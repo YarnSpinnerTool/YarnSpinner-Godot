@@ -1,0 +1,19 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YarnSpinner-Godot", "YarnSpinner-Godot.csproj", "{DBECB37D-95D2-475C-8471-594917198B51}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+	Debug|Any CPU = Debug|Any CPU
+	ExportDebug|Any CPU = ExportDebug|Any CPU
+	ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DBECB37D-95D2-475C-8471-594917198B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBECB37D-95D2-475C-8471-594917198B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBECB37D-95D2-475C-8471-594917198B51}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{DBECB37D-95D2-475C-8471-594917198B51}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{DBECB37D-95D2-475C-8471-594917198B51}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{DBECB37D-95D2-475C-8471-594917198B51}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+	EndGlobalSection
+EndGlobal
