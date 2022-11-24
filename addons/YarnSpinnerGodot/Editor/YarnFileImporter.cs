@@ -1,14 +1,18 @@
 using System;
-using System.IO;
-using Godot;
-using Yarn.Compiler;
-using Godot.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Godot;
+using Godot.Collections;
+using Google.Protobuf;
+using Yarn;
+using Yarn.Compiler;
+using Array = Godot.Collections.Array;
 using Directory = System.IO.Directory;
+using Path = System.IO.Path;
 [Tool]
-public partial class YarnProjectImporter : EditorImportPlugin
+public class YarnFileImporter : EditorImportPlugin
 {
 
     public override string GetImporterName()
@@ -20,10 +24,10 @@ public partial class YarnProjectImporter : EditorImportPlugin
     {
         return "Yarn Project";
     }
-    public override Godot.Collections.Array GetRecognizedExtensions() =>
-        new Godot.Collections.Array(new string[] { "yarnproject" });
+    public override Array GetRecognizedExtensions() =>
+        new Array(new[] { "yarn" });
 
-    public override string GetSaveExtension() => ".yarnproject-imported";
+    public override string GetSaveExtension() => "yarn";
     public override string GetResourceType()
     {
         return "Resource";
@@ -42,9 +46,9 @@ public partial class YarnProjectImporter : EditorImportPlugin
         return 0;
     }
 
-    public override Godot.Collections.Array GetImportOptions(int preset) 
+    public override Array GetImportOptions(int preset) 
     {
-        return new Godot.Collections.Array();
+        return new Array();
     }
 
     private static string Base64Encode(string plainText)
@@ -54,21 +58,21 @@ public partial class YarnProjectImporter : EditorImportPlugin
     }
 
     public override int Import(string sourceFile, string savePath, Dictionary options,
-        Godot.Collections.Array platformVariants, Godot.Collections.Array genFiles)
+        Array platformVariants, Array genFiles)
     {
         GD.Print(String.Format("importing yarn {0} to {1}", sourceFile, savePath));
 
         Array<string> files = new Array<string>();
-        string path = System.IO.Path.GetDirectoryName(ProjectSettings.GlobalizePath(sourceFile));
+        string path = Path.GetDirectoryName(ProjectSettings.GlobalizePath(sourceFile));
         foreach (var file in Directory.GetFiles(path))
         {
             if (file.Contains("yarnproject"))
                 continue;
             GD.Print(String.Format($"Importing yarn story: {file}"));
-            files.Add(System.IO.Path.Combine(path, file));
+            files.Add(Path.Combine(path, file));
         }
 
-        Error error = _Import_Files_Direct(System.IO.Path.GetFileNameWithoutExtension(sourceFile), files, savePath, options);
+        Error error = _Import_Files_Direct(Path.GetFileNameWithoutExtension(sourceFile), files, savePath, options);
         if (error != Error.Ok) {
             GD.PrintErr("could not compile files!");
             return (int)Error.CompilationFailed;
@@ -92,13 +96,13 @@ public partial class YarnProjectImporter : EditorImportPlugin
 
         if (compiledResults.Diagnostics.Any(d => d.Severity == Diagnostic.DiagnosticSeverity.Error))
         {
-            GD.PrintErr($"Not compiling files because errors were encountered.");
+            GD.PrintErr("Not compiling files because errors were encountered.");
             return Error.CompilationFailed;
         }
 
         string yarnC = null;
         using (var outStream = new MemoryStream())
-        using (var codedStream = new Google.Protobuf.CodedOutputStream(outStream))
+        using (var codedStream = new CodedOutputStream(outStream))
         {
             compiledResults.Program.WriteTo(codedStream);
             codedStream.Flush();
@@ -147,7 +151,7 @@ public partial class YarnProjectImporter : EditorImportPlugin
     public static CompilationResult CompileProgram(FileInfo[] inputs)
     {
         // The list of all files and their associated compiled results
-        var results = new List<(FileInfo file, Yarn.Program program, IDictionary<string, StringInfo> stringTable)>();
+        var results = new List<(FileInfo file, Program program, IDictionary<string, StringInfo> stringTable)>();
 
         var compilationJob = CompilationJob.CreateFromFiles(inputs.Select(fileInfo => fileInfo.FullName));
 
@@ -230,7 +234,7 @@ public partial class YarnProjectImporter : EditorImportPlugin
         Error error = Error.Ok; 
         foreach (var file in Directory.GetFiles(path))
         {
-            var filename = System.IO.Path.Combine(path, file);
+            var filename = Path.Combine(path, file);
             Directory.Delete(filename);
         }
         Directory.Delete(path, true);

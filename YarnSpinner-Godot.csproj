@@ -13,6 +13,9 @@
     <Reference Include="Google.Protobuf">
       <HintPath>Runtime\DLLs\Google.Protobuf.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Runtime\DLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Buffers">
       <HintPath>Runtime\DLLs\System.Buffers.dll</HintPath>
     </Reference>

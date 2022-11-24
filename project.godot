@@ -11,7 +11,11 @@ config_version=4
 [application]
 
 config/name="YarnSpinner-Godot"
-config/icon="res://addons/YarnSpinnerGodot/yarnproject/YarnProjectIcon.png"
+config/icon="res://YarnSpinnerLogo.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/YarnSpinnerGodot/plugin.cfg" )
 
 [gui]
 

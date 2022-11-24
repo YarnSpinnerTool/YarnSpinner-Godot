@@ -1,8 +1,6 @@
 using Godot;
 using Godot.Collections;
-using System;
-
-public partial class CompiledYarnProject : Resource
+public class CompiledYarnProject : Resource
 {
     [Export]
     public string YarnC { get; set; }

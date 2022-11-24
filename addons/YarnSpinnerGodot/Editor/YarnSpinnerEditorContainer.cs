@@ -1,5 +1,4 @@
 using Godot;
-
 [Tool]
 public class YarnSpinnerEditorContainer : PanelContainer
 {

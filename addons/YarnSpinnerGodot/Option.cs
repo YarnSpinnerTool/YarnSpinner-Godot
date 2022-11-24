@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Godot;
 using Yarn;
-using Yarn.Compiler;
-
-public partial class Option : Godot.Object
+using Object = Godot.Object;
+public class Option : Object
 {
     public int ID { get; private set; }
     public string Text { get; private set; }

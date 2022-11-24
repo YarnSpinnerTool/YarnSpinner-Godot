@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Godot;
 using Godot.Collections;
 using Yarn.Markup;
-
-public partial class MarkupAttribute : Godot.Object
+using Object = Godot.Object;
+public class MarkupAttribute : Object
 {
     [Export]
     public int Position { get; private set; }
@@ -39,13 +36,13 @@ public partial class MarkupAttribute : Godot.Object
     {
         switch (value.Type)
         {
-            case Yarn.Markup.MarkupValueType.Integer:
+            case MarkupValueType.Integer:
                 return value.IntegerValue;
-            case Yarn.Markup.MarkupValueType.String:
+            case MarkupValueType.String:
                 return value.StringValue;
-            case Yarn.Markup.MarkupValueType.Float:
+            case MarkupValueType.Float:
                 return value.FloatValue;
-            case Yarn.Markup.MarkupValueType.Bool:
+            case MarkupValueType.Bool:
                 return value.BoolValue;
             default:
                 throw new Exception("Unknown markup value type!");

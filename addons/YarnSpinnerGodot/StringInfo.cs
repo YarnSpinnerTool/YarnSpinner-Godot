@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Godot;
-
-public partial class StringInfo : Godot.Resource
+public class StringInfo : Resource
 {
     [Export]
     public string text;
@@ -27,12 +21,12 @@ public partial class StringInfo : Godot.Resource
 
     public StringInfo()
     {
-        this.text = "";
-        this.nodeName = "";
-        this.lineNumber = -1;
-        this.fileName = "";
-        this.isImplicitTag = false;
-        this.metadata = new string[] { };
+        text = "";
+        nodeName = "";
+        lineNumber = -1;
+        fileName = "";
+        isImplicitTag = false;
+        metadata = new string[] { };
     }
 
     public StringInfo(string text, string nodeName, int lineNumber, string fileName, bool isImplicitTag, string[] metadata)

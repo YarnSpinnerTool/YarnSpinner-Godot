@@ -1,11 +1,11 @@
+using System;
 using Godot;
 using Godot.Collections;
-using System;
-using System.Xml.Linq;
 using Yarn;
 using Yarn.Markup;
-
-public partial class DialogueRunner : Godot.Node
+using Array = Godot.Collections.Array;
+using Node = Godot.Node;
+public class TempDialogueRunner : Node
 {
 	[Signal]
 	public delegate void HandleLineEventHandler(string text, Array<string> tags, Array<MarkupAttribute> attributes);
@@ -14,7 +14,7 @@ public partial class DialogueRunner : Godot.Node
     public delegate void HandleOptionsEventHandler();
 
     [Export(PropertyHint.ResourceType, "CompiledYarnProject")]
-	private CompiledYarnProject CompiledYarnProject = null;
+	private CompiledYarnProject CompiledYarnProject;
 
 	[Export(PropertyHint.Enum, "en,nl")]
 	private string LanguageCode = "en";
@@ -24,7 +24,7 @@ public partial class DialogueRunner : Godot.Node
 
     private IVariableStorage _storage = new MemoryVariableStore();
 
-	private Dialogue _dialogue = null;
+	private Dialogue _dialogue;
 
     public string CurrentNode()
     {
@@ -34,21 +34,21 @@ public partial class DialogueRunner : Godot.Node
 	public bool GetVariableAsBool(string name)
 	{
 		bool result = false;
-		_storage.TryGetValue<bool>(name, out result);
+		_storage.TryGetValue(name, out result);
 		return result;
 	}
 
     public string GetVariableAsString(string name)
     {
         string result = "";
-        _storage.TryGetValue<string>(name, out result);
+        _storage.TryGetValue(name, out result);
         return result;
     }
 
     public float GetVariableAsFloat(string name)
     {
         float result = 0.0f;
-        _storage.TryGetValue<float>(name, out result);
+        _storage.TryGetValue(name, out result);
         return result;
     }
 
@@ -110,8 +110,8 @@ public partial class DialogueRunner : Godot.Node
             throw new Exception("no compiled yarn project found");
         if (CompiledYarnProject.StringTable == null)
             throw new Exception("no string table found on yarn project!");
-		var result = new Godot.Collections.Array();
-		foreach (Yarn.OptionSet.Option option in options.Options)
+		var result = new Array();
+		foreach (OptionSet.Option option in options.Options)
 		{
             var stringInfo = CompiledYarnProject.StringTable[option.Line.ID];
             var text = String.Format(stringInfo.text, option.Line.Substitutions);
@@ -128,19 +128,19 @@ public partial class DialogueRunner : Godot.Node
 		_dialogue.LogErrorMessage = LogErrorMessage;
 		_dialogue.LineHandler = LineHandler;
 		_dialogue.OptionsHandler = OptionsHandler;
-		_dialogue.CommandHandler = (Command command) =>
+		_dialogue.CommandHandler = command =>
 		{
 			GD.Print(command);
 		};
 
-		_dialogue.NodeCompleteHandler = (string nodeName) =>
+		_dialogue.NodeCompleteHandler = nodeName =>
 		{
 			GD.Print($"Node complete: {nodeName}");
 		};
 
 		_dialogue.DialogueCompleteHandler = () =>
 		{
-            GD.Print($"Dialogue complete");
+            GD.Print("Dialogue complete");
         };
 	}
 }
