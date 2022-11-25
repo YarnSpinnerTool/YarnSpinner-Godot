@@ -174,14 +174,11 @@ namespace Yarn.GodotIntegration.Editor
 
         private void ImportYarn(string assetPath)
         {
-            var sourceText = _editorUtility.GetFileText(assetPath);
-            string fileName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
-
+            var sourceText = System.IO.File.ReadAllText(assetPath);
+            var absoluteScriptPath = ProjectSettings.GlobalizePath(assetPath);
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(absoluteScriptPath);
 
             var compiledYarnFileResource = new CompiledYarnFile();
-
-            var text = _editorUtility.GetFileText(assetPath);
-
 
             // Add this container to the imported asset; it will be what
             // the user interacts with in Unity
@@ -196,6 +193,7 @@ namespace Yarn.GodotIntegration.Editor
 
             // Compile the source code into a compiled Yarn program (or
             // generate a parse error)
+            sourceText = File.ReadAllText(absoluteScriptPath);
             var compilationJob = CompilationJob.CreateFromString(fileName, sourceText, null);
             compilationJob.CompilationType = CompilationJob.Type.StringsOnly;
 

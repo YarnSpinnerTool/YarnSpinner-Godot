@@ -495,7 +495,7 @@ public class YarnProjectImporter : EditorImportPlugin
                         continue;
                     }
 
-                    var csvText = _editorUtility.GetFileText(pair.stringsFile.ResourcePath);
+                    var csvText = System.IO.File.ReadAllText(ProjectSettings.GlobalizePath(pair.stringsFile.ResourcePath));
                     
                     stringTable = StringTableEntry.ParseFromCSV(csvText);
                 }

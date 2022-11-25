@@ -151,19 +151,7 @@ namespace Yarn.GodotIntegration.Editor
             // asset), so we'll return it as a Resource here.
             return ResourceLoader.Load<Resource>(pathName);
         }
-
-        public string GetFileText(string assetPath)
-        {
-            var scriptFile = new Godot.File();
-            var err = scriptFile.Open(assetPath, Godot.File.ModeFlags.Read);
-            if (err != Error.Ok)
-            {
-                throw new IOException($"Could not open Yarn script {assetPath}. Err {err.ToString()}");
-            }
-            scriptFile.Close();
-            return scriptFile.GetAsText();
-        }
-
+        
         /// <summary>
         /// Get all assets of a given type.
         /// </summary>
