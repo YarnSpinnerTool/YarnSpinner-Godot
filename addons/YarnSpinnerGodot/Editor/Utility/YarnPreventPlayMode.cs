@@ -1,8 +1,7 @@
+#if TOOLS
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-
 
 namespace Yarn.GodotIntegration.Editor
 {
@@ -39,10 +38,6 @@ namespace Yarn.GodotIntegration.Editor
         /// <summary>
         /// Register an error source type.
         ///
-        /// Note that you may have to use <see
-        /// cref="InitializeOnLoadAttribute"/> on your class to get it to
-        /// reliably register on domain reloads etc, as by default .NET
-        /// lazily loads static state.
         /// </summary>
         /// <typeparam name="T">An asset importer type that qualifies as
         /// error source.</typeparam>
@@ -52,7 +47,7 @@ namespace Yarn.GodotIntegration.Editor
         public static void AddYarnErrorSourceType<T>(string filterQuery) where T : class,  IYarnErrorSource
             => Instance.assetSearchQueries.Add((importer => importer as T, filterQuery));
 
-        public static bool HasCompileErrors() => false; // todo: prevent play mode? Instance.CompilerErrors().Any();
+        public static bool HasCompileErrors() => false; // todo: prevent playing the game? Instance.CompilerErrors().Any();
 
         private readonly List<TypeRegistrationQuery> assetSearchQueries = new List<TypeRegistrationQuery>();
 
@@ -103,3 +98,4 @@ namespace Yarn.GodotIntegration.Editor
         // }
     }
 }
+#endif

@@ -33,6 +33,7 @@ __meta__ = {
 }
 
 [node name="Logo" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+margin_top = -4.0
 margin_right = 32.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 32, 32 )

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if TOOLS
+using System.Collections.Generic;
 using Godot;
 namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 {
@@ -30,3 +31,4 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         public List<string> parseErrorMessages = new List<string>();
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if TOOLS
 using System;
 using System.Linq;
 using System.Globalization;
@@ -251,3 +252,4 @@ namespace Yarn.GodotIntegration.Editor
         }
     }
 }
+#endif

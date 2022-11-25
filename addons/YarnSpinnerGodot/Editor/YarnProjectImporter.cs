@@ -1,3 +1,4 @@
+#if TOOLS
 #define YARNSPINNER_DEBUG // todo remove
 using System;
 using System.Collections.Generic;
@@ -922,3 +923,4 @@ public class FunctionInfo
         };
     }
 }
+#endif

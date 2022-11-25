@@ -1,3 +1,4 @@
+#if TOOLS
 using Godot;
 [Tool]
 public class YarnSpinnerEditorContainer : PanelContainer
@@ -13,3 +14,4 @@ public class YarnSpinnerEditorContainer : PanelContainer
         
     }
 }
+#endif
