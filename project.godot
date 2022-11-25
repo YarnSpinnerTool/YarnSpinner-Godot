@@ -15,7 +15,7 @@ config/icon="res://YarnSpinnerLogo.png"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/YarnSpinnerGodot/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/YarnSpinnerGodot/plugin.cfg", "res://addons/godot-plugin-refresher/plugin.cfg" )
 
 [gui]
 

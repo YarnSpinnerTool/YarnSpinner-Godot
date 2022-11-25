@@ -5,37 +5,55 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime.Standard">
-      <HintPath>Runtime\DLLs\Antlr4.Runtime.Standard.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper">
-      <HintPath>Runtime\DLLs\CsvHelper.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
-      <HintPath>Runtime\DLLs\Google.Protobuf.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>Runtime\DLLs\Newtonsoft.Json.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers">
-      <HintPath>Runtime\DLLs\System.Buffers.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory">
-      <HintPath>Runtime\DLLs\System.Memory.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics.Vectors">
-      <HintPath>Runtime\DLLs\System.Numerics.Vectors.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.TypeExtensions">
-      <HintPath>Runtime\DLLs\System.Reflection.TypeExtensions.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Reflection.TypeExtensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>Runtime\DLLs\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="YarnSpinner">
-      <HintPath>Runtime\DLLs\YarnSpinner.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/YarnSpinner.dll</HintPath>
     </Reference>
     <Reference Include="YarnSpinner.Compiler">
-      <HintPath>Runtime\DLLs\YarnSpinner.Compiler.dll</HintPath>
+      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/YarnSpinner.Compiler.dll</HintPath>
     </Reference>
+    
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LineMetadata Icon.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LineMetadata Icon.png.meta" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\Localization Icon.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\Localization Icon.png.meta" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LocalizationDatabase Icon.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LocalizationDatabase Icon.png.meta" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnProject Icon.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnProject Icon.png.meta" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnScript Icon.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnScript Icon.png.meta" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerEditorWindow.psd" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerFailed.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerLogo.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerNotTested.png" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerSuccess.png" />
   </ItemGroup>
 </Project>

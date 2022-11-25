@@ -66,8 +66,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-## Yarn Spinner for Unity
-
 # .NET symbols files, for debugging
 *.pdb
 *.pdb.meta 
@@ -75,9 +73,6 @@ Temporary Items
 .idea
 *.DotSettings.User
 
-# Symlink to Samples~ (development environments use this so we can work with the samples all at once, but we don't want to ship the symlink)
-Samples
-Samples.meta
 .mono
 .godot
 .import
