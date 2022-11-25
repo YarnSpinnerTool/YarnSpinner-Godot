@@ -2,10 +2,6 @@ tool
 extends EditorPlugin
 # YarnSpinner-Godot editor plugin
 
-# resources
-var project_importer_script = preload("res://addons/YarnSpinnerGodot/editor/YarnProjectImporter.cs")
-var script_importer_script = preload("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs")
-var editor_utility_script = preload("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs")
 
 # instances
 var container
@@ -14,7 +10,12 @@ var script_import_plugin
 var editor_utility 
 
 func _enter_tree():
-	container = preload("res://addons/YarnSpinnerGodot/editor/YarnSpinnerEditorContainer.tscn").instance()
+	# resources
+	var project_importer_script = load("res://addons/YarnSpinnerGodot/editor/YarnProjectImporter.cs")
+	var script_importer_script = load("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs")
+	var editor_utility_script = load("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs")
+
+	container = load("res://addons/YarnSpinnerGodot/editor/YarnSpinnerEditorContainer.tscn").instance()
 	container.undoRedo = get_undo_redo()
 	add_control_to_bottom_panel(container, "YarnSpinner")
 	project_import_plugin = project_importer_script.new()

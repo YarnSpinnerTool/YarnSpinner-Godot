@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/editor/YarnSpinnerEditorContainer.cs" type="Script" id=1]
+[ext_resource path="res://addons/YarnSpinnerGodot/Editor/Icons/mini_YarnSpinnerLogo.png" type="Texture" id=2]
 
 [node name="YarnSpinnerEditorContainer" type="PanelContainer"]
 margin_right = 494.0
@@ -26,21 +27,30 @@ margin_bottom = 135.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 margin_right = 474.0
-margin_bottom = 14.0
+margin_bottom = 32.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Logo" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+margin_right = 32.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 32, 32 )
+texture = ExtResource( 2 )
+stretch_mode = 3
+
 [node name="YarnSpinner" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_right = 54.0
-margin_bottom = 14.0
+margin_left = 36.0
+margin_top = 9.0
+margin_right = 111.0
+margin_bottom = 23.0
 custom_colors/font_color = Color( 0.576471, 0.576471, 0.576471, 1 )
 text = "YarnSpinner"
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 58.0
+margin_left = 115.0
 margin_right = 474.0
-margin_bottom = 14.0
+margin_bottom = 32.0
 mouse_filter = 1
 size_flags_horizontal = 3
 __meta__ = {
@@ -48,8 +58,17 @@ __meta__ = {
 }
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
-margin_top = 18.0
+margin_top = 36.0
 margin_right = 474.0
-margin_bottom = 18.0
+margin_bottom = 36.0
 mouse_filter = 1
 custom_constants/separation = 0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+margin_top = 40.0
+margin_right = 474.0
+margin_bottom = 120.0
+rect_min_size = Vector2( 200, 80 )
+bbcode_enabled = true
+bbcode_text = "YarnSpinner integration will go here"
+text = "YarnSpinner integration will go here"

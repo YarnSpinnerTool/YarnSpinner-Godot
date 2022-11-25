@@ -174,7 +174,7 @@ namespace Yarn.GodotIntegration.Editor
 
         private void ImportYarn(string assetPath)
         {
-            var sourceText = System.IO.File.ReadAllText(assetPath);
+
             var absoluteScriptPath = ProjectSettings.GlobalizePath(assetPath);
             string fileName = System.IO.Path.GetFileNameWithoutExtension(absoluteScriptPath);
 
@@ -193,12 +193,13 @@ namespace Yarn.GodotIntegration.Editor
 
             // Compile the source code into a compiled Yarn program (or
             // generate a parse error)
-            sourceText = File.ReadAllText(absoluteScriptPath);
+            var sourceText = File.ReadAllText(absoluteScriptPath);
             var compilationJob = CompilationJob.CreateFromString(fileName, sourceText, null);
             compilationJob.CompilationType = CompilationJob.Type.StringsOnly;
 
             var result = Yarn.Compiler.Compiler.Compile(compilationJob);
 
+            GD.Print($"String table keys from compilation: {string.Join(", ", result.StringTable.Keys)}");
             IEnumerable<Diagnostic> errors = result.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
 
             if (errors.Count() > 0)
