@@ -1,0 +1,8 @@
+title: HasErrors
+tags: 
+---
+// typo a command
+<typo cmd>> 
+if# I have a typo it << should show up
+===
+

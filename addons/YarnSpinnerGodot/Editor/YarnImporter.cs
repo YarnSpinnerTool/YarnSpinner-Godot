@@ -3,15 +3,19 @@ using System;
 using System.Linq;
 using System.Globalization;
 using System.Collections.Generic;
+using System.IO;
 using Yarn.Compiler;
 using System.Security.Cryptography;
 using System.Text;
 using Godot;
 using Godot.Collections;
+using Newtonsoft.Json;
 using Yarn.GodotIntegation;
 using YarnSpinnerGodot.addons.YarnSpinnerGodot;
 using File = System.IO.File;
 using Array = Godot.Collections.Array;
+using Google.Protobuf;
+
 namespace Yarn.GodotIntegration.Editor
 {
 
@@ -39,7 +43,7 @@ namespace Yarn.GodotIntegration.Editor
             {
                 "yarn"
             });
-        
+
         public override string GetImporterName()
         {
             return "yarnscript";
@@ -112,7 +116,7 @@ namespace Yarn.GodotIntegration.Editor
 
             parseErrorMessages.Clear();
 
-            compiledFile.isSuccessfullyParsed = false;
+            compiledFile.IsSuccessfullyParsed = false;
 
             if (extension == ".yarn")
             {
@@ -173,23 +177,16 @@ namespace Yarn.GodotIntegration.Editor
             }
         }
 
+
         private void ImportYarn(string assetPath)
         {
 
             var absoluteScriptPath = ProjectSettings.GlobalizePath(assetPath);
             string fileName = System.IO.Path.GetFileNameWithoutExtension(absoluteScriptPath);
 
-            var compiledYarnFileResource = new CompiledYarnFile();
-
-            // Add this container to the imported asset; it will be what
-            // the user interacts with in Unity
-            // TODO: sub resources
-            // ctx.AddObjectToAsset("Program", text, YarnEditorUtility.GetYarnDocumentIconTexture());
-            // ctx.SetMainObject(text);
-
             Yarn.Program compiledProgram = null;
-            IDictionary<string, Yarn.Compiler.StringInfo> stringTable = null;
 
+            IDictionary<string, Yarn.Compiler.StringInfo> stringTable = null;
             parseErrorMessages.Clear();
 
             // Compile the source code into a compiled Yarn program (or
@@ -198,16 +195,26 @@ namespace Yarn.GodotIntegration.Editor
             var compilationJob = CompilationJob.CreateFromString(fileName, sourceText, null);
             compilationJob.CompilationType = CompilationJob.Type.StringsOnly;
 
-            var result = Yarn.Compiler.Compiler.Compile(compilationJob);
+            var compilation = Yarn.Compiler.Compiler.Compile(compilationJob);
+            // If I don't load the resource script this way, the type of the serialized resource file is incorrect,
+            // and none of the script properties are saved. Simply calling the new CompiledYarnFile() constructor doesn't work.
+            var compiledYarnFileResource = (CompiledYarnFile)((CSharpScript)ResourceLoader.Load("res://addons/YarnSpinnerGodot/Editor/CompiledYarnFile.cs")).New();
+            if (compilation.Program != null)
+            {
+                using (var textWriter = new MemoryStream())
+                {
+                    compilation.Program.WriteTo(textWriter);
+                    compiledYarnFileResource.Compilation = textWriter.ToString();
+                }
+            }
+            GD.Print($"String table keys from compilation: {string.Join(", ", compilation.StringTable.Keys.ToList().ConvertAll(k => $"{k}={compilation.StringTable[k]}"))}");
 
-            GD.Print($"String table keys from compilation: {string.Join(", ", result.StringTable.Keys)}");
-            IEnumerable<Diagnostic> errors = result.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
-
+            IEnumerable<Diagnostic> errors = compilation.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
             if (errors.Count() > 0)
             {
-                compiledYarnFileResource.isSuccessfullyParsed = false;
+                compiledYarnFileResource.IsSuccessfullyParsed = false;
 
-                parseErrorMessages.AddRange(errors.Select(e =>
+                compiledYarnFileResource.ParseErrorMessages.AddRange(errors.Select(e =>
                 {
                     string message = $"{assetPath}: {e}";
                     GD.PushError($"Error importing {message}");
@@ -216,20 +223,27 @@ namespace Yarn.GodotIntegration.Editor
             }
             else
             {
-                compiledYarnFileResource.isSuccessfullyParsed = true;
-                compiledYarnFileResource.LastImportHadImplicitStringIDs = result.ContainsImplicitStringTags;
-                compiledYarnFileResource.LastImportHadAnyStrings = result.StringTable.Count > 0;
+                compiledYarnFileResource.IsSuccessfullyParsed = true;
+                compiledYarnFileResource.LastImportHadImplicitStringIDs = compilation.ContainsImplicitStringTags;
+                compiledYarnFileResource.LastImportHadAnyStrings = compilation.StringTable.Count > 0;
 
-                stringTable = result.StringTable;
-                compiledProgram = result.Program;
+                stringTable = compilation.StringTable;
+                compiledProgram = compilation.Program;
             }
+            var compiledPath = $"{assetPath.Substring(0, assetPath.Length - ".yarn".Length)}.{nameof(CompiledYarnFile)}.tres";
+            GD.Print($"Writing {nameof(CompiledYarnFile)} to {compiledPath}");
+            ResourceSaver.Save(compiledPath, compiledYarnFileResource, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         }
 
+        /// <summary>
+        /// Import a .yarnrc file
+        /// </summary>
+        /// <param name="assetPath"></param>
         private void ImportCompiledYarn(string assetPath)
         {
 
             var bytes = File.ReadAllBytes(assetPath);
-
+            var compiledYarnFileResource = new CompiledYarnFile();
             try
             {
                 // Validate that this can be parsed as a Program protobuf
@@ -241,7 +255,7 @@ namespace Yarn.GodotIntegration.Editor
                 return;
             }
 
-            //compiledYarnFileResource.isSuccessfullyParsed = true;
+            compiledYarnFileResource.IsSuccessfullyParsed = true;
 
             // Create a container for storing the bytes
             var programContainer = new Resource(); // "<pre-compiled Yarn script>"
@@ -249,6 +263,7 @@ namespace Yarn.GodotIntegration.Editor
             // Add this container to the imported asset; it will be what
             // the user interacts with in Godot
             GD.PrintErr("TODO: Need to save compiled yarn file asset.");
+
         }
     }
 }

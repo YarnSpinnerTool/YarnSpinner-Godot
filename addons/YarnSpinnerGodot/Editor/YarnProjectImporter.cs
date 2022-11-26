@@ -148,7 +148,7 @@ public class YarnProjectImporter : EditorImportPlugin
     
         // First step: check to see if there's any parse errors in the
         // files.
-        var scriptsWithParseErrors = scriptImporters.Where(script => script.isSuccessfullyParsed == false);
+        var scriptsWithParseErrors = scriptImporters.Where(script => script.IsSuccessfullyParsed == false);
 
         if (scriptsWithParseErrors.Count() != 0)
         {
@@ -226,7 +226,7 @@ public class YarnProjectImporter : EditorImportPlugin
         // compilation
         foreach (var importer in pathsToImporters.Values)
         {
-            importer.parseErrorMessages.Clear();
+            importer.ParseErrorMessages.Clear();
         }
 
         CreateYarnInternalLocalizationAssets( project, compilationResult);

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/YarnSpinnerGodot/Editor/CompiledYarnFile.cs" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+Compilation = null
+LastImportHadImplicitStringIDs = false
+LastImportHadAnyStrings = false
+IsSuccessfullyParsed = false
+ParseErrorMessages = PoolStringArray( "res://Samples/HasErrors.yarn: 6:6: Error: extraneous input \'h\' expecting {NEWLINE, \'#\'}\r\nif# I have a typo it << should show up\r\r\n      ^\r\n", "res://Samples/HasErrors.yarn: 9:0: Error: Unexpected \"<EOF>\" while reading a command statement\r\n\r\n\r\n" )
