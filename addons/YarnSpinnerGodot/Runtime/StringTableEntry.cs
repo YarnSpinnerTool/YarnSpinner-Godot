@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace Yarn.GodotIntegation
+namespace Yarn.GodotIntegration
 {
     public struct StringTableEntry
     {

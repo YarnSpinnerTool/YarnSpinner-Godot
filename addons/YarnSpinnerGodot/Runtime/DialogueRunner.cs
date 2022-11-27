@@ -34,7 +34,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Godot;
 using Newtonsoft.Json;
-using Yarn.GodotIntegation;
+using Yarn.GodotIntegration;
 
 namespace Yarn.GodotIntegration
 {
@@ -49,7 +49,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         /// <seealso cref="DispatchCommandToGameObject(Command, Action)"/>
         /// <seealso cref="DispatchCommandToRegisteredHandlers(Command, Action)"/>
-        internal enum CommandDispatchResult
+        public enum CommandDispatchResult
         {
             /// <summary>
             /// The command was located and successfully called.
@@ -78,7 +78,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         [Export]
         public NodePath variableStoragePath;
-        internal VariableStorageBehaviour _variableStorage;
+        public VariableStorageBehaviour _variableStorage;
 
         /// <inheritdoc cref="_variableStorage"/>
         public VariableStorageBehaviour VariableStorage
@@ -667,7 +667,7 @@ namespace Yarn.GodotIntegration
         /// The <see cref="LocalizedLine"/> currently being displayed on
         /// the dialogue views.
         /// </summary>
-        internal LocalizedLine CurrentLine { get; private set; }
+        public LocalizedLine CurrentLine { get; private set; }
 
         /// <summary>
         ///  The collection of dialogue views that are currently either
@@ -1097,7 +1097,7 @@ namespace Yarn.GodotIntegration
         /// Action)"/>
         /// <param name="command">The text of the command to
         /// dispatch.</param>
-        internal CommandDispatchResult DispatchCommandToRegisteredHandlers(string command, Action onSuccessfulDispatch)
+        public CommandDispatchResult DispatchCommandToRegisteredHandlers(string command, Action onSuccessfulDispatch)
         {
             var commandTokens = SplitCommandText(command).ToArray();
 
@@ -1194,7 +1194,7 @@ namespace Yarn.GodotIntegration
         /// <returns><see langword="true"/> if the command was successfully
         /// dispatched to a game object; <see langword="false"/> if no game
         /// object was registered as a handler for the command.</returns>
-        internal async Task<CommandDispatchResult> DispatchCommandToGameObject(Command command, Action onSuccessfulDispatch)
+        public async Task<CommandDispatchResult> DispatchCommandToGameObject(Command command, Action onSuccessfulDispatch)
         {
             // Call out to the string version of this method, because
             // Yarn.Command's constructor is only accessible from inside
@@ -1207,7 +1207,7 @@ namespace Yarn.GodotIntegration
         /// <inheritdoc cref="DispatchCommandToGameObject(Command, Action)"/>
         /// <param name="command">The text of the command to
         /// dispatch.</param>
-        internal async Task<CommandDispatchResult> DispatchCommandToGameObject(string command, System.Action onSuccessfulDispatch)
+        public async Task<CommandDispatchResult> DispatchCommandToGameObject(string command, System.Action onSuccessfulDispatch)
         {
             if (string.IsNullOrEmpty(command))
             {

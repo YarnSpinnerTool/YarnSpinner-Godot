@@ -2,12 +2,12 @@
 
 importer="yarnscript"
 type="Resource"
-path="res://.import/Space.yarn-39e985eddadd5b1a25aa0971c431f310.yarn"
+path="res://.import/Space.yarn-39e985eddadd5b1a25aa0971c431f310.tres"
 
 [deps]
 
 source_file="res://Samples/Space.yarn"
-dest_files=[ "res://.import/Space.yarn-39e985eddadd5b1a25aa0971c431f310.yarn" ]
+dest_files=[ "res://.import/Space.yarn-39e985eddadd5b1a25aa0971c431f310.tres" ]
 
 [params]
 

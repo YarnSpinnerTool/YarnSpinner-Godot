@@ -3,14 +3,14 @@ using CsvHelper;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Yarn.GodotIntegation
+namespace Yarn.GodotIntegration
 {
     /// <summary>
     /// Struct holding information about a line and its associated metadata.
     /// Only used internally as an intermediary before persisting information
     /// in either a `YarnProject` or a CSV file.
     /// </summary>
-    internal struct LineMetadataTableEntry
+    public struct LineMetadataTableEntry
     {
         /// <summary>
         /// The line ID for this line.
@@ -81,7 +81,7 @@ namespace Yarn.GodotIntegation
         /// structs.</returns>
         /// <exception cref="ArgumentException">Thrown when an error occurs when
         /// parsing the string.</exception>
-        internal static IEnumerable<LineMetadataTableEntry> ParseFromCSV(string sourceText)
+        public static IEnumerable<LineMetadataTableEntry> ParseFromCSV(string sourceText)
         {
             try
             {

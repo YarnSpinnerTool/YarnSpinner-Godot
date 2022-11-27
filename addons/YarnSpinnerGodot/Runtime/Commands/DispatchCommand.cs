@@ -10,7 +10,7 @@ namespace Yarn.GodotIntegration
     using Injector = Func<string, object>;
     using Converter = Func<string, object>;
 
-    internal class DispatchCommand
+    public class DispatchCommand
     {
         public MethodInfo Method { get; set; }
         public Injector Injector { get; set; }

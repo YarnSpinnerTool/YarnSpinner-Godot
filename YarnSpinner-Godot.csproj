@@ -56,5 +56,7 @@
     <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerLogo.png" />
     <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerNotTested.png" />
     <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerSuccess.png" />
+    <Content Include="**\*.yarn" />
+    <Content Include="addons\YarnSpinnerGodot\Editor\YarnScriptTemplate.txt" />
   </ItemGroup>
 </Project>

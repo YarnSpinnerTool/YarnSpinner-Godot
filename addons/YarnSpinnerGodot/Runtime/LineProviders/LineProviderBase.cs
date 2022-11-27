@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Godot;
-using Yarn.GodotIntegation;
+using Yarn.GodotIntegration;
 
 namespace Yarn.GodotIntegration
 {

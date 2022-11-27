@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 using Yarn.GodotIntegration;
-namespace Yarn.GodotIntegation
+namespace Yarn.GodotIntegration
 {
     /// <summary>
     /// A <see cref="Godot.Node"/> that a <see cref="DialogueRunner"/>

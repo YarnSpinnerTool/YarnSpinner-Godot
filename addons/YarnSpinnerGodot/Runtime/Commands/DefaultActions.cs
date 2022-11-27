@@ -7,7 +7,7 @@ using Godot;
 
 namespace Yarn.GodotIntegration
 {
-    internal class DefaultActions : Godot.Node
+    public class DefaultActions : Godot.Node
     {
         #region Commands
         /// <summary>

@@ -8,7 +8,7 @@ public class Option : Object
     public string DestinationNode { get; private set; }
     public bool IsAvailable { get; private set; }
 
-    internal static object fromOption(OptionSet.Option option, string text)
+    public static object fromOption(OptionSet.Option option, string text)
     {
         return new Option
         {

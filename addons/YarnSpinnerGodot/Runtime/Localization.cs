@@ -7,7 +7,7 @@ using Godot;
 using System.Linq;
 #endif
 
-namespace Yarn.GodotIntegation{
+namespace Yarn.GodotIntegration{
 
     public class Localization : Resource
     {
@@ -31,7 +31,7 @@ namespace Yarn.GodotIntegation{
         /// Gets a value indicating whether this <see cref="Localization"/>
         /// contains assets that are linked to strings.
         /// </summary>
-        public bool ContainsLocalizedAssets { get => _containsLocalizedAssets; internal set => _containsLocalizedAssets = value; }
+        public bool ContainsLocalizedAssets { get => _containsLocalizedAssets; set => _containsLocalizedAssets = value; }
 
         [Export]
         private bool _containsLocalizedAssets;
@@ -74,7 +74,7 @@ namespace Yarn.GodotIntegation{
         /// ID.)</param>
         /// <param name="value">The user-facing text for this string, in the
         /// language specified by <see cref="LocaleCode"/>.</param>
-        internal void AddLocalisedStringToAsset(string key, string value) {
+        public void AddLocalisedStringToAsset(string key, string value) {
             _stringTable.Add(key, value);
         }
 

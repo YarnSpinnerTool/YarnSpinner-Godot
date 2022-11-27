@@ -16,7 +16,7 @@ namespace Yarn.GodotIntegration
     /// <summary>
     /// Create dispatchers for functions and commands.
     /// </summary>
-    internal static class ActionManager
+    public static class ActionManager
     {
         private const BindingFlags IgnoreVisiblity = BindingFlags.Public | BindingFlags.NonPublic;
         private const BindingFlags AllInstanceMembers = BindingFlags.Instance | IgnoreVisiblity;

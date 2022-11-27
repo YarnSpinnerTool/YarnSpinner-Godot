@@ -31,7 +31,7 @@ using System.Diagnostics;
 using System.Net.Mime;
 using Godot;
 
-namespace Yarn.GodotIntegation
+namespace Yarn.GodotIntegration
 {
     /// <summary>
     /// A simple implementation of VariableStorageBehaviour.
@@ -73,7 +73,7 @@ namespace Yarn.GodotIntegation
         /// </summary>
         [Export]
         
-        internal RichTextLabel debugTextView = null;
+        public RichTextLabel debugTextView = null;
 
         public override void _Process(float deltaTime)
         {

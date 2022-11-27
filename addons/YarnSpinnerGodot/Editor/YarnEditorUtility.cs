@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
 using Godot;
+using Yarn.GodotIntegration;
 using File = System.IO.File;
 using Object = Godot.Object;
 using Path = System.IO.Path;
@@ -22,7 +23,7 @@ namespace Yarn.GodotIntegration.Editor
 
         const string DocumentIconTexturePath = "res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/YarnScript Icon.png";
         const string ProjectIconTexturePath = "res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/YarnProject Icon.png";
-        const string TemplateFilePath = "res://TODO";
+        const string TemplateFilePath = "res://addons/YarnSpinnerGodot/Editor/YarnScriptTemplate.txt";
 
         /// <summary>
         /// Returns a <see cref="Texture2D"/> that can be used to represent
@@ -50,63 +51,31 @@ namespace Yarn.GodotIntegration.Editor
         /// Begins the interactive process of creating a new Yarn file in
         /// the Editor. Menu Item "Yarn Spinner/Create Yarn Script"
         /// </summary>    
-        public void CreateYarnAsset()
+        public void CreateYarnScript(string scriptPath)
         {
-            GD.Print("TODO would create a script here");
-            // This method call is undocumented, but public. It's defined
-            // in ProjectWindowUtil, and used by other parts of the editor
-            // to create other kinds of assets (scripts, textures, etc).
-            // ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
-            //     0,
-            //     ScriptableObject.CreateInstance<DoCreateYarnScriptAsset>(),
-            //     "NewYarnScript.yarn",
-            //     GetYarnDocumentIconTexture(),
-            //     GetTemplateYarnScriptPath());
+            GD.Print($"Creating new yarn script at {scriptPath}");
+            CreateYarnScriptAssetFromTemplate(scriptPath);
         }
 
         // [MenuItem("Yarn Spinner/Create Yarn Project", false, 101)]
-        public void CreateYarnProject()
+        public void CreateYarnProject(string projectPath)
         {
-            // This method call is undocumented, but public. It's defined
-            // in ProjectWindowUtil, and used by other parts of the editor
-            // to create other kinds of assets (scripts, textures, etc).
-            // ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
-            //     0,
-            //     ScriptableObject.CreateInstance<DoCreateYarnScriptAsset>(),
-            //     "NewProject.yarnproject",
-            //     GetYarnProjectIconTexture(),
-            //     GetTemplateYarnScriptPath());
+            // If I don't load the resource script this way, the type of the serialized resource file is incorrect,
+            // and none of the script properties are saved. Simply calling the new CompiledYarnFile() constructor doesn't work.
+            var newYarnProject = (YarnProject)((CSharpScript)ResourceLoader
+                .Load("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs")).New();
+            GD.Print("TODO: code to create new yarn project");
+
         }
 
-        /// <summary>
-        /// Creates a new Yarn project at the given path, using the default
-        /// template.
-        /// </summary>
-        /// <param name="path">The path at which to create the
-        /// script.</param>
-        public Object CreateYarnProject(string path)
-        {
-            return CreateYarnScriptAssetFromTemplate(path, TemplateFilePath);
-        }
 
-        /// <summary>
-        /// Creates a new Yarn script at the given path, using the default
-        /// template.
-        /// </summary>
-        /// <param name="path">The path at which to create the
-        /// script.</param>
-        public Object CreateYarnAsset(string path)
-        {
-            return CreateYarnScriptAssetFromTemplate(path, TemplateFilePath);
-        }
-
-        private Resource CreateYarnScriptAssetFromTemplate(string pathName, string resourceFile)
+        private void CreateYarnScriptAssetFromTemplate(string pathName)
         {
             // Read the contents of the template file
             string templateContent;
             try
             {
-                templateContent = File.ReadAllText(resourceFile);
+                templateContent = File.ReadAllText(ProjectSettings.GlobalizePath(TemplateFilePath));
             }
             catch
             {
@@ -116,19 +85,9 @@ namespace Yarn.GodotIntegration.Editor
             }
 
             // Figure out the 'file name' that the user entered
-            string scriptName;
-            if (Path.GetExtension(pathName).Equals(".yarnproject", System.StringComparison.InvariantCultureIgnoreCase))
-            {
-                // This is a .yarnproject file; the script "name" is always
-                // "Project".
-                scriptName = "Project";
-            }
-            else
-            {
-                // The script name is the name of the file, sans extension.
-                scriptName = Path.GetFileNameWithoutExtension(pathName);
-            }
-
+            // The script name is the name of the file, sans extension.
+            string scriptName = Path.GetFileNameWithoutExtension(pathName);
+            
             // Replace any spaces with underscores - these aren't allowed
             // in node names
             scriptName = scriptName.Replace(" ", "_");
@@ -144,21 +103,16 @@ namespace Yarn.GodotIntegration.Editor
             templateContent = System.Text.RegularExpressions.Regex.Replace(templateContent, @"\r\n?|\n", lineEndings);
 
             // Write it all out to disk as UTF-8
-            var fullPath = Path.GetFullPath(pathName);
+            var fullPath = Path.GetFullPath(ProjectSettings.GlobalizePath(pathName));
             File.WriteAllText(fullPath, templateContent, System.Text.Encoding.UTF8);
-
-            // We don't hugely care about the details of the object anyway
-            // (we just wanted to ensure that it's imported as at least an
-            // asset), so we'll return it as a Resource here.
-            return ResourceLoader.Load<Resource>(pathName);
+            GD.Print($"Wrote new file {pathName}");
         }
-        
+
         /// <summary>
         /// Get all assets of a given type.
         /// </summary>
         /// <typeparam name="T">AssetImporter type to search for. Should be convertible from AssetImporter.</typeparam>
         /// <param name="filterQuery">Asset query (see <see cref="AssetDatabase.FindAssets(string)"/> documentation for formatting).</param>
-        /// <param name="converter">Custom type caster.</param>
         /// <returns>Enumerable of all assets of a given type.</returns>
         public IEnumerable<T> GetAllAssetsOf<T>(string filterQuery) where T : class
         {

@@ -2,12 +2,12 @@
 
 importer="yarnscript"
 type="Resource"
-path="res://.import/HasErrors.yarn-e0171f344c1673f07d9ddc9ee9ba4218.yarn"
+path="res://.import/HasErrors.yarn-e0171f344c1673f07d9ddc9ee9ba4218.tres"
 
 [deps]
 
 source_file="res://Samples/HasErrors.yarn"
-dest_files=[ "res://.import/HasErrors.yarn-e0171f344c1673f07d9ddc9ee9ba4218.yarn" ]
+dest_files=[ "res://.import/HasErrors.yarn-e0171f344c1673f07d9ddc9ee9ba4218.tres" ]
 
 [params]
 

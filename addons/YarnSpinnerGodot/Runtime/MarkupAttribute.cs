@@ -15,7 +15,7 @@ public class MarkupAttribute : Object
     [Export]
     public Dictionary Properties { get; private set; }
 
-    internal static MarkupAttribute fromMarkupAttribute(Yarn.Markup.MarkupAttribute e)
+    public static MarkupAttribute fromMarkupAttribute(Yarn.Markup.MarkupAttribute e)
     {
         Dictionary properties = new Dictionary();
         foreach (var property in e.Properties)

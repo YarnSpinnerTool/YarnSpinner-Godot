@@ -10,10 +10,9 @@ using Godot.Collections;
 using Google.Protobuf;
 using Yarn;
 using Yarn.Compiler;
-using Yarn.GodotIntegation;
+using Yarn.GodotIntegration;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
-using YarnSpinnerGodot.addons.YarnSpinnerGodot;
 using Array = Godot.Collections.Array;
 using Directory = System.IO.Directory;
 using File = Godot.File;
@@ -70,17 +69,38 @@ public class YarnProjectImporter : EditorImportPlugin
     public override int Import(string assetPath, string savePath, Dictionary options,
         Array platformVariants, Array genFiles)
     {
+        GD.Print("Hello.");
+        return 0;
+    }
+    public YarnProject GetDestinationProject(string assetPath)
+    {
+
+        var myAssetPath = assetPath;
+        var destinationProjectPath = _editorUtility.GetAllAssetsOf<YarnProject>("t:YarnProject")
+            .FirstOrDefault(importer =>
+            {
+                // Does this importer depend on this asset? If so,
+                // then this is our destination asset.
+                string[] dependencies = ResourceLoader.GetDependencies(assetPath);
+                var importerDependsOnThisAsset = dependencies.Contains(myAssetPath);
+
+                return importerDependsOnThisAsset;
+            })?.ResourcePath;
+
+        if (destinationProjectPath == null)
+        {
+            return null;
+        }
+
+        return ResourceLoader.Load<YarnProject>(destinationProjectPath);
+    }
+    public int CompileAllScript(YarnProject project, string assetPath, string savePath)
+    {
         GD.Print($"Importing yarn {assetPath} to {savePath}");
 
-        var project = new YarnProject();
         project.ResourceName = Path.GetFileNameWithoutExtension(assetPath);
 
-        // Start by creating the asset - no matter what, we need to
-        // todo: sub resource
-        // ctx.AddObjectToAsset("Project", project);
-        // ctx.SetMainObject(project);
-
-        foreach (var script in sourceScripts)
+        foreach (var script in project.SourceScripts)
         {
             // todo: add dependencies on scripts
             // string path = AssetDatabase.GetAssetPath(script);
@@ -91,6 +111,7 @@ public class YarnProjectImporter : EditorImportPlugin
             //     continue;
             // }
             // ctx.DependsOnSourceAsset(path);
+            
         }
 
         // Parse declarations 
@@ -106,7 +127,7 @@ public class YarnProjectImporter : EditorImportPlugin
 
         IEnumerable<Declaration> localDeclarations;
 
-        compileErrors.Clear();
+        project.CompileErrors.Clear();
 
         var result = Compiler.Compile(localDeclarationsCompileJob);
         localDeclarations = result.Declarations;
@@ -122,7 +143,7 @@ public class YarnProjectImporter : EditorImportPlugin
             foreach (var error in errors)
             {
                 GD.PushError($"Error in Yarn Project: {error}");
-                compileErrors.Add($"Error in Yarn Project {assetPath}: {error}");
+                project.CompileErrors.Add($"Error in Yarn Project {assetPath}: {error}");
             }
 
             return (int)Error.Failed;
@@ -135,40 +156,28 @@ public class YarnProjectImporter : EditorImportPlugin
         // this import step, in case there are compile errors later.
         // We'll replace this with a more complete list later if
         // compilation succeeds.
-        serializedDeclarations = localDeclarations
+        project.SerializedDeclarations = localDeclarations
             .Where(decl => !(decl.Type is FunctionType))
-            .Select(decl => new SerializedDeclaration(decl)).ToList();
+            .Select(decl => new YarnProject.SerializedDeclaration(decl)).ToList();
 
         // We're done processing this file - we've parsed it, and
         // pulled any information out of it that we need to. Now to
         // compile the scripts associated with this project.
 
-        var scriptImporters = sourceScripts.Where(s => s != null).Select(s => 
-            s as CompiledYarnFile); // todo wrong conversion, same concept of looking up an importer doesn't work in godot
-    
         // First step: check to see if there's any parse errors in the
         // files.
-        var scriptsWithParseErrors = scriptImporters.Where(script => script.IsSuccessfullyParsed == false);
-
-        if (scriptsWithParseErrors.Count() != 0)
+        if (project.ParseErrorMessages.Count != 0)
         {
             // Parse errors! We can't continue.
-            string failingScriptNameList = string.Join("\n", scriptsWithParseErrors.Select(script => script.ResourcePath));
-            compileErrors.Add($"Parse errors exist in the following files:\n{failingScriptNameList}");
+            string failingScriptNameList = string.Join("\n", project.ScriptsWithParseErrors.Select(script => script.ResourcePath));
+            project.CompileErrors.Add($"Parse errors exist in the following files:\n{failingScriptNameList}");
             return (int)Error.Failed;
         }
 
-        // Get paths to the scripts we're importing, and also map them
-        // to their corresponding importer
-        var pathsToImporters = scriptImporters.ToDictionary(script => script.ResourcePath, script => script);
-
-        if (pathsToImporters.Count == 0)
-        {
-            return (int)Error.Ok; // nothing further to do here
-        }
-
         // We now now compile!
-        var job = CompilationJob.CreateFromFiles(pathsToImporters.Keys);
+        var scriptAbsolutePaths = project.SourceScripts.ToList()
+            .ConvertAll(scriptResource => ProjectSettings.GlobalizePath(scriptResource.ResourcePath));
+        var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
         job.VariableDeclarations = localDeclarations;
 
         job.Library = library;
@@ -193,10 +202,7 @@ public class YarnProjectImporter : EditorImportPlugin
 
                 // Associate this compile error to the corresponding
                 // script's importer.
-                var importer = pathsToImporters[errorGroup.Key];
-
-                compileErrors.AddRange(errorMessages);
-
+                project.CompileErrors.AddRange(errorMessages);
                 parseErrorMessages.AddRange(errorMessages);
             }
 
@@ -205,7 +211,7 @@ public class YarnProjectImporter : EditorImportPlugin
 
         if (compilationResult.Program == null)
         {
-            GD.PushError("Internal error: Failed to compile: resulting program was null, but compiler did not report errors.");
+            GD.PushError("public error: Failed to compile: resulting program was null, but compiler did not report errors.");
             return(int)Error.Failed;
         }
 
@@ -213,21 +219,18 @@ public class YarnProjectImporter : EditorImportPlugin
         // .yarnproject file, and the ones inside the .yarn files.
 
         // While we're here, filter out any declarations that begin with our
-        // Yarn internal prefix. These are synthesized variables that are
+        // Yarn public prefix. These are synthesized variables that are
         // generated as a result of the compilation, and are not declared by
         // the user.
-        serializedDeclarations = localDeclarations
+        project.SerializedDeclarations = localDeclarations
             .Concat(compilationResult.Declarations)
             .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
             .Where(decl => !(decl.Type is FunctionType))
-            .Select(decl => new SerializedDeclaration(decl)).ToList();
+            .Select(decl => new YarnProject.SerializedDeclaration(decl)).ToList();
 
         // Clear error messages from all scripts - they've all passed
         // compilation
-        foreach (var importer in pathsToImporters.Values)
-        {
-            importer.ParseErrorMessages.Clear();
-        }
+        project.ParseErrorMessages.Clear();
 
         CreateYarnInternalLocalizationAssets( project, compilationResult);
         project.localizationType = LocalizationType.YarnInternal;
@@ -236,7 +239,7 @@ public class YarnProjectImporter : EditorImportPlugin
         byte[] compiledBytes = null;
 
         using (var memoryStream = new MemoryStream())
-        using (var outputStream = new Google.Protobuf.CodedOutputStream(memoryStream))
+        using (var outputStream = new CodedOutputStream(memoryStream))
         {
             // Serialize the compiled program to memory
             compilationResult.Program.WriteTo(outputStream);
@@ -245,10 +248,11 @@ public class YarnProjectImporter : EditorImportPlugin
             compiledBytes = memoryStream.ToArray();
         }
 
-        project.compiledYarnProgram = compiledBytes;
+        project.CompiledYarnProgram = compiledBytes;
 
         //project.searchAssembliesForActions = AssemblySearchList();
 
+        ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         return (int)Error.Ok;
     }
 
@@ -346,101 +350,7 @@ public class YarnProjectImporter : EditorImportPlugin
 
         return compilationResult;
     }
-    [System.Serializable]
-    public class SerializedDeclaration
-    {
-        internal static List<Yarn.IType> BuiltInTypesList = new List<Yarn.IType>
-        {
-            Yarn.BuiltinTypes.String,
-            Yarn.BuiltinTypes.Boolean,
-            Yarn.BuiltinTypes.Number,
-        };
-
-        public string name = "$variable";
-
-
-        public string typeName = Yarn.BuiltinTypes.String.Name;
-
-        public bool defaultValueBool;
-        public float defaultValueNumber;
-        public string defaultValueString;
-
-        public string description;
-
-        public bool isImplicit;
-
-        public Resource sourceYarnAsset;
-
-        public SerializedDeclaration(Declaration decl)
-        {
-            this.name = decl.Name;
-            this.typeName = decl.Type.Name;
-            this.description = decl.Description;
-            this.isImplicit = decl.IsImplicit;
-
-            sourceYarnAsset = ResourceLoader.Load<Resource>(decl.SourceFileName);
-
-            if (this.typeName == BuiltinTypes.String.Name)
-            {
-                this.defaultValueString = System.Convert.ToString(decl.DefaultValue);
-            }
-            else if (this.typeName == BuiltinTypes.Boolean.Name)
-            {
-                this.defaultValueBool = System.Convert.ToBoolean(decl.DefaultValue);
-            }
-            else if (this.typeName == BuiltinTypes.Number.Name)
-            {
-                this.defaultValueNumber = System.Convert.ToSingle(decl.DefaultValue);
-            }
-            else
-            {
-                throw new System.InvalidOperationException($"Invalid declaration type {decl.Type.Name}");
-            }
-        }
-    }
-
-    [System.Serializable]
-    /// <summary>
-    /// Pairs a language ID with a Resource.
-    /// </summary>
-    public class LanguageToSourceAsset
-    {
-        /// <summary>
-        /// The locale ID that this translation should create a
-        /// Localization for.
-        /// </summary>
-        [Language]
-        public string languageID;
-
-        /// <summary>
-        /// The Resource containing CSV data that the Localization
-        /// should use.
-        /// </summary>
-        // Hide this when its value is equal to whatever property is
-        // stored in the YarnProjectImporterEditor class's
-        // CurrentProjectDefaultLanguageProperty.
-        public Resource stringsFile;
-
-        /// <summary>
-        /// The folder containing additional assets for the lines, such
-        /// as voiceover audio files.
-        /// </summary> TODO: substitute? 
-        //public DefaultAsset assetsFolder;
-    }
-
-    public List<Resource> sourceScripts = new List<Resource>();
-
-    public List<string> compileErrors = new List<string>();
-
-    public List<SerializedDeclaration> serializedDeclarations = new List<SerializedDeclaration>();
-
-    [Language]
-    public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
-
-    public List<LanguageToSourceAsset> languagesToSourceAssets;
-
-    public bool useAddressableAssets;
-
+   
     /// <summary>
     /// If <see langword="true"/>, <see cref="ActionManager"/> will search
     /// all assemblies that have been defined using an <see
@@ -461,7 +371,7 @@ public class YarnProjectImporter : EditorImportPlugin
         // language.
         var shouldAddDefaultLocalization = true;
 
-        foreach (var pair in languagesToSourceAssets)
+        foreach (var pair in project.languagesToSourceAssets)
         {
             // Don't create a localization if the language ID was not
             // provided
@@ -476,10 +386,10 @@ public class YarnProjectImporter : EditorImportPlugin
             // Where do we get our strings from? If it's the default
             // language, we'll pull it from the scripts. If it's from
             // any other source, we'll pull it from the CSVs.
-            if (pair.languageID == defaultLanguage)
+            if (pair.languageID == project.defaultLanguage)
             {
                 // We'll use the program-supplied string table.
-                stringTable = GenerateStringsTable();
+                stringTable = GenerateStringsTable(project);
 
                 // We don't need to add a default localization.
                 shouldAddDefaultLocalization = false;
@@ -500,7 +410,7 @@ public class YarnProjectImporter : EditorImportPlugin
                     
                     stringTable = StringTableEntry.ParseFromCSV(csvText);
                 }
-                catch (System.ArgumentException e)
+                catch (ArgumentException e)
                 {
                     GD.PrintErr($"Not creating a localization for {pair.languageID} in the Yarn Project {project.ResourceName} because an error was encountered during text parsing: {e}");
                     continue;
@@ -565,7 +475,7 @@ public class YarnProjectImporter : EditorImportPlugin
             // TODO: save localization file sub-resource
             // ctx.AddObjectToAsset("localization-" + pair.languageID, newLocalization);
 
-            if (pair.languageID == defaultLanguage)
+            if (pair.languageID == project.defaultLanguage)
             {
                 // If this is our default language, set it as such
                 project.baseLocalization = newLocalization;
@@ -587,11 +497,11 @@ public class YarnProjectImporter : EditorImportPlugin
         {
             // We didn't add a localization for the default language.
             // Create one for it now.
-            var stringTableEntries = GetStringTableEntries(compilationResult);
+            var stringTableEntries = GetStringTableEntries(project, compilationResult);
 
             developmentLocalization = new Localization();
-            developmentLocalization.ResourceName = $"Default ({defaultLanguage})";
-            developmentLocalization.LocaleCode = defaultLanguage;
+            developmentLocalization.ResourceName = $"Default ({project.defaultLanguage})";
+            developmentLocalization.LocaleCode = project.defaultLanguage;
 
 
             // Add these new lines to the development localisation's asset
@@ -607,7 +517,119 @@ public class YarnProjectImporter : EditorImportPlugin
             project.lineMetadata = new LineMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
         }
     }
+    
+    /// <summary>
+    /// Generates a collection of <see cref="StringTableEntry"/>
+    /// objects, one for each line in this Yarn Project's scripts.
+    /// </summary>
+    /// <returns>An IEnumerable containing a <see
+    /// cref="StringTableEntry"/> for each of the lines in the Yarn
+    /// Project, or <see langword="null"/> if the Yarn Project contains
+    /// errors.</returns>
+    public IEnumerable<StringTableEntry> GenerateStringsTable(YarnProject project)
+    {
+        CompilationResult? compilationResult = CompileStringsOnly(project);
 
+        if (!compilationResult.HasValue)
+        {
+            // We only get no value if we have no scripts to work with.
+            // In this case, return an empty collection - there's no
+            // error, but there's no content either.
+            return new List<StringTableEntry>();
+        }
+
+        var errors = compilationResult.Value.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
+
+        if (errors.Count() > 0)
+        {
+            GD.PrintErr($"Can't generate a strings table from a Yarn Project that contains compile errors", null);
+            return null;
+        }
+
+        return GetStringTableEntries(project, compilationResult.Value);
+    }
+
+    private CompilationResult? CompileStringsOnly(YarnProject project)
+    {
+        var scriptPaths = project.SourceScripts.Where(s => s != null).Select(s => ProjectSettings.GlobalizePath(s.ResourcePath));
+
+        if (scriptPaths.Count() == 0)
+        {
+            // We have no scripts to work with.
+            return null;
+        }
+        
+        // We now now compile!
+        var job = CompilationJob.CreateFromFiles(scriptPaths);
+        job.CompilationType = CompilationJob.Type.StringsOnly;
+
+        return Compiler.Compile(job);
+    }
+
+    private IEnumerable<LineMetadataTableEntry> LineMetadataTableEntriesFromCompilationResult(CompilationResult result)
+    {
+        return result.StringTable.Select(x => new LineMetadataTableEntry
+        {
+            ID = x.Key,
+            File = x.Value.fileName,
+            Node = x.Value.nodeName,
+            LineNumber = x.Value.lineNumber.ToString(),
+            Metadata = RemoveLineIDFromMetadata(x.Value.metadata).ToArray(),
+        }).Where(x => x.Metadata.Length > 0);
+    }
+
+    private IEnumerable<StringTableEntry> GetStringTableEntries(YarnProject project, CompilationResult result)
+    {
+            
+        return result.StringTable.Select(x => new StringTableEntry
+        {
+            ID = x.Key,
+            Language = project.defaultLanguage,
+            Text = x.Value.text,
+            File = x.Value.fileName,
+            Node = x.Value.nodeName,
+            LineNumber = x.Value.lineNumber.ToString(),
+            Lock = YarnImporter.GetHashString(x.Value.text, 8),
+            Comment = GenerateCommentWithLineMetadata(x.Value.metadata),
+        });
+    }
+    
+    /// <summary>
+    /// Generates a string with the line metadata. This string is intended
+    /// to be used in the "comment" column of a strings table CSV. Because
+    /// of this, it will ignore the line ID if it exists (which is also
+    /// part of the line metadata).
+    /// </summary>
+    /// <param name="metadata">The metadata from a given line.</param>
+    /// <returns>A string prefixed with "Line metadata: ", followed by each
+    /// piece of metadata separated by whitespace. If no metadata exists or
+    /// only the line ID is part of the metadata, returns an empty string
+    /// instead.</returns>
+    private string GenerateCommentWithLineMetadata(string[] metadata)
+    {
+        var cleanedMetadata = RemoveLineIDFromMetadata(metadata);
+
+        if (cleanedMetadata.Count() == 0)
+        {
+            return string.Empty;
+        }
+
+        return $"Line metadata: {string.Join(" ", cleanedMetadata)}";
+    }
+
+
+    /// <summary>
+    /// Removes any line ID entry from an array of line metadata.
+    /// Line metadata will always contain a line ID entry if it's set. For
+    /// example, if a line contains "#line:1eaf1e55", its line metadata
+    /// will always have an entry with "line:1eaf1e55".
+    /// </summary>
+    /// <param name="metadata">The array with line metadata.</param>
+    /// <returns>An IEnumerable with any line ID entries removed.</returns>
+    private IEnumerable<string> RemoveLineIDFromMetadata(string[] metadata)
+    {
+        return metadata.Where(x => !x.StartsWith("line:"));
+    }
     // TODO: search assemblies for annotated methods
     // private List<string> AssemblySearchList()
     // {
@@ -670,212 +692,31 @@ public class YarnProjectImporter : EditorImportPlugin
 
     // A data class used for deserialising the JSON AssemblyDefinitionAssets
     // into.
-    [System.Serializable]
+    [Serializable]
     private class AssemblyDefinition
     {
         public string name;
     }
 
-    /// <summary>
-    /// Gets a value indicating whether this Yarn Project is able to
-    /// generate a strings table - that is, it has no compile errors,
-    /// it has at least one script, and all scripts are fully tagged.
-    /// </summary>
-    /// <inheritdoc path="exception"
-    /// cref="GetScriptHasLineTags(Resource)"/>
-    internal bool CanGenerateStringsTable => this.compileErrors.Count == 0 && sourceScripts.Count > 0 && sourceScripts.All(s => GetScriptHasLineTags(s));
 
-    /// <summary>
-    /// Gets a value indicating whether the source script has line
-    /// tags.
-    /// </summary>
-    /// <param name="script">The source script to add. This script must
-    /// have been imported by a <see cref="YarnImporter"/>.</param>
-    /// <returns>
-    /// <see langword="true"/> if the the script is fully tagged, <see
-    /// langword="false"/> otherwise.
-    /// </returns>
-    /// <exception cref="System.ArgumentNullException">
-    /// Thrown when <paramref name="script"/> is <see
-    /// langword="null"/>.
-    /// </exception>
-    /// <exception cref="System.ArgumentException">
-    /// Thrown when <paramref name="script"/> is not imported by a <see
-    /// cref="YarnImporter"/>.
-    /// </exception>
-    private bool GetScriptHasLineTags(Resource script)
-    {
-        if (script == null)
-        {
-            // This might be a 'None' or 'Missing' asset, so return
-            // false here.
-            return false;
-        }
-
-        // Get the importer for this Resource
-        var importer = script as CompiledYarnFile;
-
-        if (importer == null)
-        {
-            throw new ArgumentException($"The asset {script} is not imported via a {nameof(YarnImporter)}");
-        }
-
-        // Did it have any implicit string IDs when it was imported?
-        return importer.LastImportHadImplicitStringIDs == false;
-    }
-
-    private CompilationResult? CompileStringsOnly()
-    {
-        var pathsToImporters = sourceScripts.Where(s => s != null).Select(s => s.ResourcePath);
-
-        if (pathsToImporters.Count() == 0)
-        {
-            // We have no scripts to work with.
-            return null;
-        }
-
-        // We now now compile!
-        var job = CompilationJob.CreateFromFiles(pathsToImporters);
-        job.CompilationType = CompilationJob.Type.StringsOnly;
-
-        return Compiler.Compile(job);
-    }
-
-    /// <summary>
-    /// Generates a collection of <see cref="StringTableEntry"/>
-    /// objects, one for each line in this Yarn Project's scripts.
-    /// </summary>
-    /// <returns>An IEnumerable containing a <see
-    /// cref="StringTableEntry"/> for each of the lines in the Yarn
-    /// Project, or <see langword="null"/> if the Yarn Project contains
-    /// errors.</returns>
-    internal IEnumerable<StringTableEntry> GenerateStringsTable()
-    {
-        CompilationResult? compilationResult = CompileStringsOnly();
-
-        if (!compilationResult.HasValue)
-        {
-            // We only get no value if we have no scripts to work with.
-            // In this case, return an empty collection - there's no
-            // error, but there's no content either.
-            return new List<StringTableEntry>();
-        }
-
-        var errors = compilationResult.Value.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
-
-        if (errors.Count() > 0)
-        {
-            GD.PrintErr($"Can't generate a strings table from a Yarn Project that contains compile errors", null);
-            return null;
-        }
-
-        return GetStringTableEntries(compilationResult.Value);
-    }
-
-    internal IEnumerable<LineMetadataTableEntry> GenerateLineMetadataEntries()
-    {
-        CompilationResult? compilationResult = CompileStringsOnly();
-
-        if (!compilationResult.HasValue)
-        {
-            // We only get no value if we have no scripts to work with.
-            // In this case, return an empty collection - there's no
-            // error, but there's no content either.
-            return new List<LineMetadataTableEntry>();
-        }
-
-        var errors = compilationResult.Value.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
-
-        if (errors.Count() > 0)
-        {
-            GD.PrintErr($"Can't generate line metadata entries from a Yarn Project that contains compile errors", null);
-            return null;
-        }
-
-        return LineMetadataTableEntriesFromCompilationResult(compilationResult.Value);
-    }
-
-    private IEnumerable<StringTableEntry> GetStringTableEntries(CompilationResult result)
-    {
-
-        return result.StringTable.Select(x => new StringTableEntry
-        {
-            ID = x.Key,
-            Language = defaultLanguage,
-            Text = x.Value.text,
-            File = x.Value.fileName,
-            Node = x.Value.nodeName,
-            LineNumber = x.Value.lineNumber.ToString(),
-            Lock = YarnImporter.GetHashString(x.Value.text, 8),
-            Comment = GenerateCommentWithLineMetadata(x.Value.metadata),
-        });
-    }
-
-    private IEnumerable<LineMetadataTableEntry> LineMetadataTableEntriesFromCompilationResult(CompilationResult result)
-    {
-        return result.StringTable.Select(x => new LineMetadataTableEntry
-        {
-            ID = x.Key,
-            File = x.Value.fileName,
-            Node = x.Value.nodeName,
-            LineNumber = x.Value.lineNumber.ToString(),
-            Metadata = RemoveLineIDFromMetadata(x.Value.metadata).ToArray(),
-        }).Where(x => x.Metadata.Length > 0);
-    }
-
-    /// <summary>
-    /// Generates a string with the line metadata. This string is intended
-    /// to be used in the "comment" column of a strings table CSV. Because
-    /// of this, it will ignore the line ID if it exists (which is also
-    /// part of the line metadata).
-    /// </summary>
-    /// <param name="metadata">The metadata from a given line.</param>
-    /// <returns>A string prefixed with "Line metadata: ", followed by each
-    /// piece of metadata separated by whitespace. If no metadata exists or
-    /// only the line ID is part of the metadata, returns an empty string
-    /// instead.</returns>
-    private string GenerateCommentWithLineMetadata(string[] metadata)
-    {
-        var cleanedMetadata = RemoveLineIDFromMetadata(metadata);
-
-        if (cleanedMetadata.Count() == 0)
-        {
-            return string.Empty;
-        }
-
-        return $"Line metadata: {string.Join(" ", cleanedMetadata)}";
-    }
-
-    /// <summary>
-    /// Removes any line ID entry from an array of line metadata.
-    /// Line metadata will always contain a line ID entry if it's set. For
-    /// example, if a line contains "#line:1eaf1e55", its line metadata
-    /// will always have an entry with "line:1eaf1e55".
-    /// </summary>
-    /// <param name="metadata">The array with line metadata.</param>
-    /// <returns>An IEnumerable with any line ID entries removed.</returns>
-    private IEnumerable<string> RemoveLineIDFromMetadata(string[] metadata)
-    {
-        return metadata.Where(x => !x.StartsWith("line:"));
-    }
 }
 
 // A simple class lets us use a delegate as an IEqualityComparer from
 // https://stackoverflow.com/a/4607559
-internal static class Compare
+public static class Compare
 {
-    public static IEqualityComparer<T> By<T>(System.Func<T, T, bool> comparison)
+    public static IEqualityComparer<T> By<T>(Func<T, T, bool> comparison)
     {
         return new DelegateComparer<T>(comparison);
     }
 
     private class DelegateComparer<T> : EqualityComparer<T>
     {
-        private readonly System.Func<T, T, bool> comparison;
+        private readonly Func<T, T, bool> comparison;
 
-        public DelegateComparer(System.Func<T, T, bool> identitySelector)
+        public DelegateComparer(Func<T, T, bool> identitySelector)
         {
-            this.comparison = identitySelector;
+            comparison = identitySelector;
         }
 
         public override bool Equals(T x, T y)
@@ -887,7 +728,7 @@ internal static class Compare
         {
             // Force LINQ to never refer to the hash of an object by
             // returning a constant for all values. This is inefficient
-            // because LINQ can't use an internal comparator, but we're
+            // because LINQ can't use an public comparator, but we're
             // already looking to use a delegate to do a more
             // fine-grained test anyway, so we want to ensure that it's
             // called.
@@ -896,7 +737,7 @@ internal static class Compare
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class FunctionInfo
 {
     public string Name;
