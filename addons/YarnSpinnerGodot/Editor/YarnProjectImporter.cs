@@ -11,11 +11,8 @@ using Google.Protobuf;
 using Yarn;
 using Yarn.Compiler;
 using Yarn.GodotIntegration;
-using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
 using Array = Godot.Collections.Array;
-using Directory = System.IO.Directory;
-using File = Godot.File;
 using Path = System.IO.Path;
 [Tool]
 public class YarnProjectImporter : EditorImportPlugin
@@ -158,7 +155,7 @@ public class YarnProjectImporter : EditorImportPlugin
         // compilation succeeds.
         project.SerializedDeclarations = localDeclarations
             .Where(decl => !(decl.Type is FunctionType))
-            .Select(decl => new YarnProject.SerializedDeclaration(decl)).ToList();
+            .Select(decl => new SerializedDeclaration(decl)).ToList();
 
         // We're done processing this file - we've parsed it, and
         // pulled any information out of it that we need to. Now to
@@ -226,7 +223,7 @@ public class YarnProjectImporter : EditorImportPlugin
             .Concat(compilationResult.Declarations)
             .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
             .Where(decl => !(decl.Type is FunctionType))
-            .Select(decl => new YarnProject.SerializedDeclaration(decl)).ToList();
+            .Select(decl => new SerializedDeclaration(decl)).ToList();
 
         // Clear error messages from all scripts - they've all passed
         // compilation

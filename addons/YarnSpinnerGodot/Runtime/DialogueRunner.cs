@@ -26,15 +26,11 @@ DEALINGS IN THE SOFTWARE.
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Godot;
 using Newtonsoft.Json;
-using Yarn.GodotIntegration;
 
 namespace Yarn.GodotIntegration
 {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CsvHelper;
-using CsvHelper.Configuration;
 
 namespace Yarn.GodotIntegration
 {

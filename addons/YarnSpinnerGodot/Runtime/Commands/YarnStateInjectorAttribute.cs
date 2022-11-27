@@ -25,7 +25,6 @@ DEALINGS IN THE SOFTWARE.
 */
 
 
-using System.Collections;
 using System;
 
 namespace Yarn.GodotIntegration

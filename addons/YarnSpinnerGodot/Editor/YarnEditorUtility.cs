@@ -1,11 +1,6 @@
 #if TOOLS
-using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
 using Godot;
-using Yarn.GodotIntegration;
 using File = System.IO.File;
 using Object = Godot.Object;
 using Path = System.IO.Path;
@@ -48,8 +43,9 @@ namespace Yarn.GodotIntegration.Editor
         }
 
         /// <summary>
-        /// Begins the interactive process of creating a new Yarn file in
-        /// the Editor. Menu Item "Yarn Spinner/Create Yarn Script"
+        /// Menu Item "Yarn Spinner/Create Yarn Script"
+        ///
+        /// Called from the plugin.gd script
         /// </summary>    
         public void CreateYarnScript(string scriptPath)
         {
@@ -57,17 +53,23 @@ namespace Yarn.GodotIntegration.Editor
             CreateYarnScriptAssetFromTemplate(scriptPath);
         }
 
-        // [MenuItem("Yarn Spinner/Create Yarn Project", false, 101)]
+        /// <summary>
+        /// Menu Item "Yarn Spinner/Create Yarn Script"
+        /// 
+        /// Called from the plugin.gd script
+        /// </summary>
+        /// <param name="projectPath"></param>
         public void CreateYarnProject(string projectPath)
         {
             // If I don't load the resource script this way, the type of the serialized resource file is incorrect,
             // and none of the script properties are saved. Simply calling the new CompiledYarnFile() constructor doesn't work.
-            var newYarnProject = (YarnProject)((CSharpScript)ResourceLoader
-                .Load("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs")).New();
-            GD.Print("TODO: code to create new yarn project");
-
+            var projectScript = (CSharpScript)ResourceLoader.Load("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
+            var newYarnProject = (YarnProject)projectScript.New();
+            var absPath = ProjectSettings.GlobalizePath(projectPath);
+            newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
+            ResourceSaver.Save(projectPath, newYarnProject);
+            GD.Print($"Saved new yarn project to {projectPath}");
         }
-
 
         private void CreateYarnScriptAssetFromTemplate(string pathName)
         {

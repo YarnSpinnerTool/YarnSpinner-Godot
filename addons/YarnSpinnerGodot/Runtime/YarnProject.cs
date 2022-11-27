@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Godot;
 using Yarn.Compiler;
-using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
 
 namespace Yarn.GodotIntegration
 {
 
-    public class YarnProject : Resource, IYarnErrorSource
+    public class YarnProject : Resource//, IYarnErrorSource
     {
 
         /// <summary>
@@ -41,89 +39,7 @@ namespace Yarn.GodotIntegration
 
         // TODO: filter scripts by parse errors
         public List<Resource> ScriptsWithParseErrors => new List<Resource>();
-
-        [Serializable]
-        public class SerializedDeclaration
-        {
-            public static List<IType> BuiltInTypesList = new List<IType>
-            {
-                BuiltinTypes.String,
-                BuiltinTypes.Boolean,
-                BuiltinTypes.Number,
-            };
-
-            public string name = "$variable";
-
-
-            public string typeName = BuiltinTypes.String.Name;
-
-            public bool defaultValueBool;
-            public float defaultValueNumber;
-            public string defaultValueString;
-
-            public string description;
-
-            public bool isImplicit;
-
-            public Resource sourceYarnAsset;
-
-            public SerializedDeclaration(Declaration decl)
-            {
-                name = decl.Name;
-                typeName = decl.Type.Name;
-                description = decl.Description;
-                isImplicit = decl.IsImplicit;
-
-                sourceYarnAsset = ResourceLoader.Load<Resource>(decl.SourceFileName);
-
-                if (typeName == BuiltinTypes.String.Name)
-                {
-                    defaultValueString = Convert.ToString(decl.DefaultValue);
-                }
-                else if (typeName == BuiltinTypes.Boolean.Name)
-                {
-                    defaultValueBool = Convert.ToBoolean(decl.DefaultValue);
-                }
-                else if (typeName == BuiltinTypes.Number.Name)
-                {
-                    defaultValueNumber = Convert.ToSingle(decl.DefaultValue);
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Invalid declaration type {decl.Type.Name}");
-                }
-            }
-        }
-
-        [Serializable]
-        /// <summary>
-        /// Pairs a language ID with a Resource.
-        /// </summary>
-        public class LanguageToSourceAsset
-        {
-            /// <summary>
-            /// The locale ID that this translation should create a
-            /// Localization for.
-            /// </summary>
-            [Language]
-            public string languageID;
-
-            /// <summary>
-            /// The Resource containing CSV data that the Localization
-            /// should use.
-            /// </summary>
-            // Hide this when its value is equal to whatever property is
-            // stored in the YarnProjectImporterEditor class's
-            // CurrentProjectDefaultLanguageProperty.
-            public Resource stringsFile;
-
-            /// <summary>
-            /// The folder containing additional assets for the lines, such
-            /// as voiceover audio files.
-            /// </summary> TODO: substitute? 
-            //public DefaultAsset assetsFolder;
-        }
-
+        
         public List<string> CompileErrors = new List<string>();
 
         public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
@@ -174,7 +90,7 @@ namespace Yarn.GodotIntegration
             return false;
         }
         
-        IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
+        //IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
         public bool Destroyed => false; // not sure when this is used yet
         public Localization baseLocalization;
 

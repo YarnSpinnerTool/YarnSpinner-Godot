@@ -1,5 +1,4 @@
 using System;
-using Godot;
 
 namespace Yarn.GodotIntegration
 {

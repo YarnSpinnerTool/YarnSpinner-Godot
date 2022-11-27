@@ -26,7 +26,6 @@ DEALINGS IN THE SOFTWARE.
 
 
 
-using Yarn.GodotIntegration;
 namespace Yarn.GodotIntegration
 {
     /// <summary>

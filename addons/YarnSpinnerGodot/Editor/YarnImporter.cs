@@ -1,16 +1,8 @@
 #if TOOLS
-using System;
-using System.Linq;
-using System.Globalization;
-using System.Collections.Generic;
-using System.IO;
-using Yarn.Compiler;
 using System.Security.Cryptography;
 using System.Text;
 using Godot;
 using Godot.Collections;
-using Newtonsoft.Json;
-using Yarn.GodotIntegration;
 using File = System.IO.File;
 using Array = Godot.Collections.Array;
 using Google.Protobuf;
