@@ -1,12 +1,14 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" load_steps=4 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
+[ext_resource path="res://Samples/Space.yarn" type="Resource" id=2]
+[ext_resource path="res://Samples/HasErrors.yarn" type="Resource" id=3]
 
 [resource]
 resource_name = "Space_YarnProject"
 script = ExtResource( 1 )
+SourceScripts = [ ExtResource( 2 ), ExtResource( 3 ) ]
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
-ParseErrorMessages = PoolStringArray(  )
-SourceScripts = null
+ParseErrorMessages = PoolStringArray( "1:0: Error: token recognition error at: \'[\'", "1:16: Error: token recognition error at: \'=\'", "1:17: Error: token recognition error at: \'2\'", "1:18: Error: token recognition error at: \']\'", "3:0: Error: token recognition error at: \'[\'", "3:10: Error: token recognition error at: \'=\'", "3:11: Error: token recognition error at: \'\"\'", "3:21: Error: token recognition error at: \'\"\'", "3:27: Error: token recognition error at: \'=\'", "3:28: Error: token recognition error at: \'\"\'", "3:35: Error: token recognition error at: \'\"\'", "3:36: Error: token recognition error at: \']\'", "1:10: Error: missing HEADER_DELIMITER at \'format\'\r\n[gd_scene format=2]\r\n          ^^^^^^\r\n", "3:1: Error: missing HEADER_DELIMITER at \'node\'\r\n[node name=\"SpaceDemo\" type=\"Node2D\"]\r\n ^^^^\r\n", "3:6: Error: missing HEADER_DELIMITER at \'name\'\r\n[node name=\"SpaceDemo\" type=\"Node2D\"]\r\n      ^^^^\r\n", "3:12: Error: missing HEADER_DELIMITER at \'SpaceDemo\'\r\n[node name=\"SpaceDemo\" type=\"Node2D\"]\r\n            ^^^^^^^^^\r\n", "3:23: Error: missing HEADER_DELIMITER at \'type\'\r\n[node name=\"SpaceDemo\" type=\"Node2D\"]\r\n                       ^^^^\r\n", "3:29: Error: missing HEADER_DELIMITER at \'Node2D\'\r\n[node name=\"SpaceDemo\" type=\"Node2D\"]\r\n                             ^^^^^^\r\n", "4:0: Error: Unexpected \"<EOF>\" while reading a header\r\n\r\n\r\n" )

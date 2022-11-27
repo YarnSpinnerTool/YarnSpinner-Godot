@@ -7,7 +7,7 @@ using Yarn.GodotIntegration.Editor;
 
 namespace Yarn.GodotIntegration
 {
-
+    [Tool]
     public class YarnProject : Resource//, IYarnErrorSource
     {
 
@@ -47,8 +47,26 @@ namespace Yarn.GodotIntegration
         [Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
 
-        public List<LanguageToSourceAsset> languagesToSourceAssets;
-        [Export]public Godot.Collections.Array<Resource> SourceScripts;
+        public List<LanguageToSourceAsset> languagesToSourceAssets = new List<LanguageToSourceAsset>();
+
+        private Godot.Collections.Array<Resource> _sourceScripts;
+        [Export] public Godot.Collections.Array<Resource> SourceScripts
+        {
+            get {
+                return _sourceScripts;
+            }
+            set {
+                _sourceScripts = value;
+                if (Engine.EditorHint)
+                {
+                    #if TOOLS
+                    GD.Print($"Re-compiling yarns scripts on project {ResourceName}.");
+                    var importer = new YarnProjectUtility();
+                    importer.UpdateYarnProject(this);
+                    #endif
+                }
+            }
+        }
         
         /// <summary>
         /// Gets a value indicating whether this Yarn Project is able to
