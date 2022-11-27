@@ -67,6 +67,7 @@ namespace Yarn.GodotIntegration.Editor
             var newYarnProject = (YarnProject)projectScript.New();
             var absPath = ProjectSettings.GlobalizePath(projectPath);
             newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
+            newYarnProject.ResourcePath = projectPath;
             ResourceSaver.Save(projectPath, newYarnProject);
             GD.Print($"Saved new yarn project to {projectPath}");
         }

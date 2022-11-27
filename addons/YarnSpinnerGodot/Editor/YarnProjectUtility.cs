@@ -58,7 +58,12 @@ namespace Yarn.GodotIntegration.Editor
             {
                 GD.PushError($"Error updating YarnProject {project.ResourceName} to {project.ResourcePath}: {saveErr}");
             }
+            else
+            {
+                GD.Print($"Wrote updated YarnProject {project.ResourceName} to {project.ResourcePath}");
+            }
         }
+        
         public void CompileAllScripts(YarnProject project)
         {
             var assetPath = project.ResourcePath;
@@ -131,7 +136,7 @@ namespace Yarn.GodotIntegration.Editor
 
             // First step: check to see if there's any parse errors in the
             // files.
-            if (project.ParseErrorMessages.Count != 0)
+            if (project.CompileErrors.Count != 0)
             {
                 // Parse errors! We can't continue.
                 string failingScriptNameList = string.Join("\n", project.ScriptsWithParseErrors.Select(script => script.ResourcePath));
@@ -172,7 +177,6 @@ namespace Yarn.GodotIntegration.Editor
                         // Associate this compile error to the corresponding
                         // script's importer.
                         project.CompileErrors.AddRange(errorMessages);
-                        project.ParseErrorMessages.AddRange(errorMessages);
                     }
 
                     return;
@@ -199,7 +203,7 @@ namespace Yarn.GodotIntegration.Editor
 
                 // Clear error messages from all scripts - they've all passed
                 // compilation
-                project.ParseErrorMessages.Clear();
+                project.CompileErrors.Clear();
 
                 CreateYarnInternalLocalizationAssets(project, compilationResult);
                 project.localizationType = LocalizationType.YarnInternal;

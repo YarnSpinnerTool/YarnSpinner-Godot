@@ -1,5 +1,6 @@
 ﻿#if TOOLS
 using System;
+using System.Collections.Generic;
 using Godot;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
@@ -19,6 +20,36 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 
         public override bool ParseProperty(Object @object, int type, string path, int hint, string hintText, int usage)
         {
+            var project = (YarnProject)@object;
+            // We handle properties of type integer.
+            var hideProperties = new List<string>
+            {
+                nameof(YarnProject.LastImportHadAnyStrings),
+                nameof(YarnProject.LastImportHadImplicitStringIDs)
+            };
+            if (hideProperties.Contains(path))
+            {
+                // hide these properties from inspector
+                return true;
+            }
+            if (path == nameof(YarnProject.CompileErrors))
+            {
+                // Create an instance of the custom property editor and register
+                // it to a specific property path.
+                // AddPropertyEditor(path, new RandomIntEditor());
+                // // Inform the editor to remove the default property editor for
+                // // this property type.
+                // return true;
+                var parseErrorControl = new Label();
+                parseErrorControl.Text = "Compilation Errors\n";
+                foreach (var msg in project.CompileErrors)
+                {
+                    parseErrorControl.Text += msg + "\n";
+                }
+                AddCustomControl(parseErrorControl);
+                return true;
+            }
+
             return false;
         }
         
@@ -33,7 +64,6 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
                 recompileButton = null;
             }
             recompileButton = new Button();
-            recompileButton.RectMinSize = new Vector2(80, 40);
             recompileButton.Text = "Re-compile Scripts in Project";
             var recompileArgs = new Godot.Collections.Array();
             recompileArgs.Add(@object);

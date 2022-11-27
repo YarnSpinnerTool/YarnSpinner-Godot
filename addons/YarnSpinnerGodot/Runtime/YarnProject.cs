@@ -10,7 +10,6 @@ namespace Yarn.GodotIntegration
     [Tool]
     public class YarnProject : Resource//, IYarnErrorSource
     {
-
         /// <summary>
         /// Indicates whether the last time this file was imported, the
         /// file contained lines that did not have a line tag (and
@@ -34,13 +33,12 @@ namespace Yarn.GodotIntegration
         /// compiled into a full program.
         /// </remarks>
         [Export] public bool IsSuccessfullyParsed = false;
-        [Export(PropertyHint.MultilineText)] public List<string> ParseErrorMessages = new List<string>();
         public byte[] CompiledYarnProgram;
 
         // TODO: filter scripts by parse errors
         public List<Resource> ScriptsWithParseErrors => new List<Resource>();
         
-        public List<string> CompileErrors = new List<string>();
+        [Export] public List<string> CompileErrors = new List<string>();
 
         public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
 
