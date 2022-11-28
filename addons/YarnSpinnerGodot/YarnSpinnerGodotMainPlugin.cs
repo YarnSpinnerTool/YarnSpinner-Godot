@@ -8,21 +8,21 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
     [Tool]
     public class YarnSpinnerGodotMainPlugin : EditorPlugin
     {
-        private YarnImporter script_import_plugin;
-        private YarnProjectInspectorPlugin project_inspector_plugin;
-        private YarnEditorUtility editor_utility;
-        private PopupMenu popup;
-        private const string popupName = "YarnSpinner";
+        private YarnImporter _scriptImportPlugin;
+        private YarnProjectInspectorPlugin _projectInspectorPlugin;
+        private YarnEditorUtility _editorUtility;
+        private PopupMenu _popup;
+        private const string PopupName = "YarnSpinner";
 
-        private const int createYarnScriptID = 1;
-        private const int createYarnProjectID = 2;
+        private const int CreateYarnScriptId = 1;
+        public const int createYarnProjectID = 2;
 
         public override void _EnterTree()
         {
             // load script resources
-            var script_importer_script = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs");
-            var editor_utility_script = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs");
-            var project_inspector_script = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnProjectInspectorPlugin.cs");
+            var scriptImporterScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs");
+            var editorUtilityScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs");
+            var projectInspectorScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnProjectInspectorPlugin.cs");
             var localizationScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
             var dialogueRunnerScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs");
 
@@ -31,17 +31,17 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             var miniYarnSpinnerIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/mini_YarnSpinnerLogo.png");
 
 
-            script_import_plugin = (YarnImporter)script_importer_script.New();
-            editor_utility = (YarnEditorUtility)editor_utility_script.New();
-            project_inspector_plugin = (YarnProjectInspectorPlugin)project_inspector_script.New();
-            AddInspectorPlugin(project_inspector_plugin);
-            AddImportPlugin(script_import_plugin);
-            popup = new PopupMenu();
+            _scriptImportPlugin = (YarnImporter)scriptImporterScript.New();
+            _editorUtility = (YarnEditorUtility)editorUtilityScript.New();
+            _projectInspectorPlugin = (YarnProjectInspectorPlugin)projectInspectorScript.New();
+            AddInspectorPlugin(_projectInspectorPlugin);
+            AddImportPlugin(_scriptImportPlugin);
+            _popup = new PopupMenu();
 
-            popup.AddItem("Create Yarn Script", createYarnScriptID);
-            popup.AddItem("Create Yarn Project", createYarnProjectID);
-            popup.Connect("id_pressed", this, "on_popup_id_pressed");
-            AddToolSubmenuItem(popupName, popup);
+            _popup.AddItem("Create Yarn Script", CreateYarnScriptId);
+            _popup.AddItem("Create Yarn Project", createYarnProjectID);
+            _popup.Connect("id_pressed", this, "on_popup_id_pressed");
+            AddToolSubmenuItem(PopupName, _popup);
             AddCustomType("DialogueRunner", "Node",
                 dialogueRunnerScript,
                 miniYarnSpinnerIcon);
@@ -51,11 +51,11 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         }
         public override void _ExitTree()
         {
-            RemoveImportPlugin(script_import_plugin);
+            RemoveImportPlugin(_scriptImportPlugin);
             RemoveCustomType("DialogueRunner");
             RemoveCustomType("Localization");
-            RemoveInspectorPlugin(project_inspector_plugin);
-            RemoveToolMenuItem(popupName);
+            RemoveInspectorPlugin(_projectInspectorPlugin);
+            RemoveToolMenuItem(PopupName);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         /// <param name="id"></param>
         public void OnPopupIDPressed(int id)
         {
-            if (id == createYarnScriptID)
+            if (id == CreateYarnScriptId)
             {
                 CreateYarnScript();
             }
@@ -87,7 +87,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         private void CreateYarnScriptDestinationSelected(string destination)
         {
             GD.Print("Creating a yarn script at " + destination);
-            editor_utility.CreateYarnScript(destination);
+            _editorUtility.CreateYarnScript(destination);
         }
         private void CreateYarnProject()
         {
@@ -104,7 +104,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         private void create_yarn_project_destination_selected(string destination)
         {
             GD.Print("Creating a yarn project at " + destination);
-            editor_utility.CreateYarnProject(destination);
+            _editorUtility.CreateYarnProject(destination);
         }
     }
 }
