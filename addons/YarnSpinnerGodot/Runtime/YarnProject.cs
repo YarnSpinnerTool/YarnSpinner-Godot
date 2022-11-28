@@ -34,8 +34,9 @@ namespace Yarn.GodotIntegration
         /// compiled into a full program.
         /// </remarks>
         [Export] public bool IsSuccessfullyParsed = false;
-        public byte[] CompiledYarnProgram;
+        public byte[] CompiledYarnProgram => Convert.FromBase64String(CompiledYarnProgramBase64);
 
+        [Export] public string CompiledYarnProgramBase64;
         // TODO: filter scripts by parse errors
         public List<Resource> ScriptsWithParseErrors => new List<Resource>();
 
@@ -63,8 +64,8 @@ namespace Yarn.GodotIntegration
                 {
                     #if TOOLS
                     GD.Print($"Re-compiling yarns scripts on project {ResourceName}.");
-                    var importer = new YarnProjectUtility();
-                    importer.UpdateYarnProject(this);
+                    var projectUtility = new YarnProjectUtility();
+                    projectUtility.UpdateYarnProject(this);
                     #endif
                 }
             }

@@ -214,8 +214,7 @@ namespace Yarn.GodotIntegration.Editor
                     compiledBytes = memoryStream.ToArray();
                 }
             }
-
-            project.CompiledYarnProgram = compiledBytes;
+            project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
             //project.searchAssembliesForActions = AssemblySearchList();
             ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         }

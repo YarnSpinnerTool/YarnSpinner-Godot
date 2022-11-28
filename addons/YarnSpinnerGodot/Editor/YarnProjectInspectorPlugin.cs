@@ -36,7 +36,8 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             {
                 nameof(YarnProject.LastImportHadAnyStrings),
                 nameof(YarnProject.LastImportHadImplicitStringIDs),
-                nameof(YarnProject.IsSuccessfullyParsed)
+                nameof(YarnProject.IsSuccessfullyParsed),
+                nameof(YarnProject.CompiledYarnProgramBase64)
             };
             if (hideProperties.Contains(path))
             {
@@ -88,8 +89,8 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 
         private void OnRecompileClicked(YarnProject project)
         {
-            var importer = new YarnProjectUtility();
-            importer.UpdateYarnProject(project);
+            var projectUtility = new YarnProjectUtility();
+            projectUtility.UpdateYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
         }
 

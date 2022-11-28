@@ -1,14 +1,14 @@
-[gd_resource type="Resource" load_steps=4 format=2]
+[gd_resource type="Resource" load_steps=3 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
 [ext_resource path="res://Samples/Space.yarn" type="Resource" id=2]
-[ext_resource path="res://Samples/HasErrors.yarn" type="Resource" id=3]
 
 [resource]
 resource_name = "Space_YarnProject"
 script = ExtResource( 1 )
-SourceScripts = [ ExtResource( 2 ), ExtResource( 3 ) ]
+SourceScripts = [ ExtResource( 2 ) ]
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
-CompileErrors = PoolStringArray( "6:6: Error: extraneous input \'h\' expecting {NEWLINE, \'#\'}\r\nif# I have a typo it << should show up\r\r\n      ^\r\n", "9:0: Error: Unexpected \"<EOF>\" while reading a command statement\r\n\r\n\r\n" )
+CompiledYarnProgramBase64 = "EogCCgVTcGFjZRL+AQoFU3BhY2USTQgCEkIKQGxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9TcGFjZS55YXJuLVNwYWNlLTASBR0AAAAAEk0IAhJCCkBsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvU3BhY2UueWFybi1TcGFjZS0xEgUdAAAAABJNCAISQgpAbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1NwYWNlLnlhcm4tU3BhY2UtMhIFHQAAAAASAggPGgQKAkww"
+ProjectErrors = "[]"
