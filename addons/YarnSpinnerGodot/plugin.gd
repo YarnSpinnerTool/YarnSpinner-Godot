@@ -19,7 +19,7 @@ func _enter_tree():
 	var script_importer_script = load("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs")
 	var editor_utility_script = load("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs")
 	var project_inspector_script = load("res://addons/YarnSpinnerGodot/Editor/YarnProjectInspectorPlugin.cs")
-	container = load("res://addons/YarnSpinnerGodot/editor/YarnSpinnerEditorContainer.tscn").instance()
+	container = load("res://addons/YarnSpinnerGodot/editor/UI/YarnSpinnerEditorContainer.tscn").instance()
 	container.undoRedo = get_undo_redo()
 	add_control_to_bottom_panel(container, "YarnSpinner")
 	script_import_plugin = script_importer_script.new()

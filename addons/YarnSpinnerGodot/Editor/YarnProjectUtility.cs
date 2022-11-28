@@ -8,6 +8,7 @@ using System.Text;
 using Godot;
 using Godot.Collections;
 using Google.Protobuf;
+using Newtonsoft.Json;
 using Yarn;
 using Yarn.Compiler;
 using Yarn.GodotIntegration;
@@ -30,7 +31,6 @@ namespace Yarn.GodotIntegration.Editor
 
         public YarnProject GetDestinationProject(string assetPath)
         {
-
             var myAssetPath = assetPath;
             var destinationProjectPath = _editorUtility.GetAllAssetsOf<YarnProject>("t:YarnProject")
                 .FirstOrDefault(importer =>
@@ -63,25 +63,16 @@ namespace Yarn.GodotIntegration.Editor
                 GD.Print($"Wrote updated YarnProject {project.ResourceName} to {project.ResourcePath}");
             }
         }
-        
+
         public void CompileAllScripts(YarnProject project)
         {
             var assetPath = project.ResourcePath;
             GD.Print($"Compiling all scripts in {assetPath}");
 
             project.ResourceName = Path.GetFileNameWithoutExtension(assetPath);
-
-            foreach (var script in project.SourceScripts)
+            if (project.SourceScripts == null)
             {
-                // todo: add dependencies on scripts
-                // string path = AssetDatabase.GetAssetPath(script);
-                // if (string.IsNullOrEmpty(path))
-                // {
-                //     // This is, for some reason, not a valid script we can
-                //     // use. Don't add a dependency on it.
-                //     continue;
-                // }
-                // ctx.DependsOnSourceAsset(path);
+                return;
             }
 
             // Parse declarations 
@@ -97,7 +88,7 @@ namespace Yarn.GodotIntegration.Editor
 
             IEnumerable<Declaration> localDeclarations;
 
-            project.CompileErrors.Clear();
+            project.ProjectErrors = "[]";
 
             // var result = Compiler.Compile(localDeclarationsCompileJob);
             // localDeclarations = result.Declarations;
@@ -140,7 +131,8 @@ namespace Yarn.GodotIntegration.Editor
             {
                 // Parse errors! We can't continue.
                 string failingScriptNameList = string.Join("\n", project.ScriptsWithParseErrors.Select(script => script.ResourcePath));
-                project.CompileErrors.Add($"Parse errors exist in the following files:\n{failingScriptNameList}");
+                // todo: should i separate compile vs parse errors ?
+                // project.CompileErrorsJSON.Add($"Parse errors exist in the following files:\n{failingScriptNameList}");
                 return;
             }
 
@@ -173,12 +165,16 @@ namespace Yarn.GodotIntegration.Editor
                         {
                             GD.PushError($"Error compiling: {message}");
                         }
-
-                        // Associate this compile error to the corresponding
-                        // script's importer.
-                        project.CompileErrors.AddRange(errorMessages);
                     }
 
+                    var projectErrors = errors.ToList().ConvertAll(e =>
+                        new YarnProjectError
+                        {
+                            Context = e.Context,
+                            Message = e.Message,
+                            FileName = e.FileName
+                        });
+                    project.ProjectErrors = JsonConvert.SerializeObject(projectErrors);
                     return;
                 }
 
@@ -203,12 +199,10 @@ namespace Yarn.GodotIntegration.Editor
 
                 // Clear error messages from all scripts - they've all passed
                 // compilation
-                project.CompileErrors.Clear();
+                project.ProjectErrors = "[]";
 
                 CreateYarnInternalLocalizationAssets(project, compilationResult);
                 project.localizationType = LocalizationType.YarnInternal;
-
-
 
                 using (var memoryStream = new MemoryStream())
                 using (var outputStream = new CodedOutputStream(memoryStream))
@@ -222,9 +216,7 @@ namespace Yarn.GodotIntegration.Editor
             }
 
             project.CompiledYarnProgram = compiledBytes;
-
             //project.searchAssembliesForActions = AssemblySearchList();
-
             ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         }
 

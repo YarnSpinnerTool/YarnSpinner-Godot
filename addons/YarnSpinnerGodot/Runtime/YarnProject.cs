@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Newtonsoft.Json;
 using Yarn.Compiler;
 using Yarn.GodotIntegration.Editor;
 
 namespace Yarn.GodotIntegration
 {
     [Tool]
-    public class YarnProject : Resource//, IYarnErrorSource
+    public class YarnProject : Resource //, IYarnErrorSource
     {
         /// <summary>
         /// Indicates whether the last time this file was imported, the
@@ -37,8 +38,11 @@ namespace Yarn.GodotIntegration
 
         // TODO: filter scripts by parse errors
         public List<Resource> ScriptsWithParseErrors => new List<Resource>();
-        
-        [Export] public List<string> CompileErrors = new List<string>();
+
+        /// <summary>
+        /// JSON-serialized array of <see cref="Yarn.Compiler.Diagnostic"/> objects.
+        /// </summary>
+        [Export] public string ProjectErrors = "[]";
 
         public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
 
@@ -65,7 +69,11 @@ namespace Yarn.GodotIntegration
                 }
             }
         }
-        
+
+        public List<YarnProjectError> CompileErrors => ProjectErrors == null ?
+            new List<YarnProjectError>() :
+            JsonConvert.DeserializeObject<List<YarnProjectError>>(ProjectErrors);
+
         /// <summary>
         /// Gets a value indicating whether this Yarn Project is able to
         /// generate a strings table - that is, it has no compile errors,
@@ -105,7 +113,7 @@ namespace Yarn.GodotIntegration
             GD.Print("TODO: accurate check on which  scripts have line tags");
             return false;
         }
-        
+
         //IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
         public bool Destroyed => false; // not sure when this is used yet
         public Localization baseLocalization;
@@ -170,8 +178,7 @@ namespace Yarn.GodotIntegration
         /// </remarks>
         public Program Program
         {
-            get
-            {
+            get {
                 if (cachedProgram == null)
                 {
                     cachedProgram = Program.Parser.ParseFrom(CompiledYarnProgram);
@@ -181,7 +188,8 @@ namespace Yarn.GodotIntegration
         }
     }
 
-    public enum LocalizationType {
+    public enum LocalizationType
+    {
         YarnInternal,
         Unity,
     }

@@ -1,0 +1,10 @@
+[gd_scene format=2]
+
+[node name="ContextLabel" type="Label"]
+margin_top = 26.0
+margin_right = 1024.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 0, 20 )
+size_flags_horizontal = 3
+size_flags_vertical = 2
+text = "if# I have a typo it << should show up\\\\r\\\\r\\\\n      ^"

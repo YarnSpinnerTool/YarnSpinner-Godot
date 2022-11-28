@@ -59,4 +59,7 @@
     <Content Include="**\*.yarn" />
     <Content Include="addons\YarnSpinnerGodot\Editor\YarnScriptTemplate.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="addons\YarnSpinnerGodot\Editor\UI" />
+  </ItemGroup>
 </Project>
