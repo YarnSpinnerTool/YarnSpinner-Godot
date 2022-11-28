@@ -79,7 +79,7 @@ namespace Yarn.GodotIntegration.Editor
                 ImportCompiledYarn(assetPath);
             }
             var importedMarkerResource = new Resource();
-            importedMarkerResource.ResourceName = assetPath;
+            importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
             
             var saveErr = ResourceSaver.Save($"{savePath}.{GetSaveExtension()}", importedMarkerResource);
             if (saveErr != Error.Ok)

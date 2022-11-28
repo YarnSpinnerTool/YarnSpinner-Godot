@@ -4,6 +4,7 @@
 [ext_resource path="res://Samples/Space.yarn" type="Resource" id=2]
 
 [resource]
+resource_name = "Space_YarnProject"
 script = ExtResource( 1 )
 SourceScripts = [ ExtResource( 2 ) ]
 LastImportHadImplicitStringIDs = false
@@ -11,3 +12,4 @@ LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
 CompiledYarnProgramBase64 = "EogCCgVTcGFjZRL+AQoFU3BhY2USTQgCEkIKQGxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9TcGFjZS55YXJuLVNwYWNlLTASBR0AAAAAEk0IAhJCCkBsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvU3BhY2UueWFybi1TcGFjZS0xEgUdAAAAABJNCAISQgpAbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1NwYWNlLnlhcm4tU3BhY2UtMhIFHQAAAAASAggPGgQKAkww"
 ProjectErrors = "[]"
+defaultLanguage = "en-US"

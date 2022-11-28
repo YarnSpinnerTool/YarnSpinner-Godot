@@ -8,21 +8,18 @@ using System.Linq;
 
 namespace Yarn.GodotIntegration{
 
+    [Tool]
     public class Localization : Resource
     {
 
-        public string LocaleCode { get => _LocaleCode; set => _LocaleCode = value; }
+        [Export] public string LocaleCode { get => _LocaleCode; set => _LocaleCode = value; }
 
-        [Export] private string _LocaleCode;
+        private string _LocaleCode;
 
-        [System.Serializable]
-        class StringDictionary : Dictionary<string, string> { }
-
-        [System.Serializable]
-        class AssetDictionary : Dictionary<string, Resource> { }
-
-        [Export] private StringDictionary _stringTable = new StringDictionary();
-        [Export] private AssetDictionary _assetTable = new AssetDictionary();
+        //[Export] 
+        private Dictionary<string, string> _stringTable = new Dictionary<string, string>();
+        //[Export] 
+        private Dictionary<string, Resource> _assetTable = new Dictionary<string, Resource>();
 
         private Dictionary<string, string> _runtimeStringTable = new Dictionary<string, string>();
 

@@ -40,6 +40,18 @@ namespace Yarn.GodotIntegration
         // TODO: filter scripts by parse errors
         public List<Resource> ScriptsWithParseErrors => new List<Resource>();
 
+        //IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
+        public bool Destroyed => false; // not sure when this is used yet
+        //[Export] 
+        public Localization baseLocalization;
+
+        // [Export]
+        public List<Localization> localizations = new List<Localization>();
+
+        public LineMetadata lineMetadata;
+
+        public LocalizationType localizationType;
+
         /// <summary>
         /// JSON-serialized array of <see cref="Yarn.Compiler.Diagnostic"/> objects.
         /// </summary>
@@ -47,7 +59,7 @@ namespace Yarn.GodotIntegration
 
         public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
 
-        [Language]
+        [Export][Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
 
         public List<LanguageToSourceAsset> languagesToSourceAssets = new List<LanguageToSourceAsset>();
@@ -115,16 +127,6 @@ namespace Yarn.GodotIntegration
             GD.Print("TODO: accurate check on which  scripts have line tags");
             return false;
         }
-
-        //IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
-        public bool Destroyed => false; // not sure when this is used yet
-        public Localization baseLocalization;
-
-        public List<Localization> localizations = new List<Localization>();
-
-        public LineMetadata lineMetadata;
-
-        public LocalizationType localizationType;
 
         /// <summary>
         /// The cached result of deserializing <see
