@@ -1,3 +1,20 @@
-[gd_scene format=2]
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs" type="Script" id=1]
+[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/InMemoryVariableStorage.cs" type="Script" id=2]
+[ext_resource path="res://Samples/Space_YarnProject.tres" type="Resource" id=3]
 
 [node name="SpaceDemo" type="Node2D"]
+
+[node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DialogueRunner" type="Node2D" parent="YarnSpinnerCanvasLayer"]
+script = ExtResource( 1 )
+yarnProject = ExtResource( 3 )
+variableStoragePath = NodePath("InMemoryVariableStorage")
+
+[node name="InMemoryVariableStorage" type="Node" parent="YarnSpinnerCanvasLayer/DialogueRunner"]
+script = ExtResource( 2 )
+debugTextViewPath = NodePath("../VariableDebugText")
+
+[node name="VariableDebugText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/DialogueRunner"]

@@ -32,7 +32,7 @@ func _enter_tree():
 	popup.add_item("Create Yarn Project", createYarnProjectID)
 	popup.connect("id_pressed", self, "on_popup_id_pressed", [], 0)
 	add_tool_submenu_item(popupName, popup)
-	add_custom_type("DialogueRunner", "Node", preload("res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs"), preload("res://addons/YarnSpinnerGodot/Editor/Icons/YarnSpinnerLogo.png"))
+	add_custom_type("DialogueRunner", "Node", preload("res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs"), preload("res://addons/YarnSpinnerGodot/Editor/Icons/mini_YarnSpinnerLogo.png"))
 
 func _exit_tree():
 	remove_control_from_bottom_panel(container)

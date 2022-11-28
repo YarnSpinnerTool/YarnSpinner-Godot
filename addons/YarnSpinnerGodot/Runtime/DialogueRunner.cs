@@ -67,6 +67,7 @@ namespace Yarn.GodotIntegration
         /// The <see cref="YarnProject"/> asset that should be loaded on
         /// scene start.
         /// </summary>
+        [Export]
         public YarnProject yarnProject;
 
         /// <summary>

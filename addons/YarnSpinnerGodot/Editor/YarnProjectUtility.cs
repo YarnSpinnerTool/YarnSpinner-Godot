@@ -52,6 +52,7 @@ namespace Yarn.GodotIntegration.Editor
         }
         public void UpdateYarnProject(YarnProject project)
         {
+            if (string.IsNullOrEmpty(project.ResourcePath)) return;
             CompileAllScripts(project);
             var saveErr = ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
             if (saveErr != Error.Ok)

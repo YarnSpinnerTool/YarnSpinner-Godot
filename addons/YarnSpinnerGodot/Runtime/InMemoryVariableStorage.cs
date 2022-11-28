@@ -71,9 +71,13 @@ namespace Yarn.GodotIntegration
         /// of all variables in-game. Optional.
         /// </summary>
         [Export]
-        
+        public NodePath debugTextViewPath;
         public RichTextLabel debugTextView = null;
-
+        
+        public override void _EnterTree()
+        {
+            debugTextView = GetNode<RichTextLabel>(debugTextViewPath);
+        }
         public override void _Process(float deltaTime)
         {
             // If we have a debug view, show the list of all variables in it

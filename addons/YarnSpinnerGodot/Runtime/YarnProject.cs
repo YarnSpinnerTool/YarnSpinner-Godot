@@ -59,6 +59,7 @@ namespace Yarn.GodotIntegration
                 return _sourceScripts;
             }
             set {
+                if (_sourceScripts == value) return;
                 _sourceScripts = value;
                 if (Engine.EditorHint)
                 {
