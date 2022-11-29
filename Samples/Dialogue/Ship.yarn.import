@@ -1,0 +1,13 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+path="res://.import/Ship.yarn-fe209ac1902b30ccd077b744b03b23fe.tres"
+
+[deps]
+
+source_file="res://Samples/Dialogue/Ship.yarn"
+dest_files=[ "res://.import/Ship.yarn-fe209ac1902b30ccd077b744b03b23fe.tres" ]
+
+[params]
+

@@ -1,24 +1,31 @@
-[gd_resource type="Resource" load_steps=6 format=2]
+[gd_resource type="Resource" load_steps=9 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
-[ext_resource path="res://Samples/Space.yarn" type="Resource" id=2]
+[ext_resource path="res://Samples/Dialogue/Ship.yarn" type="Resource" id=2]
 [ext_resource path="res://Samples/localization/Space_en.tres" type="Resource" id=3]
+[ext_resource path="res://Samples/Dialogue/Sally.yarn" type="Resource" id=4]
 
-[sub_resource type="CSharpScript" id=1]
+[sub_resource type="CSharpScript" id=5]
 
-[sub_resource type="Resource" id=2]
-script = SubResource( 1 )
+[sub_resource type="Resource" id=6]
+script = SubResource( 5 )
+
+[sub_resource type="CSharpScript" id=3]
+
+[sub_resource type="Resource" id=4]
+resource_name = "Default (en-US)"
+script = SubResource( 3 )
 
 [resource]
 resource_name = "Space_YarnProject"
 script = ExtResource( 1 )
-SourceScripts = [ ExtResource( 2 ) ]
+SourceScripts = [ ExtResource( 2 ), ExtResource( 4 ) ]
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
-CompiledYarnProgramBase64 = "EogCCgVTcGFjZRL+AQoFU3BhY2USTQgCEkIKQGxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9TcGFjZS55YXJuLVNwYWNlLTASBR0AAAAAEk0IAhJCCkBsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvU3BhY2UueWFybi1TcGFjZS0xEgUdAAAAABJNCAISQgpAbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1NwYWNlLnlhcm4tU3BhY2UtMhIFHQAAAAASAggPGgQKAkww"
-localizations = [ ExtResource( 3 ) ]
-lineMetadata = SubResource( 2 )
+CompiledYarnProgramBase64 = "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b25fU2FsbHlfMhIFHQAAAAASAhABEjgIBBINCgtsaW5lOjBmYWNmNxIaChhMN3Nob3J0Y3V0b3B0aW9uX1NhbGx5XzMSBR0AAAAAEgIQABICCAUSAggBEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxIRCAYSDQoLU2FsbHlfV2F0Y2gSAggQEg8SDQoLTDRncm91cF9lbmQSIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEhEIBhINCgtTYWxseV9Tb3JyeRICCBASDxINCgtMNGdyb3VwX2VuZBIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSEAgGEgwKClNhbGx5X0V4aXQSAggQEg8SDQoLTDRncm91cF9lbmQSAggLEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxICCA8aBAoCTDAaEAoMTDJza2lwY2xhdXNlEAwaCwoHTDFlbmRpZhAQGhwKGEw1c2hvcnRjdXRvcHRpb25fU2FsbHlfMRAiGhwKGEw2c2hvcnRjdXRvcHRpb25fU2FsbHlfMhArGhwKGEw3c2hvcnRjdXRvcHRpb25fU2FsbHlfMxA0Gg8KC0w0Z3JvdXBfZW5kED0S4gMKC1NhbGx5X1dhdGNoEtIDCgtTYWxseV9XYXRjaBIYCAISDQoLbGluZTo4YzNmOTgSBR0AAAAAEhgIAhINCgtsaW5lOjI0YzQxOBIFHQAAAAASGAgCEg0KC2xpbmU6ZGY0ZWFmEgUdAAAAABIGCAgSAhABEhYIDhISChAkc2hvdWxkX3NlZV9zaGlwEgIICxIKCAYSBgoEU2hpcBIJCAcSBR0AAIA/Eg0IDBIJCgd2aXNpdGVkEgYICBICEAESCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhMIChIPCg1MMTBza2lwY2xhdXNlEhgIAhINCgtsaW5lOjFmZWE2YxIFHQAAAAASGAgCEg0KC2xpbmU6NWRmMzIzEgUdAAAAABILEgkKB0w5ZW5kaWYSAggLEikIDRIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9XYXRjaBIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSKQgOEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1dhdGNoEgIICxICCA8aBAoCTDgaEQoNTDEwc2tpcGNsYXVzZRAQGgsKB0w5ZW5kaWYQERI/CgpTYWxseV9FeGl0EjEKClNhbGx5X0V4aXQSGAgCEg0KC2xpbmU6NjBjMjgyEgUdAAAAABICCA8aBQoDTDExEsQBCgtTYWxseV9Tb3JyeRK0AQoLU2FsbHlfU29ycnkSGAgCEg0KC2xpbmU6ZDdkZjQ5EgUdAAAAABIpCA0SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfU29ycnkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEikIDhIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9Tb3JyeRICCAsSAggPGgUKA0wxMhIpCgxEZWNsYXJhdGlvbnMSGQoMRGVjbGFyYXRpb25zEgIIDxoFCgNMMTMaFgoQJHNob3VsZF9zZWVfc2hpcBICEAAaFAoOJHNhbGx5X3dhcm5pbmcSAhAAGiUKHCRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNoaXASBR0AAAAAGiYKHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgUdAAAAABosCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9XYXRjaBIFHQAAAAAaLAojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfU29ycnkSBR0AAAAA"
+localizations = [ ExtResource( 3 ), SubResource( 4 ) ]
+lineMetadata = SubResource( 6 )
 ListOfFunctionsJSON = "[{\"Name\":\"Random\",\"ReturnType\":\"-> Single\",\"Parameters\":[]},{\"Name\":\"RandomRange\",\"ReturnType\":\"-> Single\",\"Parameters\":[\"minInclusive\",\"maxInclusive\"]},{\"Name\":\"Dice\",\"ReturnType\":\"-> UInt32\",\"Parameters\":[\"sides\"]},{\"Name\":\"Round\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"RoundPlaces\",\"ReturnType\":\"-> Single\",\"Parameters\":[\"num\",\"places\"]},{\"Name\":\"Floor\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Ceil\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Inc\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Dec\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Decimal\",\"ReturnType\":\"-> Single\",\"Parameters\":[\"num\"]},{\"Name\":\"Int\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]}]"
 ProjectErrors = "[]"
 defaultLanguage = "en-US"
