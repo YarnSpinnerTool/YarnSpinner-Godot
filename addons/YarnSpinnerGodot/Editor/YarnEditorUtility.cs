@@ -15,37 +15,11 @@ namespace Yarn.GodotIntegration.Editor
     /// </summary>
     public class YarnEditorUtility : Object
     {
-
-        const string DocumentIconTexturePath = "res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/YarnScript Icon.png";
-        const string ProjectIconTexturePath = "res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/YarnProject Icon.png";
         const string TemplateFilePath = "res://addons/YarnSpinnerGodot/Editor/YarnScriptTemplate.txt";
 
         /// <summary>
-        /// Returns a <see cref="Texture2D"/> that can be used to represent
-        /// Yarn files.
-        /// </summary>
-        /// <returns>A texture to use in the Unity editor for Yarn
-        /// files.</returns>
-        public Texture GetYarnDocumentIconTexture()
-        {
-            return ResourceLoader.Load<Texture>(DocumentIconTexturePath);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="Texture2D"/> that can be used to represent
-        /// Yarn project files.
-        /// </summary>
-        /// <returns>A texture to use in the Unity editor for Yarn project
-        /// files.</returns>
-        public Texture GetYarnProjectIconTexture()
-        {
-            return ResourceLoader.Load<Texture>(ProjectIconTexturePath);
-        }
-
-        /// <summary>
-        /// Menu Item "Yarn Spinner/Create Yarn Script"
+        /// Menu Item "Yarn Spinner/Create Yarn Scr ipt"
         ///
-        /// Called from the plugin.gd script
         /// </summary>    
         public void CreateYarnScript(string scriptPath)
         {
@@ -56,7 +30,6 @@ namespace Yarn.GodotIntegration.Editor
         /// <summary>
         /// Menu Item "Yarn Spinner/Create Yarn Script"
         /// 
-        /// Called from the plugin.gd script
         /// </summary>
         /// <param name="projectPath"></param>
         public void CreateYarnProject(string projectPath)
@@ -68,8 +41,31 @@ namespace Yarn.GodotIntegration.Editor
             var absPath = ProjectSettings.GlobalizePath(projectPath);
             newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
             newYarnProject.ResourcePath = projectPath;
-            ResourceSaver.Save(projectPath, newYarnProject);
-            GD.Print($"Saved new yarn project to {projectPath}");
+            var saveErr = ResourceSaver.Save(projectPath, newYarnProject);
+            if (saveErr != Error.Ok)
+            {
+                GD.Print($"Failed to save yarn project to {projectPath}");
+            }
+            else
+            {
+                GD.Print($"Saved new yarn project to {projectPath}");
+            }
+        }
+        
+        /// <summary>
+        /// Menu Item "Yarn Spinner/Create Yarn Script"
+        /// 
+        /// </summary>
+        /// <param name="localizationPath"></param>
+        public void CreateYarnLocalization(string localizationPath)
+        {
+            var projectScript = (CSharpScript)ResourceLoader.Load("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
+            var newLocalization = (Localization)projectScript.New();
+            var absPath = ProjectSettings.GlobalizePath(localizationPath);
+            newLocalization.ResourceName = Path.GetFileNameWithoutExtension(absPath);
+            newLocalization.ResourcePath = localizationPath;
+            ResourceSaver.Save(localizationPath, newLocalization);
+            GD.Print($"Saved new yarn localization to {localizationPath}");
         }
 
         private void CreateYarnScriptAssetFromTemplate(string pathName)
@@ -90,7 +86,7 @@ namespace Yarn.GodotIntegration.Editor
             // Figure out the 'file name' that the user entered
             // The script name is the name of the file, sans extension.
             string scriptName = Path.GetFileNameWithoutExtension(pathName);
-            
+
             // Replace any spaces with underscores - these aren't allowed
             // in node names
             scriptName = scriptName.Replace(" ", "_");

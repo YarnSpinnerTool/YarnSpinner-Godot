@@ -11,10 +11,7 @@ namespace Yarn.GodotIntegration.Editor
 {
 
     /// <summary>
-    /// A <see cref="ScriptedImporter"/> for Yarn assets. The actual asset
-    /// used and referenced at runtime and in the editor will be a <see
-    /// cref="YarnScript"/>, which this class wraps around creating the
-    /// asset's corresponding meta file.
+    /// A <see cref="EditorImportPlugin"/> for Yarn scripts (.yarn files)
     /// </summary>
     public class YarnImporter : EditorImportPlugin
     {
