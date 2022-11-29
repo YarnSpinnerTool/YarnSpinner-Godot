@@ -40,5 +40,11 @@ jobs:
       - name: Build solution
         id: buildSolution
         run: |
-          $GODOT_CLI --path . --verbose -q -e --build-solutions
+          # https://serverfault.com/questions/989742/tee-and-assigning-to-variable
+          { GODOT_OUTPUT=$($GODOT_CLI --path . --verbose -q -e --build-solutions 2>&1 | tee /dev/fd/3); } 3>&1
+          GODOT_OUTPUT="$(echo "$GODOT_OUTPUT" | tr '[:upper:]' '[:lower:]')"
+          if [[ "$GODOT_OUTPUT" == *"failed to build project"* ]]; then
+            echo "Godot failed to build the solution."
+            exit 1
+          fi          
         timeout-minutes: 2
