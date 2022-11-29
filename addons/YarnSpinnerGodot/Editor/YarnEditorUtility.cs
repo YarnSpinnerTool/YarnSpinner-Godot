@@ -4,7 +4,7 @@ using Godot;
 using File = System.IO.File;
 using Object = Godot.Object;
 using Path = System.IO.Path;
-
+testing a compile error
 namespace Yarn.GodotIntegration.Editor
 {
     /// <summary>
