@@ -1,0 +1,48 @@
+name: Continuous Build and Test
+
+on:
+  pull_request:
+    types:
+      [ opened, reopened, edited, ready_for_review, synchronize ]
+  push:
+    branches-ignore:
+      - 'dev'
+    paths-ignore:
+      # don't need to re-run the build for now if only markdown changes
+      - '**/*.md'
+      - 'docs/**'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  build:
+    name: Build the Project
+    runs-on: [ ubuntu-latest ]
+
+    steps:
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          clean: false # we clean what we want to clean ourselves above, and try to keep some cache
+          submodules: recursive
+
+      - name: Download Godot
+        id: downloadGodot
+        run: |
+          sudo apt-get install dotnet-sdk-6.0 wget
+          wget -O godot.zip https://downloads.tuxfamily.org/godotengine/3.5.1/mono/Godot_v3.5.1-stable_mono_linux_headless_64.zip
+          unzip godot.zip
+          ls -Ralph 
+        env:
+          BUILD_TARGET: win64 # Build for 64-bit Windows
+          GODOT_EXPORT_DEBUG: true
+
+      - name: Build solution
+        id: buildSolution
+        run: |
+          echo hi
+      
