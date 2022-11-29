@@ -11,7 +11,8 @@ on:
       # don't need to re-run the build for now if only markdown changes
       - '**/*.md'
       - 'docs/**'
-
+env:
+  GODOT_CLI: ./Godot_v3.5.1-stable_mono_linux_headless_64/Godot_v3.5.1-stable_mono_linux_headless.64
 defaults:
   run:
     shell: bash
@@ -35,10 +36,9 @@ jobs:
         run: |
           wget -O godot.zip https://downloads.tuxfamily.org/godotengine/3.5.1/mono/Godot_v3.5.1-stable_mono_linux_headless_64.zip
           unzip godot.zip
-          ./Godot_v3.5.1-stable_mono_linux_headless_64/Godot_v3.5.1-stable_mono_linux_headless.64 --version
 
       - name: Build solution
         id: buildSolution
         run: |
-          echo hi
+          $GODOT_CLI --path . -e --build-solutions
       
