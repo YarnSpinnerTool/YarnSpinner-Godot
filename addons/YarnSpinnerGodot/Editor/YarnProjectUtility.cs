@@ -76,84 +76,29 @@ namespace Yarn.GodotIntegration.Editor
                 return;
             }
 
-            // Parse declarations 
-            // var localDeclarationsCompileJob = CompilationJob.CreateFromFiles(allScripts);
-            // localDeclarationsCompileJob.CompilationType = CompilationJob.Type.DeclarationsOnly;
-
             var library = new Library();
-            GD.PrintErr("TODO: not automatically discovering [YarnCommand] or [YarnFunction] yet.");
-            // ActionManager.AddActionsFromAssemblies(AssemblySearchList());
-            // ActionManager.RegisterFunctions(library);
+            ActionManager.AddActionsFromAssemblies();
+            ActionManager.RegisterFunctions(library);
             // localDeclarationsCompileJob.Library = library;
-            //ListOfFunctions = predeterminedFunctions().ToArray();
-
-            IEnumerable<Declaration> localDeclarations;
-
-            project.ProjectErrors = "[]";
-
-            // var result = Compiler.Compile(localDeclarationsCompileJob);
-            // localDeclarations = result.Declarations;
-
+            project.ListOfFunctionsJSON = JsonConvert.SerializeObject(predeterminedFunctions().ToArray());
             IEnumerable<Diagnostic> errors;
-
-            // errors = result.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
-            //
-            // if (errors.Count() > 0)
-            // {
-            //     // We encountered errors while parsing for declarations.
-            //     // Report them and exit.
-            //     foreach (var error in errors)
-            //     {
-            //         GD.PushError($"Error in Yarn Project: {error}");
-            //         project.CompileErrors.Add($"Error in Yarn Project {assetPath}: {error}");
-            //     }
-            //
-            //     return;
-            // }
-
-            // localDeclarations = localDeclarations
-            //     .Where(decl => decl.Name.StartsWith("$Yarn.Internal") == false);
-
-            // Store these so that we can continue displaying them after
-            // this import step, in case there are compile errors later.
-            // We'll replace this with a more complete list later if
-            // compilation succeeds.
-            // project.SerializedDeclarations = localDeclarations
-            //     .Where(decl => !(decl.Type is FunctionType))
-            //     .Select(decl => new SerializedDeclaration(decl)).ToList();
-
-            // We're done processing this file - we've parsed it, and
-            // pulled any information out of it that we need to. Now to
-            // compile the scripts associated with this project.
-
-            // First step: check to see if there's any parse errors in the
-            // files.
-            if (project.CompileErrors.Count != 0)
-            {
-                // Parse errors! We can't continue.
-                string failingScriptNameList = string.Join("\n", project.ScriptsWithParseErrors.Select(script => script.ResourcePath));
-                // todo: should i separate compile vs parse errors ?
-                // project.CompileErrorsJSON.Add($"Parse errors exist in the following files:\n{failingScriptNameList}");
-                return;
-            }
+            project.ProjectErrors = "[]";
 
             // We now now compile!
             var scriptAbsolutePaths = project.SourceScripts.ToList().Where(s => s != null)
                 .Select(scriptResource => ProjectSettings.GlobalizePath(scriptResource.ResourcePath)).ToList();
             // Store the compiled program
             byte[] compiledBytes = null;
+            CompilationResult? compilationResult = new CompilationResult?();
             if (scriptAbsolutePaths.Count > 0)
             {
                 var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
                 // job.VariableDeclarations = localDeclarations;
 
                 job.Library = library;
-
-                CompilationResult compilationResult;
-
                 compilationResult = Yarn.Compiler.Compiler.Compile(job);
 
-                errors = compilationResult.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
+                errors = compilationResult.Value.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
 
                 if (errors.Count() > 0)
                 {
@@ -179,7 +124,7 @@ namespace Yarn.GodotIntegration.Editor
                     return;
                 }
 
-                if (compilationResult.Program == null)
+                if (compilationResult.Value.Program == null)
                 {
                     GD.PushError("public error: Failed to compile: resulting program was null, but compiler did not report errors.");
                     return;
@@ -193,7 +138,7 @@ namespace Yarn.GodotIntegration.Editor
                 // generated as a result of the compilation, and are not declared by
                 // the user.
                 project.SerializedDeclarations = new List<Declaration>() //localDeclarations
-                    .Concat(compilationResult.Declarations)
+                    .Concat(compilationResult.Value.Declarations)
                     .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
                     .Where(decl => !(decl.Type is FunctionType))
                     .Select(decl => new SerializedDeclaration(decl)).ToList();
@@ -202,21 +147,20 @@ namespace Yarn.GodotIntegration.Editor
                 // compilation
                 project.ProjectErrors = "[]";
 
-                CreateYarnInternalLocalizationAssets(project, compilationResult);
+                CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
                 project.localizationType = LocalizationType.YarnInternal;
 
                 using (var memoryStream = new MemoryStream())
                 using (var outputStream = new CodedOutputStream(memoryStream))
                 {
                     // Serialize the compiled program to memory
-                    compilationResult.Program.WriteTo(outputStream);
+                    compilationResult.Value.Program.WriteTo(outputStream);
                     outputStream.Flush();
 
                     compiledBytes = memoryStream.ToArray();
                 }
             }
             project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
-            //project.searchAssembliesForActions = AssemblySearchList();
             ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         }
 
@@ -322,7 +266,7 @@ namespace Yarn.GodotIntegration.Editor
                             continue;
                         }
 
-                        var csvText = System.IO.File.ReadAllText(ProjectSettings.GlobalizePath(pair.stringsFile.ResourcePath));
+                        var csvText = System.IO.File.ReadAllText(ProjectSettings.GlobalizePath(pair.stringsFile));
 
                         stringTable = StringTableEntry.ParseFromCSV(csvText);
                     }
@@ -341,9 +285,7 @@ namespace Yarn.GodotIntegration.Editor
                 {
                     newLocalization.AddLocalisedStringToAsset(entry.ID, entry.Text);
                 }
-
-
-                project.localizations.Add(newLocalization);
+                
                 newLocalization.ResourceName = pair.languageID;
 //             TODO: localizable resources
 //             if (pair.assetsFolder != null)
@@ -388,9 +330,6 @@ namespace Yarn.GodotIntegration.Editor
 //                 }
 //             }
 
-                // TODO: save localization file sub-resource
-                // ctx.AddObjectToAsset("localization-" + pair.languageID, newLocalization);
-
                 if (pair.languageID == project.defaultLanguage)
                 {
                     // If this is our default language, set it as such
@@ -399,13 +338,17 @@ namespace Yarn.GodotIntegration.Editor
                     // Since this is the default language, also populate the line metadata.
                     project.lineMetadata = new LineMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
                 }
-                else
+                foreach (var existingLocalization in project.localizations)
                 {
-                    // This localization depends upon a source asset. Make
-                    // this asset get re-imported if this source asset was
-                    // modified
-                    // todo: set dependency on strings file
-                    //ctx.DependsOnSourceAsset(AssetDatabase.GetAssetPath(pair.stringsFile));
+                    if (existingLocalization.LocaleCode.Equals(newLocalization.LocaleCode))
+                    {
+                        newLocalization.stringsFile = existingLocalization.stringsFile;
+                        var saveErr = ResourceSaver.Save(existingLocalization.ResourcePath, newLocalization);
+                        if (saveErr != Error.Ok)
+                        {
+                            GD.PushError($"Error saving localization {newLocalization.LocaleCode} to {existingLocalization.ResourcePath}");
+                        }
+                    }
                 }
             }
 
@@ -656,9 +599,9 @@ namespace Yarn.GodotIntegration.Editor
     [Serializable]
     public class FunctionInfo
     {
-        public string Name;
-        public string ReturnType;
-        public string[] Parameters;
+        [JsonProperty] public string Name;
+        [JsonProperty] public string ReturnType;
+        [JsonProperty] public string[] Parameters;
 
         public static FunctionInfo CreateFunctionInfoFromMethodGroup(System.Reflection.MethodInfo method)
         {

@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
 namespace Yarn.GodotIntegration
 {
     [Serializable]
-    public class LineMetadata
+    public class LineMetadata: Resource
     {
-        [Serializable]
-        class StringDictionary : Dictionary<string, string> { }
-
-        private StringDictionary _lineMetadata = new StringDictionary();
+        [Export] private Dictionary<string, string> _lineMetadata = new Dictionary<string, string>();
 
         public LineMetadata(IEnumerable<LineMetadataTableEntry> lineMetadataTableEntries)
         {

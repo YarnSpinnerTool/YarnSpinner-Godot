@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Godot;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
@@ -16,13 +17,14 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         private Button recompileButton;
         private YarnCompileErrorsPropertyEditor _compileErrorsPropertyEditor;
         private ScrollContainer parseErrorControl;
+        private ScrollContainer functionsControl;
         private YarnProject project;
         private PackedScene _fileNameLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/FilenameLabel.tscn");
         private PackedScene _errorTextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ErrorTextLabel.tscn");
         private PackedScene _contextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ContextLabel.tscn");
 
         private VBoxContainer _container;
-        
+
         public override bool CanHandle(Object obj)
         {
             return obj is YarnProject;
@@ -44,16 +46,31 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
                 // hide these properties from inspector
                 return true;
             }
+            if (path == nameof(YarnProject.ListOfFunctionsJSON))
+            {
+                functionsControl = new ScrollContainer();
+                var functionsLabel = new Label();
+                var functionsSB = new StringBuilder();
+                functionsSB.Append("Functions\n---------\n\n");
+                foreach (var func in project.ListOfFunctions)
+                {
+                    functionsSB.Append($"{func.Name}({string.Join(", ", func.Parameters)})\n");
+                }
+                functionsLabel.Text = functionsSB.ToString();
+                functionsControl.AddChild(functionsLabel);
+                functionsControl.RectMinSize = new Vector2(0, 120);
+                AddCustomControl(functionsControl);
+                return true;
+            }
             if (path == nameof(YarnProject.ProjectErrors))
             {
                 _compileErrorsPropertyEditor = new YarnCompileErrorsPropertyEditor();
                 AddPropertyEditor(path, _compileErrorsPropertyEditor);
                 parseErrorControl = new ScrollContainer();
-                parseErrorControl.RectClipContent = false;
                 parseErrorControl.RectMinSize = new Vector2(0, 200);
                 parseErrorControl.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
                 parseErrorControl.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
-                
+
                 _container = new VBoxContainer();
                 _container.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
                 _container.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
@@ -100,13 +117,13 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             var errors = project.CompileErrors;
             SetErrors(errors);
         }
-        
+
         private void SetErrors(List<YarnProjectError> errors)
         {
-            for (var i = _container.GetChildCount()-1; i >= 0; i--)
+            for (var i = _container.GetChildCount() - 1; i >= 0; i--)
             {
                 var child = _container.GetChild(i);
-                
+
                 child.QueueFree();
             }
 

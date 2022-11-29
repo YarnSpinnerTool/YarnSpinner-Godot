@@ -1,14 +1,24 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" load_steps=6 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
+[ext_resource path="res://Samples/Space.yarn" type="Resource" id=2]
+[ext_resource path="res://Samples/localization/Space_en.tres" type="Resource" id=3]
+
+[sub_resource type="CSharpScript" id=1]
+
+[sub_resource type="Resource" id=2]
+script = SubResource( 1 )
 
 [resource]
 resource_name = "Space_YarnProject"
 script = ExtResource( 1 )
-SourceScripts = null
+SourceScripts = [ ExtResource( 2 ) ]
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
-CompiledYarnProgramBase64 = null
+CompiledYarnProgramBase64 = "EogCCgVTcGFjZRL+AQoFU3BhY2USTQgCEkIKQGxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9TcGFjZS55YXJuLVNwYWNlLTASBR0AAAAAEk0IAhJCCkBsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvU3BhY2UueWFybi1TcGFjZS0xEgUdAAAAABJNCAISQgpAbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1NwYWNlLnlhcm4tU3BhY2UtMhIFHQAAAAASAggPGgQKAkww"
+localizations = [ ExtResource( 3 ) ]
+lineMetadata = SubResource( 2 )
+ListOfFunctionsJSON = "[{\"Name\":\"Random\",\"ReturnType\":\"-> Single\",\"Parameters\":[]},{\"Name\":\"RandomRange\",\"ReturnType\":\"-> Single\",\"Parameters\":[\"minInclusive\",\"maxInclusive\"]},{\"Name\":\"Dice\",\"ReturnType\":\"-> UInt32\",\"Parameters\":[\"sides\"]},{\"Name\":\"Round\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"RoundPlaces\",\"ReturnType\":\"-> Single\",\"Parameters\":[\"num\",\"places\"]},{\"Name\":\"Floor\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Ceil\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Inc\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Dec\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]},{\"Name\":\"Decimal\",\"ReturnType\":\"-> Single\",\"Parameters\":[\"num\"]},{\"Name\":\"Int\",\"ReturnType\":\"-> Int32\",\"Parameters\":[\"num\"]}]"
 ProjectErrors = "[]"
 defaultLanguage = "en-US"

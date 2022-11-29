@@ -286,7 +286,7 @@ namespace Yarn.GodotIntegration
             return string.IsNullOrEmpty(metadata.Name) ? method.Name : metadata.Name;
         }
 
-        private static void FindAllActions(IEnumerable<string> assemblyNames)
+        private static void FindAllActions()
         {
             if (commands == null)
             {
@@ -302,25 +302,16 @@ namespace Yarn.GodotIntegration
             {
                 searchedAssemblyNames = new HashSet<string>();
             }
-
-            var assemblyNamesToLoad = assemblyNames.Except(searchedAssemblyNames);
-
             var injectorCache = new Dictionary<string, Injector>();
 
             // Find the assemblies we're looking for
-            IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                .Join(
-                    assemblyNamesToLoad,
-                    (assembly => assembly.GetName().Name),
-                    (name => name),
-                    (assembly, name) => assembly
-                ).ToList();
+            IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
 
             // Record that we've searched these assemblies before, so we don't
             // try and do it again
-            foreach (var assemblyName in assemblyNamesToLoad)
+            foreach (var assemblyName in assemblies)
             {
-                searchedAssemblyNames.Add(assemblyName);
+                searchedAssemblyNames.Add(assemblyName.FullName);
             }
 
             // Search for all methods in these assemblies
@@ -390,7 +381,6 @@ namespace Yarn.GodotIntegration
         /// <summary>
         /// Try to execute a command if it exists.
         /// </summary>
-        /// <param name="name">Name of command.</param>
         /// <param name="args">Any arguments to pass in. Should be convertible
         /// based on the rules laid out in <see cref="YarnCommandAttribute"/>.
         /// </param>
@@ -504,25 +494,19 @@ namespace Yarn.GodotIntegration
 
         static ActionManager()
         {
-            // We always want to get actions from the default Unity code
-            // assembly, "Assembly-CSharp". Start by searching it.
-            AddActionsFromAssemblies(new[]
-            {
-                "Assembly-CSharp"
-            });
+            // We always want to get actions from the default Godot assembly
+            // AddActionsFromAssemblies();
         }
 
         /// <summary>
         /// Searches all loaded assemblies whose names are equal to those found
-        /// in <paramref name="assemblyNames"/>, and registers all methods that
+        /// in this assembly and registers all methods that
         /// have the <see cref="YarnCommandAttribute"/> and <see
         /// cref="YarnFunctionAttribute"/> attributes.
         /// </summary>
-        /// <param name="assemblyNames">The names of the assemblies to
-        /// search.</param>
-        public static void AddActionsFromAssemblies(IEnumerable<string> assemblyNames)
+        public static void AddActionsFromAssemblies()
         {
-            FindAllActions(assemblyNames);
+            FindAllActions();
         }
 
         /// <summary>

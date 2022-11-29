@@ -32,8 +32,6 @@ namespace Yarn.GodotIntegration.Editor
         {
             return "Yarn Script";
         }
-        
-       
 
         public override string GetSaveExtension() => "tres";
         public override string GetResourceType()

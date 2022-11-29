@@ -45,13 +45,17 @@ namespace Yarn.GodotIntegration
         //[Export] 
         public Localization baseLocalization;
 
-        // [Export]
+        [Export]
         public List<Localization> localizations = new List<Localization>();
 
-        public LineMetadata lineMetadata;
+        [Export]
+        public LineMetadata lineMetadata = new LineMetadata(new List<LineMetadataTableEntry>());
 
         public LocalizationType localizationType;
-
+        
+        [Export]
+        public string ListOfFunctionsJSON = "[]";
+        
         /// <summary>
         /// JSON-serialized array of <see cref="Yarn.Compiler.Diagnostic"/> objects.
         /// </summary>
@@ -62,7 +66,23 @@ namespace Yarn.GodotIntegration
         [Export][Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
 
-        public List<LanguageToSourceAsset> languagesToSourceAssets = new List<LanguageToSourceAsset>();
+        public List<LanguageToSourceAsset> languagesToSourceAssets
+        {
+            get {
+               var result = new List<LanguageToSourceAsset>();
+               if (localizations != null)
+               {
+                   foreach (var localization in localizations)
+                   {
+                       var entry = new LanguageToSourceAsset();
+                       entry.languageID = localization.LocaleCode;
+                       entry.stringsFile = localization.stringsFile;
+                       result.Add(entry);
+                   }
+               }
+               return result;
+            }
+        }
 
         private Godot.Collections.Array<Resource> _sourceScripts;
         [Export] public Godot.Collections.Array<Resource> SourceScripts
@@ -76,7 +96,7 @@ namespace Yarn.GodotIntegration
                 if (Engine.EditorHint)
                 {
                     #if TOOLS
-                    GD.Print($"Re-compiling yarns scripts on project {ResourceName}.");
+                    GD.Print($"Re-compiling yarn scripts on project {ResourceName}.");
                     var projectUtility = new YarnProjectUtility();
                     projectUtility.UpdateYarnProject(this);
                     #endif
@@ -87,6 +107,9 @@ namespace Yarn.GodotIntegration
         public List<YarnProjectError> CompileErrors => ProjectErrors == null ?
             new List<YarnProjectError>() :
             JsonConvert.DeserializeObject<List<YarnProjectError>>(ProjectErrors);
+        
+        public List<FunctionInfo>ListOfFunctions => ListOfFunctionsJSON == null ?
+            new List<FunctionInfo>(): JsonConvert.DeserializeObject<List<FunctionInfo>>(ListOfFunctionsJSON);
 
         /// <summary>
         /// Gets a value indicating whether this Yarn Project is able to

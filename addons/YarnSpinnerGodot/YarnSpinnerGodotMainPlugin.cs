@@ -34,7 +34,6 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             var miniYarnSpinnerIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/mini_YarnSpinnerLogo.png");
             var miniYarnProjectIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
 
-
             _scriptImportPlugin = (YarnImporter)scriptImporterScript.New();
             _editorUtility = (YarnEditorUtility)editorUtilityScript.New();
             _projectInspectorPlugin = (YarnProjectInspectorPlugin)projectInspectorScript.New();
