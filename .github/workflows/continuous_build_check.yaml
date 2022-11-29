@@ -33,13 +33,9 @@ jobs:
       - name: Download Godot
         id: downloadGodot
         run: |
-          sudo apt-get install dotnet-sdk-6.0 wget
           wget -O godot.zip https://downloads.tuxfamily.org/godotengine/3.5.1/mono/Godot_v3.5.1-stable_mono_linux_headless_64.zip
           unzip godot.zip
-          ls -Ralph 
-        env:
-          BUILD_TARGET: win64 # Build for 64-bit Windows
-          GODOT_EXPORT_DEBUG: true
+          ./Godot_v3.5.1-stable_mono_linux_headless_64/Godot_v3.5.1-stable_mono_linux_headless.64 --version
 
       - name: Build solution
         id: buildSolution
