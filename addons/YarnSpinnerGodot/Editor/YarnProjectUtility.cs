@@ -277,7 +277,7 @@ namespace Yarn.GodotIntegration.Editor
                     }
                 }
 
-                var newLocalization = new Localization();
+                var newLocalization = _editorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
                 newLocalization.LocaleCode = pair.languageID;
 
                 // Add these new lines to the localisation's asset
@@ -358,7 +358,7 @@ namespace Yarn.GodotIntegration.Editor
                 // Create one for it now.
                 var stringTableEntries = GetStringTableEntries(project, compilationResult);
 
-                developmentLocalization = new Localization();
+                developmentLocalization = _editorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
                 developmentLocalization.ResourceName = $"Default ({project.defaultLanguage})";
                 developmentLocalization.LocaleCode = project.defaultLanguage;
 
