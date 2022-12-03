@@ -8,6 +8,10 @@ using System.Linq;
 
 namespace Yarn.GodotIntegration{
 
+    /// <summary>
+    /// List of valid locale codes
+    /// https://docs.godotengine.org/en/stable/tutorials/i18n/locales.html#doc-locales
+    /// </summary>
     [Tool]
     public class Localization : Resource
     {

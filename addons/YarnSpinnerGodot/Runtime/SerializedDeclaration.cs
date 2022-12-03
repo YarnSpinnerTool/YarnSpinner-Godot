@@ -4,39 +4,45 @@ using Godot;
 using Yarn.Compiler;
 namespace Yarn.GodotIntegration
 {
+    /// <summary>
+    /// A declaration of a variable that is written to a yarn project
+    /// </summary>
     [Serializable]
-    public class SerializedDeclaration
+    public class SerializedDeclaration: Resource
     {
         public static List<IType> BuiltInTypesList = new List<IType>
         {
             BuiltinTypes.String,
             BuiltinTypes.Boolean,
-            BuiltinTypes.Number,
+            BuiltinTypes.Number
         };
 
-        public string name = "$variable";
+        [Export] public string name = "$variable";
 
+        [Export] public string typeName = BuiltinTypes.String.Name;
 
-        public string typeName = BuiltinTypes.String.Name;
+        [Export] public bool defaultValueBool;
+        [Export] public float defaultValueNumber;
+        [Export] public string defaultValueString;
 
-        public bool defaultValueBool;
-        public float defaultValueNumber;
-        public string defaultValueString;
+        [Export] public string description;
 
-        public string description;
+        [Export] public bool isImplicit;
 
-        public bool isImplicit;
+        [Export] public string sourceYarnAssetPath;
 
-        public Resource sourceYarnAsset;
-
-        public SerializedDeclaration(Declaration decl)
+        /// <summary>
+        /// Set all of the serialized properties from a <see cref="Declaration"/> instance.
+        /// </summary>
+        /// <param name="decl"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void SetDeclaration(Declaration decl)
         {
             name = decl.Name;
             typeName = decl.Type.Name;
             description = decl.Description;
             isImplicit = decl.IsImplicit;
-
-            sourceYarnAsset = ResourceLoader.Load<Resource>(decl.SourceFileName);
+            sourceYarnAssetPath = decl.SourceFileName;
 
             if (typeName == BuiltinTypes.String.Name)
             {

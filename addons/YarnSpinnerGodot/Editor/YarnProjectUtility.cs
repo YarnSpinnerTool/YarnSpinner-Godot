@@ -141,7 +141,12 @@ namespace Yarn.GodotIntegration.Editor
                     .Concat(compilationResult.Value.Declarations)
                     .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
                     .Where(decl => !(decl.Type is FunctionType))
-                    .Select(decl => new SerializedDeclaration(decl)).ToList();
+                    .Select(decl =>
+                    {
+                        var serialized = _editorUtility.InstanceScript<SerializedDeclaration>("res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs");
+                        serialized.SetDeclaration(decl);
+                        return serialized;
+                    }).ToList();
 
                 // Clear error messages from all scripts - they've all passed
                 // compilation
@@ -285,7 +290,7 @@ namespace Yarn.GodotIntegration.Editor
                 {
                     newLocalization.AddLocalisedStringToAsset(entry.ID, entry.Text);
                 }
-                
+
                 newLocalization.ResourceName = pair.languageID;
 //             TODO: localizable resources
 //             if (pair.assetsFolder != null)
@@ -336,7 +341,8 @@ namespace Yarn.GodotIntegration.Editor
                     project.baseLocalization = newLocalization;
 
                     // Since this is the default language, also populate the line metadata.
-                    project.lineMetadata = new LineMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
+                    project.lineMetadata = _editorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
+                    project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
                 }
                 foreach (var existingLocalization in project.localizations)
                 {
@@ -373,7 +379,8 @@ namespace Yarn.GodotIntegration.Editor
                 project.localizations.Add(project.baseLocalization);
 
                 // Since this is the default language, also populate the line metadata.
-                project.lineMetadata = new LineMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
+                project.lineMetadata = _editorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
+                project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
             }
         }
 
@@ -556,8 +563,122 @@ namespace Yarn.GodotIntegration.Editor
         {
             public string name;
         }
+       public void AddLineTagsToFilesInYarnProject(YarnProject project)
+        {
+            // First, gather all existing line tags across ALL yarn
+            // projects, so that we don't accidentally overwrite an
+            // existing one. Do this by finding all yarn scripts in all
+            // yarn projects, and get the string tags inside them.
 
+            var allYarnFiles =
+                // get all yarn projects across the entire project
+                LoadAllYarnProjects()
+                // Get all of their source scripts, as a single sequence
+                .SelectMany(i => i.SourceScripts)
+                // Get the path for each asset
+                .Select(sourceAsset => sourceAsset.ResourcePath)
+                // remove any nulls, in case any are found
+                .Where(path => path != null);
 
+#if YARNSPINNER_DEBUG
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
+            var library = new Library();
+            ActionManager.ClearAllActions();
+            ActionManager.RegisterFunctions(library);
+
+            // Compile all of these, and get whatever existing string tags
+            // they had. Do each in isolation so that we can continue even
+            // if a file contains a parse error.
+            var allExistingTags = allYarnFiles.SelectMany(path =>
+            {
+                // Compile this script in strings-only mode to get
+                // string entries
+                var compilationJob = Yarn.Compiler.CompilationJob.CreateFromFiles(path);
+                compilationJob.CompilationType = Yarn.Compiler.CompilationJob.Type.StringsOnly;
+                compilationJob.Library = library;
+
+                var result = Yarn.Compiler.Compiler.Compile(compilationJob);
+
+                bool containsErrors = result.Diagnostics
+                    .Any(d => d.Severity == Compiler.Diagnostic.DiagnosticSeverity.Error);
+
+                if (containsErrors) {
+                    GD.PrintErr($"Can't check for existing line tags in {path} because it contains errors.");
+                    return new string[] { };
+                }
+                
+                return result.StringTable.Where(i => i.Value.isImplicitTag == false).Select(i => i.Key);
+            }).ToList(); // immediately execute this query so we can determine timing information
+
+#if YARNSPINNER_DEBUG
+            stopwatch.Stop();
+            GD.Print($"Checked {allYarnFiles.Count()} yarn files for line tags in {stopwatch.ElapsedMilliseconds}ms");
+#endif
+
+            var modifiedFiles = new List<string>();
+
+            try{
+
+                foreach (var script in project.SourceScripts)
+                {
+                    var assetPath = ProjectSettings.GlobalizePath(script.ResourcePath);
+                    var contents = System.IO.File.ReadAllText(assetPath);
+
+                    // Produce a version of this file that contains line
+                    // tags added where they're needed.
+                    var taggedVersion = Yarn.Compiler.Utility.AddTagsToLines(contents, allExistingTags);
+                    
+                    // if the file has an error it returns null
+                    // we want to bail out then otherwise we'd wipe the yarn file
+                    if (taggedVersion == null)
+                    {
+                        continue;
+                    }
+
+                    // If this produced a modified version of the file,
+                    // write it out and re-import it.
+                    if (contents != taggedVersion)
+                    {
+                        modifiedFiles.Add(Path.GetFileNameWithoutExtension(assetPath));
+
+                        System.IO.File.WriteAllText(assetPath, taggedVersion, Encoding.UTF8);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                GD.PrintErr($"Encountered an error when updating scripts: {e}");
+                return;
+            }
+
+            // Report on the work we did.
+            if (modifiedFiles.Count > 0)
+            {
+                GD.Print($"Updated the following files: {string.Join(", ", modifiedFiles)}");
+            }
+            else
+            {
+                GD.Print("No files needed updating.");
+            }
+
+        }
+        /// <summary>
+        /// Load all known YarnProject resources in the project
+        /// </summary>
+        /// <returns>a list of all YarnProject resources</returns>
+       public List<YarnProject> LoadAllYarnProjects()
+       {
+           throw new NotImplementedException();
+       }
+       /// <summary>
+       /// Add a yarn project to the list of known yarn projects, if it is not already in the list
+       /// </summary>
+       public void AddProjectToList()
+       {
+           
+       }
     }
 
 // A simple class lets us use a delegate as an IEqualityComparer from

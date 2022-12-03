@@ -4,7 +4,7 @@ colorID: 0
 position: 721,130
 ---
 <<if visited("Ship") is false>>
-    Ship: Hey, friend.  #line:5837f2
+    Ship: Hey, friend.  #line:5837f2 #firstline
     Player: Hi, Ship. #line:ship09
     Player: How's space? #line:ship10
     Ship: Oh, man. #line:ship11

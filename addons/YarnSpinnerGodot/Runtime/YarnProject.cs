@@ -49,7 +49,7 @@ namespace Yarn.GodotIntegration
         public List<Localization> localizations = new List<Localization>();
 
         [Export]
-        public LineMetadata lineMetadata = new LineMetadata(new List<LineMetadataTableEntry>());
+        public LineMetadata lineMetadata = null;
 
         public LocalizationType localizationType;
         
@@ -61,7 +61,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         [Export] public string ProjectErrors = "[]";
 
-        public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
+        [Export] public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
 
         [Export][Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;

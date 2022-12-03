@@ -8,7 +8,10 @@ namespace Yarn.GodotIntegration
     public class LineMetadata: Resource
     {
         [Export] private Dictionary<string, string> _lineMetadata = new Dictionary<string, string>();
-
+        public LineMetadata()
+        {
+            // empty constructor needed to instantiate from YarnProjectUtility
+        }
         public LineMetadata(IEnumerable<LineMetadataTableEntry> lineMetadataTableEntries)
         {
             AddMetadata(lineMetadataTableEntries);
