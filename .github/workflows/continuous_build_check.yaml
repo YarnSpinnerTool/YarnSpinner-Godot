@@ -1,0 +1,51 @@
+name: Continuous Build and Test
+
+on:
+  pull_request:
+    types:
+      [ opened, reopened, edited, ready_for_review, synchronize ]
+  push:
+    branches-ignore:
+      - 'dev'
+    paths-ignore:
+      # don't need to re-run the build for now if only markdown changes
+      - '**/*.md'
+      - 'docs/**'
+env:
+  GODOT_CLI: ./Godot_v3.5.1-stable_mono_linux_headless_64/Godot_v3.5.1-stable_mono_linux_headless.64
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  build:
+    name: Build the Project
+    runs-on: [ ubuntu-latest ]
+
+    steps:
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          clean: false # we clean what we want to clean ourselves above, and try to keep some cache
+          submodules: recursive
+
+      - name: Download Godot
+        id: downloadGodot
+        run: |
+          wget -O godot.zip https://downloads.tuxfamily.org/godotengine/3.5.1/mono/Godot_v3.5.1-stable_mono_linux_headless_64.zip
+          unzip godot.zip
+
+      - name: Build solution
+        id: buildSolution
+        run: |
+          # https://serverfault.com/questions/989742/tee-and-assigning-to-variable
+          { GODOT_OUTPUT=$($GODOT_CLI --path . --verbose -q -e --build-solutions 2>&1 | tee /dev/fd/3); } 3>&1
+          if [[ "$GODOT_OUTPUT" == *"the build callback failed"* ]]; then
+            echo "Godot failed to build the solution."
+            exit 1
+          else
+            echo "Godot built the solution successfully."
+          fi          
+        timeout-minutes: 2
