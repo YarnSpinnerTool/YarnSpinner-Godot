@@ -14,6 +14,7 @@ script = ExtResource( 1 )
 yarnProject = ExtResource( 4 )
 variableStoragePath = NodePath("InMemoryVariableStorage")
 dialogueViewPaths = [ NodePath("LineView") ]
+startNode = "Sally"
 
 [node name="InMemoryVariableStorage" type="Node" parent="YarnSpinnerCanvasLayer/DialogueRunner"]
 script = ExtResource( 2 )

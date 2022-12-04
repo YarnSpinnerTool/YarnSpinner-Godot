@@ -270,7 +270,7 @@ namespace Yarn.GodotIntegration
         [Export]
         public float fadeOutTime = 0.05f;
 
-        public const float FrameWaitTime = 0.05f;
+        public const float FrameWaitTime = 0.16f;
         /// <summary>
         /// Node path from the inspector for <see cref="lineText"/>
         /// </summary>
@@ -430,9 +430,13 @@ namespace Yarn.GodotIntegration
             {
                 canvasLayer = GetNode<CanvasLayer>(canvasLayerPath);
             }
-            if (continueButton == null)
+            if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath))
             {
-                continueButton = GetNode<Button>(continueButtonPath);
+                continueButton = (Button)GetNode(continueButtonPath);
+            }
+            if (continueButton != null)
+            {
+                continueButton.Connect("pressed", this, nameof(OnContinueClicked));
             }
             if (characterNameText == null)
             {
@@ -678,7 +682,7 @@ namespace Yarn.GodotIntegration
         
         private void SetCanvasInteractable(bool b)
         {
-            GD.PushError("TODO: set canvas layer interactable?");
+            GD.Print("TODO: set canvas layer interactable?");
         }
 
         /// <inheritdoc/>

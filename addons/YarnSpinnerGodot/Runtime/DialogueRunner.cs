@@ -105,7 +105,7 @@ namespace Yarn.GodotIntegration
         /// This value is used to select a node to start from when <see
         /// cref="startAutomatically"/> is called.
         /// </remarks>
-        public string startNode = Yarn.Dialogue.DefaultStartNodeName;
+        [Export] public string startNode = Yarn.Dialogue.DefaultStartNodeName;
 
         /// <summary>
         /// Whether the DialogueRunner should automatically start running
@@ -768,11 +768,7 @@ namespace Yarn.GodotIntegration
                     {
                         GD.Print($"Dialogue Runner has no LineProvider; creating a {nameof(TextLineProvider)}.", this);
                     }
-                    var txt = lineProvider.GetLocalizedLine(new Line
-                    {
-                        ID = "dcc2bc"
-                    }).RawText;
-                    GD.Print(txt);
+
                 }
                 else
                 {
@@ -783,19 +779,13 @@ namespace Yarn.GodotIntegration
 #endif
                 }
             }
-        }
-
-        /// <summary>
-        /// Prepares the Dialogue Runner for start.
-        /// </summary>
-        /// <remarks>If <see cref="startAutomatically"/> is <see langword="true"/>, the Dialogue Runner will start.</remarks>
-        private void Start()
-        {
             if (yarnProject != null && startAutomatically)
             {
                 StartDialogue(startNode);
             }
         }
+
+  
 
         Dialogue CreateDialogueInstance()
         {
