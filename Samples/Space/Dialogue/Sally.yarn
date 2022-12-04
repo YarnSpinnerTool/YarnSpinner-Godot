@@ -12,7 +12,6 @@ position: 524,111
     Player: Hey. #line:a8e70c
     Sally: Hi.   #line:0af7f86 
 <<endif>>
-<<typo cmd
 
 -> Anything exciting happen on your watch? <<if not visited("Sally_Watch")>> #line:5d7a7c
     <<jump Sally_Watch>>

@@ -109,6 +109,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _projectUtility = new YarnProjectUtility();
             _projectUtility.UpdateYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
+            PropertyListChangedNotify();
         }
 
         public void RenderCompilationErrors(Object yarnProject)
@@ -116,6 +117,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _project = (YarnProject)yarnProject;
             var errors = _project.CompileErrors;
             SetErrors(errors);
+            PropertyListChangedNotify();
         }
 
         private void SetErrors(List<YarnProjectError> errors)
@@ -156,6 +158,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         {
             _projectUtility.AddLineTagsToFilesInYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
+            PropertyListChangedNotify();
         }
     }
 }

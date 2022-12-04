@@ -9,7 +9,9 @@ The YarnSpinner logo was made by [Cecile Richard](https://www.cecile-richard.com
 Godot logo by Andrea Calabró
 
 Working:
-Create a Yarn Project, Yarn Script, or Yarn Localization through the Tools > YarnSpinner menu
+* Create a Yarn Project, Yarn Script, or Yarn Localization through the Tools > YarnSpinner menu
+* Yarn scripts will re-import on change, triggering a compilation of all yarn scripts in the associated project
+* Storing a compiled yarn program, a list of errors, and string tables.
 
 TODO:
 * Generate Godot localization CSV files from yarn Localization resources

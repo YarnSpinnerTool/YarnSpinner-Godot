@@ -15,7 +15,8 @@ namespace Yarn.GodotIntegration
 
         public override LocalizedLine GetLocalizedLine(Yarn.Line line)
         {
-            var text = YarnProject.GetLocalization(textLanguageCode).GetLocalizedString(line.ID);
+            var localization = YarnProject.GetLocalization(textLanguageCode);
+            var text= localization.GetLocalizedString(line.ID);
             return new LocalizedLine()
             {
                 TextID = line.ID,

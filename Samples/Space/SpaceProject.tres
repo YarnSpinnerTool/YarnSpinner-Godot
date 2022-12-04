@@ -8,77 +8,77 @@
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs" type="Script" id=6]
 [ext_resource path="res://Samples/Space/Dialogue/Ship.yarn" type="Resource" id=7]
 
-[sub_resource type="Resource" id=30]
+[sub_resource type="Resource" id=16]
 resource_name = "Random"
 script = ExtResource( 6 )
 Name = "Random"
 ReturnType = "-> Single"
 Parameters = PoolStringArray(  )
 
-[sub_resource type="Resource" id=31]
+[sub_resource type="Resource" id=17]
 resource_name = "RandomRange"
 script = ExtResource( 6 )
 Name = "RandomRange"
 ReturnType = "-> Single"
 Parameters = PoolStringArray( "minInclusive", "maxInclusive" )
 
-[sub_resource type="Resource" id=32]
+[sub_resource type="Resource" id=18]
 resource_name = "Dice"
 script = ExtResource( 6 )
 Name = "Dice"
 ReturnType = "-> UInt32"
 Parameters = PoolStringArray( "sides" )
 
-[sub_resource type="Resource" id=33]
+[sub_resource type="Resource" id=19]
 resource_name = "Round"
 script = ExtResource( 6 )
 Name = "Round"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=34]
+[sub_resource type="Resource" id=20]
 resource_name = "RoundPlaces"
 script = ExtResource( 6 )
 Name = "RoundPlaces"
 ReturnType = "-> Single"
 Parameters = PoolStringArray( "num", "places" )
 
-[sub_resource type="Resource" id=35]
+[sub_resource type="Resource" id=21]
 resource_name = "Floor"
 script = ExtResource( 6 )
 Name = "Floor"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=36]
+[sub_resource type="Resource" id=22]
 resource_name = "Ceil"
 script = ExtResource( 6 )
 Name = "Ceil"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=37]
+[sub_resource type="Resource" id=23]
 resource_name = "Inc"
 script = ExtResource( 6 )
 Name = "Inc"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=38]
+[sub_resource type="Resource" id=24]
 resource_name = "Dec"
 script = ExtResource( 6 )
 Name = "Dec"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=39]
+[sub_resource type="Resource" id=25]
 resource_name = "Decimal"
 script = ExtResource( 6 )
 Name = "Decimal"
 ReturnType = "-> Single"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=40]
+[sub_resource type="Resource" id=26]
 resource_name = "Int"
 script = ExtResource( 6 )
 Name = "Int"
@@ -86,18 +86,6 @@ ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
 [sub_resource type="Resource" id=27]
-resource_name = "$sally_warning"
-script = ExtResource( 4 )
-name = "$sally_warning"
-typeName = "Bool"
-defaultValueBool = false
-defaultValueNumber = 0.0
-defaultValueString = null
-description = "Implicitly declared in Sally.yarn, node Sally"
-isImplicit = true
-sourceYarnAssetPath = "C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn"
-
-[sub_resource type="Resource" id=28]
 resource_name = "$should_see_ship"
 script = ExtResource( 4 )
 name = "$should_see_ship"
@@ -105,15 +93,21 @@ typeName = "Bool"
 defaultValueBool = false
 defaultValueNumber = 0.0
 defaultValueString = null
-description = "Implicitly declared in Sally.yarn, node Sally_Watch"
+description = "Implicitly declared in Ship.yarn, node Ship"
 isImplicit = true
-sourceYarnAssetPath = "C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn"
+sourceYarnAssetPath = "C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Ship.yarn"
 
-[sub_resource type="Resource" id=29]
-script = ExtResource( 3 )
-_lineMetadata = {
-"line:5837f2": "firstline"
-}
+[sub_resource type="Resource" id=28]
+resource_name = "$sally_warning"
+script = ExtResource( 4 )
+name = "$sally_warning"
+typeName = "Bool"
+defaultValueBool = false
+defaultValueNumber = 0.0
+defaultValueString = null
+description = "Implicitly declared in Ship.yarn, node Ship"
+isImplicit = true
+sourceYarnAssetPath = "C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Ship.yarn"
 
 [sub_resource type="Resource" id=15]
 resource_name = "Default (en-US)"
@@ -142,17 +136,24 @@ _assetTable = {
 _containsLocalizedAssets = false
 stringsFile = ""
 
+[sub_resource type="Resource" id=29]
+script = ExtResource( 3 )
+_lineMetadata = {
+"line:5837f2": "firstline"
+}
+
 [resource]
 resource_name = "SpaceProject"
 script = ExtResource( 1 )
-SourceScripts = [ ExtResource( 2 ), ExtResource( 7 ) ]
+SourceScripts = [ ExtResource( 7 ), ExtResource( 2 ) ]
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
-CompiledYarnProgramBase64 = "EowLCgVTYWxseRKCCwoFU2FsbHkSCwgGEgcKBVNhbGx5EgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSBggIEgIQABIJCAcSBR0AAABAEhIIDBIOCgxCb29sLkVxdWFsVG8SEggKEg4KDEwyc2tpcGNsYXVzZRIYCAISDQoLbGluZTo3OTQ5NDUSBR0AAAAAEhgIAhINCgtsaW5lOjJkYzM5YhIFHQAAAAASGAgCEg0KC2xpbmU6MzRkZTJmEgUdAAAAABIYCAISDQoLbGluZTpkY2MyYmMSBR0AAAAAEgsSCQoHTDFlbmRpZhICCAsSGAgCEg0KC2xpbmU6YThlNzBjEgUdAAAAABIZCAISDgoMbGluZTowYWY3Zjg2EgUdAAAAABILEgkKB0wxZW5kaWYSEQgGEg0KC1NhbGx5X1dhdGNoEgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSCQgHEgUdAACAPxIOCAwSCgoIQm9vbC5Ob3QSOAgEEg0KC2xpbmU6NWQ3YTdjEhoKGEw1c2hvcnRjdXRvcHRpb25fU2FsbHlfMRIFHQAAAAASAhABEhQIDRIQCg4kc2FsbHlfd2FybmluZxIRCAYSDQoLU2FsbHlfU29ycnkSCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIJCAcSBR0AAIA/Eg4IDBIKCghCb29sLk5vdBIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBI4CAQSDQoLbGluZTowYTdlMzkSGgoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yEgUdAAAAABICEAESOAgEEg0KC2xpbmU6MGZhY2Y3EhoKGEw3c2hvcnRjdXRvcHRpb25fU2FsbHlfMxIFHQAAAAASAhAAEgIIBRICCAESIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEhEIBhINCgtTYWxseV9XYXRjaBICCBASDxINCgtMNGdyb3VwX2VuZBIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSEQgGEg0KC1NhbGx5X1NvcnJ5EgIIEBIPEg0KC0w0Z3JvdXBfZW5kEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxIQCAYSDAoKU2FsbHlfRXhpdBICCBASDxINCgtMNGdyb3VwX2VuZBICCAsSIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDBoLCgdMMWVuZGlmEBAaHAoYTDVzaG9ydGN1dG9wdGlvbl9TYWxseV8xECIaHAoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yECsaHAoYTDdzaG9ydGN1dG9wdGlvbl9TYWxseV8zEDQaDwoLTDRncm91cF9lbmQQPRLiAwoLU2FsbHlfV2F0Y2gS0gMKC1NhbGx5X1dhdGNoEhgIAhINCgtsaW5lOjhjM2Y5OBIFHQAAAAASGAgCEg0KC2xpbmU6MjRjNDE4EgUdAAAAABIYCAISDQoLbGluZTpkZjRlYWYSBR0AAAAAEgYICBICEAESFggOEhIKECRzaG91bGRfc2VlX3NoaXASAggLEgoIBhIGCgRTaGlwEgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSBggIEgIQARIJCAcSBR0AAABAEhIIDBIOCgxCb29sLkVxdWFsVG8SEwgKEg8KDUwxMHNraXBjbGF1c2USGAgCEg0KC2xpbmU6MWZlYTZjEgUdAAAAABIYCAISDQoLbGluZTo1ZGYzMjMSBR0AAAAAEgsSCQoHTDllbmRpZhICCAsSKQgNEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1dhdGNoEgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIpCA4SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSAggLEgIIDxoECgJMOBoRCg1MMTBza2lwY2xhdXNlEBAaCwoHTDllbmRpZhAREj8KClNhbGx5X0V4aXQSMQoKU2FsbHlfRXhpdBIYCAISDQoLbGluZTo2MGMyODISBR0AAAAAEgIIDxoFCgNMMTESxAEKC1NhbGx5X1NvcnJ5ErQBCgtTYWxseV9Tb3JyeRIYCAISDQoLbGluZTpkN2RmNDkSBR0AAAAAEikIDRIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9Tb3JyeRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSKQgOEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgIICxICCA8aBQoDTDEyEikKDERlY2xhcmF0aW9ucxIZCgxEZWNsYXJhdGlvbnMSAggPGgUKA0wxMxK1CQoEU2hpcBKsCQoEU2hpcBIKCAYSBgoEU2hpcBIJCAcSBR0AAIA/Eg0IDBIJCgd2aXNpdGVkEgYICBICEAASCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhIIChIOCgxMMnNraXBjbGF1c2USGAgCEg0KC2xpbmU6NTgzN2YyEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDkSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAxMBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDExEgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTISBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEgIICxIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTMSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEhYIDRISChAkc2hvdWxkX3NlZV9zaGlwEgYICBICEAESCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhQIDRIQCg4kc2FsbHlfd2FybmluZxIGCAgSAhAAEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBISCAoSDgoMTDVza2lwY2xhdXNlEhgIAhINCgtsaW5lOnNoaXAwMRIFHQAAAAASJQgDEhoKGHNldHNwcml0ZSBTaGlwRmFjZSBoYXBweRIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDAzEgUdAAAAABInCAMSHAoac2V0c3ByaXRlIFNoaXBGYWNlIG5ldXRyYWwSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAwNBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDA1EgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDYSBR0AAAAAEgYICBICEAESFAgOEhAKDiRzYWxseV93YXJuaW5nEgIICxITCAMSCAoGd2FpdCAxEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDcSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMNGVuZGlmEgIICxIiCA0SHgocJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2hpcBIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIggOEh4KHCRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNoaXASAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDxoLCgdMMWVuZGlmEBQaEAoMTDVza2lwY2xhdXNlEC4aCwoHTDRlbmRpZhAvGhQKDiRzYWxseV93YXJuaW5nEgIQABoWChAkc2hvdWxkX3NlZV9zaGlwEgIQABomCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIFHQAAAAAaLAojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSBR0AAAAAGiwKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgUdAAAAABolChwkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TaGlwEgUdAAAAAA=="
+CompiledYarnProgramBase64 = "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aW9uX1NhbGx5XzISBR0AAAAAEgIQARI4CAQSDQoLbGluZTowZmFjZjcSGgoYTDdzaG9ydGN1dG9wdGlvbl9TYWxseV8zEgUdAAAAABICEAASAggFEgIIARIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSEQgGEg0KC1NhbGx5X1dhdGNoEgIIEBIPEg0KC0w0Z3JvdXBfZW5kEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxIRCAYSDQoLU2FsbHlfU29ycnkSAggQEg8SDQoLTDRncm91cF9lbmQSIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEhAIBhIMCgpTYWxseV9FeGl0EgIIEBIPEg0KC0w0Z3JvdXBfZW5kEgIICxIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSAggPGgQKAkwwGhAKDEwyc2tpcGNsYXVzZRAMGgsKB0wxZW5kaWYQEBocChhMNXNob3J0Y3V0b3B0aW9uX1NhbGx5XzEQIhocChhMNnNob3J0Y3V0b3B0aW9uX1NhbGx5XzIQKxocChhMN3Nob3J0Y3V0b3B0aW9uX1NhbGx5XzMQNBoPCgtMNGdyb3VwX2VuZBA9EuIDCgtTYWxseV9XYXRjaBLSAwoLU2FsbHlfV2F0Y2gSGAgCEg0KC2xpbmU6OGMzZjk4EgUdAAAAABIYCAISDQoLbGluZToyNGM0MTgSBR0AAAAAEhgIAhINCgtsaW5lOmRmNGVhZhIFHQAAAAASBggIEgIQARIWCA4SEgoQJHNob3VsZF9zZWVfc2hpcBICCAsSCggGEgYKBFNoaXASCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIGCAgSAhABEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxITCAoSDwoNTDEwc2tpcGNsYXVzZRIYCAISDQoLbGluZToxZmVhNmMSBR0AAAAAEhgIAhINCgtsaW5lOjVkZjMyMxIFHQAAAAASCxIJCgdMOWVuZGlmEgIICxIpCA0SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEikIDhIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9XYXRjaBICCAsSAggPGgQKAkw4GhEKDUwxMHNraXBjbGF1c2UQEBoLCgdMOWVuZGlmEBESPwoKU2FsbHlfRXhpdBIxCgpTYWxseV9FeGl0EhgIAhINCgtsaW5lOjYwYzI4MhIFHQAAAAASAggPGgUKA0wxMRLEAQoLU2FsbHlfU29ycnkStAEKC1NhbGx5X1NvcnJ5EhgIAhINCgtsaW5lOmQ3ZGY0ORIFHQAAAAASKQgNEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIpCA4SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfU29ycnkSAggLEgIIDxoFCgNMMTISKQoMRGVjbGFyYXRpb25zEhkKDERlY2xhcmF0aW9ucxICCA8aBQoDTDEzGhYKECRzaG91bGRfc2VlX3NoaXASAhAAGhQKDiRzYWxseV93YXJuaW5nEgIQABolChwkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TaGlwEgUdAAAAABomCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIFHQAAAAAaLAojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSBR0AAAAAGiwKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgUdAAAAAA=="
+baseLocalization = SubResource( 15 )
 localizations = [ SubResource( 15 ) ]
 lineMetadata = SubResource( 29 )
-ListOfFunctions = [ SubResource( 30 ), SubResource( 31 ), SubResource( 32 ), SubResource( 33 ), SubResource( 34 ), SubResource( 35 ), SubResource( 36 ), SubResource( 37 ), SubResource( 38 ), SubResource( 39 ), SubResource( 40 ) ]
-ProjectErrors = "[{\"FileName\":\"C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn\",\"Message\":\"token recognition error at: '> '\",\"Context\":null},{\"FileName\":\"C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn\",\"Message\":\"Unexpected \\\"\\r\\n    \\\" while reading a node\",\"Context\":\"-> Anything exciting happen on your watch? <<if not visited(\\\"Sally_Watch\\\")>> #line:5d7a7c\\r\\r\\n                                                                                         ^^^^^^\"},{\"FileName\":\"C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn\",\"Message\":\"Unexpected \\\">>\\\" while reading a header\",\"Context\":\"    <<jump Sally_Watch>>\\r\\r\\n                      ^^\"},{\"FileName\":\"C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn\",\"Message\":\"Unexpected \\\">>\\\" while reading a header\",\"Context\":\"    <<jump Sally_Sorry>>\\r\\r\\n                      ^^\"},{\"FileName\":\"C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn\",\"Message\":\"Unexpected \\\">>\\\" while reading a header\",\"Context\":\"    <<jump Sally_Exit>>\\r\\r\\n                     ^^\"}]"
+ListOfFunctions = [ SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 19 ), SubResource( 20 ), SubResource( 21 ), SubResource( 22 ), SubResource( 23 ), SubResource( 24 ), SubResource( 25 ), SubResource( 26 ) ]
+ProjectErrors = "[]"
 SerializedDeclarations = [ SubResource( 27 ), SubResource( 28 ) ]
 defaultLanguage = "en-US"
