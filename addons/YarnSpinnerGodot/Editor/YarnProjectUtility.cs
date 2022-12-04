@@ -14,6 +14,7 @@ using Yarn.Compiler;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
 using Array = Godot.Collections.Array;
+using File = System.IO.File;
 using Path = System.IO.Path;
 
 namespace Yarn.GodotIntegration.Editor
@@ -23,6 +24,8 @@ namespace Yarn.GodotIntegration.Editor
     {
         public List<string> parseErrorMessages = new List<string>();
 
+        public const string YarnProjectPathsSettingKey = "YarnSpinner-Godot/YarnProjectPaths";
+
         private static string Base64Encode(string plainText)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
@@ -31,15 +34,13 @@ namespace Yarn.GodotIntegration.Editor
 
         public YarnProject GetDestinationProject(string assetPath)
         {
-            var myAssetPath = assetPath;
-            var destinationProjectPath = _editorUtility.GetAllAssetsOf<YarnProject>("t:YarnProject")
-                .FirstOrDefault(importer =>
+            var destinationProjectPath = LoadAllYarnProjects()
+                .FirstOrDefault(proj =>
                 {
-                    // Does this importer depend on this asset? If so,
+                    // Does this project depend on this script? If so,
                     // then this is our destination asset.
-                    string[] dependencies = ResourceLoader.GetDependencies(assetPath);
-                    var importerDependsOnThisAsset = dependencies.Contains(myAssetPath);
-
+                    var importerDependsOnThisAsset = proj.SourceScripts.ToList()
+                        .ConvertAll(s => s.ResourcePath).Contains(assetPath);
                     return importerDependsOnThisAsset;
                 })?.ResourcePath;
 
@@ -50,10 +51,21 @@ namespace Yarn.GodotIntegration.Editor
 
             return ResourceLoader.Load<YarnProject>(destinationProjectPath);
         }
+
+        /// <summary>
+        /// Re-compile scripts in a yarn project, add all associated data to the project,
+        /// and save it back to disk in the same .tres file.
+        /// </summary>
+        /// <param name="project"></param>
         public void UpdateYarnProject(YarnProject project)
         {
             if (string.IsNullOrEmpty(project.ResourcePath)) return;
             CompileAllScripts(project);
+            SaveYarnProject(project);
+        }
+
+        public void SaveYarnProject(YarnProject project)
+        {
             var saveErr = ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
             if (saveErr != Error.Ok)
             {
@@ -64,7 +76,6 @@ namespace Yarn.GodotIntegration.Editor
                 GD.Print($"Wrote updated YarnProject {project.ResourceName} to {project.ResourcePath}");
             }
         }
-
         public void CompileAllScripts(YarnProject project)
         {
             var assetPath = project.ResourcePath;
@@ -77,10 +88,11 @@ namespace Yarn.GodotIntegration.Editor
             }
 
             var library = new Library();
+            ActionManager.ClearAllActions();
             ActionManager.AddActionsFromAssemblies();
             ActionManager.RegisterFunctions(library);
             // localDeclarationsCompileJob.Library = library;
-            project.ListOfFunctionsJSON = JsonConvert.SerializeObject(predeterminedFunctions().ToArray());
+            project.ListOfFunctions = predeterminedFunctions();
             IEnumerable<Diagnostic> errors;
             project.ProjectErrors = "[]";
 
@@ -145,6 +157,7 @@ namespace Yarn.GodotIntegration.Editor
                     {
                         var serialized = _editorUtility.InstanceScript<SerializedDeclaration>("res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs");
                         serialized.SetDeclaration(decl);
+                        serialized.ResourceName = serialized.name;
                         return serialized;
                     }).ToList();
 
@@ -214,6 +227,25 @@ namespace Yarn.GodotIntegration.Editor
             }
 
             return compilationResult;
+        }
+        public FunctionInfo CreateFunctionInfoFromMethodGroup(System.Reflection.MethodInfo method)
+        {
+            var returnType = $"-> {method.ReturnType.Name}";
+
+            var parameters = method.GetParameters();
+            var p = new string[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                var q = parameters[i].ParameterType;
+                p[i] = parameters[i].Name;
+            }
+
+            var info = _editorUtility.InstanceScript<FunctionInfo>("res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs");
+            info.Name = method.Name;
+            info.ReturnType = returnType;
+            info.Parameters = p;
+            info.ResourceName = info.Name;
+            return info;
         }
 
         /// <summary>
@@ -349,11 +381,17 @@ namespace Yarn.GodotIntegration.Editor
                     if (existingLocalization.LocaleCode.Equals(newLocalization.LocaleCode))
                     {
                         newLocalization.stringsFile = existingLocalization.stringsFile;
-                        var saveErr = ResourceSaver.Save(existingLocalization.ResourcePath, newLocalization);
-                        if (saveErr != Error.Ok)
+                        if (!existingLocalization.ResourcePath.Contains(project.ResourcePath) 
+                            && !existingLocalization.ResourcePath.Contains("::"))
                         {
-                            GD.PushError($"Error saving localization {newLocalization.LocaleCode} to {existingLocalization.ResourcePath}");
+                            // only try to save it to disk if it's a standalone file and a sub resource
+                            var saveErr = ResourceSaver.Save(existingLocalization.ResourcePath, newLocalization);
+                            if (saveErr != Error.Ok)
+                            {
+                                GD.PushError($"Error saving localization {newLocalization.LocaleCode} to {existingLocalization.ResourcePath}");
+                            }
                         }
+
                     }
                 }
             }
@@ -551,7 +589,7 @@ namespace Yarn.GodotIntegration.Editor
             List<FunctionInfo> f = new List<FunctionInfo>();
             foreach (var func in functions)
             {
-                f.Add(FunctionInfo.CreateFunctionInfoFromMethodGroup(func));
+                f.Add(CreateFunctionInfoFromMethodGroup(func));
             }
             return f;
         }
@@ -563,7 +601,7 @@ namespace Yarn.GodotIntegration.Editor
         {
             public string name;
         }
-       public void AddLineTagsToFilesInYarnProject(YarnProject project)
+        public void AddLineTagsToFilesInYarnProject(YarnProject project)
         {
             // First, gather all existing line tags across ALL yarn
             // projects, so that we don't accidentally overwrite an
@@ -573,12 +611,12 @@ namespace Yarn.GodotIntegration.Editor
             var allYarnFiles =
                 // get all yarn projects across the entire project
                 LoadAllYarnProjects()
-                // Get all of their source scripts, as a single sequence
-                .SelectMany(i => i.SourceScripts)
-                // Get the path for each asset
-                .Select(sourceAsset => sourceAsset.ResourcePath)
-                // remove any nulls, in case any are found
-                .Where(path => path != null);
+                    // Get all of their source scripts, as a single sequence
+                    .SelectMany(i => i.SourceScripts)
+                    // Get the path for each asset
+                    .Select(sourceAsset => sourceAsset.ResourcePath)
+                    // remove any nulls, in case any are found
+                    .Where(path => path != null);
 
 #if YARNSPINNER_DEBUG
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -595,7 +633,7 @@ namespace Yarn.GodotIntegration.Editor
             {
                 // Compile this script in strings-only mode to get
                 // string entries
-                var compilationJob = Yarn.Compiler.CompilationJob.CreateFromFiles(path);
+                var compilationJob = Yarn.Compiler.CompilationJob.CreateFromFiles(ProjectSettings.GlobalizePath(path));
                 compilationJob.CompilationType = Yarn.Compiler.CompilationJob.Type.StringsOnly;
                 compilationJob.Library = library;
 
@@ -604,11 +642,14 @@ namespace Yarn.GodotIntegration.Editor
                 bool containsErrors = result.Diagnostics
                     .Any(d => d.Severity == Compiler.Diagnostic.DiagnosticSeverity.Error);
 
-                if (containsErrors) {
+                if (containsErrors)
+                {
                     GD.PrintErr($"Can't check for existing line tags in {path} because it contains errors.");
-                    return new string[] { };
+                    return new string[]
+                    {
+                    };
                 }
-                
+
                 return result.StringTable.Where(i => i.Value.isImplicitTag == false).Select(i => i.Key);
             }).ToList(); // immediately execute this query so we can determine timing information
 
@@ -619,7 +660,8 @@ namespace Yarn.GodotIntegration.Editor
 
             var modifiedFiles = new List<string>();
 
-            try{
+            try
+            {
 
                 foreach (var script in project.SourceScripts)
                 {
@@ -629,7 +671,7 @@ namespace Yarn.GodotIntegration.Editor
                     // Produce a version of this file that contains line
                     // tags added where they're needed.
                     var taggedVersion = Yarn.Compiler.Utility.AddTagsToLines(contents, allExistingTags);
-                    
+
                     // if the file has an error it returns null
                     // we want to bail out then otherwise we'd wipe the yarn file
                     if (taggedVersion == null)
@@ -668,17 +710,45 @@ namespace Yarn.GodotIntegration.Editor
         /// Load all known YarnProject resources in the project
         /// </summary>
         /// <returns>a list of all YarnProject resources</returns>
-       public List<YarnProject> LoadAllYarnProjects()
-       {
-           throw new NotImplementedException();
-       }
-       /// <summary>
-       /// Add a yarn project to the list of known yarn projects, if it is not already in the list
-       /// </summary>
-       public void AddProjectToList()
-       {
-           
-       }
+        public List<YarnProject> LoadAllYarnProjects()
+        {
+            var projects = new List<YarnProject>();
+            CleanUpMovedOrDeletedProjects();
+            var allProjects = (string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            foreach (var path in allProjects)
+            {
+                projects.Add(ResourceLoader.Load<YarnProject>(path));
+            }
+            return projects;
+        }
+
+        private void CleanUpMovedOrDeletedProjects()
+        {
+            var projects = ((string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey)).ToList();
+            var removeProjects = new List<string>();
+            foreach (var path in projects)
+            {
+                if (!File.Exists(ProjectSettings.GlobalizePath(path)))
+                {
+                    removeProjects.Add(path);
+                }
+            }
+            projects.RemoveAll(path => removeProjects.Contains(path));
+            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, projects);
+        }
+        /// <summary>
+        /// Add a yarn project to the list of known yarn projects, if it is not already in the list
+        /// </summary>
+        public void AddProjectToList(YarnProject project)
+        {
+            CleanUpMovedOrDeletedProjects();
+            var projects = ((string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey)).ToList();
+            if (project.ResourcePath != "" && !projects.Contains(project.ResourcePath))
+            {
+                projects.Add(project.ResourcePath);
+            }
+            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, projects);
+        }
     }
 
 // A simple class lets us use a delegate as an IEqualityComparer from
@@ -717,32 +787,5 @@ namespace Yarn.GodotIntegration.Editor
         }
     }
 
-    [Serializable]
-    public class FunctionInfo
-    {
-        [JsonProperty] public string Name;
-        [JsonProperty] public string ReturnType;
-        [JsonProperty] public string[] Parameters;
-
-        public static FunctionInfo CreateFunctionInfoFromMethodGroup(System.Reflection.MethodInfo method)
-        {
-            var returnType = $"-> {method.ReturnType.Name}";
-
-            var parameters = method.GetParameters();
-            var p = new string[parameters.Count()];
-            for (int i = 0; i < parameters.Count(); i++)
-            {
-                var q = parameters[i].ParameterType;
-                p[i] = parameters[i].Name;
-            }
-
-            return new FunctionInfo
-            {
-                Name = method.Name,
-                ReturnType = returnType,
-                Parameters = p,
-            };
-        }
-    }
 }
 #endif

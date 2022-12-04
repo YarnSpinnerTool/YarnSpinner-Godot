@@ -18,7 +18,6 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         private Button _addTagsButton;
         private YarnCompileErrorsPropertyEditor _compileErrorsPropertyEditor;
         private ScrollContainer _parseErrorControl;
-        private ScrollContainer _functionsControl;
         private YarnProject _project;
         private readonly PackedScene _fileNameLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/FilenameLabel.tscn");
         private readonly PackedScene _errorTextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ErrorTextLabel.tscn");
@@ -47,23 +46,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
                 // hide these properties from inspector
                 return true;
             }
-            if (path == nameof(YarnProject.ListOfFunctionsJSON))
-            {
-                _functionsControl = new ScrollContainer();
-                var functionsLabel = new Label();
-                var functionsSb = new StringBuilder();
-                functionsSb.Append("Functions\n---------\n\n");
-                foreach (var func in _project.ListOfFunctions)
-                {
-                    functionsSb.Append($"{func.Name}({string.Join(", ", func.Parameters)})\n");
-                }
-                functionsLabel.Text = functionsSb.ToString();
-                _functionsControl.AddChild(functionsLabel);
-                _functionsControl.RectMinSize = new Vector2(0, 120);
-                AddCustomControl(_functionsControl);
-                return true;
-            }
-            if (path == nameof(YarnProject.ProjectErrors))
+         if (path == nameof(YarnProject.ProjectErrors))
             {
                 _compileErrorsPropertyEditor = new YarnCompileErrorsPropertyEditor();
                 AddPropertyEditor(path, _compileErrorsPropertyEditor);
@@ -89,6 +72,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         public override void ParseBegin(Object @object)
         {
             _project = (YarnProject)@object;
+            _projectUtility.AddProjectToList(_project);
             if (_recompileButton != null)
             {
                 if (IsInstanceValid(_recompileButton))
@@ -103,6 +87,21 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             recompileArgs.Add(@object);
             _recompileButton.Connect("pressed", this, nameof(OnRecompileClicked), recompileArgs);
             AddCustomControl(_recompileButton);
+            
+            if (_addTagsButton != null)
+            {
+                if (IsInstanceValid(_addTagsButton))
+                {
+                    _addTagsButton.QueueFree();
+                }
+                _addTagsButton = null;
+            }
+            _addTagsButton = new Button();
+            _addTagsButton.Text = "Add Line Tags to Scripts";
+            var addTagsButtonArgs = new Godot.Collections.Array();
+            addTagsButtonArgs.Add(_project);
+            _addTagsButton.Connect("pressed", this, nameof(OnAddTagsClicked), addTagsButtonArgs);
+            AddCustomControl(_addTagsButton);
         }
 
         private void OnRecompileClicked(YarnProject project)
@@ -153,24 +152,6 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             }
         }
 
-        public override void ParseEnd()
-        {           
-            if (_addTagsButton != null)
-            {
-                if (IsInstanceValid(_addTagsButton))
-                {
-                    _addTagsButton.QueueFree();
-                }
-                _addTagsButton = null;
-            }
-            _addTagsButton = new Button();
-            _addTagsButton.Text = "Add Line Tags to Scripts";
-            var addTagsButtonArgs = new Godot.Collections.Array();
-            addTagsButtonArgs.Add(_project);
-            _addTagsButton.Connect("pressed", this, nameof(OnAddTagsClicked), addTagsButtonArgs);
-            AddCustomControl(_addTagsButton);
-            
-        }
         private void OnAddTagsClicked(YarnProject project)
         {
             _projectUtility.AddLineTagsToFilesInYarnProject(project);

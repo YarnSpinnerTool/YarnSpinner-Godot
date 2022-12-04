@@ -15,6 +15,8 @@ namespace Yarn.GodotIntegration.Editor
     /// </summary>
     public class YarnEditorUtility : Object
     {
+        private YarnProjectUtility _projectUtility;
+        
         const string TemplateFilePath = "res://addons/YarnSpinnerGodot/Editor/YarnScriptTemplate.txt";
 
         /// <summary>
@@ -44,6 +46,7 @@ namespace Yarn.GodotIntegration.Editor
         /// <param name="projectPath"></param>
         public void CreateYarnProject(string projectPath)
         {
+            _projectUtility = new YarnProjectUtility();
             var newYarnProject = InstanceScript<YarnProject>("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
         
             var absPath = ProjectSettings.GlobalizePath(projectPath);
@@ -57,6 +60,7 @@ namespace Yarn.GodotIntegration.Editor
             else
             {
                 GD.Print($"Saved new yarn project to {projectPath}");
+                _projectUtility.AddProjectToList(newYarnProject);
             }
         }
         

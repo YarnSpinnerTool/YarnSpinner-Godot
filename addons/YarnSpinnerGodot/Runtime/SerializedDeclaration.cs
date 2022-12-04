@@ -7,8 +7,8 @@ namespace Yarn.GodotIntegration
     /// <summary>
     /// A declaration of a variable that is written to a yarn project
     /// </summary>
-    [Serializable]
-    public class SerializedDeclaration: Resource
+    [Serializable] [Tool]
+    public class SerializedDeclaration : Resource
     {
         public static List<IType> BuiltInTypesList = new List<IType>
         {

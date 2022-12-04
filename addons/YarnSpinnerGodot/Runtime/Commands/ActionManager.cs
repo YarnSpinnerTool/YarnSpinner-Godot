@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using Godot;
 
 
@@ -365,18 +366,18 @@ namespace Yarn.GodotIntegration
         /// <summary>
         /// The Yarn commands that we have found.
         /// </summary>
-        private static Dictionary<string, DispatchCommand> commands;
+        private static Dictionary<string, DispatchCommand> commands = new Dictionary<string, DispatchCommand>();
 
         /// <summary>
         /// The Yarn functions that we have found.
         /// </summary>
-        private static Dictionary<string, Delegate> functions;
+        private static Dictionary<string, Delegate> functions = new Dictionary<string, Delegate>();
 
         /// <summary>
         /// A list of names of assemblies that we have searched for commands and
         /// functions.
         /// </summary>
-        private static HashSet<string> searchedAssemblyNames;
+        private static HashSet<string> searchedAssemblyNames = new HashSet<string>();
 
         /// <summary>
         /// Try to execute a command if it exists.

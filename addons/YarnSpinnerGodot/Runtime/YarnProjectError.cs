@@ -1,4 +1,5 @@
 ﻿using System;
+using Godot;
 using Newtonsoft.Json;
 namespace Yarn.GodotIntegration
 {

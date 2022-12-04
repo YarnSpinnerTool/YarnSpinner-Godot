@@ -58,6 +58,14 @@
     <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerSuccess.png" />
     <Content Include="**\*.yarn" />
     <Content Include="addons\YarnSpinnerGodot\Editor\YarnScriptTemplate.txt" />
+    <Content Include="Samples\Space\Sprites\Background.jpg" />
+    <Content Include="Samples\Space\Sprites\Player.png" />
+    <Content Include="Samples\Space\Sprites\Sally.png" />
+    <Content Include="Samples\Space\Sprites\Ship-Face-Happy.png" />
+    <Content Include="Samples\Space\Sprites\Ship-Face-Neutral.png" />
+    <Content Include="Samples\Space\Sprites\Ship.png" />
+    <Content Include="Samples\Space\Sprites\Source\Characters.psd" />
+    <Content Include="Samples\Space\Sprites\Source\Wall.psd" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="addons\YarnSpinnerGodot\Editor\UI" />
