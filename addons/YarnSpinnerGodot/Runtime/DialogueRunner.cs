@@ -91,16 +91,21 @@ namespace Yarn.GodotIntegration
         }
 
         /// <summary>
+        /// List of node paths from the inspector to <see cref="dialogueViews"/>
+        /// </summary>
+        [Export] public List<NodePath> dialogueViewPaths = new List<NodePath>();
+
+        /// <summary>
         /// The View classes that will present the dialogue to the user.
         /// </summary>
-        public DialogueViewBase[] dialogueViews;
+        public List<DialogueViewBase> dialogueViews;
 
         /// <summary>The name of the node to start from.</summary>
         /// <remarks>
         /// This value is used to select a node to start from when <see
         /// cref="startAutomatically"/> is called.
         /// </remarks>
-        public string startNode = Yarn.Dialogue.DefaultStartNodeName;
+        [Export] public string startNode = Yarn.Dialogue.DefaultStartNodeName;
 
         /// <summary>
         /// Whether the DialogueRunner should automatically start running
@@ -645,7 +650,7 @@ namespace Yarn.GodotIntegration
         /// will respond correctly.
         /// </summary>
         /// <param name="views">The array of views to be assigned.</param>
-        public void SetDialogueViews(DialogueViewBase[] views)
+        public void SetDialogueViews(List<DialogueViewBase> views)
         {
             foreach (var view in views)
             {
@@ -698,9 +703,30 @@ namespace Yarn.GodotIntegration
         public override void _Ready()
         {
             _variableStorage = GetNode<VariableStorageBehaviour>(variableStoragePath);
-            if (dialogueViews.Length == 0)
+            if (dialogueViews == null)
             {
-                GD.PrintErr($"Dialogue Runner doesn't have any dialogue views set up. No lines or options will be visible.");
+                dialogueViews = new List<DialogueViewBase>();
+            }
+            foreach (var path in dialogueViewPaths)
+            {
+                var potentialView = GetNode(path);
+                if (potentialView is DialogueViewBase view)
+                {
+                    if (!dialogueViews.Contains(potentialView))
+                    {
+                        dialogueViews.Add(view);
+                    }
+                }
+                else
+                {
+                    GD.PushError($"{potentialView.Name} is not derived from {nameof(DialogueViewBase)}");
+                }
+
+
+            }
+            if (dialogueViews.Count == 0)
+            {
+                GD.PrintErr("Dialogue Runner doesn't have any dialogue views set up. No lines or options will be visible.");
             }
 
             foreach (var view in dialogueViews)
@@ -732,6 +758,7 @@ namespace Yarn.GodotIntegration
                 {
                     // Create the temporary line provider and the line database
                     var textProvider = new TextLineProvider();
+                    textProvider.Name = nameof(TextLineProvider);
                     lineProvider = textProvider;
                     AddChild(textProvider);
                     lineProvider.YarnProject = yarnProject;
@@ -741,6 +768,7 @@ namespace Yarn.GodotIntegration
                     {
                         GD.Print($"Dialogue Runner has no LineProvider; creating a {nameof(TextLineProvider)}.", this);
                     }
+
                 }
                 else
                 {
@@ -751,19 +779,13 @@ namespace Yarn.GodotIntegration
 #endif
                 }
             }
-        }
-
-        /// <summary>
-        /// Prepares the Dialogue Runner for start.
-        /// </summary>
-        /// <remarks>If <see cref="startAutomatically"/> is <see langword="true"/>, the Dialogue Runner will start.</remarks>
-        private void Start()
-        {
             if (yarnProject != null && startAutomatically)
             {
                 StartDialogue(startNode);
             }
         }
+
+  
 
         Dialogue CreateDialogueInstance()
         {
@@ -1532,9 +1554,9 @@ namespace Yarn.GodotIntegration
             // }
             // else
             // {
-                GD.PrintErr("TODO: No player prefs equivalent implemented");
-                GD.PrintErr("Attempted to load the runner previous state but found none saved");
-                return false;
+            GD.PrintErr("TODO: No player prefs equivalent implemented");
+            GD.PrintErr("Attempted to load the runner previous state but found none saved");
+            return false;
             // }
         }
 

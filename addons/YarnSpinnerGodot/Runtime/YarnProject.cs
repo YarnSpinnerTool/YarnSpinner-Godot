@@ -44,7 +44,7 @@ namespace Yarn.GodotIntegration
         //IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
         public bool Destroyed => false; // not sure when this is used yet
         //[Export] 
-        public Localization baseLocalization;
+        [Export] public Localization baseLocalization;
 
         [Export]
         public List<Localization> localizations = new List<Localization>();
