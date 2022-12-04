@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Godot.Collections;
 using Newtonsoft.Json;
 using Yarn.Compiler;
 using Yarn.GodotIntegration.Editor;
@@ -45,24 +46,44 @@ namespace Yarn.GodotIntegration
         //[Export] 
         public Localization baseLocalization;
 
-        // [Export]
+        [Export]
         public List<Localization> localizations = new List<Localization>();
 
-        public LineMetadata lineMetadata;
+        [Export]
+        public LineMetadata lineMetadata = null;
 
         public LocalizationType localizationType;
+
+        [Export]
+        public List<FunctionInfo> ListOfFunctions;
 
         /// <summary>
         /// JSON-serialized array of <see cref="Yarn.Compiler.Diagnostic"/> objects.
         /// </summary>
         [Export] public string ProjectErrors = "[]";
 
-        public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
+        [Export] public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
 
-        [Export][Language]
+        [Export] [Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
 
-        public List<LanguageToSourceAsset> languagesToSourceAssets = new List<LanguageToSourceAsset>();
+        public List<LanguageToSourceAsset> languagesToSourceAssets
+        {
+            get {
+                var result = new List<LanguageToSourceAsset>();
+                if (localizations != null)
+                {
+                    foreach (var localization in localizations)
+                    {
+                        var entry = new LanguageToSourceAsset();
+                        entry.languageID = localization.LocaleCode;
+                        entry.stringsFile = localization.stringsFile;
+                        result.Add(entry);
+                    }
+                }
+                return result;
+            }
+        }
 
         private Godot.Collections.Array<Resource> _sourceScripts;
         [Export] public Godot.Collections.Array<Resource> SourceScripts
@@ -71,17 +92,75 @@ namespace Yarn.GodotIntegration
                 return _sourceScripts;
             }
             set {
-                if (_sourceScripts == value) return;
-                _sourceScripts = value;
-                if (Engine.EditorHint)
+                if (value == null)
                 {
-                    #if TOOLS
-                    GD.Print($"Re-compiling yarns scripts on project {ResourceName}.");
+                    value = new Array<Resource>();
+                }
+                var removeScripts = new List<Resource>();
+                // check for any invalid files added
+                foreach (var script in value)
+                {
+                    var path = ProjectSettings.GlobalizePath(script.ResourcePath);
+                    var ext = System.IO.Path.GetExtension(path);
+                    if (ext == null || !ext.ToLowerInvariant().Equals(".yarn"))
+                    {
+                        removeScripts.Add(script);
+                        GD.PushError($"The script {path} is not a .yarn File. Only add .yarn files to {nameof(SourceScripts)}.");
+                    }
+                    else if (!System.IO.File.Exists(path))
+                    {
+                        GD.PushError($"The script {path} seems to have been deleted or moved. Removing it from {ResourceName}");
+                    }
+                }
+                foreach (var script in removeScripts)
+                {
+                    value.Remove(script);
+                }
+                var existingScripts = _sourceScripts;
+                _sourceScripts = value;
+                
+            #if TOOLS
+                // if we are in the Godot editor, we can now automatically
+                // re-compile all scripts in this project, but 
+                // only if the list of scripts actually changed
+                var doCompile = existingScripts == null; // if the old value was null, we definitely changed.
+                if (!doCompile)
+                {
+                    // if before and after were not null
+                    var sortedScriptList = existingScripts.ToList().ConvertAll(r => r.ResourcePath);
+                    sortedScriptList.Sort(string.Compare);
+                    var sortedNewList = value.ToList().ConvertAll(r => r.ResourcePath);
+                    sortedNewList.Sort(string.Compare);
+
+                    if (value.Count != existingScripts.Count)
+                    {
+                        doCompile = true;
+                    }
+                    else
+                    {
+                        for (var i = 0; i < value.Count; i++)
+                        {
+                            var existingScript = existingScripts[i];
+                            var newScript = _sourceScripts[i];
+                            if (newScript.ResourcePath.Equals(existingScript.ResourcePath))
+                            {
+                                // at least one script is changed
+                                doCompile = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (doCompile)
+                {
+                    GD.Print($"Re-compiling yarn scripts on project {ResourceName}.");
                     var projectUtility = new YarnProjectUtility();
                     projectUtility.UpdateYarnProject(this);
-                    #endif
                 }
+            #endif
             }
+
+
         }
 
         public List<YarnProjectError> CompileErrors => ProjectErrors == null ?

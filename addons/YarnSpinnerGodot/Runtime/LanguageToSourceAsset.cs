@@ -23,7 +23,7 @@ namespace Yarn.GodotIntegration
         // Hide this when its value is equal to whatever property is
         // stored in the YarnProjectImporterEditor class's
         // CurrentProjectDefaultLanguageProperty.
-        public Resource stringsFile;
+        public string stringsFile;
 
         /// <summary>
         /// The folder containing additional assets for the lines, such

@@ -17,6 +17,7 @@ namespace Yarn.GodotIntegration.Editor
     {
 
         private YarnEditorUtility _editorUtility = new YarnEditorUtility();
+        private YarnProjectUtility _projectUtility = new YarnProjectUtility();
         public override Array GetRecognizedExtensions() =>
             new Array(new[]
             {
@@ -32,8 +33,6 @@ namespace Yarn.GodotIntegration.Editor
         {
             return "Yarn Script";
         }
-        
-       
 
         public override string GetSaveExtension() => "tres";
         public override string GetResourceType()
@@ -136,7 +135,15 @@ namespace Yarn.GodotIntegration.Editor
 
         private void ImportYarn(string assetPath)
         {
-            GD.Print("TODO: update yarn project to re-compile");
+           var project = _projectUtility.GetDestinationProject(assetPath);
+           if (project == null)
+           {
+               GD.Print($"The yarn file {assetPath} is not currently associated with a Yarn Project. Create a Yarn Project via Tools > YarnSpinner > Create Yarn Project and add this script to it to compile it.");
+           }
+           else
+           {
+               _projectUtility.UpdateYarnProject(project);
+           }
         }
 
         /// <summary>

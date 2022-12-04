@@ -8,6 +8,10 @@ using System.Linq;
 
 namespace Yarn.GodotIntegration{
 
+    /// <summary>
+    /// List of valid locale codes
+    /// https://docs.godotengine.org/en/stable/tutorials/i18n/locales.html#doc-locales
+    /// </summary>
     [Tool]
     public class Localization : Resource
     {
@@ -16,9 +20,9 @@ namespace Yarn.GodotIntegration{
 
         private string _LocaleCode;
 
-        //[Export] 
+        [Export] 
         private Dictionary<string, string> _stringTable = new Dictionary<string, string>();
-        //[Export] 
+        [Export] 
         private Dictionary<string, Resource> _assetTable = new Dictionary<string, Resource>();
 
         private Dictionary<string, string> _runtimeStringTable = new Dictionary<string, string>();
@@ -32,6 +36,16 @@ namespace Yarn.GodotIntegration{
         [Export]
         private bool _containsLocalizedAssets;
 
+        /// <summary>
+        /// The Resource containing CSV data that the Localization
+        /// should use.
+        /// </summary>
+        // Hide this when its value is equal to whatever property is
+        // stored in the YarnProjectImporterEditor class's
+        // CurrentProjectDefaultLanguageProperty.
+        [Export]
+        public string stringsFile = "";
+        
         #region Localized Strings
         public string GetLocalizedString(string key)
         {

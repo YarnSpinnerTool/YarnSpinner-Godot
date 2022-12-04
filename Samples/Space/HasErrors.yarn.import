@@ -1,0 +1,13 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+path="res://.import/HasErrors.yarn-1d188e21019e8fe4fa8a00f0861770f7.tres"
+
+[deps]
+
+source_file="res://Samples/Space/HasErrors.yarn"
+dest_files=[ "res://.import/HasErrors.yarn-1d188e21019e8fe4fa8a00f0861770f7.tres" ]
+
+[params]
+

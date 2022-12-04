@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Godot;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
@@ -13,16 +14,17 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
     [Tool]
     public class YarnProjectInspectorPlugin : EditorInspectorPlugin
     {
-        private Button recompileButton;
+        private Button _recompileButton;
+        private Button _addTagsButton;
         private YarnCompileErrorsPropertyEditor _compileErrorsPropertyEditor;
-        private ScrollContainer parseErrorControl;
-        private YarnProject project;
-        private PackedScene _fileNameLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/FilenameLabel.tscn");
-        private PackedScene _errorTextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ErrorTextLabel.tscn");
-        private PackedScene _contextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ContextLabel.tscn");
-
+        private ScrollContainer _parseErrorControl;
+        private YarnProject _project;
+        private readonly PackedScene _fileNameLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/FilenameLabel.tscn");
+        private readonly PackedScene _errorTextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ErrorTextLabel.tscn");
+        private readonly PackedScene _contextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ContextLabel.tscn");
+        private YarnProjectUtility _projectUtility = new YarnProjectUtility();
         private VBoxContainer _container;
-        
+
         public override bool CanHandle(Object obj)
         {
             return obj is YarnProject;
@@ -30,7 +32,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 
         public override bool ParseProperty(Object @object, int type, string path, int hint, string hintText, int usage)
         {
-            project = (YarnProject)@object;
+            _project = (YarnProject)@object;
             // hide some properties that are not editable by the user
             var hideProperties = new List<string>
             {
@@ -44,24 +46,23 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
                 // hide these properties from inspector
                 return true;
             }
-            if (path == nameof(YarnProject.ProjectErrors))
+         if (path == nameof(YarnProject.ProjectErrors))
             {
                 _compileErrorsPropertyEditor = new YarnCompileErrorsPropertyEditor();
                 AddPropertyEditor(path, _compileErrorsPropertyEditor);
-                parseErrorControl = new ScrollContainer();
-                parseErrorControl.RectClipContent = false;
-                parseErrorControl.RectMinSize = new Vector2(0, 200);
-                parseErrorControl.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
-                parseErrorControl.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
-                
+                _parseErrorControl = new ScrollContainer();
+                _parseErrorControl.RectMinSize = new Vector2(0, 200);
+                _parseErrorControl.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
+                _parseErrorControl.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
+
                 _container = new VBoxContainer();
                 _container.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
                 _container.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
-                parseErrorControl.AddChild(_container);
+                _parseErrorControl.AddChild(_container);
                 //parseErrorControl.BbcodeEnabled = true;
                 _compileErrorsPropertyEditor.OnErrorsUpdated += RenderCompilationErrors;
-                RenderCompilationErrors(project);
-                AddCustomControl(parseErrorControl);
+                RenderCompilationErrors(_project);
+                AddCustomControl(_parseErrorControl);
                 return true;
             }
 
@@ -70,43 +71,59 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 
         public override void ParseBegin(Object @object)
         {
-            project = (YarnProject)@object;
-            if (recompileButton != null)
+            _project = (YarnProject)@object;
+            _projectUtility.AddProjectToList(_project);
+            if (_recompileButton != null)
             {
-                if (IsInstanceValid(recompileButton))
+                if (IsInstanceValid(_recompileButton))
                 {
-                    recompileButton.QueueFree();
+                    _recompileButton.QueueFree();
                 }
-                recompileButton = null;
+                _recompileButton = null;
             }
-            recompileButton = new Button();
-            recompileButton.Text = "Re-compile Scripts in Project";
+            _recompileButton = new Button();
+            _recompileButton.Text = "Re-compile Scripts in Project";
             var recompileArgs = new Godot.Collections.Array();
             recompileArgs.Add(@object);
-            recompileButton.Connect("pressed", this, nameof(OnRecompileClicked), recompileArgs);
-            AddCustomControl(recompileButton);
+            _recompileButton.Connect("pressed", this, nameof(OnRecompileClicked), recompileArgs);
+            AddCustomControl(_recompileButton);
+            
+            if (_addTagsButton != null)
+            {
+                if (IsInstanceValid(_addTagsButton))
+                {
+                    _addTagsButton.QueueFree();
+                }
+                _addTagsButton = null;
+            }
+            _addTagsButton = new Button();
+            _addTagsButton.Text = "Add Line Tags to Scripts";
+            var addTagsButtonArgs = new Godot.Collections.Array();
+            addTagsButtonArgs.Add(_project);
+            _addTagsButton.Connect("pressed", this, nameof(OnAddTagsClicked), addTagsButtonArgs);
+            AddCustomControl(_addTagsButton);
         }
 
         private void OnRecompileClicked(YarnProject project)
         {
-            var projectUtility = new YarnProjectUtility();
-            projectUtility.UpdateYarnProject(project);
+            _projectUtility = new YarnProjectUtility();
+            _projectUtility.UpdateYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
         }
 
         public void RenderCompilationErrors(Object yarnProject)
         {
-            project = (YarnProject)yarnProject;
-            var errors = project.CompileErrors;
+            _project = (YarnProject)yarnProject;
+            var errors = _project.CompileErrors;
             SetErrors(errors);
         }
-        
+
         private void SetErrors(List<YarnProjectError> errors)
         {
-            for (var i = _container.GetChildCount()-1; i >= 0; i--)
+            for (var i = _container.GetChildCount() - 1; i >= 0; i--)
             {
                 var child = _container.GetChild(i);
-                
+
                 child.QueueFree();
             }
 
@@ -133,6 +150,12 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
                     _container.AddChild(contextLabel);
                 }
             }
+        }
+
+        private void OnAddTagsClicked(YarnProject project)
+        {
+            _projectUtility.AddLineTagsToFilesInYarnProject(project);
+            _compileErrorsPropertyEditor.Refresh();
         }
     }
 }

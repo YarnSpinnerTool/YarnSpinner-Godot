@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System.Collections.Generic;
+using Godot;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
 namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
@@ -21,6 +22,11 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 
         public override void _EnterTree()
         {
+            if (!ProjectSettings.HasSetting(YarnProjectUtility.YarnProjectPathsSettingKey))
+            {
+                ProjectSettings.SetSetting(YarnProjectUtility.YarnProjectPathsSettingKey, new List<string>());
+            }
+            ProjectSettings.SetInitialValue(YarnProjectUtility.YarnProjectPathsSettingKey, new List<string>());
             // load script resources
             var scriptImporterScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs");
             var editorUtilityScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs");
@@ -33,7 +39,6 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             var miniLocalizationIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_Localization Icon.png");
             var miniYarnSpinnerIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/mini_YarnSpinnerLogo.png");
             var miniYarnProjectIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
-
 
             _scriptImportPlugin = (YarnImporter)scriptImporterScript.New();
             _editorUtility = (YarnEditorUtility)editorUtilityScript.New();

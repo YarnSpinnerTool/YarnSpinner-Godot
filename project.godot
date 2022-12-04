@@ -8,10 +8,14 @@
 
 config_version=4
 
+[YarnSpinner-Godot]
+
+YarnProjectPaths=PoolStringArray( "res://Samples/Space/SpaceProject.tres" )
+
 [application]
 
 config/name="YarnSpinner-Godot"
-run/main_scene="res://Samples/SpaceSample.tscn"
+run/main_scene="res://Samples/Space/SpaceSample.tscn"
 config/icon="res://YarnSpinnerLogo.png"
 
 [editor_plugins]

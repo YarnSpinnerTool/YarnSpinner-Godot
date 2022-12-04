@@ -225,7 +225,7 @@ namespace Yarn.GodotIntegration
         {
             // Load all of the commands and functions from the assemblies that
             // this project wants to load from.
-            ActionManager.AddActionsFromAssemblies(newProject.searchAssembliesForActions);
+            ActionManager.AddActionsFromAssemblies();
 
             // Register any new functions that we found as part of doing this.
             ActionManager.RegisterFunctions(Dialogue.Library);
