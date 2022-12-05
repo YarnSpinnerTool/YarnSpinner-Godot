@@ -8,6 +8,10 @@
 
 config_version=5
 
+[YarnSpinnerGodot]
+
+YarnProjectPaths=PackedStringArray()
+
 [application]
 
 config/name="YarnSpinner-Godot"
