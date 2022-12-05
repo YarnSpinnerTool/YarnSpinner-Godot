@@ -23,7 +23,8 @@ namespace Yarn.GodotIntegration{
         private string _LocaleCode;
 
         [Export] 
-        private Dictionary _stringTable = new Dictionary();
+        public Dictionary _stringTable = new Dictionary();
+
         [Export] 
         private Dictionary _assetTable = new Dictionary();
 

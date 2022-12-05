@@ -79,6 +79,7 @@ namespace Yarn.GodotIntegration.Editor
         }
         public void CompileAllScripts(YarnProject project)
         {
+            List<FunctionInfo> newFunctionList = new List<FunctionInfo>();
             var assetPath = project.ResourcePath;
             GD.Print($"Compiling all scripts in {assetPath}");
 
@@ -92,8 +93,23 @@ namespace Yarn.GodotIntegration.Editor
             ActionManager.ClearAllActions();
             ActionManager.AddActionsFromAssemblies();
             ActionManager.RegisterFunctions(library);
-            // localDeclarationsCompileJob.Library = library;
-            project.ListOfFunctions = predeterminedFunctions().ToArray();
+            var existingFunctions = project.ListOfFunctions;
+            var pretedermined = predeterminedFunctions().ToArray();
+            foreach (var func in pretedermined)
+            {
+                FunctionInfo existingFunc = null;
+                foreach (var existing in existingFunctions)
+                {
+                    if (existing.Name == func.Name)
+                    {
+                        existingFunc = existing;
+                        existingFunc.Parameters = func.Parameters;
+                        existingFunc.ReturnType = func.ReturnType;
+                        break;
+                    }
+                }
+                newFunctionList.Add(existingFunc?? func);
+            }
             IEnumerable<Diagnostic> errors;
             project.ProjectErrors = System.Array.Empty<YarnProjectError>();
 
@@ -179,6 +195,7 @@ namespace Yarn.GodotIntegration.Editor
                     compiledBytes = memoryStream.ToArray();
                 }
             }
+            project.ListOfFunctions = newFunctionList.ToArray();
             project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
             ResourceSaver.Save(project,project.ResourcePath,  ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         }
@@ -268,7 +285,10 @@ namespace Yarn.GodotIntegration.Editor
             // configured in languagesToSourceAssets is the default
             // language.
             var shouldAddDefaultLocalization = true;
-
+            if (project.localizations == null)
+            {
+                project.localizations = System.Array.Empty<Localization>();
+            }
             foreach (var pair in project.languagesToSourceAssets)
             {
                 // Don't create a localization if the language ID was not
@@ -315,7 +335,16 @@ namespace Yarn.GodotIntegration.Editor
                     }
                 }
 
-                var newLocalization = new Localization();
+                Localization existingLocalization = null;
+
+                foreach (var localization in project.localizations)
+                {
+                    if (localization.LocaleCode == pair.languageID)
+                    {
+                        existingLocalization = localization;
+                    }
+                }
+                var newLocalization = existingLocalization ?? new Localization();
                 newLocalization.LocaleCode = pair.languageID;
 
                 // Add these new lines to the localisation's asset
@@ -325,6 +354,8 @@ namespace Yarn.GodotIntegration.Editor
                 }
 
                 newLocalization.ResourceName = pair.languageID;
+                
+                #region localizable resources (todo)
 //             TODO: localizable resources
 //             if (pair.assetsFolder != null)
 //             {
@@ -367,7 +398,8 @@ namespace Yarn.GodotIntegration.Editor
 //
 //                 }
 //             }
-
+                #endregion
+                
                 if (pair.languageID == project.defaultLanguage)
                 {
                     // If this is our default language, set it as such
@@ -377,23 +409,20 @@ namespace Yarn.GodotIntegration.Editor
                     project.lineMetadata = new LineMetadata();
                     project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
                 }
-                foreach (var existingLocalization in project.localizations)
+                foreach (var localization in project.localizations)
                 {
-                    if (existingLocalization.LocaleCode.Equals(newLocalization.LocaleCode))
+                    if (!localization.LocaleCode.Equals(newLocalization.LocaleCode)) continue;
+                    if (!localization.ResourcePath.Contains(project.ResourcePath)
+                        && !localization.ResourcePath.Contains("::"))
                     {
-                        newLocalization.stringsFile = existingLocalization.stringsFile;
-                        if (!existingLocalization.ResourcePath.Contains(project.ResourcePath)
-                            && !existingLocalization.ResourcePath.Contains("::"))
+                        // only try to save it to disk if it's a standalone file and a sub resource
+                        var saveErr = ResourceSaver.Save(newLocalization, localization.ResourcePath);
+                        if (saveErr != Error.Ok)
                         {
-                            // only try to save it to disk if it's a standalone file and a sub resource
-                            var saveErr = ResourceSaver.Save(newLocalization, existingLocalization.ResourcePath);
-                            if (saveErr != Error.Ok)
-                            {
-                                GD.PushError($"Error saving localization {newLocalization.LocaleCode} to {existingLocalization.ResourcePath}");
-                            }
+                            GD.PushError($"Error saving localization {localization.LocaleCode} to {localization.ResourcePath}");
                         }
-
                     }
+                    break;
                 }
             }
 
