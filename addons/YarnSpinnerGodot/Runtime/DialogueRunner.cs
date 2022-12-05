@@ -30,6 +30,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using Godot;
+using Godot.Collections;
 using Newtonsoft.Json;
 
 namespace Yarn.GodotIntegration
@@ -93,7 +94,7 @@ namespace Yarn.GodotIntegration
         /// <summary>
         /// List of node paths from the inspector to <see cref="dialogueViews"/>
         /// </summary>
-        [Export] public List<NodePath> dialogueViewPaths = new List<NodePath>();
+        [Export] public Array<NodePath> dialogueViewPaths = new Array<NodePath>();
 
         /// <summary>
         /// The View classes that will present the dialogue to the user.
@@ -680,7 +681,7 @@ namespace Yarn.GodotIntegration
         Action<int> selectAction;
 
         /// Maps the names of commands to action delegates.
-        Dictionary<string, Delegate> commandHandlers = new Dictionary<string, Delegate>();
+        System.Collections.Generic.Dictionary<string, Delegate> commandHandlers = new System.Collections.Generic.Dictionary<string, Delegate>();
 
         /// <summary>
         /// The underlying object that executes Yarn instructions
@@ -1590,7 +1591,7 @@ namespace Yarn.GodotIntegration
         // takes in a JSON string and converts it into a tuple of dictionaries
         // intended to let you just dump these straight into the variable storage
         // throws exceptions if unable to convert or if the conversion half works
-        private (Dictionary<string, float>, Dictionary<string, string>, Dictionary<string, bool>) DeserializeAllVariablesFromJSON(string jsonData)
+        private (System.Collections.Generic.Dictionary<string, float>, System.Collections.Generic.Dictionary<string, string>, System.Collections.Generic.Dictionary<string, bool>) DeserializeAllVariablesFromJSON(string jsonData)
         {
             SaveData data = JsonConvert.DeserializeObject<SaveData>(jsonData);
 
@@ -1620,17 +1621,17 @@ namespace Yarn.GodotIntegration
                 throw new ArgumentException("Number of keys and values of boolean variables does not match");
             }
 
-            var floats = new Dictionary<string, float>();
+            var floats = new System.Collections.Generic.Dictionary<string, float>();
             for (int i = 0; i < data.floatValues.Length; i++)
             {
                 floats.Add(data.floatKeys[i], data.floatValues[i]);
             }
-            var strings = new Dictionary<string, string>();
+            var strings = new System.Collections.Generic.Dictionary<string, string>();
             for (int i = 0; i < data.stringValues.Length; i++)
             {
                 strings.Add(data.stringKeys[i], data.stringValues[i]);
             }
-            var bools = new Dictionary<string, bool>();
+            var bools = new System.Collections.Generic.Dictionary<string, bool>();
             for (int i = 0; i < data.boolValues.Length; i++)
             {
                 bools.Add(data.boolKeys[i], data.boolValues[i]);

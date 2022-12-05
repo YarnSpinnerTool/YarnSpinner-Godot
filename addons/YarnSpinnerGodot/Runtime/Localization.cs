@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using Godot.Collections;
 
 #if UNITY_EDITOR
 
@@ -21,11 +22,11 @@ namespace Yarn.GodotIntegration{
         private string _LocaleCode;
 
         [Export] 
-        private Dictionary<string, string> _stringTable = new Dictionary<string, string>();
+        private Dictionary _stringTable = new Dictionary();
         [Export] 
-        private Dictionary<string, Resource> _assetTable = new Dictionary<string, Resource>();
+        private Dictionary _assetTable = new Dictionary();
 
-        private Dictionary<string, string> _runtimeStringTable = new Dictionary<string, string>();
+        private System.Collections.Generic.Dictionary<string, string> _runtimeStringTable = new System.Collections.Generic.Dictionary<string, string>();
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Localization"/>

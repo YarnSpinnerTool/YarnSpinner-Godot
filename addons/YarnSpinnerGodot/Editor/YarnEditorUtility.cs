@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using File = System.IO.File;
 using Object = Godot.Object;
-using Path3D = System.IO.Path3D;
+using Path = System.IO.Path;
 
 namespace Yarn.GodotIntegration.Editor
 {
@@ -50,7 +50,7 @@ namespace Yarn.GodotIntegration.Editor
             var newYarnProject = InstanceScript<YarnProject>("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
         
             var absPath = ProjectSettings.GlobalizePath(projectPath);
-            newYarnProject.ResourceName = Path3D.GetFileNameWithoutExtension(absPath);
+            newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
             newYarnProject.ResourcePath = projectPath;
             var saveErr = ResourceSaver.Save(projectPath, newYarnProject);
             if (saveErr != Error.Ok)
@@ -73,7 +73,7 @@ namespace Yarn.GodotIntegration.Editor
         {
             var newLocalization = InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
             var absPath = ProjectSettings.GlobalizePath(localizationPath);
-            newLocalization.ResourceName = Path3D.GetFileNameWithoutExtension(absPath);
+            newLocalization.ResourceName = Path.GetFileNameWithoutExtension(absPath);
             newLocalization.ResourcePath = localizationPath;
             ResourceSaver.Save(localizationPath, newLocalization);
             GD.Print($"Saved new yarn localization to {localizationPath}");
@@ -96,7 +96,7 @@ namespace Yarn.GodotIntegration.Editor
 
             // Figure out the 'file name' that the user entered
             // The script name is the name of the file, sans extension.
-            string scriptName = Path3D.GetFileNameWithoutExtension(pathName);
+            string scriptName = Path.GetFileNameWithoutExtension(pathName);
 
             // Replace any spaces with underscores - these aren't allowed
             // in node names
@@ -113,7 +113,7 @@ namespace Yarn.GodotIntegration.Editor
             templateContent = System.Text.RegularExpressions.Regex.Replace(templateContent, @"\r\n?|\n", lineEndings);
 
             // Write it all out to disk as UTF-8
-            var fullPath = Path3D.GetFullPath(ProjectSettings.GlobalizePath(pathName));
+            var fullPath = Path.GetFullPath(ProjectSettings.GlobalizePath(pathName));
             File.WriteAllText(fullPath, templateContent, System.Text.Encoding.UTF8);
             GD.Print($"Wrote new file {pathName}");
         }

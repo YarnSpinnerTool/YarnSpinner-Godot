@@ -25,7 +25,7 @@ namespace Yarn.GodotIntegration
     /// </para>
     /// </remarks>
     /// <seealso cref="DialogueViewBase"/>
-    public abstract class LineProviderBehaviour : Godot.Node
+    public abstract partial class LineProviderBehaviour : Godot.Node
     {
         /// <summary>
         /// Prepares and returns a <see cref="LocalizedLine"/> from the

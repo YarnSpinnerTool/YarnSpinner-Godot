@@ -1,4 +1,5 @@
 #if TOOLS
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using Godot;
@@ -18,11 +19,11 @@ namespace Yarn.GodotIntegration.Editor
 
         private YarnEditorUtility _editorUtility = new YarnEditorUtility();
         private YarnProjectUtility _projectUtility = new YarnProjectUtility();
-        public override Array _GetRecognizedExtensions() =>
-            new Array(new[]
+        public override string[] _GetRecognizedExtensions() =>
+            new string[]
             {
                 "yarn"
-            });
+            };
 
         public override string _GetImporterName()
         {
@@ -39,32 +40,23 @@ namespace Yarn.GodotIntegration.Editor
         {
             return "Resource";
         }
-        public override int _GetPresetCount()
+        public override long _GetPresetCount()
         {
             return 0;
         }
 
-        public override float GetPriority()
+        public override Array<Dictionary> _GetImportOptions(string path, long presetIndex)
         {
-            return 1.0f;
-        }
-        public override int _GetImportOrder()
-        {
-            return 0;
+            return new Array<Dictionary>();
         }
 
-        public override Array _GetImportOptions(int preset)
-        {
-            return new Array();
-        }
-
-        public override int Import(string assetPath, string savePath, Dictionary options,
-            Array platformVariants, Array genFiles)
+        public override long _Import(string assetPath, string savePath, Dictionary options,
+            Array<string> platformVariants, Array<string> genFiles)
         {
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            var extension = System.IO.Path3D.GetExtension(assetPath);
+            var extension = System.IO.Path.GetExtension(assetPath);
 
             if (extension == ".yarn")
             {
@@ -75,7 +67,7 @@ namespace Yarn.GodotIntegration.Editor
                 ImportCompiledYarn(assetPath);
             }
             var importedMarkerResource = new Resource();
-            importedMarkerResource.ResourceName = System.IO.Path3D.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
+            importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
             
             var saveErr = ResourceSaver.Save($"{savePath}.{_GetSaveExtension()}", importedMarkerResource);
             if (saveErr != Error.Ok)
