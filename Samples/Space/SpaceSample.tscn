@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dwve4hlcvxtc5"]
+[gd_scene load_steps=5 format=3 uid="uid://dwve4hlcvxtc5"]
 
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs" id="1"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/InMemoryVariableStorage.cs" id="2"]
+[ext_resource type="Resource" uid="uid://cor40yvxg5edc" path="res://Samples/Space/Space_Project.tres" id="2_h2hse"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Views/LineView.cs" id="3"]
 
 [node name="SpaceDemo" type="Node2D"]
@@ -10,6 +11,7 @@
 
 [node name="DialogueRunner" type="Node2D" parent="YarnSpinnerCanvasLayer"]
 script = ExtResource("1")
+yarnProject = ExtResource("2_h2hse")
 variableStoragePath = NodePath("InMemoryVariableStorage")
 dialogueViewPaths = [NodePath("LineView")]
 startNode = "Sally"
@@ -49,6 +51,7 @@ bbcode_enabled = true
 text = "The dialogue text should appear here!"
 
 [node name="CharacterNameText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/DialogueRunner/LineView/CanvasModulate/CanvasLayer"]
+self_modulate = Color(0.811765, 1, 0.411765, 1)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

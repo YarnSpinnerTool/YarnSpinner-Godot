@@ -58,11 +58,6 @@ namespace Yarn.GodotIntegration
         [Export]
         public FunctionInfo[] ListOfFunctions;
 
-        /// <summary>
-        /// JSON-serialized array of <see cref="Yarn.Compiler.Diagnostic"/> objects.
-        /// </summary>
-        [Export] public string ProjectErrors = "[]";
-
         [Export] public SerializedDeclaration[] SerializedDeclarations =Array.Empty<SerializedDeclaration>();
 
         [Export] [Language]
@@ -164,9 +159,8 @@ namespace Yarn.GodotIntegration
 
         }
 
-        public List<YarnProjectError> CompileErrors => ProjectErrors == null ?
-            new List<YarnProjectError>() :
-            JsonConvert.DeserializeObject<List<YarnProjectError>>(ProjectErrors);
+        [Export]
+        public YarnProjectError[] ProjectErrors = Array.Empty<YarnProjectError>();
 
         /// <summary>
         /// Gets a value indicating whether this Yarn Project is able to
@@ -175,7 +169,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         /// <inheritdoc path="exception"
         /// cref="GetScriptHasLineTags(Resource)"/>
-        public bool CanGenerateStringsTable => this.CompileErrors.Count == 0 && SourceScripts.Count > 0 && SourceScripts.All(s => GetScriptHasLineTags(s));
+        public bool CanGenerateStringsTable => this.ProjectErrors.Length == 0 && SourceScripts.Count > 0 && SourceScripts.All(s => GetScriptHasLineTags(s));
 
         /// <summary>
         /// Gets a value indicating whether the source script has line

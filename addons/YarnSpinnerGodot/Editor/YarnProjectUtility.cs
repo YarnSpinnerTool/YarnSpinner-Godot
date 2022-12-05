@@ -24,7 +24,7 @@ namespace Yarn.GodotIntegration.Editor
     {
         public List<string> parseErrorMessages = new List<string>();
 
-        public const string YarnProjectPathsSettingKey = "YarnSpinner-Godot/YarnProjectPaths";
+        public const string YarnProjectPathsSettingKey = "YarnSpinnerGodot/YarnProjectPaths";
 
         private static string Base64Encode(string plainText)
         {
@@ -94,7 +94,7 @@ namespace Yarn.GodotIntegration.Editor
             // localDeclarationsCompileJob.Library = library;
             project.ListOfFunctions = predeterminedFunctions().ToArray();
             IEnumerable<Diagnostic> errors;
-            project.ProjectErrors = "[]";
+            project.ProjectErrors = System.Array.Empty<YarnProjectError>();
 
             // We now now compile!
             var scriptAbsolutePaths = project.SourceScripts.ToList().Where(s => s != null)
@@ -132,7 +132,7 @@ namespace Yarn.GodotIntegration.Editor
                             Message = e.Message,
                             FileName = e.FileName
                         });
-                    project.ProjectErrors = JsonConvert.SerializeObject(projectErrors);
+                    project.ProjectErrors = projectErrors.ToArray();
                     return;
                 }
 
@@ -163,8 +163,8 @@ namespace Yarn.GodotIntegration.Editor
 
                 // Clear error messages from all scripts - they've all passed
                 // compilation
-                project.ProjectErrors = "[]";
-
+                project.ProjectErrors = System.Array.Empty<YarnProjectError>();
+                
                 CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
                 project.localizationType = LocalizationType.YarnInternal;
 
@@ -747,7 +747,7 @@ namespace Yarn.GodotIntegration.Editor
             {
                 projects.Add(project.ResourcePath);
             }
-            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, Variant.From(projects));
+            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, Variant.From(projects.ToArray()));
         }
     }
 

@@ -683,7 +683,8 @@ namespace Yarn.GodotIntegration
 
         private void SetCanvasInteractable(bool b)
         {
-            GD.Print("TODO: set canvas layer interactable?");
+           canvasLayer.SetProcessInput(b);
+           canvasLayer.Visible = b;
         }
 
         /// <inheritdoc/>
