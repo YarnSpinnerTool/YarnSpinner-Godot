@@ -41,8 +41,8 @@ jobs:
         id: buildSolution
         run: |
           # https://serverfault.com/questions/989742/tee-and-assigning-to-variable
-          xvfb-run -a -n 55 -s "-screen 0 1280x720x24 -ac +extension GLX +render -noreset" $GODOT_CLI --help || true
-          xvfb-run -a -n 55 -s "-screen 0 1280x720x24 -ac +extension GLX +render -noreset" $GODOT_CLI --path . --no-window --verbose -q -e --build-solutions
+          $GODOT_CLI --help || true
+          $GODOT_CLI --path . --display-driver headless --no-window --verbose -q -e --build-solutions
           if [[ "$GODOT_OUTPUT" == *"the build callback failed"* ]]; then
             echo "Godot failed to build the solution."
             exit 1
