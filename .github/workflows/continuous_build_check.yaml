@@ -42,7 +42,7 @@ jobs:
         run: |
           # https://serverfault.com/questions/989742/tee-and-assigning-to-variable
           $GODOT_CLI --help || true
-          $GODOT_CLI --path . --display-driver headless --no-window --verbose -q -e --build-solutions
+          $GODOT_CLI --path . --display-driver headless --no-window --verbose --quit -e --build-solutions
           if [[ "$GODOT_OUTPUT" == *"the build callback failed"* ]]; then
             echo "Godot failed to build the solution."
             exit 1
