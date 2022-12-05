@@ -59,6 +59,7 @@ namespace Yarn.GodotIntegration.Editor
         /// <param name="project"></param>
         public void UpdateYarnProject(YarnProject project)
         {
+            if (project == null) return;
             if (string.IsNullOrEmpty(project.ResourcePath)) return;
             CompileAllScripts(project);
             SaveYarnProject(project);
