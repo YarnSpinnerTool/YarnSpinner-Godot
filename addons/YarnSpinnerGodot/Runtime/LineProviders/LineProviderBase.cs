@@ -118,7 +118,7 @@ namespace Yarn.GodotIntegration
     /// Represents a line, ready to be presented to the user in the
     /// localisation they have specified.
     /// </summary>
-    public class LocalizedLine
+    public partial class LocalizedLine
     {
         /// <summary>
         /// DialogueLine's ID

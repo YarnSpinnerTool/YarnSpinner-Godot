@@ -5,7 +5,7 @@ using Yarn;
 using Yarn.Markup;
 using Array = Godot.Collections.Array;
 using Node = Godot.Node;
-public class TempDialogueRunner : Node
+public partial class TempDialogueRunner : Node
 {
 	[Signal]
 	public delegate void HandleLineEventHandler(string text, Array<string> tags, Array<MarkupAttribute> attributes);

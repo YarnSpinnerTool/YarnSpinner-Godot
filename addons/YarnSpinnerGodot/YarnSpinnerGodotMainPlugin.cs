@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Godot;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
@@ -8,7 +8,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
     /// Main plugin script for the YarnSpinner-Godot plugin
     /// </summary>
     [Tool]
-    public class YarnSpinnerGodotMainPlugin : EditorPlugin
+    public partial class YarnSpinnerGodotMainPlugin : EditorPlugin
     {
         private YarnImporter _scriptImportPlugin;
         private YarnProjectInspectorPlugin _projectInspectorPlugin;
@@ -36,9 +36,9 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             var dialogueRunnerScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs");
 
             // load icons
-            var miniLocalizationIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_Localization Icon.png");
-            var miniYarnSpinnerIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/mini_YarnSpinnerLogo.png");
-            var miniYarnProjectIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
+            var miniLocalizationIcon = ResourceLoader.Load<Texture2D>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_Localization Icon.png");
+            var miniYarnSpinnerIcon = ResourceLoader.Load<Texture2D>("res://addons/YarnSpinnerGodot/Editor/Icons/mini_YarnSpinnerLogo.png");
+            var miniYarnProjectIcon = ResourceLoader.Load<Texture2D>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
 
             _scriptImportPlugin = (YarnImporter)scriptImporterScript.New();
             _editorUtility = (YarnEditorUtility)editorUtilityScript.New();
@@ -50,7 +50,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _popup.AddItem("Create Yarn Script", CreateYarnScriptId);
             _popup.AddItem("Create Yarn Project", createYarnProjectID);
             _popup.AddItem("Create Yarn Localization", createYarnLocalizationID);
-            _popup.Connect("id_pressed", this, nameof(OnPopupIDPressed));
+            _popup.Connect("id_pressed",new Callable(this,nameof(OnPopupIDPressed)));
             AddToolSubmenuItem(PopupName, _popup);
             AddCustomType(nameof(DialogueRunner), "Node", dialogueRunnerScript, miniYarnSpinnerIcon);
             AddCustomType(nameof(Localization), "Resource", localizationScript, miniLocalizationIcon);
@@ -117,8 +117,8 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             dialog.AddFilter(filter);
             dialog.Mode = EditorFileDialog.ModeEnum.SaveFile;
             dialog.WindowTitle = windowTitle;
-            dialog.Connect("file_selected", this, fileSelectedHandler);
-            GetEditorInterface().GetEditorViewport().AddChild(dialog);
+            dialog.Connect("file_selected",new Callable(this,fileSelectedHandler));
+            GetEditorInterface().GetViewport().AddChild(dialog);
             dialog.Popup_(new Rect2(50, 50, 700, 500));
         }
         private void CreateYarnProjectDestinationSelected(string destination)

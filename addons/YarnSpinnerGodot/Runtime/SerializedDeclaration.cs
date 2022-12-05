@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Godot;
 using Yarn.Compiler;
@@ -8,7 +8,7 @@ namespace Yarn.GodotIntegration
     /// A declaration of a variable that is written to a yarn project
     /// </summary>
     [Serializable] [Tool]
-    public class SerializedDeclaration : Resource
+    public partial class SerializedDeclaration : Resource
     {
         public static List<IType> BuiltInTypesList = new List<IType>
         {

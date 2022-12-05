@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Yarn;
 using Object = Godot.Object;
-public class Option : Object
+public partial class Option : Object
 {
     public int ID { get; private set; }
     public string Text { get; private set; }

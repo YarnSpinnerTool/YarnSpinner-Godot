@@ -41,7 +41,7 @@ namespace Yarn.GodotIntegration
         /// a coroutine that's using it is currently running.)
         /// </para>
         /// </remarks>
-        public class CoroutineInterruptToken
+        public partial class CoroutineInterruptToken
         {
 
             /// <summary>
@@ -219,7 +219,7 @@ namespace Yarn.GodotIntegration
     /// A Dialogue View that presents lines of dialogue, using Unity UI
     /// elements.
     /// </summary>
-    public class LineView : DialogueViewBase
+    public partial class LineView : DialogueViewBase
     {
         /// <summary>
         /// The canvas group that contains the UI elements used by this Line
@@ -437,7 +437,7 @@ namespace Yarn.GodotIntegration
             }
             if (continueButton != null)
             {
-                continueButton.Connect("pressed", this, nameof(OnContinueClicked));
+                continueButton.Connect("pressed",new Callable(this,nameof(OnContinueClicked)));
             }
             if (characterNameText == null)
             {
@@ -507,19 +507,19 @@ namespace Yarn.GodotIntegration
             {
                 if (showCharacterNameInLineView)
                 {
-                    lineText.BbcodeText = dialogueLine.Text.Text;
+                    lineText.Text = dialogueLine.Text.Text;
                     length = dialogueLine.Text.Text.Length;
                 }
                 else
                 {
-                    lineText.BbcodeText = dialogueLine.TextWithoutCharacterName.Text;
+                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                     length = dialogueLine.TextWithoutCharacterName.Text.Length;
                 }
             }
             else
             {
-                characterNameText.BbcodeText = dialogueLine.CharacterName;
-                lineText.BbcodeText = dialogueLine.TextWithoutCharacterName.Text;
+                characterNameText.Text = dialogueLine.CharacterName;
+                lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                 length = dialogueLine.TextWithoutCharacterName.Text.Length;
             }
 
@@ -568,8 +568,8 @@ namespace Yarn.GodotIntegration
                     // If we have a character name text view, show the character
                     // name in it, and show the rest of the text in our main
                     // text view.
-                    characterNameText.BbcodeText = dialogueLine.CharacterName;
-                    lineText.BbcodeText = dialogueLine.TextWithoutCharacterName.Text;
+                    characterNameText.Text = dialogueLine.CharacterName;
+                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                 }
                 else
                 {
@@ -578,12 +578,12 @@ namespace Yarn.GodotIntegration
                     if (showCharacterNameInLineView)
                     {
                         // Yep! Show the entire text.
-                        lineText.BbcodeText = dialogueLine.Text.Text;
+                        lineText.Text = dialogueLine.Text.Text;
                     }
                     else
                     {
                         // Nope! Show just the text without the character name.
-                        lineText.BbcodeText = dialogueLine.TextWithoutCharacterName.Text;
+                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                     }
                 }
 

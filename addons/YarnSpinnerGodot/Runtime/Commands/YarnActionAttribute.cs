@@ -4,7 +4,7 @@ using System;
 namespace Yarn.GodotIntegration
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class YarnActionAttribute : Attribute
+    public partial class YarnActionAttribute : Attribute
     {
         /// <summary>
         /// The name of the command or function, as it exists in Yarn.

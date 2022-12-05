@@ -5,7 +5,7 @@ using Godot;
 namespace Yarn.GodotIntegration
 {
     [Serializable]
-    public class LineMetadata: Resource
+    public partial class LineMetadata: Resource
     {
         [Export] private Dictionary<string, string> _lineMetadata = new Dictionary<string, string>();
         public LineMetadata()

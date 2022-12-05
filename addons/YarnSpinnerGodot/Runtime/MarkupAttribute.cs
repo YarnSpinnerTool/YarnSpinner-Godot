@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Text;
 using Godot;
 using Godot.Collections;
 using Yarn.Markup;
 using Object = Godot.Object;
-public class MarkupAttribute : Object
+public partial class MarkupAttribute : Object
 {
     [Export]
     public int Position { get; private set; }

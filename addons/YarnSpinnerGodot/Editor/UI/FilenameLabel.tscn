@@ -1,9 +1,9 @@
 [gd_scene format=2]
 
 [node name="FilenameLabel" type="Label"]
-margin_right = 1024.0
-margin_bottom = 18.0
-rect_min_size = Vector2( 0, 18 )
+offset_right = 1024.0
+offset_bottom = 18.0
+minimum_size = Vector2( 0, 18 )
 size_flags_horizontal = 3
 size_flags_vertical = 2
 text = "C:/Users/chris/YarnSpinner-Godot/Samples/HasErrors.yarn"

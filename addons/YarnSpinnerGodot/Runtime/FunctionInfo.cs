@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using Godot;
 using System.Linq;
 namespace Yarn.GodotIntegration
 {
     [Serializable]
     [Tool]
-    public class FunctionInfo : Resource
+    public partial class FunctionInfo : Resource
     {
         [Export] public string Name;
         [Export] public string ReturnType;

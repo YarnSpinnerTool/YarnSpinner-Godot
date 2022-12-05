@@ -108,7 +108,7 @@ namespace Yarn.GodotIntegration
     /// until the coroutine ends.
     /// </para>
     /// </remarks>
-    public class YarnCommandAttribute : YarnActionAttribute
+    public partial class YarnCommandAttribute : YarnActionAttribute
     {
         [Obsolete("Use " + nameof(Name) + " instead.")]
         public string CommandString {

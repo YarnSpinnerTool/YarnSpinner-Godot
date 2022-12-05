@@ -38,7 +38,7 @@ namespace Yarn.GodotIntegration
     /// The DialogueRunner component acts as the interface between your game and
     /// Yarn Spinner.
     /// </summary>
-    public class DialogueRunner : Godot.Node
+    public partial class DialogueRunner : Godot.Node
     {
         /// <summary>
         /// Represents the result of attempting to locate and call a command.
@@ -546,7 +546,7 @@ namespace Yarn.GodotIntegration
         /// remove.</param>
         public void RemoveCommandHandler(string commandName)
         {
-            commandHandlers.Remove(commandName);
+            commandHandlers.RemoveAt(commandName);
         }
 
         /// <summary>
@@ -633,7 +633,7 @@ namespace Yarn.GodotIntegration
         }
 
         /// <summary>
-        /// Remove a registered function.
+        /// RemoveAt a registered function.
         /// </summary>
         /// <remarks>
         /// After a function has been removed, it cannot be called from
@@ -1282,9 +1282,9 @@ namespace Yarn.GodotIntegration
         /// the line.</param>
         private void DialogueViewCompletedDelivery(DialogueViewBase dialogueView)
         {
-            // A dialogue view just completed its delivery. Remove it from
+            // A dialogue view just completed its delivery. RemoveAt it from
             // the set of active views.
-            ActiveDialogueViews.Remove(dialogueView);
+            ActiveDialogueViews.RemoveAt(dialogueView);
 
             // Have all of the views completed? 
             if (ActiveDialogueViews.Count == 0)
@@ -1297,7 +1297,7 @@ namespace Yarn.GodotIntegration
         // main difference is a line continues automatically every interrupt finishes
         private void DialogueViewCompletedInterrupt(DialogueViewBase dialogueView)
         {
-            ActiveDialogueViews.Remove(dialogueView);
+            ActiveDialogueViews.RemoveAt(dialogueView);
 
             if (ActiveDialogueViews.Count == 0)
             {
@@ -1374,9 +1374,9 @@ namespace Yarn.GodotIntegration
 
         private void DialogueViewCompletedDismissal(DialogueViewBase dialogueView)
         {
-            // A dialogue view just completed dismissing its line. Remove
+            // A dialogue view just completed dismissing its line. RemoveAt
             // it from the set of active views.
-            ActiveDialogueViews.Remove(dialogueView);
+            ActiveDialogueViews.RemoveAt(dialogueView);
 
             // Have all of the views completed dismissal? 
             if (ActiveDialogueViews.Count == 0)

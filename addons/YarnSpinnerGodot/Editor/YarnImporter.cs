@@ -13,33 +13,33 @@ namespace Yarn.GodotIntegration.Editor
     /// <summary>
     /// A <see cref="EditorImportPlugin"/> for Yarn scripts (.yarn files)
     /// </summary>
-    public class YarnImporter : EditorImportPlugin
+    public partial class YarnImporter : EditorImportPlugin
     {
 
         private YarnEditorUtility _editorUtility = new YarnEditorUtility();
         private YarnProjectUtility _projectUtility = new YarnProjectUtility();
-        public override Array GetRecognizedExtensions() =>
+        public override Array _GetRecognizedExtensions() =>
             new Array(new[]
             {
                 "yarn"
             });
 
-        public override string GetImporterName()
+        public override string _GetImporterName()
         {
             return "yarnscript";
         }
 
-        public override string GetVisibleName()
+        public override string _GetVisibleName()
         {
             return "Yarn Script";
         }
 
-        public override string GetSaveExtension() => "tres";
-        public override string GetResourceType()
+        public override string _GetSaveExtension() => "tres";
+        public override string _GetResourceType()
         {
             return "Resource";
         }
-        public override int GetPresetCount()
+        public override int _GetPresetCount()
         {
             return 0;
         }
@@ -48,12 +48,12 @@ namespace Yarn.GodotIntegration.Editor
         {
             return 1.0f;
         }
-        public override int GetImportOrder()
+        public override int _GetImportOrder()
         {
             return 0;
         }
 
-        public override Array GetImportOptions(int preset)
+        public override Array _GetImportOptions(int preset)
         {
             return new Array();
         }
@@ -64,7 +64,7 @@ namespace Yarn.GodotIntegration.Editor
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
 
-            var extension = System.IO.Path.GetExtension(assetPath);
+            var extension = System.IO.Path3D.GetExtension(assetPath);
 
             if (extension == ".yarn")
             {
@@ -75,9 +75,9 @@ namespace Yarn.GodotIntegration.Editor
                 ImportCompiledYarn(assetPath);
             }
             var importedMarkerResource = new Resource();
-            importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
+            importedMarkerResource.ResourceName = System.IO.Path3D.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
             
-            var saveErr = ResourceSaver.Save($"{savePath}.{GetSaveExtension()}", importedMarkerResource);
+            var saveErr = ResourceSaver.Save($"{savePath}.{_GetSaveExtension()}", importedMarkerResource);
             if (saveErr != Error.Ok)
             {
                 GD.PrintErr($"Error saving yarn file import: {saveErr.ToString()}");

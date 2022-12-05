@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using File = System.IO.File;
 using Object = Godot.Object;
-using Path = System.IO.Path;
+using Path3D = System.IO.Path3D;
 
 namespace Yarn.GodotIntegration.Editor
 {
@@ -13,7 +13,7 @@ namespace Yarn.GodotIntegration.Editor
     /// Note: this is no longer a static class unlike the Unity version because that causes
     /// difficulties calling the methods from GDScript
     /// </summary>
-    public class YarnEditorUtility : Object
+    public partial class YarnEditorUtility : Object
     {
         private YarnProjectUtility _projectUtility;
         
@@ -50,7 +50,7 @@ namespace Yarn.GodotIntegration.Editor
             var newYarnProject = InstanceScript<YarnProject>("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
         
             var absPath = ProjectSettings.GlobalizePath(projectPath);
-            newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
+            newYarnProject.ResourceName = Path3D.GetFileNameWithoutExtension(absPath);
             newYarnProject.ResourcePath = projectPath;
             var saveErr = ResourceSaver.Save(projectPath, newYarnProject);
             if (saveErr != Error.Ok)
@@ -73,7 +73,7 @@ namespace Yarn.GodotIntegration.Editor
         {
             var newLocalization = InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
             var absPath = ProjectSettings.GlobalizePath(localizationPath);
-            newLocalization.ResourceName = Path.GetFileNameWithoutExtension(absPath);
+            newLocalization.ResourceName = Path3D.GetFileNameWithoutExtension(absPath);
             newLocalization.ResourcePath = localizationPath;
             ResourceSaver.Save(localizationPath, newLocalization);
             GD.Print($"Saved new yarn localization to {localizationPath}");
@@ -96,7 +96,7 @@ namespace Yarn.GodotIntegration.Editor
 
             // Figure out the 'file name' that the user entered
             // The script name is the name of the file, sans extension.
-            string scriptName = Path.GetFileNameWithoutExtension(pathName);
+            string scriptName = Path3D.GetFileNameWithoutExtension(pathName);
 
             // Replace any spaces with underscores - these aren't allowed
             // in node names
@@ -113,7 +113,7 @@ namespace Yarn.GodotIntegration.Editor
             templateContent = System.Text.RegularExpressions.Regex.Replace(templateContent, @"\r\n?|\n", lineEndings);
 
             // Write it all out to disk as UTF-8
-            var fullPath = Path.GetFullPath(ProjectSettings.GlobalizePath(pathName));
+            var fullPath = Path3D.GetFullPath(ProjectSettings.GlobalizePath(pathName));
             File.WriteAllText(fullPath, templateContent, System.Text.Encoding.UTF8);
             GD.Print($"Wrote new file {pathName}");
         }
