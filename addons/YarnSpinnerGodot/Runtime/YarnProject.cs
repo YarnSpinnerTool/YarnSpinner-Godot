@@ -47,7 +47,7 @@ namespace Yarn.GodotIntegration
         [Export] public Localization baseLocalization;
 
         [Export]
-        public List<Localization> localizations = new List<Localization>();
+        public Array<Localization> localizations = new List<Localization>();
 
         [Export]
         public LineMetadata lineMetadata = null;
@@ -62,7 +62,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         [Export] public string ProjectErrors = "[]";
 
-        [Export] public List<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
+        [Export] public Array<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
 
         [Export] [Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
@@ -101,7 +101,7 @@ namespace Yarn.GodotIntegration
                 foreach (var script in value)
                 {
                     var path = ProjectSettings.GlobalizePath(script.ResourcePath);
-                    var ext = System.IO.Path3D.GetExtension(path);
+                    var ext = System.IO.Path.GetExtension(path);
                     if (ext == null || !ext.ToLowerInvariant().Equals(".yarn"))
                     {
                         removeScripts.Add(script);

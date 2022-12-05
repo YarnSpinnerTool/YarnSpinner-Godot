@@ -25,12 +25,18 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         private YarnProjectUtility _projectUtility = new YarnProjectUtility();
         private VBoxContainer _container;
 
-        public override bool CanHandle(Object obj)
+        public override bool _CanHandle(Variant obj)
         {
             return obj is YarnProject;
         }
 
-        public override bool ParseProperty(Object @object, int type, string path, int hint, string hintText, int usage)
+        public override bool _ParseProperty(Object @object,
+            long type,
+            string name,
+            long hintType,
+            string hintString,
+            long usageFlags,
+            bool wide)
         {
             _project = (YarnProject)@object;
             // hide some properties that are not editable by the user
@@ -69,7 +75,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             return false;
         }
 
-        public override void ParseBegin(Object @object)
+        public override void _ParseBegin(Object @object)
         {
             _project = (YarnProject)@object;
             _projectUtility.AddProjectToList(_project);

@@ -36,7 +36,7 @@ namespace Yarn.GodotIntegration
     /// </remarks>
     /// <seealso cref="LineProviderBehaviour"/>
     /// <seealso cref="DialogueRunner.dialogueViews"/>
-    public abstract class DialogueViewBase : Godot.Node
+    public abstract partial class DialogueViewBase : Godot.Node
     {
         /// <summary>
         /// Represents the method that should be called when this view wants the

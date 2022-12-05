@@ -37,7 +37,7 @@ namespace Yarn.GodotIntegration
     /// which means that subclasses of this class can be attached to <see
     /// cref="GameObject"/>s.
     /// </remarks>
-    public abstract class VariableStorageBehaviour : Godot.Node, IVariableStorage
+    public abstract partial  class VariableStorageBehaviour : Godot.Node, IVariableStorage
     {
         /// <inheritdoc/>
         public abstract bool TryGetValue<T>(string variableName, out T result);

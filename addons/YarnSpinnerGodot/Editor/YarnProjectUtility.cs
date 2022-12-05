@@ -15,7 +15,7 @@ using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
 using Array = Godot.Collections.Array;
 using File = System.IO.File;
-using Path3D = System.IO.Path3D;
+using Path = System.IO.Path;
 
 namespace Yarn.GodotIntegration.Editor
 {
@@ -81,7 +81,7 @@ namespace Yarn.GodotIntegration.Editor
             var assetPath = project.ResourcePath;
             GD.Print($"Compiling all scripts in {assetPath}");
 
-            project.ResourceName = Path3D.GetFileNameWithoutExtension(assetPath);
+            project.ResourceName = Path.GetFileNameWithoutExtension(assetPath);
             if (project.SourceScripts == null)
             {
                 return;
@@ -683,7 +683,7 @@ namespace Yarn.GodotIntegration.Editor
                     // write it out and re-import it.
                     if (contents != taggedVersion)
                     {
-                        modifiedFiles.Add(Path3D.GetFileNameWithoutExtension(assetPath));
+                        modifiedFiles.Add(Path.GetFileNameWithoutExtension(assetPath));
 
                         System.IO.File.WriteAllText(assetPath, taggedVersion, Encoding.UTF8);
                     }
