@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -50,15 +51,15 @@ namespace Yarn.GodotIntegration{
         #region Localized Strings
         public string GetLocalizedString(string key)
         {
-            string result;
-            if (_runtimeStringTable.TryGetValue(key, out result))
+            Variant result;
+            if (_runtimeStringTable.TryGetValue(key, out var resultStr))
             {
-                return result;
+                return resultStr;
             }
 
             if (_stringTable.TryGetValue(key, out result))
             {
-                return result;
+                return result.AsString();
             }
 
             return null;
@@ -191,7 +192,7 @@ namespace Yarn.GodotIntegration{
             var compileTimeKeys = _stringTable.Keys;
 
             allKeys.AddRange(runtimeKeys);
-            allKeys.AddRange(compileTimeKeys);
+            allKeys.AddRange(compileTimeKeys.ToList().ConvertAll(v=>v.AsString()));
 
             return allKeys;
         }

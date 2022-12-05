@@ -32,7 +32,7 @@ public partial class MarkupAttribute : Object
         return result;
     }
 
-    private static object VariantFromMarkupValue(MarkupValue value)
+    private static Variant VariantFromMarkupValue(MarkupValue value)
     {
         switch (value.Type)
         {

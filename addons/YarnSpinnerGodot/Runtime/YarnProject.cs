@@ -6,6 +6,7 @@ using Godot.Collections;
 using Newtonsoft.Json;
 using Yarn.Compiler;
 using Yarn.GodotIntegration.Editor;
+using Array = System.Array;
 
 namespace Yarn.GodotIntegration
 {
@@ -47,7 +48,7 @@ namespace Yarn.GodotIntegration
         [Export] public Localization baseLocalization;
 
         [Export]
-        public Array<Localization> localizations = new List<Localization>();
+        public Localization[] localizations = Array.Empty<Localization>();
 
         [Export]
         public LineMetadata lineMetadata = null;
@@ -55,14 +56,14 @@ namespace Yarn.GodotIntegration
         public LocalizationType localizationType;
 
         [Export]
-        public List<FunctionInfo> ListOfFunctions;
+        public FunctionInfo[] ListOfFunctions;
 
         /// <summary>
         /// JSON-serialized array of <see cref="Yarn.Compiler.Diagnostic"/> objects.
         /// </summary>
         [Export] public string ProjectErrors = "[]";
 
-        [Export] public Array<SerializedDeclaration> SerializedDeclarations = new List<SerializedDeclaration>();
+        [Export] public SerializedDeclaration[] SerializedDeclarations =Array.Empty<SerializedDeclaration>();
 
         [Export] [Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
@@ -114,7 +115,7 @@ namespace Yarn.GodotIntegration
                 }
                 foreach (var script in removeScripts)
                 {
-                    value.RemoveAt(script);
+                    value.Remove(script);
                 }
                 var existingScripts = _sourceScripts;
                 _sourceScripts = value;

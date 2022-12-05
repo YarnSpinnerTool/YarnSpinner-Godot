@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
+using Godot.Collections;
 
 namespace Yarn.GodotIntegration
 {
     [Serializable]
     public partial class LineMetadata: Resource
     {
-        [Export] private Dictionary<string, string> _lineMetadata = new Dictionary<string, string>();
+        [Export] private Dictionary _lineMetadata = new Dictionary();
         public LineMetadata()
         {
             // empty constructor needed to instantiate from YarnProjectUtility
@@ -40,11 +42,11 @@ namespace Yarn.GodotIntegration
         /// Gets the line IDs that contain metadata.
         /// </summary>
         /// <returns>The line IDs.</returns>
-        public IEnumerable<string> GetLineIDs()
+        public List<string> GetLineIDs()
         {
             // The object returned doesn't allow modifications and is kept in
             // sync with `_lineMetadata`.
-            return _lineMetadata.Keys;
+            return _lineMetadata.Keys.ToList().ConvertAll(v=>v.ToString());
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace Yarn.GodotIntegration
         {
             if (_lineMetadata.TryGetValue(lineID, out var result))
             {
-                return result.Split(' ');
+                return result.AsString().Split(' ');
             }
 
             return null;

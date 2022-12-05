@@ -69,7 +69,7 @@ namespace Yarn.GodotIntegration.Editor
             var importedMarkerResource = new Resource();
             importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
             
-            var saveErr = ResourceSaver.Save($"{savePath}.{_GetSaveExtension()}", importedMarkerResource);
+            var saveErr = ResourceSaver.Save(importedMarkerResource, $"{savePath}.{_GetSaveExtension()}" );
             if (saveErr != Error.Ok)
             {
                 GD.PrintErr($"Error saving yarn file import: {saveErr.ToString()}");
