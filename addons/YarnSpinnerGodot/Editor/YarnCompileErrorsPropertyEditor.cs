@@ -1,6 +1,7 @@
 #if TOOLS
 using System.Collections.Generic;
 using Godot;
+using Godot.Collections;
 using Newtonsoft.Json;
 using Yarn.GodotIntegration;
 namespace YarnSpinnerGodot.addons.YarnSpinnerGodot.Editor
@@ -11,11 +12,11 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot.Editor
         // The main control for editing the property.
         private Label _propertyControl = new Label();
         // An internal value of the property.
-        private List<YarnProjectError> _currentValue;
+        private Array _currentValue;
 
         public delegate void ErrorsUpdatedHandler(Object yarnProject);
         public event ErrorsUpdatedHandler OnErrorsUpdated;
-        
+
         public YarnCompileErrorsPropertyEditor()
         {
             Label = "Project Errors";
@@ -30,13 +31,13 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot.Editor
         public override void _UpdateProperty()
         {
             // Read the current value from the property.
-            var newValue = (string)GetEditedObject().Get(GetEditedProperty());
-            var parsedNewValue = JsonConvert.DeserializeObject<List<YarnProjectError>>(newValue);
-            if (parsedNewValue == _currentValue)
+            var newVariantValue = GetEditedObject().Get(GetEditedProperty());
+            var newValue = (Array)newVariantValue.Obj;
+            if (newValue == _currentValue)
             {
                 return;
             }
-            _currentValue = parsedNewValue;
+            _currentValue = newValue;
             RefreshControlText();
             OnErrorsUpdated?.Invoke(GetEditedObject());
         }
@@ -47,7 +48,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot.Editor
             {
                 _propertyControl.Text = "";
             }
-            else if(_currentValue.Count == 0)
+            else if (_currentValue.Count == 0)
             {
                 _propertyControl.Text = "None";
             }

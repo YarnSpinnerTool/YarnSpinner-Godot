@@ -7,11 +7,11 @@ namespace Yarn.GodotIntegration
     /// A class used to serialize errors in the yarn project so that they can be displayed
     /// in more detail in the inspector
     /// </summary>
-    [Serializable]
-    public partial class YarnProjectError
+    [Serializable] [Tool]
+    public partial class YarnProjectError : Resource
     {
-        [JsonProperty] public string FileName;
-        [JsonProperty] public string Message;
-        [JsonProperty] public string Context;
+        [Export]public string FileName;
+        [Export(PropertyHint.MultilineText)] public string Message;
+        [Export(PropertyHint.MultilineText)] public string Context;
     }
 }

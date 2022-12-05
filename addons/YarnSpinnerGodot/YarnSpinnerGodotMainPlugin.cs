@@ -28,8 +28,6 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             }
             ProjectSettings.SetInitialValue(YarnProjectUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
             // load script resources
-            var scriptImporterScript = new YarnImporter();
-            var projectInspectorScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnProjectInspectorPlugin.cs");
             var localizationScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
             var yarnProjectScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
 
@@ -42,7 +40,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 
             _scriptImportPlugin = new YarnImporter();
             _editorUtility = new YarnEditorUtility();
-            _projectInspectorPlugin = (YarnProjectInspectorPlugin)projectInspectorScript.New();
+            _projectInspectorPlugin = new YarnProjectInspectorPlugin();
             AddInspectorPlugin(_projectInspectorPlugin);
             AddImportPlugin(_scriptImportPlugin);
             _popup = new PopupMenu();

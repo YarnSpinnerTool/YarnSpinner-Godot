@@ -27,7 +27,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 
         public override bool _CanHandle(Variant obj)
         {
-            return obj is YarnProject;
+            return obj.Obj is YarnProject;
         }
 
         public override bool _ParseProperty(Object @object,
@@ -60,7 +60,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
                 _parseErrorControl.CustomMinimumSize = new Vector2(0, 200);
                 _parseErrorControl.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
                 _parseErrorControl.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
-
+         
                 _container = new VBoxContainer();
                 _container.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
                 _container.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
@@ -125,12 +125,12 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         public void RenderCompilationErrors(Object yarnProject)
         {
             _project = (YarnProject)yarnProject;
-            var errors = _project.CompileErrors;
+            var errors = _project.ProjectErrors;
             SetErrors(errors);
             NotifyPropertyListChanged();
         }
 
-        private void SetErrors(List<YarnProjectError> errors)
+        private void SetErrors(YarnProjectError[] errors)
         {
             for (var i = _container.GetChildCount() - 1; i >= 0; i--)
             {

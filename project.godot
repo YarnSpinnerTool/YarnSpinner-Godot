@@ -8,10 +8,6 @@
 
 config_version=5
 
-[YarnSpinner-Godot]
-
-YarnProjectPaths=PackedStringArray("res://Samples/Space/SpaceProject.tres")
-
 [application]
 
 config/name="YarnSpinner-Godot"
