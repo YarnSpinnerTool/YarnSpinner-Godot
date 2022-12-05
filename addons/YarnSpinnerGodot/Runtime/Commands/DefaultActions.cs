@@ -15,7 +15,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         /// <param name="duration">How long to wait.</param>
         [YarnCommand("wait")]
-        public static async Task Wait(float duration)
+        public static async Task Wait(double duration)
         {
             var mainLoop = Engine.GetMainLoop();
             var sceneTree = mainLoop as SceneTree;
@@ -34,7 +34,7 @@ namespace Yarn.GodotIntegration
         [YarnFunction("random_range")]
         public static float RandomRange(float minInclusive, float maxInclusive)
         {
-            return (float)GD.RandfRange(minInclusive, maxInclusive);
+            return (float)GD.RandRange(minInclusive, maxInclusive);
         }
 
         /// <summary>

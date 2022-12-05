@@ -25,7 +25,12 @@ project/assembly_name="YarnSpinner-Godot"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/YarnSpinnerGodot/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false
+import/fbx/enabled=false
 
 [gui]
 

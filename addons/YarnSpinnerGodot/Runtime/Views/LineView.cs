@@ -93,7 +93,7 @@ namespace Yarn.GodotIntegration
             color.a = from;
             canvasGroup.Color = color;
 
-            var timeElapsed = 0f;
+            var timeElapsed = 0d;
 
             while (timeElapsed < fadeTime)
             {
@@ -105,7 +105,7 @@ namespace Yarn.GodotIntegration
                 var fraction = timeElapsed / fadeTime;
                 timeElapsed += mainTree.Root.GetProcessDeltaTime();
 
-                float a = Mathf.Lerp(from, to, fraction);
+                float a = Mathf.Lerp(from, to, (float)fraction);
                 color.a = a;
                 canvasGroup.Color = color;
                 await DefaultActions.Wait(mainTree.Root.GetProcessDeltaTime());
@@ -153,7 +153,7 @@ namespace Yarn.GodotIntegration
             stopToken?.Start();
 
             // Start with everything invisible
-            text.PercentVisible = 0;
+            text.VisibleRatio = 0;
 
             // Wait a single frame to let the text component process its
             // content, otherwise text.textInfo.characterCount won't be
@@ -167,7 +167,7 @@ namespace Yarn.GodotIntegration
             if (lettersPerSecond <= 0 || characterCount == 0)
             {
                 // Show everything and return
-                text.PercentVisible = 1;
+                text.VisibleRatio = 1;
                 stopToken?.Complete();
                 return;
             }
@@ -187,7 +187,7 @@ namespace Yarn.GodotIntegration
             var deltaTime = mainTree.Root.GetProcessDeltaTime();
             var accumulator = deltaTime;
 
-            while (text.PercentVisible < 1)
+            while (text.VisibleRatio < 1)
             {
                 if (stopToken?.WasInterrupted ?? false)
                 {
@@ -198,7 +198,7 @@ namespace Yarn.GodotIntegration
                 // time for.
                 while (accumulator >= secondsPerLetter)
                 {
-                    text.PercentVisible += .03f;
+                    text.VisibleRatio += .03f;
                     onCharacterTyped?.Invoke();
                     accumulator -= secondsPerLetter;
                 }
@@ -209,7 +209,7 @@ namespace Yarn.GodotIntegration
 
             // We either finished displaying everything, or were
             // interrupted. Either way, display everything now.
-            text.PercentVisible = 1;
+            text.VisibleRatio = 1;
 
             stopToken?.Complete();
         }
@@ -524,7 +524,7 @@ namespace Yarn.GodotIntegration
             }
 
             // Show the entire line's text immediately.
-            lineText.PercentVisible = 1;
+            lineText.VisibleRatio = 1;
 
             // Make the canvas group fully visible immediately, too.
             SetCanvasAlpha(1f);
@@ -592,12 +592,12 @@ namespace Yarn.GodotIntegration
                     // If we're using the typewriter effect, hide all of the
                     // text before we begin any possible fade (so we don't fade
                     // in on visible text).
-                    lineText.PercentVisible = 0;
+                    lineText.VisibleRatio = 0;
                 }
                 else
                 {
                     // Show all characters
-                    lineText.PercentVisible = 100;
+                    lineText.VisibleRatio = 100;
                 }
 
                 // If we're using the fade effect, start it, and wait for it to
@@ -647,7 +647,7 @@ namespace Yarn.GodotIntegration
             currentStopToken.Complete();
 
             // All of our text should now be visible.
-            lineText.PercentVisible = 100;
+            lineText.VisibleRatio = 100;
 
             // Our view should at be at full opacity.
             SetCanvasAlpha(1f);

@@ -24,9 +24,9 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         {
             if (!ProjectSettings.HasSetting(YarnProjectUtility.YarnProjectPathsSettingKey))
             {
-                ProjectSettings.SetSetting(YarnProjectUtility.YarnProjectPathsSettingKey, new List<string>());
+                ProjectSettings.SetSetting(YarnProjectUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
             }
-            ProjectSettings.SetInitialValue(YarnProjectUtility.YarnProjectPathsSettingKey, new List<string>());
+            ProjectSettings.SetInitialValue(YarnProjectUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
             // load script resources
             var scriptImporterScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs");
             var editorUtilityScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs");
@@ -115,11 +115,11 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         {
             var dialog = new EditorFileDialog();
             dialog.AddFilter(filter);
-            dialog.Mode = EditorFileDialog.ModeEnum.SaveFile;
-            dialog.WindowTitle = windowTitle;
+            dialog.Mode = Window.ModeEnum.Windowed;
+            dialog.Title= windowTitle;
             dialog.Connect("file_selected",new Callable(this,fileSelectedHandler));
             GetEditorInterface().GetViewport().AddChild(dialog);
-            dialog.Popup_(new Rect2(50, 50, 700, 500));
+            dialog.Popup(new Rect2i(50, 50, 700, 500));
         }
         private void CreateYarnProjectDestinationSelected(string destination)
         {

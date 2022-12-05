@@ -66,7 +66,7 @@ namespace Yarn.GodotIntegration.Editor
 
         public void SaveYarnProject(YarnProject project)
         {
-            var saveErr = ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
+            var saveErr = ResourceSaver.Save(project, project.ResourcePath, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
             if (saveErr != Error.Ok)
             {
                 GD.PushError($"Error updating YarnProject {project.ResourceName} to {project.ResourcePath}: {saveErr}");
@@ -92,7 +92,7 @@ namespace Yarn.GodotIntegration.Editor
             ActionManager.AddActionsFromAssemblies();
             ActionManager.RegisterFunctions(library);
             // localDeclarationsCompileJob.Library = library;
-            project.ListOfFunctions = predeterminedFunctions();
+            project.ListOfFunctions = predeterminedFunctions().ToArray();
             IEnumerable<Diagnostic> errors;
             project.ProjectErrors = "[]";
 
@@ -155,11 +155,11 @@ namespace Yarn.GodotIntegration.Editor
                     .Where(decl => !(decl.Type is FunctionType))
                     .Select(decl =>
                     {
-                        var serialized = _editorUtility.InstanceScript<SerializedDeclaration>("res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs");
+                        var serialized = new SerializedDeclaration();
                         serialized.SetDeclaration(decl);
                         serialized.ResourceName = serialized.name;
                         return serialized;
-                    }).ToList();
+                    }).ToArray();
 
                 // Clear error messages from all scripts - they've all passed
                 // compilation
@@ -179,7 +179,7 @@ namespace Yarn.GodotIntegration.Editor
                 }
             }
             project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
-            ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
+            ResourceSaver.Save(project,project.ResourcePath,  ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         }
 
         private static void LogDiagnostic(Diagnostic diagnostic)
@@ -240,7 +240,7 @@ namespace Yarn.GodotIntegration.Editor
                 p[i] = parameters[i].Name;
             }
 
-            var info = _editorUtility.InstanceScript<FunctionInfo>("res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs");
+            var info = new FunctionInfo();
             info.Name = method.Name;
             info.ReturnType = returnType;
             info.Parameters = p;
@@ -314,7 +314,7 @@ namespace Yarn.GodotIntegration.Editor
                     }
                 }
 
-                var newLocalization = _editorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
+                var newLocalization = new Localization();
                 newLocalization.LocaleCode = pair.languageID;
 
                 // Add these new lines to the localisation's asset
@@ -373,7 +373,7 @@ namespace Yarn.GodotIntegration.Editor
                     project.baseLocalization = newLocalization;
 
                     // Since this is the default language, also populate the line metadata.
-                    project.lineMetadata = _editorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
+                    project.lineMetadata = new LineMetadata();
                     project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
                 }
                 foreach (var existingLocalization in project.localizations)
@@ -381,11 +381,11 @@ namespace Yarn.GodotIntegration.Editor
                     if (existingLocalization.LocaleCode.Equals(newLocalization.LocaleCode))
                     {
                         newLocalization.stringsFile = existingLocalization.stringsFile;
-                        if (!existingLocalization.ResourcePath.Contains(project.ResourcePath) 
+                        if (!existingLocalization.ResourcePath.Contains(project.ResourcePath)
                             && !existingLocalization.ResourcePath.Contains("::"))
                         {
                             // only try to save it to disk if it's a standalone file and a sub resource
-                            var saveErr = ResourceSaver.Save(existingLocalization.ResourcePath, newLocalization);
+                            var saveErr = ResourceSaver.Save(newLocalization, existingLocalization.ResourcePath);
                             if (saveErr != Error.Ok)
                             {
                                 GD.PushError($"Error saving localization {newLocalization.LocaleCode} to {existingLocalization.ResourcePath}");
@@ -402,7 +402,7 @@ namespace Yarn.GodotIntegration.Editor
                 // Create one for it now.
                 var stringTableEntries = GetStringTableEntries(project, compilationResult);
 
-                developmentLocalization = _editorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
+                developmentLocalization = new Localization();
                 developmentLocalization.ResourceName = $"Default ({project.defaultLanguage})";
                 developmentLocalization.LocaleCode = project.defaultLanguage;
 
@@ -414,10 +414,10 @@ namespace Yarn.GodotIntegration.Editor
                 }
 
                 project.baseLocalization = developmentLocalization;
-                project.localizations.Add(project.baseLocalization);
+                project.localizations = project.localizations.Concat(new List<Localization>{project.baseLocalization}).ToArray();
 
                 // Since this is the default language, also populate the line metadata.
-                project.lineMetadata = _editorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
+                project.lineMetadata = new LineMetadata();
                 project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
             }
         }
@@ -724,7 +724,7 @@ namespace Yarn.GodotIntegration.Editor
 
         private void CleanUpMovedOrDeletedProjects()
         {
-            var projects = ((string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey)).ToList();
+            var projects = ((string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey));
             var removeProjects = new List<string>();
             foreach (var path in projects)
             {
@@ -733,8 +733,8 @@ namespace Yarn.GodotIntegration.Editor
                     removeProjects.Add(path);
                 }
             }
-            projects.RemoveAll(path => removeProjects.Contains(path));
-            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, projects);
+            var newProjects = projects.ToList().Where(p => !removeProjects.Contains(p)).ToArray();
+            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, Variant.From(newProjects));
         }
         /// <summary>
         /// Add a yarn project to the list of known yarn projects, if it is not already in the list
@@ -747,7 +747,7 @@ namespace Yarn.GodotIntegration.Editor
             {
                 projects.Add(project.ResourcePath);
             }
-            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, projects);
+            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, Variant.From(projects));
         }
     }
 

@@ -47,17 +47,17 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
                 nameof(YarnProject.IsSuccessfullyParsed),
                 nameof(YarnProject.CompiledYarnProgramBase64)
             };
-            if (hideProperties.Contains(path))
+            if (hideProperties.Contains(name))
             {
                 // hide these properties from inspector
                 return true;
             }
-         if (path == nameof(YarnProject.ProjectErrors))
+         if (name == nameof(YarnProject.ProjectErrors))
             {
                 _compileErrorsPropertyEditor = new YarnCompileErrorsPropertyEditor();
-                AddPropertyEditor(path, _compileErrorsPropertyEditor);
+                AddPropertyEditor(name, _compileErrorsPropertyEditor);
                 _parseErrorControl = new ScrollContainer();
-                _parseErrorControl.RectMinSize = new Vector2(0, 200);
+                _parseErrorControl.CustomMinimumSize = new Vector2(0, 200);
                 _parseErrorControl.SizeFlagsVertical |= (int)Control.SizeFlags.Expand;
                 _parseErrorControl.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
 
@@ -89,9 +89,10 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             }
             _recompileButton = new Button();
             _recompileButton.Text = "Re-compile Scripts in Project";
-            var recompileArgs = new Godot.Collections.Array();
-            recompileArgs.Add(@object);
-            _recompileButton.Connect("pressed",new Callable(this,nameof(OnRecompileClicked)),recompileArgs);
+            _recompileButton.Connect("pressed",Callable.From(() =>
+            {
+                OnRecompileClicked(_project);
+            }));
             AddCustomControl(_recompileButton);
             
             if (_addTagsButton != null)
@@ -106,7 +107,10 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _addTagsButton.Text = "Add Line Tags to Scripts";
             var addTagsButtonArgs = new Godot.Collections.Array();
             addTagsButtonArgs.Add(_project);
-            _addTagsButton.Connect("pressed",new Callable(this,nameof(OnAddTagsClicked)),addTagsButtonArgs);
+            _addTagsButton.Connect("pressed", Callable.From(()=>
+            {
+                OnAddTagsClicked(_project);
+            }));
             AddCustomControl(_addTagsButton);
         }
 
@@ -139,21 +143,21 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             foreach (var errorGroup in errorGroups)
             {
                 var errorsInGroup = errorGroup.ToList();
-                var fileNameLabel = _fileNameLabelScene.Instance<Label>();
+                var fileNameLabel = _fileNameLabelScene.Instantiate<Label>();
                 var resFileName = ProjectSettings.LocalizePath(errorsInGroup[0].FileName);
                 fileNameLabel.Text = $"{resFileName}:";
                 _container.AddChild(fileNameLabel);
                 var separator = new HSeparator();
-                separator.RectMinSize = new Vector2(0, 4);
+                separator.CustomMinimumSize = new Vector2(0, 4);
                 separator.SizeFlagsHorizontal |= (int)Control.SizeFlags.Expand;
                 _container.AddChild(separator);
                 foreach (var err in errorsInGroup)
                 {
-                    var errorTextLabel = _errorTextLabelScene.Instance<Label>();
+                    var errorTextLabel = _errorTextLabelScene.Instantiate<Label>();
                     errorTextLabel.Text = $"    {err.Message}";
                     _container.AddChild(errorTextLabel);
 
-                    var contextLabel = _contextLabelScene.Instance<Label>();
+                    var contextLabel = _contextLabelScene.Instantiate<Label>();
                     contextLabel.Text = $"    {err.Context}";
                     _container.AddChild(contextLabel);
                 }

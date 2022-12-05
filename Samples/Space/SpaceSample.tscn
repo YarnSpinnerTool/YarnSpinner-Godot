@@ -1,29 +1,27 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://dwve4hlcvxtc5"]
 
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs" type="Script" id=1]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/InMemoryVariableStorage.cs" type="Script" id=2]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/Views/LineView.cs" type="Script" id=3]
-[ext_resource path="res://Samples/Space/SpaceProject.tres" type="Resource" id=4]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs" id="1"]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/InMemoryVariableStorage.cs" id="2"]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Views/LineView.cs" id="3"]
 
 [node name="SpaceDemo" type="Node2D"]
 
 [node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="DialogueRunner" type="Node2D" parent="YarnSpinnerCanvasLayer"]
-script = ExtResource( 1 )
-yarnProject = ExtResource( 4 )
+script = ExtResource("1")
 variableStoragePath = NodePath("InMemoryVariableStorage")
-dialogueViewPaths = [ NodePath("LineView") ]
+dialogueViewPaths = [NodePath("LineView")]
 startNode = "Sally"
 
 [node name="InMemoryVariableStorage" type="Node" parent="YarnSpinnerCanvasLayer/DialogueRunner"]
-script = ExtResource( 2 )
+script = ExtResource("2")
 debugTextViewPath = NodePath("../VariableDebugText")
 
 [node name="VariableDebugText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/DialogueRunner"]
 
 [node name="LineView" type="Node" parent="YarnSpinnerCanvasLayer/DialogueRunner"]
-script = ExtResource( 3 )
+script = ExtResource("3")
 canvasLayerPath = NodePath("CanvasModulate/CanvasLayer")
 lineTextPath = NodePath("CanvasModulate/CanvasLayer/LineText")
 characterNameTextPath = NodePath("CanvasModulate/CanvasLayer/CharacterNameText")
@@ -36,6 +34,7 @@ continueButtonPath = NodePath("CanvasModulate/CanvasLayer/ContinueButton")
 [node name="CanvasLayer" type="CanvasLayer" parent="YarnSpinnerCanvasLayer/DialogueRunner/LineView/CanvasModulate"]
 
 [node name="LineText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/DialogueRunner/LineView/CanvasModulate/CanvasLayer"]
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -44,11 +43,13 @@ offset_left = -443.0
 offset_top = -225.0
 offset_right = 443.0
 offset_bottom = 225.0
+grow_horizontal = 2
+grow_vertical = 2
 bbcode_enabled = true
-text = "The dialogue text should appear here!"
 text = "The dialogue text should appear here!"
 
 [node name="CharacterNameText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/DialogueRunner/LineView/CanvasModulate/CanvasLayer"]
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -57,11 +58,13 @@ offset_left = -443.0
 offset_top = -265.0
 offset_right = 443.0
 offset_bottom = 185.0
+grow_horizontal = 2
+grow_vertical = 2
 bbcode_enabled = true
-text = "Character Name"
 text = "Character Name"
 
 [node name="ContinueButton" type="Button" parent="YarnSpinnerCanvasLayer/DialogueRunner/LineView/CanvasModulate/CanvasLayer"]
+anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -70,4 +73,6 @@ offset_left = -113.0
 offset_top = -142.0
 offset_right = 119.0
 offset_bottom = -42.0
+grow_horizontal = 2
+grow_vertical = 0
 text = "Continue"

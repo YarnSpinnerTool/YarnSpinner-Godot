@@ -547,7 +547,7 @@ namespace Yarn.GodotIntegration
         /// remove.</param>
         public void RemoveCommandHandler(string commandName)
         {
-            commandHandlers.RemoveAt(commandName);
+            commandHandlers.Remove(commandName);
         }
 
         /// <summary>
@@ -1285,7 +1285,7 @@ namespace Yarn.GodotIntegration
         {
             // A dialogue view just completed its delivery. RemoveAt it from
             // the set of active views.
-            ActiveDialogueViews.RemoveAt(dialogueView);
+            ActiveDialogueViews.Remove(dialogueView);
 
             // Have all of the views completed? 
             if (ActiveDialogueViews.Count == 0)
@@ -1298,7 +1298,7 @@ namespace Yarn.GodotIntegration
         // main difference is a line continues automatically every interrupt finishes
         private void DialogueViewCompletedInterrupt(DialogueViewBase dialogueView)
         {
-            ActiveDialogueViews.RemoveAt(dialogueView);
+            ActiveDialogueViews.Remove(dialogueView);
 
             if (ActiveDialogueViews.Count == 0)
             {
@@ -1377,7 +1377,7 @@ namespace Yarn.GodotIntegration
         {
             // A dialogue view just completed dismissing its line. RemoveAt
             // it from the set of active views.
-            ActiveDialogueViews.RemoveAt(dialogueView);
+            ActiveDialogueViews.Remove(dialogueView);
 
             // Have all of the views completed dismissal? 
             if (ActiveDialogueViews.Count == 0)
