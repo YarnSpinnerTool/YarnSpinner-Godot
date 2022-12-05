@@ -6,21 +6,26 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
+config_version=5
 
 [YarnSpinner-Godot]
 
-YarnProjectPaths=PoolStringArray( "res://Samples/Space/SpaceProject.tres" )
+YarnProjectPaths=PackedStringArray("res://Samples/Space/SpaceProject.tres")
 
 [application]
 
 config/name="YarnSpinner-Godot"
 run/main_scene="res://Samples/Space/SpaceSample.tscn"
+config/features=PackedStringArray("4.0", "C#")
 config/icon="res://YarnSpinnerLogo.png"
+
+[dotnet]
+
+project/assembly_name="YarnSpinner-Godot"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/YarnSpinnerGodot/plugin.cfg", "res://addons/godot-plugin-refresher/plugin.cfg" )
+enabled=PackedStringArray()
 
 [gui]
 

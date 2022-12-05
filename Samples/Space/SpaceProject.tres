@@ -13,77 +13,77 @@ resource_name = "Random"
 script = ExtResource( 6 )
 Name = "Random"
 ReturnType = "-> Single"
-Parameters = PoolStringArray(  )
+Parameters = PackedStringArray(  )
 
 [sub_resource type="Resource" id=17]
 resource_name = "RandomRange"
 script = ExtResource( 6 )
 Name = "RandomRange"
 ReturnType = "-> Single"
-Parameters = PoolStringArray( "minInclusive", "maxInclusive" )
+Parameters = PackedStringArray( "minInclusive", "maxInclusive" )
 
 [sub_resource type="Resource" id=18]
 resource_name = "Dice"
 script = ExtResource( 6 )
 Name = "Dice"
 ReturnType = "-> UInt32"
-Parameters = PoolStringArray( "sides" )
+Parameters = PackedStringArray( "sides" )
 
 [sub_resource type="Resource" id=19]
 resource_name = "Round"
 script = ExtResource( 6 )
 Name = "Round"
 ReturnType = "-> Int32"
-Parameters = PoolStringArray( "num" )
+Parameters = PackedStringArray( "num" )
 
 [sub_resource type="Resource" id=20]
 resource_name = "RoundPlaces"
 script = ExtResource( 6 )
 Name = "RoundPlaces"
 ReturnType = "-> Single"
-Parameters = PoolStringArray( "num", "places" )
+Parameters = PackedStringArray( "num", "places" )
 
 [sub_resource type="Resource" id=21]
 resource_name = "Floor"
 script = ExtResource( 6 )
 Name = "Floor"
 ReturnType = "-> Int32"
-Parameters = PoolStringArray( "num" )
+Parameters = PackedStringArray( "num" )
 
 [sub_resource type="Resource" id=22]
 resource_name = "Ceil"
 script = ExtResource( 6 )
 Name = "Ceil"
 ReturnType = "-> Int32"
-Parameters = PoolStringArray( "num" )
+Parameters = PackedStringArray( "num" )
 
 [sub_resource type="Resource" id=23]
 resource_name = "Inc"
 script = ExtResource( 6 )
 Name = "Inc"
 ReturnType = "-> Int32"
-Parameters = PoolStringArray( "num" )
+Parameters = PackedStringArray( "num" )
 
 [sub_resource type="Resource" id=24]
 resource_name = "Dec"
 script = ExtResource( 6 )
 Name = "Dec"
 ReturnType = "-> Int32"
-Parameters = PoolStringArray( "num" )
+Parameters = PackedStringArray( "num" )
 
 [sub_resource type="Resource" id=25]
 resource_name = "Decimal"
 script = ExtResource( 6 )
 Name = "Decimal"
 ReturnType = "-> Single"
-Parameters = PoolStringArray( "num" )
+Parameters = PackedStringArray( "num" )
 
 [sub_resource type="Resource" id=26]
 resource_name = "Int"
 script = ExtResource( 6 )
 Name = "Int"
 ReturnType = "-> Int32"
-Parameters = PoolStringArray( "num" )
+Parameters = PackedStringArray( "num" )
 
 [sub_resource type="Resource" id=27]
 resource_name = "$should_see_ship"

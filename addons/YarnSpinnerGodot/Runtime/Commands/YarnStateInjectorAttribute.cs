@@ -51,7 +51,7 @@ namespace Yarn.GodotIntegration
     /// </para>
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class YarnStateInjectorAttribute : Attribute {
+    public partial class YarnStateInjectorAttribute : Attribute {
         /// <summary>
         /// Method to use as an injector.
         /// </summary>

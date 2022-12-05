@@ -1,7 +1,7 @@
 #if TOOLS
 using Godot;
 [Tool]
-public class YarnSpinnerEditorContainer : PanelContainer
+public partial class YarnSpinnerEditorContainer : PanelContainer
 {
     public UndoRedo undoRedo;
 

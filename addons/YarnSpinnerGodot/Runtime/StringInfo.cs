@@ -1,5 +1,5 @@
 using Godot;
-public class StringInfo : Resource
+public partial class StringInfo : Resource
 {
     [Export]
     public string text;

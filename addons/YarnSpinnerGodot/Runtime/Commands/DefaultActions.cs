@@ -5,7 +5,7 @@ using Godot;
 
 namespace Yarn.GodotIntegration
 {
-    public class DefaultActions : Godot.Node
+    public partial class DefaultActions : Godot.Node
     {
         #region Commands
         /// <summary>
@@ -34,7 +34,7 @@ namespace Yarn.GodotIntegration
         [YarnFunction("random_range")]
         public static float RandomRange(float minInclusive, float maxInclusive)
         {
-            return (float)GD.RandRange(minInclusive, maxInclusive);
+            return (float)GD.RandfRange(minInclusive, maxInclusive);
         }
 
         /// <summary>

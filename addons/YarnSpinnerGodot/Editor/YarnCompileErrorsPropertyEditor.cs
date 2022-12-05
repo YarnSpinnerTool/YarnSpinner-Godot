@@ -1,4 +1,4 @@
-﻿#if TOOLS
+#if TOOLS
 using System.Collections.Generic;
 using Godot;
 using Newtonsoft.Json;
@@ -6,7 +6,7 @@ using Yarn.GodotIntegration;
 namespace YarnSpinnerGodot.addons.YarnSpinnerGodot.Editor
 {
     [Tool]
-    public class YarnCompileErrorsPropertyEditor : EditorProperty
+    public partial class YarnCompileErrorsPropertyEditor : EditorProperty
     {
         // The main control for editing the property.
         private Label _propertyControl = new Label();

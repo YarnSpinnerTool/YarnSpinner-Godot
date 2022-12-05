@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Godot;
 using Newtonsoft.Json;
 namespace Yarn.GodotIntegration
@@ -8,7 +8,7 @@ namespace Yarn.GodotIntegration
     /// in more detail in the inspector
     /// </summary>
     [Serializable]
-    public class YarnProjectError
+    public partial class YarnProjectError
     {
         [JsonProperty] public string FileName;
         [JsonProperty] public string Message;

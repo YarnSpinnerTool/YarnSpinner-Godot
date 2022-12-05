@@ -15,7 +15,7 @@ namespace Yarn.GodotIntegration
     /// more than 16 parameters, as that is the largest overload that
     /// <see cref="Func{TResult}"/> etc has.
     /// </remarks>
-    public class YarnFunctionAttribute : YarnActionAttribute {
+    public partial class YarnFunctionAttribute : YarnActionAttribute {
         [Obsolete("Use " + nameof(Name) + " instead.")]
         public string FunctionName
         {

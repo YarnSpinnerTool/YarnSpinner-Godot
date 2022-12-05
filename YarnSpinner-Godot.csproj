@@ -1,73 +1,7 @@
-<Project Sdk="Godot.NET.Sdk/3.3.0">
+<Project Sdk="Godot.NET.Sdk/4.0.0-beta.5">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>YarnSpinnerGodot</RootNamespace>
-    <LangVersion>8</LangVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Antlr4.Runtime.Standard">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
-    </Reference>
-    <Reference Include="CsvHelper">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Buffers">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics.Vectors">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.TypeExtensions">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Reflection.TypeExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/YarnSpinner.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner.Compiler">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/YarnSpinner.Compiler.dll</HintPath>
-    </Reference>
-    
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LineMetadata Icon.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LineMetadata Icon.png.meta" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\Localization Icon.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\Localization Icon.png.meta" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LocalizationDatabase Icon.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\LocalizationDatabase Icon.png.meta" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnProject Icon.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnProject Icon.png.meta" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnScript Icon.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\Asset Icons\YarnScript Icon.png.meta" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerEditorWindow.psd" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerFailed.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerLogo.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerNotTested.png" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\Icons\YarnSpinnerSuccess.png" />
-    <Content Include="**\*.yarn" />
-    <Content Include="addons\YarnSpinnerGodot\Editor\YarnScriptTemplate.txt" />
-    <Content Include="Samples\Space\Sprites\Background.jpg" />
-    <Content Include="Samples\Space\Sprites\Player.png" />
-    <Content Include="Samples\Space\Sprites\Sally.png" />
-    <Content Include="Samples\Space\Sprites\Ship-Face-Happy.png" />
-    <Content Include="Samples\Space\Sprites\Ship-Face-Neutral.png" />
-    <Content Include="Samples\Space\Sprites\Ship.png" />
-    <Content Include="Samples\Space\Sprites\Source\Characters.psd" />
-    <Content Include="Samples\Space\Sprites\Source\Wall.psd" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="addons\YarnSpinnerGodot\Editor\UI" />
-  </ItemGroup>
 </Project>

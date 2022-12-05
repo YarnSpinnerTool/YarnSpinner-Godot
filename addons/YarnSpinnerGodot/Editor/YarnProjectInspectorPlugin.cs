@@ -1,4 +1,4 @@
-﻿#if TOOLS
+#if TOOLS
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using Object = Godot.Object;
 namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 {
     [Tool]
-    public class YarnProjectInspectorPlugin : EditorInspectorPlugin
+    public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
     {
         private Button _recompileButton;
         private Button _addTagsButton;
@@ -85,7 +85,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _recompileButton.Text = "Re-compile Scripts in Project";
             var recompileArgs = new Godot.Collections.Array();
             recompileArgs.Add(@object);
-            _recompileButton.Connect("pressed", this, nameof(OnRecompileClicked), recompileArgs);
+            _recompileButton.Connect("pressed",new Callable(this,nameof(OnRecompileClicked)),recompileArgs);
             AddCustomControl(_recompileButton);
             
             if (_addTagsButton != null)
@@ -100,7 +100,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _addTagsButton.Text = "Add Line Tags to Scripts";
             var addTagsButtonArgs = new Godot.Collections.Array();
             addTagsButtonArgs.Add(_project);
-            _addTagsButton.Connect("pressed", this, nameof(OnAddTagsClicked), addTagsButtonArgs);
+            _addTagsButton.Connect("pressed",new Callable(this,nameof(OnAddTagsClicked)),addTagsButtonArgs);
             AddCustomControl(_addTagsButton);
         }
 
@@ -109,7 +109,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _projectUtility = new YarnProjectUtility();
             _projectUtility.UpdateYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
-            PropertyListChangedNotify();
+            NotifyPropertyListChanged();
         }
 
         public void RenderCompilationErrors(Object yarnProject)
@@ -117,7 +117,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
             _project = (YarnProject)yarnProject;
             var errors = _project.CompileErrors;
             SetErrors(errors);
-            PropertyListChangedNotify();
+            NotifyPropertyListChanged();
         }
 
         private void SetErrors(List<YarnProjectError> errors)
@@ -158,7 +158,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         {
             _projectUtility.AddLineTagsToFilesInYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
-            PropertyListChangedNotify();
+            NotifyPropertyListChanged();
         }
     }
 }

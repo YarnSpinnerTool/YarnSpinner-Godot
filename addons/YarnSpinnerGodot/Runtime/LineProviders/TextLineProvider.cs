@@ -6,7 +6,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Yarn.GodotIntegration
 {
-    public class TextLineProvider : LineProviderBehaviour
+    public partial class TextLineProvider : LineProviderBehaviour
     {
         /// <summary>Specifies the language code to use for text content
         /// for this <see cref="TextLineProvider"/>.

@@ -56,7 +56,7 @@ namespace Yarn.GodotIntegration
     /// enforce static typing of declared variables within the Yarn
     /// Program.</para>
     /// </remarks>
-    public class InMemoryVariableStorage : VariableStorageBehaviour, IEnumerable<KeyValuePair<string, object>>
+    public partial class InMemoryVariableStorage : VariableStorageBehaviour, IEnumerable<KeyValuePair<string, object>>
     {
         /// <summary>
         /// Where we're actually keeping our variables
@@ -83,7 +83,7 @@ namespace Yarn.GodotIntegration
             // If we have a debug view, show the list of all variables in it
             if (debugTextView != null)
             {
-                debugTextView.BbcodeText = GetDebugList();
+                debugTextView.Text = GetDebugList();
             }
         }
 

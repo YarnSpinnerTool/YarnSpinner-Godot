@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Godot;
 namespace Yarn.GodotIntegration
 {
@@ -7,7 +7,7 @@ namespace Yarn.GodotIntegration
     /// <summary>
     /// Pairs a language ID with a Resource.
     /// </summary>
-    public class LanguageToSourceAsset
+    public partial class LanguageToSourceAsset
     {
         /// <summary>
         /// The locale ID that this translation should create a

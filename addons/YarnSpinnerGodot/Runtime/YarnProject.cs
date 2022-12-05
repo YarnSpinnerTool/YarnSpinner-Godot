@@ -10,7 +10,7 @@ using Yarn.GodotIntegration.Editor;
 namespace Yarn.GodotIntegration
 {
     [Tool]
-    public class YarnProject : Resource //, IYarnErrorSource
+    public partial class YarnProject : Resource //, IYarnErrorSource
     {
         /// <summary>
         /// Indicates whether the last time this file was imported, the
@@ -101,7 +101,7 @@ namespace Yarn.GodotIntegration
                 foreach (var script in value)
                 {
                     var path = ProjectSettings.GlobalizePath(script.ResourcePath);
-                    var ext = System.IO.Path.GetExtension(path);
+                    var ext = System.IO.Path3D.GetExtension(path);
                     if (ext == null || !ext.ToLowerInvariant().Equals(".yarn"))
                     {
                         removeScripts.Add(script);
@@ -114,7 +114,7 @@ namespace Yarn.GodotIntegration
                 }
                 foreach (var script in removeScripts)
                 {
-                    value.Remove(script);
+                    value.RemoveAt(script);
                 }
                 var existingScripts = _sourceScripts;
                 _sourceScripts = value;

@@ -19,7 +19,7 @@ namespace Yarn.GodotIntegration.Editor
     /// <summary>
     /// Prevents play mode if there are any errors in any Yarn projects or scripts.
     /// </summary>
-    public class YarnPreventPlayMode
+    public partial class YarnPreventPlayMode
     {
         private static YarnPreventPlayMode _instance;
         private static YarnPreventPlayMode Instance

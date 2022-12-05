@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 
 namespace Yarn.GodotIntegration
 {
-    public class DialogueOption
+    public partial class DialogueOption
     {
         /// <summary>
         /// The ID of this dialogue option
