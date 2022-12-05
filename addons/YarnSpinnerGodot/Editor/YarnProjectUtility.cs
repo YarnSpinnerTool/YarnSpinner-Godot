@@ -166,18 +166,29 @@ namespace Yarn.GodotIntegration.Editor
                 // Yarn public prefix. These are synthesized variables that are
                 // generated as a result of the compilation, and are not declared by
                 // the user.
-                project.SerializedDeclarations = new List<Declaration>() //localDeclarations
+              
+                var newDeclarations =  new List<Declaration>() //localDeclarations
                     .Concat(compilationResult.Value.Declarations)
                     .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
                     .Where(decl => !(decl.Type is FunctionType))
                     .Select(decl =>
                     {
-                        var serialized = new SerializedDeclaration();
+                        SerializedDeclaration existingDeclaration = null;
+                        // try to re-use a declaration if one exists to avoid changing the .tres file so much
+                        foreach (var existing in project.SerializedDeclarations)
+                        {
+                            if (existing.name == decl.Name)
+                            {
+                                existingDeclaration = existing;
+                                break;
+                            }
+                        }
+                        var serialized = existingDeclaration ?? new SerializedDeclaration();
                         serialized.SetDeclaration(decl);
                         serialized.ResourceName = serialized.name;
                         return serialized;
                     }).ToArray();
-
+                project.SerializedDeclarations = newDeclarations;
                 // Clear error messages from all scripts - they've all passed
                 // compilation
                 project.ProjectErrors = System.Array.Empty<YarnProjectError>();
@@ -345,6 +356,7 @@ namespace Yarn.GodotIntegration.Editor
                     }
                 }
                 var newLocalization = existingLocalization ?? new Localization();
+                newLocalization.Clear();
                 newLocalization.LocaleCode = pair.languageID;
 
                 // Add these new lines to the localisation's asset
@@ -406,7 +418,7 @@ namespace Yarn.GodotIntegration.Editor
                     project.baseLocalization = newLocalization;
 
                     // Since this is the default language, also populate the line metadata.
-                    project.lineMetadata = new LineMetadata();
+                    project.lineMetadata.Clear();
                     project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
                 }
                 foreach (var localization in project.localizations)
