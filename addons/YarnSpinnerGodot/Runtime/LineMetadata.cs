@@ -63,5 +63,9 @@ namespace Yarn.GodotIntegration
 
             return null;
         }
+        public void Clear()
+        {
+            _lineMetadata.Clear();
+        }
     }
 }
