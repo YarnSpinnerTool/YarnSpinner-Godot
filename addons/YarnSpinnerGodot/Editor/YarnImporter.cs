@@ -19,12 +19,6 @@ namespace Yarn.GodotIntegration.Editor
 
         private YarnEditorUtility _editorUtility = new YarnEditorUtility();
         private YarnProjectUtility _projectUtility = new YarnProjectUtility();
-        public override string[] _GetRecognizedExtensions() =>
-            new string[]
-            {
-                "yarn"
-            };
-
         public override string _GetImporterName()
         {
             return "yarnscript";
@@ -34,20 +28,42 @@ namespace Yarn.GodotIntegration.Editor
         {
             return "Yarn Script";
         }
-
-        public override string _GetSaveExtension() => "tres";
+        public override string[] _GetRecognizedExtensions()
+        {
+            return new[] { 
+                "yarn" 
+            };
+        }
+        public override string _GetSaveExtension()
+        {
+            return "tres";
+        }
         public override string _GetResourceType()
         {
             return "Resource";
         }
         public override long _GetPresetCount()
         {
-            return 0;
+            return 0L;
+        }
+
+        public override double _GetPriority()
+        {
+            return 1.0;
+        }
+        public override long _GetImportOrder()
+        {
+            return 0L;
         }
 
         public override Array<Dictionary> _GetImportOptions(string path, long presetIndex)
         {
             return new Array<Dictionary>();
+        }
+
+        public override bool _GetOptionVisibility(string path, StringName optionName, Dictionary options)
+        {
+            return true;
         }
 
         public override long _Import(string assetPath, string savePath, Dictionary options,
@@ -74,7 +90,7 @@ namespace Yarn.GodotIntegration.Editor
             {
                 GD.PrintErr($"Error saving yarn file import: {saveErr.ToString()}");
             }
-            return (int)Error.Ok;
+            return (long)Error.Ok;
         }
 
         /// <summary>
