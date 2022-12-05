@@ -46,7 +46,10 @@ namespace Yarn.GodotIntegration.Editor
         {
             return 0L;
         }
-
+        public override string _GetPresetName(long presetIndex)
+        {
+            return "Yarn Script";
+        }
         public override double _GetPriority()
         {
             return 1.0;
