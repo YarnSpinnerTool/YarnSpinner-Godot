@@ -27,6 +27,8 @@ script = ExtResource( 3 )
 canvasLayerPath = NodePath("CanvasModulate/CanvasLayer")
 lineTextPath = NodePath("CanvasModulate/CanvasLayer/LineText")
 characterNameTextPath = NodePath("CanvasModulate/CanvasLayer/CharacterNameText")
+useTypewriterEffect = true
+typewriterEffectSpeed = 240.0
 continueButtonPath = NodePath("CanvasModulate/CanvasLayer/ContinueButton")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="YarnSpinnerCanvasLayer/DialogueRunner/LineView"]

@@ -153,7 +153,7 @@ namespace Yarn.GodotIntegration
             stopToken?.Start();
 
             // Start with everything invisible
-            text.PercentVisible= 0;
+            text.PercentVisible = 0;
 
             // Wait a single frame to let the text component process its
             // content, otherwise text.textInfo.characterCount won't be
@@ -167,7 +167,7 @@ namespace Yarn.GodotIntegration
             if (lettersPerSecond <= 0 || characterCount == 0)
             {
                 // Show everything and return
-                text.PercentVisible= 100;
+                text.PercentVisible = 1;
                 stopToken?.Complete();
                 return;
             }
@@ -184,31 +184,32 @@ namespace Yarn.GodotIntegration
             // Instead, we'll accumulate time every frame, and display as
             // many letters in that frame as we need to in order to achieve
             // the requested speed.
-            var accumulator = mainTree.Root.GetProcessDeltaTime();
+            var deltaTime = mainTree.Root.GetProcessDeltaTime();
+            var accumulator = deltaTime;
 
-            while (text.PercentVisible < 100)
+            while (text.PercentVisible < 1)
             {
                 if (stopToken?.WasInterrupted ?? false)
                 {
                     return;
                 }
-
+                
                 // We need to show as many letters as we have accumulated
                 // time for.
                 while (accumulator >= secondsPerLetter)
                 {
-                    text.PercentVisible += 1;
+                    text.PercentVisible += .03f;
                     onCharacterTyped?.Invoke();
                     accumulator -= secondsPerLetter;
                 }
-                accumulator += mainTree.Root.GetProcessDeltaTime();
+                accumulator += deltaTime;
 
-                await DefaultActions.Wait(LineView.FrameWaitTime);
+                await DefaultActions.Wait(deltaTime);
             }
 
             // We either finished displaying everything, or were
             // interrupted. Either way, display everything now.
-            text.PercentVisible = 100;
+            text.PercentVisible = 1;
 
             stopToken?.Complete();
         }
@@ -308,7 +309,7 @@ namespace Yarn.GodotIntegration
         /// </remarks>
         [Export]
         public NodePath characterNameTextPath;
-        
+
         public RichTextLabel characterNameText = null;
 
         /// <summary>
@@ -370,7 +371,7 @@ namespace Yarn.GodotIntegration
         /// <seealso cref="autoAdvance"/>
         [Export]
         public NodePath continueButtonPath;
-        
+
         public Button continueButton = null;
 
         /// <summary>
@@ -423,8 +424,8 @@ namespace Yarn.GodotIntegration
         {
             if (lineText == null)
             {
-                            lineText = GetNode<RichTextLabel>(lineTextPath);
-                                         lineText.BbcodeEnabled = true;
+                lineText = GetNode<RichTextLabel>(lineTextPath);
+                lineText.BbcodeEnabled = true;
             }
             if (canvasLayer == null)
             {
@@ -445,7 +446,7 @@ namespace Yarn.GodotIntegration
             if (!(canvasLayer.GetParent() is CanvasModulate))
             {
                 GD.PushError($"The parent of {nameof(canvasLayer)} is not of type {nameof(CanvasModulate)}. Parent the canvas layer to a {nameof(CanvasModulate)}");
-                
+
             }
             canvasModulate = canvasLayer.GetParent<CanvasModulate>();
             SetCanvasAlpha(0);
@@ -476,7 +477,7 @@ namespace Yarn.GodotIntegration
             // If we're using a fade effect, run it, and wait for it to finish.
             if (useFadeEffect)
             {
-               await Effects.FadeAlpha(canvasModulate, 1, 0, fadeOutTime, currentStopToken);
+                await Effects.FadeAlpha(canvasModulate, 1, 0, fadeOutTime, currentStopToken);
                 currentStopToken.Complete();
             }
 
@@ -523,12 +524,12 @@ namespace Yarn.GodotIntegration
             }
 
             // Show the entire line's text immediately.
-            lineText.PercentVisible = 100;
+            lineText.PercentVisible = 1;
 
             // Make the canvas group fully visible immediately, too.
             SetCanvasAlpha(1f);
 
-           SetCanvasInteractable(true);
+            SetCanvasInteractable(true);
 
             onInterruptLineFinished();
         }
@@ -541,7 +542,7 @@ namespace Yarn.GodotIntegration
             // StopAllCoroutines();
 
             // Begin running the line as a coroutine.
-           RunLineInternal(dialogueLine, onDialogueLineFinished);
+            RunLineInternal(dialogueLine, onDialogueLineFinished);
         }
 
         private async Task RunLineInternal(LocalizedLine dialogueLine, Action onDialogueLineFinished)
@@ -591,7 +592,7 @@ namespace Yarn.GodotIntegration
                     // If we're using the typewriter effect, hide all of the
                     // text before we begin any possible fade (so we don't fade
                     // in on visible text).
-                    lineText.PercentVisible= 0;
+                    lineText.PercentVisible = 0;
                 }
                 else
                 {
@@ -624,7 +625,7 @@ namespace Yarn.GodotIntegration
                     await Effects.Typewriter(
                         lineText,
                         typewriterEffectSpeed,
-                        () => onCharacterTyped.Invoke(),
+                        () => onCharacterTyped?.Invoke(),
                         currentStopToken
                     );
                     if (currentStopToken.WasInterrupted)
@@ -679,7 +680,7 @@ namespace Yarn.GodotIntegration
             // Our presentation is complete; call the completion handler.
             onDialogueLineFinished();
         }
-        
+
         private void SetCanvasInteractable(bool b)
         {
             GD.Print("TODO: set canvas layer interactable?");
