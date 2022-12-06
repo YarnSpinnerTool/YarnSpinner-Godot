@@ -93,7 +93,7 @@ namespace Yarn.GodotIntegration.Editor
             ActionManager.ClearAllActions();
             ActionManager.AddActionsFromAssemblies();
             ActionManager.RegisterFunctions(library);
-            var existingFunctions = project.ListOfFunctions;
+            var existingFunctions = project.ListOfFunctions ?? System.Array.Empty<FunctionInfo>();
             var pretedermined = predeterminedFunctions().ToArray();
             foreach (var func in pretedermined)
             {

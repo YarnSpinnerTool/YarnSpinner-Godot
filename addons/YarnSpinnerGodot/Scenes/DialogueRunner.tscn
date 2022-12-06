@@ -1,0 +1,82 @@
+[gd_scene load_steps=5 format=3 uid="uid://d05megy423g"]
+
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs" id="1_ka8yc"]
+[ext_resource type="Resource" uid="uid://cor40yvxg5edc" path="res://Samples/Space/Space_Project.tres" id="2_0ckbe"]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/InMemoryVariableStorage.cs" id="3_ahivn"]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Views/LineView.cs" id="4_54qim"]
+
+[node name="DialogueRunner" type="Node2D"]
+script = ExtResource("1_ka8yc")
+yarnProject = ExtResource("2_0ckbe")
+variableStoragePath = NodePath("InMemoryVariableStorage")
+dialogueViewPaths = [NodePath("LineView")]
+startNode = "Sally"
+startAutomatically = false
+
+[node name="InMemoryVariableStorage" type="Node" parent="."]
+script = ExtResource("3_ahivn")
+debugTextViewPath = NodePath("../VariableDebugText")
+
+[node name="VariableDebugText" type="RichTextLabel" parent="."]
+
+[node name="LineView" type="Node" parent="."]
+script = ExtResource("4_54qim")
+canvasLayerPath = NodePath("CanvasModulate/CanvasLayer")
+lineTextPath = NodePath("CanvasModulate/CanvasLayer/LineText")
+characterNameTextPath = NodePath("CanvasModulate/CanvasLayer/CharacterNameText")
+useTypewriterEffect = true
+typewriterEffectSpeed = 240.0
+continueButtonPath = NodePath("CanvasModulate/CanvasLayer/ContinueButton")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="LineView"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="LineView/CanvasModulate"]
+
+[node name="LineText" type="RichTextLabel" parent="LineView/CanvasModulate/CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -443.0
+offset_top = -225.0
+offset_right = 443.0
+offset_bottom = 225.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 8
+bbcode_enabled = true
+text = "The dialogue text should appear here!"
+
+[node name="CharacterNameText" type="RichTextLabel" parent="LineView/CanvasModulate/CanvasLayer"]
+self_modulate = Color(0.811765, 1, 0.411765, 1)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -443.0
+offset_top = -265.0
+offset_right = 443.0
+offset_bottom = 185.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 8
+bbcode_enabled = true
+text = "Character Name"
+
+[node name="ContinueButton" type="Button" parent="LineView/CanvasModulate/CanvasLayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -113.0
+offset_top = -142.0
+offset_right = 119.0
+offset_bottom = -42.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Continue"
