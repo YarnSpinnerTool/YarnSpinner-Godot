@@ -1,0 +1,132 @@
+[gd_resource type="Resource" load_steps=19 format=3 uid="uid://4fq4j0n3xj26"]
+
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs" id="1_m0hal"]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" id="1_q5jnn"]
+[ext_resource type="Resource" uid="uid://c3bj8pxkq5s5n" path="res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn" id="2_q6jj7"]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" id="3_hrfa2"]
+[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" id="4_cwtr6"]
+
+[sub_resource type="Resource" id="Resource_xeqem"]
+resource_name = "Random"
+script = ExtResource("1_m0hal")
+Name = "Random"
+ReturnType = "-> Single"
+Parameters = PackedStringArray()
+
+[sub_resource type="Resource" id="Resource_xpkkp"]
+resource_name = "RandomRange"
+script = ExtResource("1_m0hal")
+Name = "RandomRange"
+ReturnType = "-> Single"
+Parameters = PackedStringArray("minInclusive", "maxInclusive")
+
+[sub_resource type="Resource" id="Resource_gq3km"]
+resource_name = "Dice"
+script = ExtResource("1_m0hal")
+Name = "Dice"
+ReturnType = "-> UInt32"
+Parameters = PackedStringArray("sides")
+
+[sub_resource type="Resource" id="Resource_uqhn0"]
+resource_name = "Round"
+script = ExtResource("1_m0hal")
+Name = "Round"
+ReturnType = "-> Int32"
+Parameters = PackedStringArray("num")
+
+[sub_resource type="Resource" id="Resource_6glub"]
+resource_name = "RoundPlaces"
+script = ExtResource("1_m0hal")
+Name = "RoundPlaces"
+ReturnType = "-> Single"
+Parameters = PackedStringArray("num", "places")
+
+[sub_resource type="Resource" id="Resource_5s5na"]
+resource_name = "Floor"
+script = ExtResource("1_m0hal")
+Name = "Floor"
+ReturnType = "-> Int32"
+Parameters = PackedStringArray("num")
+
+[sub_resource type="Resource" id="Resource_lw43j"]
+resource_name = "Ceil"
+script = ExtResource("1_m0hal")
+Name = "Ceil"
+ReturnType = "-> Int32"
+Parameters = PackedStringArray("num")
+
+[sub_resource type="Resource" id="Resource_qacgs"]
+resource_name = "Inc"
+script = ExtResource("1_m0hal")
+Name = "Inc"
+ReturnType = "-> Int32"
+Parameters = PackedStringArray("num")
+
+[sub_resource type="Resource" id="Resource_ywwxv"]
+resource_name = "Dec"
+script = ExtResource("1_m0hal")
+Name = "Dec"
+ReturnType = "-> Int32"
+Parameters = PackedStringArray("num")
+
+[sub_resource type="Resource" id="Resource_2ivbi"]
+resource_name = "Decimal"
+script = ExtResource("1_m0hal")
+Name = "Decimal"
+ReturnType = "-> Single"
+Parameters = PackedStringArray("num")
+
+[sub_resource type="Resource" id="Resource_8vtnj"]
+resource_name = "Int"
+script = ExtResource("1_m0hal")
+Name = "Int"
+ReturnType = "-> Int32"
+Parameters = PackedStringArray("num")
+
+[sub_resource type="Resource" id="Resource_oo6gh"]
+resource_name = "Default (en-US)"
+script = ExtResource("3_hrfa2")
+LocaleCode = "en-US"
+_stringTable = {
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-0": "A VISUAL NOVEL EXAMPLE",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-1": "Eve: Finally, a quiet day at the office. Maybe I'll be able to get some work done.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-10": "Eve: Not when you're bothering me.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-11": "Adam: Oh, I didn't realize you were busy. Sorry.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-12": "Eve: Ok, now to finally write that visual novel.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-13": "Eve: I can finally write my epic romance about -",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-14": "Eve: Wait... where's my laptop? It's not here.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-15": "Eve: Adam! Have you seen my laptop???",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-16": "Eve: ADDDDAAAMMMMMMM!!!",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-17": "THE END.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-2": "Adam: Hey Eve! I have a question!",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-3": "Eve: Oh no...",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-4": "Eve gets upset with Adam",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-5": "Eve: WHAT DO YOU WANT???",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-6": "Adam: I just wanted to see if you liked using Yarn Spinner.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-7": "Eve: ... It's fine. Thanks. Now leave me alone.",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-8": "Adam asks Eve a question",
+"line:C:/Users/chris/YarnSpinner-Godot/Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn-Start-9": "Adam: Do you think Yarn Spinner is easy to use?"
+}
+_assetTable = {}
+_containsLocalizedAssets = false
+stringsFile = ""
+
+[sub_resource type="Resource" id="Resource_tejst"]
+script = ExtResource("4_cwtr6")
+_lineMetadata = {}
+
+[resource]
+resource_name = "VisualNovel_YarnProject"
+script = ExtResource("1_q5jnn")
+LastImportHadImplicitStringIDs = false
+LastImportHadAnyStrings = false
+IsSuccessfullyParsed = false
+CompiledYarnProgramBase64 = "EusWCgVTdGFydBLhFgoFU3RhcnQSHAgDEhEKD1NjZW5lIGJnX29mZmljZRIFHQAAAAASLQgDEiIKIFBsYXlBdWRpbyBhbWJpZW50X2JpcmRzIDAuNSBsb29wEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMBIFHQAAAAASMAgDEiUKI0FjdCBFdmUgY29vbC1naXJsIGxlZnQgY2VudGVyIGdyZWVuEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMRIFHQAAAAASMQgDEiYKJEFjdCBBZGFtIGJpei1ndXkgMS4yNSBjZW50ZXIgIzIyNjY3NxIFHQAAAAASJwgDEhwKGk1vdmUgQWRhbSByaWdodCBjZW50ZXIgMC41EgUdAAAAABIrCAMSIAoeUGxheUF1ZGlvIG11c2ljX2Z1bm55IDEuMCBsb29wEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMhIFHQAAAAASbggCEmMKYWxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTMSBR0AAAAAEhUIAxIKCghGbGlwIEV2ZRIFHQAAAAASjgEIBBJjCmFsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC00EhoKGEwyc2hvcnRjdXRvcHRpb25fU3RhcnRfMRIFHQAAAAASAhAAEo4BCAQSYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtOBIaChhMM3Nob3J0Y3V0b3B0aW9uX1N0YXJ0XzISBR0AAAAAEgIQABICCAUSAggBEhoIAxIPCg1TaGFrZSBFdmUgMS4wEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtNRIFHQAAAAASbggCEmMKYWxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTYSBR0AAAAAEm4IAhJjCmFsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC03EgUdAAAAABIPEg0KC0wxZ3JvdXBfZW5kEm4IAhJjCmFsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC05EgUdAAAAABJvCAISZApibGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMTASBR0AAAAAEm8IAhJkCmJsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC0xMRIFHQAAAAASDxINCgtMMWdyb3VwX2VuZBICCAsSFggDEgsKCUhpZGUgQWRhbRIFHQAAAAASGQgDEg4KDFN0b3BBdWRpb0FsbBIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTEyEgUdAAAAABIVCAMSCgoIRmxpcCBFdmUSBR0AAAAAEiUIAxIaChhQbGF5QXVkaW8gbXVzaWNfcm9tYW50aWMSBR0AAAAAEm8IAhJkCmJsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC0xMxIFHQAAAAASGQgDEg4KDFN0b3BBdWRpb0FsbBIFHQAAAAASFQgDEgoKCEZsaXAgRXZlEgUdAAAAABIVCAMSCgoId2FpdCAxLjUSBR0AAAAAEhUIAxIKCghGbGlwIEV2ZRIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTE0EgUdAAAAABIWCAMSCwoJU2hha2UgRXZlEgUdAAAAABJvCAISZApibGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMTUSBR0AAAAAEiIIAxIXChVQbGF5QXVkaW8gbXVzaWNfZnVubnkSBR0AAAAAEhUIAxIKCghGbGlwIEV2ZRIFHQAAAAASJQgDEhoKGE1vdmUgRXZlIDEuMjUgY2VudGVyIDEuMBIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTE2EgUdAAAAABIjCAMSGAoWRmFkZSBibGFjayAwLjAgMS4wIDIuMBIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTE3EgUdAAAAABICCA8aBAoCTDAaHAoYTDJzaG9ydGN1dG9wdGlvbl9TdGFydF8xEA8aHAoYTDNzaG9ydGN1dG9wdGlvbl9TdGFydF8yEBQaDwoLTDFncm91cF9lbmQQGA=="
+baseLocalization = SubResource("Resource_oo6gh")
+localizations = [SubResource("Resource_oo6gh")]
+lineMetadata = SubResource("Resource_tejst")
+ListOfFunctions = [SubResource("Resource_xeqem"), SubResource("Resource_xpkkp"), SubResource("Resource_gq3km"), SubResource("Resource_uqhn0"), SubResource("Resource_6glub"), SubResource("Resource_5s5na"), SubResource("Resource_lw43j"), SubResource("Resource_qacgs"), SubResource("Resource_ywwxv"), SubResource("Resource_2ivbi"), SubResource("Resource_8vtnj")]
+SerializedDeclarations = []
+defaultLanguage = "en-US"
+SourceScripts = [ExtResource("2_q6jj7")]
+ProjectErrors = []

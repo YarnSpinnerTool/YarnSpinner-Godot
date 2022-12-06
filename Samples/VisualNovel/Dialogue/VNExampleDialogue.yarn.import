@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+uid="uid://c3bj8pxkq5s5n"
+path="res://.godot/imported/VNExampleDialogue.yarn-41f0962017de26826290721466099c71.tres"
+
+[deps]
+
+source_file="res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+dest_files=["res://.godot/imported/VNExampleDialogue.yarn-41f0962017de26826290721466099c71.tres"]
+
+[params]
+

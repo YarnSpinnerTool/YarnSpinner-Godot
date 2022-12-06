@@ -115,13 +115,13 @@ namespace Yarn.GodotIntegration
         /// <remarks>
         /// The node specified by <see cref="startNode"/> will be used.
         /// </remarks>
-        public bool startAutomatically = true;
+       [Export] public bool startAutomatically = true;
 
         /// <summary>
         /// If true, when an option is selected, it's as though it were a
         /// line.
         /// </summary>
-        public bool runSelectedOptionAsLine;
+       [Export] public bool runSelectedOptionAsLine;
 
         public LineProviderBehaviour lineProvider;
 
