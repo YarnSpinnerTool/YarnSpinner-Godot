@@ -15,11 +15,9 @@ public partial class VisualNovelManager : Node
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		_background = GetNode<TextureRect>(backgroundPath);
 		_dialogueRunner = GetNode<DialogueRunner>(dialogueRunnerPath);
-		_dialogueRunner.AddCommandHandler("Scene", (string backgroundImage) =>
-		{
-			GD.Print("Scene command invoked.");
-		});		
+		_dialogueRunner.AddCommandHandler("Scene", Scene);		
 		_dialogueRunner.AddCommandHandler("PlayAudio", (string streamName, float volume, string doLoop) =>
 		{
 			GD.Print("PlayAudio command invoked.");
@@ -31,7 +29,22 @@ public partial class VisualNovelManager : Node
 		
 		_dialogueRunner.StartDialogue("Start");
 	}
+	
+	private Dictionary<string, string> bgShortNameToUUID = new Dictionary<string, string>
+	{
+		{"bg_office", "res://Samples/VisualNovel/Sprites/bg_office.png"}
+	};
+	private void Scene(string backgroundImage)
+	{
+		if (!bgShortNameToUUID.ContainsKey(backgroundImage))
+		{
+			GD.PrintErr($"The audio stream name {backgroundImage} was not defined in {nameof(bgShortNameToUUID)}");
+			return;
+		}
 
+		var texture = ResourceLoader.Load<Texture2D>(bgShortNameToUUID[backgroundImage]);
+		_background.Texture = texture;
+	}
 	private Dictionary<string, string> audioShortNameToUUID = new Dictionary<string, string>
 	{
 		{"music_funny", "res://Samples/VisualNovel/Sounds/music_funny.mp3"},

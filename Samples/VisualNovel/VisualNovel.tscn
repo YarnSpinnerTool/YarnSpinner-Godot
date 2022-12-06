@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://c3vextjh7kcwx"]
+[gd_scene load_steps=4 format=3 uid="uid://c3vextjh7kcwx"]
 
 [ext_resource type="PackedScene" uid="uid://d05megy423g" path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" id="1_fneuv"]
 [ext_resource type="Resource" uid="uid://4fq4j0n3xj26" path="res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres" id="2_rnoea"]
 [ext_resource type="Script" path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" id="3_hslms"]
-[ext_resource type="Texture2D" uid="uid://dio4okvwpbdw8" path="res://Samples/VisualNovel/Sprites/bg_office.png" id="3_vp0ub"]
 
 [node name="VisualNovel" type="Node2D"]
 position = Vector2(299, 159)
@@ -22,7 +21,22 @@ script = ExtResource("3_hslms")
 dialogueRunnerPath = NodePath("../DialogueRunner")
 backgroundPath = NodePath("Background")
 
+[node name="BackgroundColor" type="ColorRect" parent="VisualNovelManager"]
+custom_minimum_size = Vector2(8000, 8000)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -3980.0
+offset_top = -3980.0
+offset_right = 3980.0
+offset_bottom = 3980.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0313726, 0.0705882, 0.0313726, 1)
+
 [node name="Background" type="TextureRect" parent="VisualNovelManager"]
+layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.420724
 anchor_top = 0.889558
@@ -34,5 +48,4 @@ offset_right = 1650.0
 offset_bottom = 800.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_vp0ub")
 metadata/_edit_use_anchors_ = true
