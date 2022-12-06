@@ -23,7 +23,6 @@ dialogueRunnerPath = NodePath("../DialogueRunner")
 backgroundPath = NodePath("Background")
 
 [node name="Background" type="TextureRect" parent="VisualNovelManager"]
-layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.420724
 anchor_top = 0.889558
