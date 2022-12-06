@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://d05megy423g"]
 
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs" id="1_ka8yc"]
-[ext_resource type="Resource" uid="uid://cor40yvxg5edc" path="res://Samples/Space/Space_Project.tres" id="2_0ckbe"]
+[ext_resource type="Resource" uid="uid://cor40yvxg5edc" path="res://Samples/Space/Dialogue/Space_YarnProject.tres" id="2_0ckbe"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/InMemoryVariableStorage.cs" id="3_ahivn"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Views/LineView.cs" id="4_54qim"]
 

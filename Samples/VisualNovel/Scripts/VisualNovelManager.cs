@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Net.Mime;
 using Yarn.GodotIntegration;
 
@@ -22,12 +23,39 @@ public partial class VisualNovelManager : Node
 		_dialogueRunner.AddCommandHandler("PlayAudio", (string streamName, float volume, string doLoop) =>
 		{
 			GD.Print("PlayAudio command invoked.");
+			PlayAudio(streamName, volume, doLoop);
 		});		_dialogueRunner.AddCommandHandler("Act", (string actor, string spriteName, string positionX, string DispositionTypeNames, string color) =>
 		{
-			GD.Print("PlayAudio command invoked.");
+			GD.Print("Act command invoked.");
 		});
 		
 		_dialogueRunner.StartDialogue("Start");
 	}
 
+	private Dictionary<string, string> audioShortNameToUUID = new Dictionary<string, string>
+	{
+		{"music_funny", "res://Samples/VisualNovel/Sounds/music_funny.mp3"},
+		{"music_romantic", "res://Samples/VisualNovel/Sounds/music_romantic.mp3"},
+		{"ambient_birds", "res://Samples/VisualNovel/Sounds/ambient_birds.ogg"}
+	};
+	private async void PlayAudio(string streamName, float volume, string doLoop)
+	{
+		if (!audioShortNameToUUID.ContainsKey(streamName))
+		{
+			GD.PrintErr($"The audio stream name {streamName} was not defined in {nameof(audioShortNameToUUID)}");
+			return;
+		}
+		var stream = ResourceLoader.Load<AudioStream>(audioShortNameToUUID[streamName]);
+		var player = new AudioStreamPlayer2D();
+		player.VolumeDb = GD.LinearToDb(volume);
+		player.Stream = stream;
+		AddChild(player);
+		player.Play();
+		if (doLoop != "loop")
+		{
+			await DefaultActions.Wait(stream.GetLength());
+			player.Stop();
+			player.QueueFree();
+		}
+	}
 }

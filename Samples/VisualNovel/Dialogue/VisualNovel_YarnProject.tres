@@ -6,84 +6,84 @@
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" id="3_hrfa2"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" id="4_cwtr6"]
 
-[sub_resource type="Resource" id="Resource_xeqem"]
+[sub_resource type="Resource" id="Resource_3dq5r"]
 resource_name = "Random"
 script = ExtResource("1_m0hal")
 Name = "Random"
 ReturnType = "-> Single"
 Parameters = PackedStringArray()
 
-[sub_resource type="Resource" id="Resource_xpkkp"]
+[sub_resource type="Resource" id="Resource_0rdu1"]
 resource_name = "RandomRange"
 script = ExtResource("1_m0hal")
 Name = "RandomRange"
 ReturnType = "-> Single"
 Parameters = PackedStringArray("minInclusive", "maxInclusive")
 
-[sub_resource type="Resource" id="Resource_gq3km"]
+[sub_resource type="Resource" id="Resource_cee8p"]
 resource_name = "Dice"
 script = ExtResource("1_m0hal")
 Name = "Dice"
 ReturnType = "-> UInt32"
 Parameters = PackedStringArray("sides")
 
-[sub_resource type="Resource" id="Resource_uqhn0"]
+[sub_resource type="Resource" id="Resource_oa8aj"]
 resource_name = "Round"
 script = ExtResource("1_m0hal")
 Name = "Round"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_6glub"]
+[sub_resource type="Resource" id="Resource_bc7j0"]
 resource_name = "RoundPlaces"
 script = ExtResource("1_m0hal")
 Name = "RoundPlaces"
 ReturnType = "-> Single"
 Parameters = PackedStringArray("num", "places")
 
-[sub_resource type="Resource" id="Resource_5s5na"]
+[sub_resource type="Resource" id="Resource_42q3l"]
 resource_name = "Floor"
 script = ExtResource("1_m0hal")
 Name = "Floor"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_lw43j"]
+[sub_resource type="Resource" id="Resource_jvd0a"]
 resource_name = "Ceil"
 script = ExtResource("1_m0hal")
 Name = "Ceil"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_qacgs"]
+[sub_resource type="Resource" id="Resource_xbg1j"]
 resource_name = "Inc"
 script = ExtResource("1_m0hal")
 Name = "Inc"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_ywwxv"]
+[sub_resource type="Resource" id="Resource_lrxoy"]
 resource_name = "Dec"
 script = ExtResource("1_m0hal")
 Name = "Dec"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_2ivbi"]
+[sub_resource type="Resource" id="Resource_n40u5"]
 resource_name = "Decimal"
 script = ExtResource("1_m0hal")
 Name = "Decimal"
 ReturnType = "-> Single"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_8vtnj"]
+[sub_resource type="Resource" id="Resource_tiki0"]
 resource_name = "Int"
 script = ExtResource("1_m0hal")
 Name = "Int"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_oo6gh"]
+[sub_resource type="Resource" id="Resource_rt8p2"]
 resource_name = "Default (en-US)"
 script = ExtResource("3_hrfa2")
 LocaleCode = "en-US"
@@ -111,7 +111,7 @@ _assetTable = {}
 _containsLocalizedAssets = false
 stringsFile = ""
 
-[sub_resource type="Resource" id="Resource_tejst"]
+[sub_resource type="Resource" id="Resource_usij6"]
 script = ExtResource("4_cwtr6")
 _lineMetadata = {}
 
@@ -122,10 +122,10 @@ LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
 CompiledYarnProgramBase64 = "EusWCgVTdGFydBLhFgoFU3RhcnQSHAgDEhEKD1NjZW5lIGJnX29mZmljZRIFHQAAAAASLQgDEiIKIFBsYXlBdWRpbyBhbWJpZW50X2JpcmRzIDAuNSBsb29wEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMBIFHQAAAAASMAgDEiUKI0FjdCBFdmUgY29vbC1naXJsIGxlZnQgY2VudGVyIGdyZWVuEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMRIFHQAAAAASMQgDEiYKJEFjdCBBZGFtIGJpei1ndXkgMS4yNSBjZW50ZXIgIzIyNjY3NxIFHQAAAAASJwgDEhwKGk1vdmUgQWRhbSByaWdodCBjZW50ZXIgMC41EgUdAAAAABIrCAMSIAoeUGxheUF1ZGlvIG11c2ljX2Z1bm55IDEuMCBsb29wEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMhIFHQAAAAASbggCEmMKYWxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTMSBR0AAAAAEhUIAxIKCghGbGlwIEV2ZRIFHQAAAAASjgEIBBJjCmFsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC00EhoKGEwyc2hvcnRjdXRvcHRpb25fU3RhcnRfMRIFHQAAAAASAhAAEo4BCAQSYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtOBIaChhMM3Nob3J0Y3V0b3B0aW9uX1N0YXJ0XzISBR0AAAAAEgIQABICCAUSAggBEhoIAxIPCg1TaGFrZSBFdmUgMS4wEgUdAAAAABJuCAISYwphbGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtNRIFHQAAAAASbggCEmMKYWxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTYSBR0AAAAAEm4IAhJjCmFsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC03EgUdAAAAABIPEg0KC0wxZ3JvdXBfZW5kEm4IAhJjCmFsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC05EgUdAAAAABJvCAISZApibGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMTASBR0AAAAAEm8IAhJkCmJsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC0xMRIFHQAAAAASDxINCgtMMWdyb3VwX2VuZBICCAsSFggDEgsKCUhpZGUgQWRhbRIFHQAAAAASGQgDEg4KDFN0b3BBdWRpb0FsbBIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTEyEgUdAAAAABIVCAMSCgoIRmxpcCBFdmUSBR0AAAAAEiUIAxIaChhQbGF5QXVkaW8gbXVzaWNfcm9tYW50aWMSBR0AAAAAEm8IAhJkCmJsaW5lOkM6L1VzZXJzL2NocmlzL1lhcm5TcGlubmVyLUdvZG90L1NhbXBsZXMvVmlzdWFsTm92ZWwvRGlhbG9ndWUvVk5FeGFtcGxlRGlhbG9ndWUueWFybi1TdGFydC0xMxIFHQAAAAASGQgDEg4KDFN0b3BBdWRpb0FsbBIFHQAAAAASFQgDEgoKCEZsaXAgRXZlEgUdAAAAABIVCAMSCgoId2FpdCAxLjUSBR0AAAAAEhUIAxIKCghGbGlwIEV2ZRIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTE0EgUdAAAAABIWCAMSCwoJU2hha2UgRXZlEgUdAAAAABJvCAISZApibGluZTpDOi9Vc2Vycy9jaHJpcy9ZYXJuU3Bpbm5lci1Hb2RvdC9TYW1wbGVzL1Zpc3VhbE5vdmVsL0RpYWxvZ3VlL1ZORXhhbXBsZURpYWxvZ3VlLnlhcm4tU3RhcnQtMTUSBR0AAAAAEiIIAxIXChVQbGF5QXVkaW8gbXVzaWNfZnVubnkSBR0AAAAAEhUIAxIKCghGbGlwIEV2ZRIFHQAAAAASJQgDEhoKGE1vdmUgRXZlIDEuMjUgY2VudGVyIDEuMBIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTE2EgUdAAAAABIjCAMSGAoWRmFkZSBibGFjayAwLjAgMS4wIDIuMBIFHQAAAAASbwgCEmQKYmxpbmU6QzovVXNlcnMvY2hyaXMvWWFyblNwaW5uZXItR29kb3QvU2FtcGxlcy9WaXN1YWxOb3ZlbC9EaWFsb2d1ZS9WTkV4YW1wbGVEaWFsb2d1ZS55YXJuLVN0YXJ0LTE3EgUdAAAAABICCA8aBAoCTDAaHAoYTDJzaG9ydGN1dG9wdGlvbl9TdGFydF8xEA8aHAoYTDNzaG9ydGN1dG9wdGlvbl9TdGFydF8yEBQaDwoLTDFncm91cF9lbmQQGA=="
-baseLocalization = SubResource("Resource_oo6gh")
-localizations = [SubResource("Resource_oo6gh")]
-lineMetadata = SubResource("Resource_tejst")
-ListOfFunctions = [SubResource("Resource_xeqem"), SubResource("Resource_xpkkp"), SubResource("Resource_gq3km"), SubResource("Resource_uqhn0"), SubResource("Resource_6glub"), SubResource("Resource_5s5na"), SubResource("Resource_lw43j"), SubResource("Resource_qacgs"), SubResource("Resource_ywwxv"), SubResource("Resource_2ivbi"), SubResource("Resource_8vtnj")]
+baseLocalization = SubResource("Resource_rt8p2")
+localizations = [SubResource("Resource_rt8p2")]
+lineMetadata = SubResource("Resource_usij6")
+ListOfFunctions = [SubResource("Resource_3dq5r"), SubResource("Resource_0rdu1"), SubResource("Resource_cee8p"), SubResource("Resource_oa8aj"), SubResource("Resource_bc7j0"), SubResource("Resource_42q3l"), SubResource("Resource_jvd0a"), SubResource("Resource_xbg1j"), SubResource("Resource_lrxoy"), SubResource("Resource_n40u5"), SubResource("Resource_tiki0")]
 SerializedDeclarations = []
 defaultLanguage = "en-US"
 SourceScripts = [ExtResource("2_q6jj7")]
