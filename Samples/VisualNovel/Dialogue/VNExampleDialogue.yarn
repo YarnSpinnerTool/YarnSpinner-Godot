@@ -27,7 +27,7 @@ Adam: Hey Eve! I have a question!
 Eve: Oh no...
 
 // horizontally flips Eve actor to face Adam
-<<Flip Eve>>
+<<Flip Eve left>>
 
 // Yarn shortcut choices, an easy way to make branching options
 -> Eve gets upset with Adam

@@ -145,7 +145,8 @@ public partial class VisualNovelManager : Node
     // in seconds it will take to reach that position
     public void MoveSprite(string actorOrSpriteName, string screenPosX = "0.5", string screenPosY = "0.5", float moveTime = 1)
     {
-        GD.Print("Move command was called");
+        var actor = actors[actorOrSpriteName];
+        var position = new Vector2(ConvertCoordinates(screenPosX), ConvertCoordinates(screenPosY));
     }
 
     public void SetActor(string actorName, string spriteName, string positionX, string DispositionTypeNames, string color)
@@ -162,10 +163,11 @@ public partial class VisualNovelManager : Node
         var sizeRatio = originalSize.x / originalSize.y;
         // clamp the actor sprite size to the screen
         rect.Size = new Vector2(targetHeight * sizeRatio, targetHeight);
+        actors[actorName] = newActor;
     }
 
     /// flip a sprite, or force the sprite to face a direction
-    public void FlipSprite(string actorOrSpriteName, string xDirection = "")
+    public void FlipSprite(string actorOrSpriteName, string xDirection)
     {
         bool newFlip;
         var rect = actors[actorOrSpriteName].Rect;
@@ -175,7 +177,7 @@ public partial class VisualNovelManager : Node
         }
         else
         {
-            switch (xDirection)
+            switch (xDirection.ToLower())
             {
                 case "left":
                     newFlip = false;
