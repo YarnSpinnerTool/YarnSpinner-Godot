@@ -19,6 +19,12 @@ run/main_scene="res://Samples/VisualNovel/VisualNovel.tscn"
 config/features=PackedStringArray("4.0", "C#")
 config/icon="res://YarnSpinnerLogo.png"
 
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/size/resizable=false
+
 [dotnet]
 
 project/assembly_name="YarnSpinner-Godot"

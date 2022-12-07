@@ -1153,10 +1153,10 @@ namespace Yarn.GodotIntegration
 
             if (typeof(Task).IsAssignableFrom(methodInfo.ReturnType))
             {
-                // This delegate returns a YieldInstruction of some kind
-                // (e.g. a Coroutine). Run it, and wait for it to finish
+                // This delegate returns an async Task of some kind
+                // Run it, and wait for it to finish
                 // before calling onSuccessfulDispatch.
-                WaitForYieldInstruction(@delegate, finalParameters, onSuccessfulDispatch);
+                WaitForAsyncTask(@delegate, finalParameters, onSuccessfulDispatch);
             }
             else if (typeof(void) == methodInfo.ReturnType)
             {
@@ -1190,7 +1190,7 @@ namespace Yarn.GodotIntegration
         /// name="theDelegate"/> has finished.</param>
         /// <returns>An <see cref="IEnumerator"/> to use with <see
         /// cref="StartCoroutine"/>.</returns>
-        private static async void WaitForYieldInstruction(Delegate @theDelegate, object[] finalParametersToUse, Action onSuccessfulDispatch)
+        private static async void WaitForAsyncTask(Delegate @theDelegate, object[] finalParametersToUse, Action onSuccessfulDispatch)
         {
             // Invoke the delegate.
             var yieldInstruction = (Task)theDelegate.DynamicInvoke(finalParametersToUse);
