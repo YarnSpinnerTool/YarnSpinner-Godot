@@ -8,44 +8,48 @@
 position = Vector2(299, 159)
 scale = Vector2(0.639376, 0.639376)
 
-[node name="DialogueRunner" parent="." instance=ExtResource("1_fneuv")]
-yarnProject = ExtResource("2_rnoea")
-startNode = "Start"
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="VisualNovelManager" type="Control" parent="."]
+[node name="VisualNovelManager" type="Control" parent="CanvasLayer"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("3_hslms")
-dialogueRunnerPath = NodePath("../DialogueRunner")
-backgroundPath = NodePath("Background")
+dialogueRunnerPath = NodePath("DialogueRunner")
+backgroundPath = NodePath("BackgroundImage")
 
-[node name="BackgroundColor" type="ColorRect" parent="VisualNovelManager"]
-custom_minimum_size = Vector2(8000, 8000)
+[node name="BackgroundImage" type="TextureRect" parent="CanvasLayer/VisualNovelManager"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -3980.0
-offset_top = -3980.0
-offset_right = 3980.0
-offset_bottom = 3980.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0313726, 0.0705882, 0.0313726, 1)
 
-[node name="Background" type="TextureRect" parent="VisualNovelManager"]
+[node name="DialogueRunner" parent="CanvasLayer/VisualNovelManager" instance=ExtResource("1_fneuv")]
+z_index = 7
+z_as_relative = false
+position = Vector2(299, 159)
+scale = Vector2(0.639376, 0.639376)
+yarnProject = ExtResource("2_rnoea")
+startNode = "Start"
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/VisualNovelManager/DialogueRunner/LineView/CanvasModulate/CanvasLayer/LineText" index="1"]
+z_index = -1
 layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.420724
-anchor_top = 0.889558
-anchor_right = -0.420724
-anchor_bottom = 0.889558
-offset_left = -834.0
-offset_top = -400.0
-offset_right = 1650.0
-offset_bottom = 800.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-metadata/_edit_use_anchors_ = true
+color = Color(0.0823529, 0.117647, 0.0823529, 0.32549)
+
+[node name="CharacterNameText" parent="CanvasLayer/VisualNovelManager/DialogueRunner/LineView/CanvasModulate/CanvasLayer" index="1"]
+offset_bottom = -232.0
+
+[editable path="CanvasLayer/VisualNovelManager/DialogueRunner"]
