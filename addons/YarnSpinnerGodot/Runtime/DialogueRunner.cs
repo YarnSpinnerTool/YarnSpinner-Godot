@@ -904,7 +904,7 @@ namespace Yarn.GodotIntegration
 
                 dialogueView.DialogueComplete();
             }
-            onDialogueComplete.Invoke();
+            onDialogueComplete?.Invoke();
         }
 
         async void HandleCommand(Command command)

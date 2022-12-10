@@ -19,7 +19,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         [Export] private NodePath viewControlPath;
         private Control viewControl;
-         
+
         [Export] float fadeTime = 0.1f;
 
         [Export] bool showUnavailableOptions = false;
@@ -57,6 +57,7 @@ namespace Yarn.GodotIntegration
 
         public override void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
         {
+            viewControl.Visible = false;
             // Hide all existing option views
             foreach (var optionView in optionViews)
             {
@@ -118,12 +119,13 @@ namespace Yarn.GodotIntegration
             Effects.FadeAlpha(viewControl, 0, 1, fadeTime)
                 .ContinueWith(t =>
                 {
+                    viewControl.Visible = true;
                     if (t.IsFaulted)
                     {
                         GD.PrintErr($"Error running {nameof(Effects.FadeAlpha)} on {nameof(OptionsListView)}: {t.Exception}");
                     }
                 });
-                    
+
             /// <summary>
             /// Creates and configures a new <see cref="OptionView"/>, and adds
             /// it to <see cref="optionViews"/>.
@@ -145,7 +147,12 @@ namespace Yarn.GodotIntegration
             void OptionViewWasSelected(DialogueOption option)
             {
                 OptionViewWasSelectedInternal(option).ContinueWith(t =>
-                    GD.PrintErr($"Error running {nameof(OptionViewWasSelected)} on {nameof(OptionsListView)}: {t.Exception}"));
+                {
+                    if (t.IsFaulted)
+                    {
+                        GD.PrintErr($"Error running {nameof(OptionViewWasSelected)} on {nameof(OptionsListView)}: {t.Exception}");
+                    }
+                });
 
                 async Task OptionViewWasSelectedInternal(DialogueOption selectedOption)
                 {
