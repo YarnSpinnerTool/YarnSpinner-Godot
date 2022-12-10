@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Net.Mime;
+using System.Threading.Tasks;
 using Yarn.GodotIntegration;
 
 public partial class VisualNovelManager : Node
@@ -85,23 +86,31 @@ public partial class VisualNovelManager : Node
     private Dictionary<string, Actor> actors = new Dictionary<string, Actor>();
     private Dictionary<string, string> spriteShortNameToPath = new Dictionary<string, string>
     {
-        {"biz-guy", "res://Samples/VisualNovel/Sprites/biz-guy.png"},
-        {"cool-girl", "res://Samples/VisualNovel/Sprites/cool-girl.png"}
-    };
-    // utility function to convert words like "left" or "right" into
-    // equivalent position numbers
-    float ConvertCoordinates(string coordinate)
-    {
-        // first, is anyone named after this coordinate? we'll use the
-        // X position
-        if (actors.ContainsKey(coordinate))
         {
-            return actors[coordinate].Rect.Position.x / DisplayServer.WindowGetSize().x;
+            "biz-guy", "res://Samples/VisualNovel/Sprites/biz-guy.png"
+        },
+        {
+            "cool-girl", "res://Samples/VisualNovel/Sprites/cool-girl.png"
         }
+    };
 
-        // next, let's see if they used a position keyword
-        var labelCoordinate = coordinate.ToLower().Replace(" ", "").Replace("_", "").Replace("-", "");
-        switch (labelCoordinate)
+    private Vector2 GetPosition(string coordinateX, string coordinateY)
+    {
+        // let's see if they used a position keyword
+        var labelCoordinate = coordinateX.ToLower()
+            .Replace(" ", "")
+            .Replace("_", "")
+            .Replace("-", "");
+        var windowSize = DisplayServer.WindowGetSize();
+        var targetCoordinates = new Vector2(GetCoordinate(coordinateX)*windowSize.x, (0.5f-GetCoordinate(coordinateY))*windowSize.y);
+        return targetCoordinates;
+    }
+    // utility function to convert words like "left" or "right" into
+    // equivalent screen ratios, where 0 for an x coordinate is extreme left
+    private float GetCoordinate(string coordinate)
+    {
+
+        switch (coordinate)
         {
             case "leftedge":
             case "bottomedge":
@@ -127,29 +136,46 @@ public partial class VisualNovelManager : Node
             case "offright":
                 return 1.33f;
         }
-
         // if none of those worked, then let's try parsing it as a
         // number
-        float x;
-        if (float.TryParse(coordinate, out x))
+        float position;
+        if (float.TryParse(coordinate, out position))
         {
-            return x;
+            return position;
         }
-
-        GD.PrintErr(this, $"VN Manager couldn't convert position [{coordinate}]... it must be an alignment (left, center, right, or top, middle, bottom) or a value (like 0.42 as 42%)");
+        GD.PrintErr( $"VN Manager couldn't convert position [{coordinate}]... it must be an alignment (left, center, right, or top, middle, bottom) or a value (like 0.42 as 42%)");
         return -1f;
+        
     }
     // move a sprite usage: <<Move actorOrspriteName, screenPosX=0.5,
     // screenPosY=0.5, moveTime=1.0>> screenPosX and screenPosY are
     // normalized screen coordinates (0.0 - 1.0) moveTime is the time
     // in seconds it will take to reach that position
-    public void MoveSprite(string actorOrSpriteName, string screenPosX = "0.5", string screenPosY = "0.5", float moveTime = 1)
+    public async Task MoveSprite(string actorOrSpriteName, string screenPosX = "0.5", string screenPosY = "0.5", float moveTime = 1)
     {
         var actor = actors[actorOrSpriteName];
-        var position = new Vector2(ConvertCoordinates(screenPosX), ConvertCoordinates(screenPosY));
+        var targetPosition = GetPosition(screenPosX, screenPosY);
+        double elapsed = 0f;
+
+        var distance = targetPosition - actor.Rect.Position;
+        if (moveTime > 0)
+        {
+            while (elapsed < moveTime)
+            {
+                var delta = GetProcessDeltaTime();
+                // calculate the sprite movement this frame, 
+                // trying to normalize it based on framerate
+                var timeRatio = delta / moveTime;
+                var movement = new Vector2((float)timeRatio * distance.x, (float)timeRatio * distance.y);
+                actor.Rect.Position += movement;
+                elapsed += delta;
+                await DefaultActions.Wait(delta); // wait a frame
+            }
+        }
+        actor.Rect.Position = targetPosition; // fully snap to the final position
     }
 
-    public void SetActor(string actorName, string spriteName, string positionX, string DispositionTypeNames, string color)
+    public void SetActor(string actorName, string spriteName, string positionX = "", string positionY = "", string colorHex = "")
     {
         var newActor = new Actor();
         var rect = new TextureRect();
@@ -164,6 +190,8 @@ public partial class VisualNovelManager : Node
         // clamp the actor sprite size to the screen
         rect.Size = new Vector2(targetHeight * sizeRatio, targetHeight);
         actors[actorName] = newActor;
+        rect.Position = GetPosition(positionX, positionY);
+        MoveChild(rect, 1);
     }
 
     /// flip a sprite, or force the sprite to face a direction

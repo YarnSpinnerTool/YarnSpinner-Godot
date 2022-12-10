@@ -82,16 +82,16 @@ namespace Yarn.GodotIntegration
         /// to 1.</param>
         /// <param name="stopToken">A <see cref="CoroutineInterruptToken"/> that
         /// can be used to interrupt the coroutine.</param>
-        public static async Task FadeAlpha(CanvasModulate canvasGroup, float from, float to, float fadeTime, CoroutineInterruptToken stopToken = null)
+        public static async Task FadeAlpha(Control canvasGroup, float from, float to, float fadeTime, CoroutineInterruptToken stopToken = null)
         {
 
             var mainTree = (SceneTree)Engine.GetMainLoop();
 
             stopToken?.Start();
 
-            var color = canvasGroup.Color;
+            var color = canvasGroup.Modulate;
             color.a = from;
-            canvasGroup.Color = color;
+            canvasGroup.Modulate = color;
 
             var timeElapsed = 0d;
 
@@ -107,12 +107,12 @@ namespace Yarn.GodotIntegration
 
                 float a = Mathf.Lerp(from, to, (float)fraction);
                 color.a = a;
-                canvasGroup.Color = color;
+                canvasGroup.Modulate = color;
                 await DefaultActions.Wait(mainTree.Root.GetProcessDeltaTime());
             }
 
             color.a = to;
-            canvasGroup.Color = color;
+            canvasGroup.Modulate = color;
 
             // If our destination alpha is zero, disable interactibility,
             // because the canvas group is now invisible.
@@ -222,8 +222,8 @@ namespace Yarn.GodotIntegration
     public partial class LineView : DialogueViewBase
     {
         /// <summary>
-        /// The canvas group that contains the UI elements used by this Line
-        /// View.
+        /// The Control that is the parent of all UI elements in this line view.
+        /// Used to modify the transparency/visibility of the UI.
         /// </summary>
         /// <remarks>
         /// If <see cref="useFadeEffect"/> is true, then the alpha value of this
@@ -232,22 +232,22 @@ namespace Yarn.GodotIntegration
         /// </remarks>
         /// <seealso cref="useFadeEffect"/>
         [Export]
-        public NodePath canvasLayerPath;
-        public CanvasLayer canvasLayer;
+        public NodePath viewControlPath;
+        public Control viewControl;
 
         /// <summary>
         /// Controls whether the line view should fade in when lines appear, and
         /// fade out when lines disappear.
         /// </summary>
         /// <remarks><para>If this value is <see langword="true"/>, the <see
-        /// cref="canvasLayer"/> object's alpha property will animate from 0 to
+        /// cref="viewControl"/> object's alpha property will animate from 0 to
         /// 1 over the course of <see cref="fadeInTime"/> seconds when lines
         /// appear, and animate from 1 to zero over the course of <see
         /// cref="fadeOutTime"/> seconds when lines disappear.</para>
         /// <para>If this value is <see langword="false"/>, the <see
-        /// cref="canvasLayer"/> object will appear instantaneously.</para>
+        /// cref="viewControl"/> object will appear instantaneously.</para>
         /// </remarks>
-        /// <seealso cref="canvasLayer"/>
+        /// <seealso cref="viewControl"/>
         /// <seealso cref="fadeInTime"/>
         /// <seealso cref="fadeOutTime"/>
         [Export]
@@ -415,11 +415,6 @@ namespace Yarn.GodotIntegration
         /// </summary>
         Effects.CoroutineInterruptToken currentStopToken = new Effects.CoroutineInterruptToken();
 
-        /// <summary>
-        /// Parent of the <see cref="canvasLayer"/> for the view that
-        /// allows us to modulate the alpha
-        /// </summary>
-        public CanvasModulate canvasModulate;
         public override void _Ready()
         {
             if (lineText == null)
@@ -427,9 +422,9 @@ namespace Yarn.GodotIntegration
                 lineText = GetNode<RichTextLabel>(lineTextPath);
                 lineText.BbcodeEnabled = true;
             }
-            if (canvasLayer == null)
+            if (viewControl == null)
             {
-                canvasLayer = GetNode<CanvasLayer>(canvasLayerPath);
+                viewControl = GetNode(viewControlPath) as Control;
             }
             if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath))
             {
@@ -443,21 +438,16 @@ namespace Yarn.GodotIntegration
             {
                 characterNameText = GetNode<RichTextLabel>(characterNameTextPath);
             }
-            if (!(canvasLayer.GetParent() is CanvasModulate))
-            {
-                GD.PushError($"The parent of {nameof(canvasLayer)} is not of type {nameof(CanvasModulate)}. Parent the canvas layer to a {nameof(CanvasModulate)}");
 
-            }
-            canvasModulate = canvasLayer.GetParent<CanvasModulate>();
-            SetCanvasAlpha(0);
+            SetViewAlpha(0);
             SetCanvasInteractable(false);
         }
 
-        private void SetCanvasAlpha(float alpha)
+        private void SetViewAlpha(float alpha)
         {
-            var color = canvasModulate.Color;
+            var color = viewControl.Modulate;
             color.a = alpha;
-            canvasModulate.Color = color;
+            viewControl.Modulate = color;
         }
         /// <inheritdoc/>
         public override void DismissLine(Action onDismissalComplete)
@@ -471,17 +461,17 @@ namespace Yarn.GodotIntegration
         {
             // disabling interaction temporarily while dismissing the line
             // we don't want people to interrupt a dismissal
-            var interactable = canvasLayer.Visible;
+            var interactable = viewControl.Visible;
             SetCanvasInteractable(false);
 
             // If we're using a fade effect, run it, and wait for it to finish.
             if (useFadeEffect)
             {
-                await Effects.FadeAlpha(canvasModulate, 1, 0, fadeOutTime, currentStopToken);
+                await Effects.FadeAlpha(viewControl, 1, 0, fadeOutTime, currentStopToken);
                 currentStopToken.Complete();
             }
 
-            SetCanvasAlpha(0f);
+            SetViewAlpha(0f);
             SetCanvasInteractable(interactable);
             onDismissalComplete();
         }
@@ -499,7 +489,7 @@ namespace Yarn.GodotIntegration
             // for now we are going to just immediately show everything
             // later we will make it fade in
             lineText.Visible = true;
-            canvasLayer.Visible = true;
+            viewControl.Visible = true;
 
             int length;
 
@@ -527,7 +517,7 @@ namespace Yarn.GodotIntegration
             lineText.VisibleRatio = 1;
 
             // Make the canvas group fully visible immediately, too.
-            SetCanvasAlpha(1f);
+            SetViewAlpha(1f);
 
             SetCanvasInteractable(true);
 
@@ -550,10 +540,10 @@ namespace Yarn.GodotIntegration
             async Task PresentLine()
             {
                 lineText.Visible = true;
-                canvasLayer.Visible = true;
-                var color = canvasModulate.Color;
+                viewControl.Visible = true;
+                var color = viewControl.Modulate;
                 color.a = 1f;
-                canvasModulate.Color = color;
+                viewControl.Modulate = color;
 
                 // Hide the continue button until presentation is complete (if
                 // we have one).
@@ -604,7 +594,7 @@ namespace Yarn.GodotIntegration
                 // finish.
                 if (useFadeEffect)
                 {
-                    await Effects.FadeAlpha(canvasModulate, 0, 1, fadeInTime, currentStopToken);
+                    await Effects.FadeAlpha(viewControl, 0, 1, fadeInTime, currentStopToken);
                     if (currentStopToken.WasInterrupted)
                     {
                         // The fade effect was interrupted. Stop this entire
@@ -618,9 +608,9 @@ namespace Yarn.GodotIntegration
                 if (useTypewriterEffect)
                 {
                     // setting the canvas all back to its defaults because if we didn't also fade we don't have anything visible
-                    color = canvasModulate.Color;
+                    color = viewControl.Modulate;
                     color.a = 1f;
-                    canvasModulate.Color = color;
+                    viewControl.Modulate = color;
                     SetCanvasInteractable(true);
                     await Effects.Typewriter(
                         lineText,
@@ -650,7 +640,7 @@ namespace Yarn.GodotIntegration
             lineText.VisibleRatio = 100;
 
             // Our view should at be at full opacity.
-            SetCanvasAlpha(1f);
+            SetViewAlpha(1f);
             SetCanvasInteractable(true);
 
             // Show the continue button, if we have one.
@@ -683,8 +673,8 @@ namespace Yarn.GodotIntegration
 
         private void SetCanvasInteractable(bool b)
         {
-           canvasLayer.SetProcessInput(b);
-           canvasLayer.Visible = b;
+           viewControl.SetProcessInput(b);
+           viewControl.Visible = b;
         }
 
         /// <inheritdoc/>

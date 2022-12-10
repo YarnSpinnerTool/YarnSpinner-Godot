@@ -17,7 +17,7 @@ A VISUAL NOVEL EXAMPLE
 Eve: Finally, a quiet day at the office. Maybe I'll be able to get some work done.
 
 // adds actor "Adam" with sprite "biz-guy" off-screen right, with blue-ish text label
-<<Act Adam biz-guy 1.25 center #226677>>
+<<Act Adam biz-guy 1.25 top #226677>>
 
 // animate Adam into new position in right-half + center, within 0.5 seconds
 <<Move Adam right center 0.5>>
@@ -27,7 +27,7 @@ Adam: Hey Eve! I have a question!
 Eve: Oh no...
 
 // horizontally flips Eve actor to face Adam
-<<Flip Eve left>>
+<<Flip Eve right>>
 
 // Yarn shortcut choices, an easy way to make branching options
 -> Eve gets upset with Adam

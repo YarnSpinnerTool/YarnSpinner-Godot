@@ -1193,9 +1193,9 @@ namespace Yarn.GodotIntegration
         private static async void WaitForAsyncTask(Delegate @theDelegate, object[] finalParametersToUse, Action onSuccessfulDispatch)
         {
             // Invoke the delegate.
-            var yieldInstruction = (Task)theDelegate.DynamicInvoke(finalParametersToUse);
+            var task = (Task)theDelegate.DynamicInvoke(finalParametersToUse);
 
-            await yieldInstruction;
+            await task;
 
             // Call the completion handler.
             onSuccessfulDispatch();
