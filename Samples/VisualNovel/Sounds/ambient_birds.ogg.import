@@ -1,19 +1,15 @@
 [remap]
 
-importer="oggvorbisstr"
-type="AudioStreamOggVorbis"
-uid="uid://vh0e4ihaa8w4"
-path="res://.godot/imported/ambient_birds.ogg-4a1782792412ceeabc8a5e184f0a5b70.oggvorbisstr"
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/ambient_birds.ogg-4a1782792412ceeabc8a5e184f0a5b70.oggstr"
 
 [deps]
 
 source_file="res://Samples/VisualNovel/Sounds/ambient_birds.ogg"
-dest_files=["res://.godot/imported/ambient_birds.ogg-4a1782792412ceeabc8a5e184f0a5b70.oggvorbisstr"]
+dest_files=[ "res://.import/ambient_birds.ogg-4a1782792412ceeabc8a5e184f0a5b70.oggstr" ]
 
 [params]
 
 loop=true
 loop_offset=0
-bpm=0
-beat_count=0
-bar_beats=4

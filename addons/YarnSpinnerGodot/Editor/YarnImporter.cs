@@ -19,58 +19,48 @@ namespace Yarn.GodotIntegration.Editor
 
         private YarnEditorUtility _editorUtility = new YarnEditorUtility();
         private YarnProjectUtility _projectUtility = new YarnProjectUtility();
-        public override string _GetImporterName()
+        public override Array GetRecognizedExtensions() =>
+            new Array(new[]
+            {
+                "yarn"
+            });
+
+        public override string GetImporterName()
         {
             return "yarnscript";
         }
 
-        public override string _GetVisibleName()
+        public override string GetVisibleName()
         {
             return "Yarn Script";
         }
-        public override string[] _GetRecognizedExtensions()
-        {
-            return new[] { 
-                "yarn" 
-            };
-        }
-        public override string _GetSaveExtension()
-        {
-            return "tres";
-        }
-        public override string _GetResourceType()
+
+        public override string GetSaveExtension() => "tres";
+        public override string GetResourceType()
         {
             return "Resource";
         }
-        public override long _GetPresetCount()
+        public override int GetPresetCount()
         {
-            return 0L;
-        }
-        public override string _GetPresetName(long presetIndex)
-        {
-            return "Yarn Script";
-        }
-        public override double _GetPriority()
-        {
-            return 1.0;
-        }
-        public override long _GetImportOrder()
-        {
-            return 0L;
+            return 0;
         }
 
-        public override Array<Dictionary> _GetImportOptions(string path, long presetIndex)
+        public override float GetPriority()
         {
-            return new Array<Dictionary>();
+            return 1.0f;
+        }
+        public override int GetImportOrder()
+        {
+            return 0;
         }
 
-        public override bool _GetOptionVisibility(string path, StringName optionName, Dictionary options)
+        public override Array GetImportOptions(int preset)
         {
-            return true;
+            return new Array();
         }
 
-        public override long _Import(string assetPath, string savePath, Dictionary options,
-            Array<string> platformVariants, Array<string> genFiles)
+        public override int Import(string assetPath, string savePath, Dictionary options,
+            Array platformVariants, Array genFiles)
         {
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
@@ -88,12 +78,12 @@ namespace Yarn.GodotIntegration.Editor
             var importedMarkerResource = new Resource();
             importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
             
-            var saveErr = ResourceSaver.Save(importedMarkerResource, $"{savePath}.{_GetSaveExtension()}" );
+            var saveErr = ResourceSaver.Save($"{savePath}.{GetSaveExtension()}", importedMarkerResource);
             if (saveErr != Error.Ok)
             {
                 GD.PrintErr($"Error saving yarn file import: {saveErr.ToString()}");
             }
-            return (long)Error.Ok;
+            return (int)Error.Ok;
         }
 
         /// <summary>

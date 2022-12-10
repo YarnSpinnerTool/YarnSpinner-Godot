@@ -2,13 +2,12 @@
 
 importer="yarnscript"
 type="Resource"
-uid="uid://dtk8ds2tq38py"
-path="res://.godot/imported/Ship.yarn-ad47f038d197a9000e088f841751e3da.tres"
+path="res://.import/Ship.yarn-ad47f038d197a9000e088f841751e3da.tres"
 
 [deps]
 
 source_file="res://Samples/Space/Dialogue/Ship.yarn"
-dest_files=["res://.godot/imported/Ship.yarn-ad47f038d197a9000e088f841751e3da.tres"]
+dest_files=[ "res://.import/Ship.yarn-ad47f038d197a9000e088f841751e3da.tres" ]
 
 [params]
 

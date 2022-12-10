@@ -78,7 +78,7 @@ namespace Yarn.GodotIntegration
         {
             debugTextView = GetNode<RichTextLabel>(debugTextViewPath);
         }
-        public override void _Process(double deltaTime)
+        public override void _Process(float deltaTime)
         {
             // If we have a debug view, show the list of all variables in it
             if (debugTextView != null)

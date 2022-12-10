@@ -115,7 +115,7 @@ public partial class TempDialogueRunner : Node
 		{
             var stringInfo = CompiledYarnProject.StringTable[option.Line.ID];
             var text = String.Format(stringInfo.text, option.Line.Substitutions);
-            result.Add(Variant.From(Option.fromOption(option, text)));
+            result.Add(Option.fromOption(option, text));
 		}
         EmitSignal("HandleOptions", result);
     }

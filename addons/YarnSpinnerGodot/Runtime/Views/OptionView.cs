@@ -17,8 +17,7 @@ namespace Yarn.GodotIntegration
         {
             get => _option;
 
-            set
-            {
+            set {
                 _option = value;
 
                 hasSubmittedOptionSelection = false;
@@ -31,29 +30,20 @@ namespace Yarn.GodotIntegration
                 }
                 else
                 {
-                  Text = value.Line.TextWithoutCharacterName.Text;
+                    Text = value.Line.TextWithoutCharacterName.Text;
                 }
                 Disabled = !value.IsAvailable;
             }
         }
 
-        private Callable _clickHandler;
         public override void _Ready()
         {
-            _clickHandler = Callable.From(OnPressed);
-            Connect("pressed", _clickHandler);
+            Connect("pressed", this, nameof(InvokeOptionSelected));
         }
 
         public override void _ExitTree()
         {
-            Disconnect("pressed", _clickHandler);
-        }
-        
-        // If we receive a submit or click event, invoke our "we just selected
-        // this option" handler.
-        public void OnPressed()
-        {
-            InvokeOptionSelected();
+            Disconnect("pressed", this, nameof(InvokeOptionSelected));
         }
 
         public void InvokeOptionSelected()

@@ -29,7 +29,16 @@ namespace Yarn.GodotIntegration.Editor
             CreateYarnScriptAssetFromTemplate(scriptPath);
         }
 
-
+        /// <summary>
+        ///In Godot 3.5, if we don't load the resource script this way, the type of the serialized resource file is incorrect,
+        // and none of the script properties are saved. Simply calling the new TypeHere() constructor doesn't work.
+        /// </summary>
+        /// <returns>The instantiated script that will retain its connection to the related .cs file</returns>
+        public T InstanceScript<T>(string scriptPath)
+        {
+            var projectScript = (CSharpScript)ResourceLoader.Load(scriptPath);
+            return  (T)projectScript.New();
+        }
         /// <summary>
         /// Menu Item "Yarn Spinner/Create Yarn Script"
         /// 
@@ -38,12 +47,11 @@ namespace Yarn.GodotIntegration.Editor
         public void CreateYarnProject(string projectPath)
         {
             _projectUtility = new YarnProjectUtility();
-            var newYarnProject = new YarnProject();
-        
+            var newYarnProject = InstanceScript<YarnProject>("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
             var absPath = ProjectSettings.GlobalizePath(projectPath);
             newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
             newYarnProject.ResourcePath = projectPath;
-            var saveErr = ResourceSaver.Save( newYarnProject, projectPath);
+            var saveErr = ResourceSaver.Save(projectPath, newYarnProject);
             if (saveErr != Error.Ok)
             {
                 GD.Print($"Failed to save yarn project to {projectPath}");
@@ -62,11 +70,11 @@ namespace Yarn.GodotIntegration.Editor
         /// <param name="localizationPath"></param>
         public void CreateYarnLocalization(string localizationPath)
         {
-            var newLocalization = new Localization();
+            var newLocalization =  InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
             var absPath = ProjectSettings.GlobalizePath(localizationPath);
             newLocalization.ResourceName = Path.GetFileNameWithoutExtension(absPath);
             newLocalization.ResourcePath = localizationPath;
-            ResourceSaver.Save(newLocalization, localizationPath );
+            ResourceSaver.Save(localizationPath, newLocalization );
             GD.Print($"Saved new yarn localization to {localizationPath}");
         }
 
