@@ -42,7 +42,7 @@ namespace Yarn.GodotIntegration
             typeName = decl.Type.Name;
             description = decl.Description;
             isImplicit = decl.IsImplicit;
-            sourceYarnAssetPath = decl.SourceFileName;
+            sourceYarnAssetPath = ProjectSettings.LocalizePath(decl.SourceFileName);
 
             if (typeName == BuiltinTypes.String.Name)
             {
