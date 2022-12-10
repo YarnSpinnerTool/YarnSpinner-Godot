@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://b45wnafn76mij"]
+[gd_scene load_steps=3 format=3 uid="uid://dxqamwmp1reed"]
 
-[ext_resource type="PackedScene" uid="uid://d05megy423g" path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" id="1_fneuv"]
+[ext_resource type="PackedScene" path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" id="1_fneuv"]
 [ext_resource type="Script" path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" id="3_hslms"]
-[ext_resource type="Resource" uid="uid://454yvitfiwam" path="res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres" id="3_srtee"]
 
 [node name="VisualNovel" type="Node2D"]
 position = Vector2(299, 159)
@@ -37,8 +36,16 @@ z_index = 7
 z_as_relative = false
 position = Vector2(299, 159)
 scale = Vector2(0.639376, 0.639376)
-yarnProject = ExtResource("3_srtee")
 startNode = "Start"
+
+[node name="LineText" parent="CanvasLayer/VisualNovelManager/DialogueRunner/LineView/ViewControl" index="0"]
+layout_mode = 1
+
+[node name="CharacterNameText" parent="CanvasLayer/VisualNovelManager/DialogueRunner/LineView/ViewControl" index="1"]
+layout_mode = 1
+
+[node name="ContinueButton" parent="CanvasLayer/VisualNovelManager/DialogueRunner/LineView/ViewControl" index="2"]
+layout_mode = 1
 
 [node name="CanvasLayer@VisualNovelManager@DialogueRunner@LineView@CanvasModulate@CanvasLayer@LineText@ColorRect" type="ColorRect" parent="."]
 z_index = -1

@@ -1,91 +1,91 @@
-[gd_resource type="Resource" load_steps=23 format=3 uid="uid://bf71n6tdguyli"]
+[gd_resource type="Resource" load_steps=23 format=3 uid="uid://dfa3grnwfj1do"]
 
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs" id="1_mor05"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" id="1_uk8ms"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs" id="2_swm7b"]
-[ext_resource type="Resource" uid="uid://dtfpnciykmvig" path="res://Samples/Space/Dialogue/Sally.yarn" id="3_1b65n"]
+[ext_resource type="Resource" uid="uid://dtfpnciykmvig" path="res://Samples/Space/Dialogue/Sally.yarn" id="3_5s1lj"]
+[ext_resource type="Resource" uid="uid://dtk8ds2tq38py" path="res://Samples/Space/Dialogue/Ship.yarn" id="4_12ck4"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" id="4_334aa"]
-[ext_resource type="Resource" uid="uid://dtk8ds2tq38py" path="res://Samples/Space/Dialogue/Ship.yarn" id="4_ojsyx"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" id="5_mgma5"]
 
-[sub_resource type="Resource" id="Resource_s4dtn"]
+[sub_resource type="Resource" id="Resource_rbs5y"]
 resource_name = "Random"
 script = ExtResource("1_mor05")
 Name = "Random"
 ReturnType = "-> Single"
 Parameters = PackedStringArray()
 
-[sub_resource type="Resource" id="Resource_jhs1l"]
+[sub_resource type="Resource" id="Resource_smlui"]
 resource_name = "RandomRange"
 script = ExtResource("1_mor05")
 Name = "RandomRange"
 ReturnType = "-> Single"
 Parameters = PackedStringArray("minInclusive", "maxInclusive")
 
-[sub_resource type="Resource" id="Resource_xgail"]
+[sub_resource type="Resource" id="Resource_x01sm"]
 resource_name = "Dice"
 script = ExtResource("1_mor05")
 Name = "Dice"
 ReturnType = "-> UInt32"
 Parameters = PackedStringArray("sides")
 
-[sub_resource type="Resource" id="Resource_72u1a"]
+[sub_resource type="Resource" id="Resource_akbdr"]
 resource_name = "Round"
 script = ExtResource("1_mor05")
 Name = "Round"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_oqt1o"]
+[sub_resource type="Resource" id="Resource_3fj0h"]
 resource_name = "RoundPlaces"
 script = ExtResource("1_mor05")
 Name = "RoundPlaces"
 ReturnType = "-> Single"
 Parameters = PackedStringArray("num", "places")
 
-[sub_resource type="Resource" id="Resource_n5rnh"]
+[sub_resource type="Resource" id="Resource_03c4d"]
 resource_name = "Floor"
 script = ExtResource("1_mor05")
 Name = "Floor"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_w0htl"]
+[sub_resource type="Resource" id="Resource_j41wl"]
 resource_name = "Ceil"
 script = ExtResource("1_mor05")
 Name = "Ceil"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_s4hl1"]
+[sub_resource type="Resource" id="Resource_ik011"]
 resource_name = "Inc"
 script = ExtResource("1_mor05")
 Name = "Inc"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_trour"]
+[sub_resource type="Resource" id="Resource_ei1vu"]
 resource_name = "Dec"
 script = ExtResource("1_mor05")
 Name = "Dec"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_qd148"]
+[sub_resource type="Resource" id="Resource_2bfp4"]
 resource_name = "Decimal"
 script = ExtResource("1_mor05")
 Name = "Decimal"
 ReturnType = "-> Single"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_yh4wr"]
+[sub_resource type="Resource" id="Resource_5bk17"]
 resource_name = "Int"
 script = ExtResource("1_mor05")
 Name = "Int"
 ReturnType = "-> Int32"
 Parameters = PackedStringArray("num")
 
-[sub_resource type="Resource" id="Resource_oqc0k"]
+[sub_resource type="Resource" id="Resource_026ey"]
 resource_name = "$sally_warning"
 script = ExtResource("2_swm7b")
 name = "$sally_warning"
@@ -95,9 +95,9 @@ defaultValueNumber = 0.0
 defaultValueString = ""
 description = "Implicitly declared in Sally.yarn, node Sally"
 isImplicit = true
-sourceYarnAssetPath = "C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn"
+sourceYarnAssetPath = "res://Samples/Space/Dialogue/Sally.yarn"
 
-[sub_resource type="Resource" id="Resource_emnly"]
+[sub_resource type="Resource" id="Resource_ibm3j"]
 resource_name = "$should_see_ship"
 script = ExtResource("2_swm7b")
 name = "$should_see_ship"
@@ -107,9 +107,9 @@ defaultValueNumber = 0.0
 defaultValueString = ""
 description = "Implicitly declared in Sally.yarn, node Sally_Watch"
 isImplicit = true
-sourceYarnAssetPath = "C:/Users/chris/YarnSpinner-Godot/Samples/Space/Dialogue/Sally.yarn"
+sourceYarnAssetPath = "res://Samples/Space/Dialogue/Sally.yarn"
 
-[sub_resource type="Resource" id="Resource_5oitp"]
+[sub_resource type="Resource" id="Resource_w165v"]
 resource_name = "Default (en-US)"
 script = ExtResource("4_334aa")
 LocaleCode = "en-US"
@@ -147,7 +147,7 @@ _assetTable = {}
 _containsLocalizedAssets = false
 stringsFile = ""
 
-[sub_resource type="Resource" id="Resource_7r6en"]
+[sub_resource type="Resource" id="Resource_u0ve1"]
 script = ExtResource("5_mgma5")
 _lineMetadata = {
 "line:5837f2": "firstline"
@@ -160,11 +160,11 @@ LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
 CompiledYarnProgramBase64 = "EowLCgVTYWxseRKCCwoFU2FsbHkSCwgGEgcKBVNhbGx5EgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSBggIEgIQABIJCAcSBR0AAABAEhIIDBIOCgxCb29sLkVxdWFsVG8SEggKEg4KDEwyc2tpcGNsYXVzZRIYCAISDQoLbGluZTo3OTQ5NDUSBR0AAAAAEhgIAhINCgtsaW5lOjJkYzM5YhIFHQAAAAASGAgCEg0KC2xpbmU6MzRkZTJmEgUdAAAAABIYCAISDQoLbGluZTpkY2MyYmMSBR0AAAAAEgsSCQoHTDFlbmRpZhICCAsSGAgCEg0KC2xpbmU6YThlNzBjEgUdAAAAABIZCAISDgoMbGluZTowYWY3Zjg2EgUdAAAAABILEgkKB0wxZW5kaWYSEQgGEg0KC1NhbGx5X1dhdGNoEgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSCQgHEgUdAACAPxIOCAwSCgoIQm9vbC5Ob3QSOAgEEg0KC2xpbmU6NWQ3YTdjEhoKGEw1c2hvcnRjdXRvcHRpb25fU2FsbHlfMRIFHQAAAAASAhABEhQIDRIQCg4kc2FsbHlfd2FybmluZxIRCAYSDQoLU2FsbHlfU29ycnkSCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIJCAcSBR0AAIA/Eg4IDBIKCghCb29sLk5vdBIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBI4CAQSDQoLbGluZTowYTdlMzkSGgoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yEgUdAAAAABICEAESOAgEEg0KC2xpbmU6MGZhY2Y3EhoKGEw3c2hvcnRjdXRvcHRpb25fU2FsbHlfMxIFHQAAAAASAhAAEgIIBRICCAESIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEhEIBhINCgtTYWxseV9XYXRjaBICCBASDxINCgtMNGdyb3VwX2VuZBIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSEQgGEg0KC1NhbGx5X1NvcnJ5EgIIEBIPEg0KC0w0Z3JvdXBfZW5kEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxIQCAYSDAoKU2FsbHlfRXhpdBICCBASDxINCgtMNGdyb3VwX2VuZBICCAsSIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDBoLCgdMMWVuZGlmEBAaHAoYTDVzaG9ydGN1dG9wdGlvbl9TYWxseV8xECIaHAoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yECsaHAoYTDdzaG9ydGN1dG9wdGlvbl9TYWxseV8zEDQaDwoLTDRncm91cF9lbmQQPRLiAwoLU2FsbHlfV2F0Y2gS0gMKC1NhbGx5X1dhdGNoEhgIAhINCgtsaW5lOjhjM2Y5OBIFHQAAAAASGAgCEg0KC2xpbmU6MjRjNDE4EgUdAAAAABIYCAISDQoLbGluZTpkZjRlYWYSBR0AAAAAEgYICBICEAESFggOEhIKECRzaG91bGRfc2VlX3NoaXASAggLEgoIBhIGCgRTaGlwEgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSBggIEgIQARIJCAcSBR0AAABAEhIIDBIOCgxCb29sLkVxdWFsVG8SEwgKEg8KDUwxMHNraXBjbGF1c2USGAgCEg0KC2xpbmU6MWZlYTZjEgUdAAAAABIYCAISDQoLbGluZTo1ZGYzMjMSBR0AAAAAEgsSCQoHTDllbmRpZhICCAsSKQgNEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1dhdGNoEgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIpCA4SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSAggLEgIIDxoECgJMOBoRCg1MMTBza2lwY2xhdXNlEBAaCwoHTDllbmRpZhAREj8KClNhbGx5X0V4aXQSMQoKU2FsbHlfRXhpdBIYCAISDQoLbGluZTo2MGMyODISBR0AAAAAEgIIDxoFCgNMMTESxAEKC1NhbGx5X1NvcnJ5ErQBCgtTYWxseV9Tb3JyeRIYCAISDQoLbGluZTpkN2RmNDkSBR0AAAAAEikIDRIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9Tb3JyeRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSKQgOEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgIICxICCA8aBQoDTDEyEikKDERlY2xhcmF0aW9ucxIZCgxEZWNsYXJhdGlvbnMSAggPGgUKA0wxMxK1CQoEU2hpcBKsCQoEU2hpcBIKCAYSBgoEU2hpcBIJCAcSBR0AAIA/Eg0IDBIJCgd2aXNpdGVkEgYICBICEAASCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhIIChIOCgxMMnNraXBjbGF1c2USGAgCEg0KC2xpbmU6NTgzN2YyEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDkSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAxMBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDExEgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTISBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEgIICxIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTMSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEhYIDRISChAkc2hvdWxkX3NlZV9zaGlwEgYICBICEAESCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhQIDRIQCg4kc2FsbHlfd2FybmluZxIGCAgSAhAAEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBISCAoSDgoMTDVza2lwY2xhdXNlEhgIAhINCgtsaW5lOnNoaXAwMRIFHQAAAAASJQgDEhoKGHNldHNwcml0ZSBTaGlwRmFjZSBoYXBweRIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDAzEgUdAAAAABInCAMSHAoac2V0c3ByaXRlIFNoaXBGYWNlIG5ldXRyYWwSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAwNBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDA1EgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDYSBR0AAAAAEgYICBICEAESFAgOEhAKDiRzYWxseV93YXJuaW5nEgIICxITCAMSCAoGd2FpdCAxEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDcSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMNGVuZGlmEgIICxIiCA0SHgocJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2hpcBIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIggOEh4KHCRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNoaXASAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDxoLCgdMMWVuZGlmEBQaEAoMTDVza2lwY2xhdXNlEC4aCwoHTDRlbmRpZhAvGhQKDiRzYWxseV93YXJuaW5nEgIQABoWChAkc2hvdWxkX3NlZV9zaGlwEgIQABomCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIFHQAAAAAaLAojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSBR0AAAAAGiwKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgUdAAAAABolChwkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TaGlwEgUdAAAAAA=="
-baseLocalization = SubResource("Resource_5oitp")
-localizations = [SubResource("Resource_5oitp")]
-lineMetadata = SubResource("Resource_7r6en")
-ListOfFunctions = [SubResource("Resource_s4dtn"), SubResource("Resource_jhs1l"), SubResource("Resource_xgail"), SubResource("Resource_72u1a"), SubResource("Resource_oqt1o"), SubResource("Resource_n5rnh"), SubResource("Resource_w0htl"), SubResource("Resource_s4hl1"), SubResource("Resource_trour"), SubResource("Resource_qd148"), SubResource("Resource_yh4wr")]
-SerializedDeclarations = [SubResource("Resource_oqc0k"), SubResource("Resource_emnly")]
+baseLocalization = SubResource("Resource_w165v")
+localizations = [SubResource("Resource_w165v")]
+lineMetadata = SubResource("Resource_u0ve1")
+ListOfFunctions = [SubResource("Resource_rbs5y"), SubResource("Resource_smlui"), SubResource("Resource_x01sm"), SubResource("Resource_akbdr"), SubResource("Resource_3fj0h"), SubResource("Resource_03c4d"), SubResource("Resource_j41wl"), SubResource("Resource_ik011"), SubResource("Resource_ei1vu"), SubResource("Resource_2bfp4"), SubResource("Resource_5bk17")]
+SerializedDeclarations = [SubResource("Resource_026ey"), SubResource("Resource_ibm3j")]
 defaultLanguage = "en-US"
-SourceScripts = [ExtResource("3_1b65n"), ExtResource("4_ojsyx")]
+SourceScripts = [ExtResource("3_5s1lj"), ExtResource("4_12ck4")]
 ProjectErrors = []

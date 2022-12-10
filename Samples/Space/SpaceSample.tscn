@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://bavi4xhix1u4s"]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource type="PackedScene" uid="uid://d05megy423g" path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" id="1_vinv8"]
+[ext_resource type="PackedScene" path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" id="1_vinv8"]
 
 [node name="SpaceDemo" type="Node2D"]
 

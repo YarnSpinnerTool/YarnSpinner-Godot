@@ -147,7 +147,7 @@ namespace Yarn.GodotIntegration.Editor
                         {
                             Context = e.Context,
                             Message = e.Message,
-                            FileName = e.FileName
+                            FileName = ProjectSettings.LocalizePath(e.FileName)
                         });
                     project.ProjectErrors = projectErrors.ToArray();
                     return;
@@ -517,7 +517,7 @@ namespace Yarn.GodotIntegration.Editor
             return result.StringTable.Select(x => new LineMetadataTableEntry
             {
                 ID = x.Key,
-                File = x.Value.fileName,
+                File = ProjectSettings.LocalizePath(x.Value.fileName),
                 Node = x.Value.nodeName,
                 LineNumber = x.Value.lineNumber.ToString(),
                 Metadata = RemoveLineIDFromMetadata(x.Value.metadata).ToArray(),
@@ -532,7 +532,7 @@ namespace Yarn.GodotIntegration.Editor
                 ID = x.Key,
                 Language = project.defaultLanguage,
                 Text = x.Value.text,
-                File = x.Value.fileName,
+                File = ProjectSettings.LocalizePath(x.Value.fileName),
                 Node = x.Value.nodeName,
                 LineNumber = x.Value.lineNumber.ToString(),
                 Lock = YarnImporter.GetHashString(x.Value.text, 8),

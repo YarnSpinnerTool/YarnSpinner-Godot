@@ -1,11 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://d05megy423g"]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/DialogueRunner.cs" id="1_ka8yc"]
-[ext_resource type="Resource" uid="uid://bf71n6tdguyli" path="res://Samples/Space/Dialogue/Space_YarnProject.tres" id="2_0ckbe"]
+[ext_resource type="Resource" path="res://Samples/Space/Dialogue/Space_YarnProject.tres" id="2_0ckbe"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/InMemoryVariableStorage.cs" id="3_ahivn"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Views/LineView.cs" id="4_54qim"]
 [ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Views/OptionsListView.cs" id="5_2hya0"]
-[ext_resource type="PackedScene" uid="uid://b2tukvofryd2o" path="res://addons/YarnSpinnerGodot/Scenes/OptionView.tscn" id="6_eq8dw"]
+[ext_resource type="PackedScene" path="res://addons/YarnSpinnerGodot/Scenes/OptionView.tscn" id="6_eq8dw"]
 
 [node name="DialogueRunner" type="Node2D"]
 script = ExtResource("1_ka8yc")
