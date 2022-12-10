@@ -2,18 +2,14 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-uid="uid://bkhdgd3q2m4a6"
-path="res://.godot/imported/music_romantic.mp3-82d2f4f32c9a46cd37c62fe20477a0c1.mp3str"
+path="res://.import/music_romantic.mp3-82d2f4f32c9a46cd37c62fe20477a0c1.mp3str"
 
 [deps]
 
 source_file="res://Samples/VisualNovel/Sounds/music_romantic.mp3"
-dest_files=["res://.godot/imported/music_romantic.mp3-82d2f4f32c9a46cd37c62fe20477a0c1.mp3str"]
+dest_files=[ "res://.import/music_romantic.mp3-82d2f4f32c9a46cd37c62fe20477a0c1.mp3str" ]
 
 [params]
 
 loop=true
 loop_offset=0
-bpm=0
-beat_count=0
-bar_beats=4

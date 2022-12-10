@@ -19,7 +19,7 @@ namespace Yarn.GodotIntegration
         {
             var mainLoop = Engine.GetMainLoop();
             var sceneTree = mainLoop as SceneTree;
-            var timer = sceneTree.CreateTimer(duration);
+            var timer = sceneTree.CreateTimer((float)duration);
             await mainLoop.ToSignal(timer, "timeout");
         }
         #endregion

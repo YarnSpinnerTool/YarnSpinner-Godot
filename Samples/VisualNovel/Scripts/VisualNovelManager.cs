@@ -18,15 +18,11 @@ public partial class VisualNovelManager : Node
     {
         _background = GetNode<TextureRect>(backgroundPath);
         _dialogueRunner = GetNode<DialogueRunner>(dialogueRunnerPath);
-        _dialogueRunner.AddCommandHandler("Scene", Scene);
-        _dialogueRunner.AddCommandHandler("PlayAudio", (string streamName, float volume, string doLoop) =>
-        {
-            GD.Print("PlayAudio command invoked.");
-            PlayAudio(streamName, volume, doLoop);
-        });
-        _dialogueRunner.AddCommandHandler("Act", SetActor);
-        _dialogueRunner.AddCommandHandler("Move", MoveSprite);
-        _dialogueRunner.AddCommandHandler("Flip", FlipSprite);
+        _dialogueRunner.AddCommandHandler("Scene", new Action<string>(Scene));
+        _dialogueRunner.AddCommandHandler("PlayAudio", new Action<string, float, string>(PlayAudio));
+        _dialogueRunner.AddCommandHandler("Act", new Action<string, string, string, string, string>(SetActor));
+        _dialogueRunner.AddCommandHandler("Move", new Func<string, string, string, float, Task>(MoveSprite));
+        _dialogueRunner.AddCommandHandler("Flip", new Action<string, string>(FlipSprite));
         _dialogueRunner.StartDialogue("Start");
     }
 
@@ -44,7 +40,7 @@ public partial class VisualNovelManager : Node
             return;
         }
 
-        var texture = ResourceLoader.Load<Texture2D>(bgShortNameToPath[backgroundImage]);
+        var texture = ResourceLoader.Load<Texture>(bgShortNameToPath[backgroundImage]);
         _background.Texture = texture;
     }
     private Dictionary<string, string> audioShortNameToUUID = new Dictionary<string, string>
@@ -68,7 +64,7 @@ public partial class VisualNovelManager : Node
         }
         var stream = ResourceLoader.Load<AudioStream>(audioShortNameToUUID[streamName]);
         var player = new AudioStreamPlayer2D();
-        player.VolumeDb = GD.LinearToDb(volume);
+        player.VolumeDb = GD.Linear2Db(volume);
         player.Stream = stream;
         AddChild(player);
         player.Play();
@@ -101,7 +97,7 @@ public partial class VisualNovelManager : Node
             .Replace(" ", "")
             .Replace("_", "")
             .Replace("-", "");
-        var windowSize = DisplayServer.WindowGetSize();
+        var windowSize = OS.WindowSize;
         var targetCoordinates = new Vector2(GetCoordinate(coordinateX)*windowSize.x, (0.5f-GetCoordinate(coordinateY))*windowSize.y);
         return targetCoordinates;
     }
@@ -157,7 +153,7 @@ public partial class VisualNovelManager : Node
         var targetPosition = GetPosition(screenPosX, screenPosY);
         double elapsed = 0f;
 
-        var distance = targetPosition - actor.Rect.Position;
+        var distance = targetPosition - actor.Rect.RectPosition;
         if (moveTime > 0)
         {
             while (elapsed < moveTime)
@@ -167,12 +163,12 @@ public partial class VisualNovelManager : Node
                 // trying to normalize it based on framerate
                 var timeRatio = delta / moveTime;
                 var movement = new Vector2((float)timeRatio * distance.x, (float)timeRatio * distance.y);
-                actor.Rect.Position += movement;
+                actor.Rect.RectPosition += movement;
                 elapsed += delta;
                 await DefaultActions.Wait(delta); // wait a frame
             }
         }
-        actor.Rect.Position = targetPosition; // fully snap to the final position
+        actor.Rect.RectPosition = targetPosition; // fully snap to the final position
     }
 
     public void SetActor(string actorName, string spriteName, string positionX = "", string positionY = "", string colorHex = "")
@@ -180,17 +176,16 @@ public partial class VisualNovelManager : Node
         var newActor = new Actor();
         var rect = new TextureRect();
         AddChild(rect);
-        rect.IgnoreTextureSize = true;
         newActor.Rect = rect;
-        var texture = ResourceLoader.Load<Texture2D>(spriteShortNameToPath[spriteName]);
+        var texture = ResourceLoader.Load<Texture>(spriteShortNameToPath[spriteName]);
         rect.Texture = texture;
         var originalSize = texture.GetSize();
-        var targetHeight = DisplayServer.WindowGetSize().y;
+        var targetHeight = OS.WindowSize.y;
         var sizeRatio = originalSize.x / originalSize.y;
         // clamp the actor sprite size to the screen
-        rect.Size = new Vector2(targetHeight * sizeRatio, targetHeight);
+        rect.RectSize = new Vector2(targetHeight * sizeRatio, targetHeight);
         actors[actorName] = newActor;
-        rect.Position = GetPosition(positionX, positionY);
+        rect.RectPosition = GetPosition(positionX, positionY);
         MoveChild(rect, 1);
     }
 

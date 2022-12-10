@@ -42,11 +42,11 @@ namespace Yarn.GodotIntegration
         /// Gets the line IDs that contain metadata.
         /// </summary>
         /// <returns>The line IDs.</returns>
-        public List<string> GetLineIDs()
+        public IEnumerable<string> GetLineIDs()
         {
             // The object returned doesn't allow modifications and is kept in
             // sync with `_lineMetadata`.
-            return _lineMetadata.Keys.ToList().ConvertAll(v=>v.ToString());
+            return _lineMetadata.Keys.Cast<string>();
         }
 
         /// <summary>
@@ -56,9 +56,9 @@ namespace Yarn.GodotIntegration
         /// <returns>An array of each piece of metadata if defined, otherwise returns null.</returns>
         public string[] GetMetadata(string lineID)
         {
-            if (_lineMetadata.TryGetValue(lineID, out var result))
+            if (_lineMetadata.Contains(lineID))
             {
-                return result.AsString().Split(' ');
+                return _lineMetadata[lineID].ToString().Split(' ');
             }
 
             return null;

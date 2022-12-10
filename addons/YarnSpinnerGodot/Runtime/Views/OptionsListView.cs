@@ -39,6 +39,10 @@ namespace Yarn.GodotIntegration
             {
                 viewControl = GetNode<Control>(viewControlPath);
             }
+            if (lastLineText == null && lastLineTextPath != null)
+            {
+                lastLineText = GetNode<RichTextLabel>(lastLineTextPath);
+            }
             viewControl.Visible = false;
         }
 
@@ -126,7 +130,7 @@ namespace Yarn.GodotIntegration
             /// </summary>
             OptionView CreateNewOptionView()
             {
-                var optionView = optionViewPrefab.Instantiate<OptionView>();
+                var optionView = optionViewPrefab.Instance<OptionView>();
                 viewControl.AddChild(optionView);
 
                 optionView.OnOptionSelected = OptionViewWasSelected;

@@ -1,19 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=2]
 
-[ext_resource type="Script" path="res://addons/YarnSpinnerGodot/Runtime/Views/OptionView.cs" id="1_duju2"]
+[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/Views/OptionView.cs" type="Script" id=1]
 
 [node name="OptionView" type="Button"]
-anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 915.0
-offset_top = 237.0
-offset_right = 1147.0
-offset_bottom = 337.0
-grow_horizontal = 2
-grow_vertical = 0
-text = "Option text goes here,
- this is the option text"
-script = ExtResource("1_duju2")
+margin_left = -113.0
+margin_top = -142.0
+margin_right = 119.0
+margin_bottom = -42.0
+text = "Option View"
+script = ExtResource( 1 )
