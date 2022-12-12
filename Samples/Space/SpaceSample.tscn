@@ -5,15 +5,11 @@
 [ext_resource path="res://Samples/Space/Scripts/SpaceSample.cs" type="Script" id=3]
 
 [node name="SpaceDemo" type="Node2D"]
+script = ExtResource( 3 )
+dialogueRunnerPath = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
 
 [node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" instance=ExtResource( 1 )]
 yarnProject = ExtResource( 2 )
 startNode = "Sally"
-
-[node name="SpaceSample" type="Control" parent="YarnSpinnerCanvasLayer"]
-margin_right = 40.0
-margin_bottom = 40.0
-script = ExtResource( 3 )
-dialogueRunnerPath = NodePath("../DialogueRunner")
