@@ -10,12 +10,12 @@ config_version=4
 
 [YarnSpinnerGodot]
 
-YarnProjectPaths=PoolStringArray( "res://Samples/Space/Dialogue/Space_YarnProject.tres" )
+YarnProjectPaths=PoolStringArray( "res://Samples/Space/Dialogue/Space_YarnProject.tres", "res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres" )
 
 [application]
 
 config/name="YarnSpinner-Godot"
-run/main_scene="res://Samples/Space/SpaceSample.tscn"
+run/main_scene="res://Samples/VisualNovel/VisualNovelSample.tscn"
 config/icon="res://YarnSpinnerLogo.png"
 config/features=PoolStringArray( "4.0", "C#" )
 

@@ -22,8 +22,13 @@ public partial class VisualNovelManager : Node
         _dialogueRunner.AddCommandHandler("PlayAudio", new Action<string, float, string>(PlayAudio));
         _dialogueRunner.AddCommandHandler("Act", new Action<string, string, string, string, string>(SetActor));
         _dialogueRunner.AddCommandHandler("Move", new Func<string, string, string, float, Task>(MoveSprite));
-        _dialogueRunner.AddCommandHandler("Flip", new Action<string, string>(FlipSprite));
-        _dialogueRunner.StartDialogue("Start");
+        _dialogueRunner.AddCommandHandler("Flip", FlipSprite);
+        _dialogueRunner.onDialogueComplete += OnDialogueComplete;
+    }
+
+    private void OnDialogueComplete()
+    {
+        GD.Print("Visual novel sample has completed!");
     }
 
     private Dictionary<string, string> bgShortNameToPath = new Dictionary<string, string>
@@ -190,7 +195,7 @@ public partial class VisualNovelManager : Node
     }
 
     /// flip a sprite, or force the sprite to face a direction
-    public void FlipSprite(string actorOrSpriteName, string xDirection)
+    public void FlipSprite(string actorOrSpriteName, string xDirection =null)
     {
         bool newFlip;
         var rect = actors[actorOrSpriteName].Rect;

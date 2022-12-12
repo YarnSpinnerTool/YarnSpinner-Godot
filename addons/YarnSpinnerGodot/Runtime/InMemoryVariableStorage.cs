@@ -76,7 +76,10 @@ namespace Yarn.GodotIntegration
         
         public override void _EnterTree()
         {
-            debugTextView = GetNode<RichTextLabel>(debugTextViewPath);
+            if (debugTextViewPath != null && debugTextView == null)
+            {
+                debugTextView = GetNode<RichTextLabel>(debugTextViewPath);
+            }
         }
         public override void _Process(float deltaTime)
         {
