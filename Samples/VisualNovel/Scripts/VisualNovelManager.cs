@@ -22,7 +22,7 @@ public partial class VisualNovelManager : Node
         _dialogueRunner.AddCommandHandler("PlayAudio", new Action<string, float, string>(PlayAudio));
         _dialogueRunner.AddCommandHandler("Act", new Action<string, string, string, string, string>(SetActor));
         _dialogueRunner.AddCommandHandler("Move", new Func<string, string, string, float, Task>(MoveSprite));
-        _dialogueRunner.AddCommandHandler("Flip", FlipSprite);
+        _dialogueRunner.AddCommandHandler("Flip", new Action<string, string>(FlipSprite));
         _dialogueRunner.onDialogueComplete += OnDialogueComplete;
     }
 
@@ -186,6 +186,7 @@ public partial class VisualNovelManager : Node
         rect.Texture = texture;
         var originalSize = texture.GetSize();
         var targetHeight = OS.WindowSize.y;
+        rect.RectMinSize = Vector2.Zero;
         var sizeRatio = originalSize.x / originalSize.y;
         // clamp the actor sprite size to the screen
         rect.RectSize = new Vector2(targetHeight * sizeRatio, targetHeight);
