@@ -16,6 +16,8 @@ YarnProjectPaths=PoolStringArray( "res://Samples/Space/Dialogue/Space_YarnProjec
 
 config/name="YarnSpinner-Godot"
 run/main_scene="res://Samples/VisualNovel/VisualNovelSample.tscn"
+boot_splash/image="res://addons/YarnSpinnerGodot/Editor/Icons/YarnSpinnerLogo.png"
+boot_splash/bg_color=Color( 0.0313726, 0.0705882, 0.0313726, 1 )
 config/icon="res://YarnSpinnerLogo.png"
 config/features=PoolStringArray( "4.0", "C#" )
 
