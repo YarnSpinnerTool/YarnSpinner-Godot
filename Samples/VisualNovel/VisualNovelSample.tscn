@@ -1,33 +1,95 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://b4lixjwce14o3"]
 
-[ext_resource path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres" type="Resource" id=2]
-[ext_resource path="res://Samples/Space/Scripts/SpaceSample.cs" type="Script" id=3]
-[ext_resource path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" type="Script" id=4]
+[ext_resource type="Resource" uid="uid://c245gwv8qwsod" path="res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres" id="2"]
+[ext_resource type="Script" path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" id="4"]
+[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnDonut/Scenes/DefaultDialogueSystem.tscn" id="4_rci1f"]
+[ext_resource type="Script" path="res://addons/YarnDonut/Runtime/InMemoryVariableStorage.cs" id="6"]
+[ext_resource type="Script" path="res://addons/YarnDonut/Runtime/LineProviders/TextLineProvider.cs" id="9"]
 
 [node name="VisualNovelSample" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VisualNovelManager" type="Control" parent="."]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 4 )
-dialogueRunnerPath = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
-backgroundPath = NodePath("BackgroundImage")
+script = ExtResource("4")
+_dialogueRunnerPath = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+_backgroundPath = NodePath("BackgroundImage")
+_colorOverlayPath = NodePath("../YarnSpinnerCanvasLayer/ColorOverlay")
+_dialogueStartUiPath = NodePath("DialogueStartUI")
+_englishButtonPath = NodePath("DialogueStartUI/VBoxContainer/EnglishButton")
+_spanishButtonPath = NodePath("DialogueStartUI/VBoxContainer/SpanishButton")
+_japaneseButtonPath = NodePath("DialogueStartUI/VBoxContainer/JapaneseButton")
+_dialogueCanvasPath = NodePath("../YarnSpinnerCanvasLayer")
 
 [node name="BackgroundImage" type="TextureRect" parent="VisualNovelManager"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
+[node name="DialogueStartUI" type="Control" parent="VisualNovelManager"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" instance=ExtResource( 1 )]
-yarnProject = ExtResource( 2 )
-startNode = "Start"
+[node name="VBoxContainer" type="VBoxContainer" parent="VisualNovelManager/DialogueStartUI"]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 0
+offset_left = 494.0
+offset_top = 272.0
+offset_right = 1094.0
+offset_bottom = 407.0
 
-[node name="SpaceSample" type="Control" parent="YarnSpinnerCanvasLayer"]
-margin_right = 40.0
-margin_bottom = 40.0
-script = ExtResource( 3 )
-dialogueRunnerPath = NodePath("../DialogueRunner")
+[node name="PlayTheGameIn" type="RichTextLabel" parent="VisualNovelManager/DialogueStartUI/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+bbcode_enabled = true
+text = "Play the game in...."
+
+[node name="EnglishButton" type="Button" parent="VisualNovelManager/DialogueStartUI/VBoxContainer"]
+layout_mode = 2
+text = "English"
+
+[node name="SpanishButton" type="Button" parent="VisualNovelManager/DialogueStartUI/VBoxContainer"]
+layout_mode = 2
+text = "Español"
+
+[node name="JapaneseButton" type="Button" parent="VisualNovelManager/DialogueStartUI/VBoxContainer"]
+layout_mode = 2
+text = "日本語"
+
+[node name="InMemoryVariableStorage" type="Node" parent="."]
+script = ExtResource("6")
+debugTextViewPath = NodePath("")
+
+[node name="TextLineProvider" type="Node2D" parent="."]
+script = ExtResource("9")
+textLanguageCode = "en"
+
+[node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("4_rci1f")]
+
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("2")
+
+[node name="LineText" parent="YarnSpinnerCanvasLayer/LineView/ViewControl" index="0"]
+theme_override_font_sizes/normal_font_size = 34
+
+[node name="ColorOverlay" type="ColorRect" parent="YarnSpinnerCanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[editable path="YarnSpinnerCanvasLayer"]

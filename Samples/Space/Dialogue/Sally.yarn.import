@@ -2,12 +2,13 @@
 
 importer="yarnscript"
 type="Resource"
-path="res://.import/Sally.yarn-461d08e5b02f98c92224badc7e45d4ba.tres"
+uid="uid://baypc2v305035"
+path="res://.godot/imported/Sally.yarn-461d08e5b02f98c92224badc7e45d4ba.tres"
 
 [deps]
 
 source_file="res://Samples/Space/Dialogue/Sally.yarn"
-dest_files=[ "res://.import/Sally.yarn-461d08e5b02f98c92224badc7e45d4ba.tres" ]
+dest_files=["res://.godot/imported/Sally.yarn-461d08e5b02f98c92224badc7e45d4ba.tres"]
 
 [params]
 

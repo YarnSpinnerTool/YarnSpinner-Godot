@@ -1,0 +1,9 @@
+[gd_resource type="DynamicFont" load_steps=2 format=2]
+
+[ext_resource path="res://Samples/NotoSerifJP-Regular.otf" type="DynamicFontData" id=1]
+
+[resource]
+size = 28
+outline_size = 2
+outline_color = Color( 0.0352941, 0.0627451, 0.0509804, 1 )
+font_data = ExtResource( 1 )

@@ -2,12 +2,13 @@
 
 importer="yarnscript"
 type="Resource"
-path="res://.import/VNExampleDialogue.yarn-41f0962017de26826290721466099c71.tres"
+uid="uid://ctj60pr4owfc3"
+path="res://.godot/imported/VNExampleDialogue.yarn-41f0962017de26826290721466099c71.tres"
 
 [deps]
 
 source_file="res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-dest_files=[ "res://.import/VNExampleDialogue.yarn-41f0962017de26826290721466099c71.tres" ]
+dest_files=["res://.godot/imported/VNExampleDialogue.yarn-41f0962017de26826290721466099c71.tres"]
 
 [params]
 

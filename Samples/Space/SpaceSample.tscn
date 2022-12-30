@@ -1,15 +1,151 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=17 format=3 uid="uid://ddbq27wcm6emj"]
 
-[ext_resource path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Samples/Space/Dialogue/Space_YarnProject.tres" type="Resource" id=2]
-[ext_resource path="res://Samples/Space/Scripts/SpaceSample.cs" type="Script" id=3]
+[ext_resource type="Resource" uid="uid://baf1cu6kwapdh" path="res://Samples/Space/Dialogue/SpaceYarnProject.tres" id="1"]
+[ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_xb3ul"]
+[ext_resource type="Script" path="res://Samples/Space/Scripts/SpaceSample.cs" id="3"]
+[ext_resource type="Texture2D" uid="uid://dsxwawdra77cw" path="res://Samples/Space/Sprites/Ship-Face-Neutral.png" id="3_jhhyl"]
+[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnDonut/Scenes/DefaultDialogueSystem.tscn" id="4"]
+[ext_resource type="Texture2D" uid="uid://b47akckvwuptw" path="res://Samples/Space/Sprites/Ship.png" id="4_adhl1"]
+[ext_resource type="Texture2D" uid="uid://cran3pr6dgduh" path="res://Samples/Space/Sprites/Sally.png" id="6_0pnyi"]
+[ext_resource type="Texture2D" uid="uid://u2fbx0x644y6" path="res://Samples/Space/Sprites/Background.jpg" id="6_lstjv"]
+[ext_resource type="Texture2D" uid="uid://bof87dtlnbrt0" path="res://Samples/Space/Sprites/Wall.png" id="7_ld3rh"]
+[ext_resource type="Texture2D" uid="uid://d3utr21wvs3n6" path="res://Samples/Space/Sprites/Player.png" id="8_18hb1"]
+[ext_resource type="Script" path="res://Samples/Space/Player.cs" id="14"]
+[ext_resource type="Script" path="res://Samples/Space/SpaceCamera.cs" id="15"]
+[ext_resource type="Script" path="res://Samples/Space/DialogueTarget.cs" id="16"]
 
-[node name="SpaceDemo" type="Node2D"]
-script = ExtResource( 3 )
-dialogueRunnerPath = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
+[sub_resource type="CapsuleShape2D" id="3"]
+radius = 40.02
+height = 80.04
 
-[node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
+[sub_resource type="CapsuleShape2D" id="2"]
+radius = 132.53
+height = 265.06
 
-[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" instance=ExtResource( 1 )]
-yarnProject = ExtResource( 2 )
-startNode = "Sally"
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(314, 2122)
+
+[node name="SpaceSample" type="Node2D" node_paths=PackedStringArray("dialogueRunner", "shipFace")]
+script = ExtResource("3")
+ShipHappySprite = ExtResource("2_xb3ul")
+ShipNeutralSprite = ExtResource("3_jhhyl")
+dialogueRunner = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
+shipFace = NodePath("Ship/ShipFaceSprite")
+
+[node name="Ship" type="Area2D" parent="."]
+position = Vector2(1828, 1328)
+collision_layer = 2
+collision_mask = 0
+
+[node name="ShipSprite" type="Sprite2D" parent="Ship"]
+z_index = 1
+position = Vector2(-10, -126)
+texture = ExtResource("4_adhl1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ship"]
+modulate = Color(0, 0.12549, 0.54902, 1)
+z_index = 6
+z_as_relative = false
+position = Vector2(-7, -102)
+shape = SubResource("3")
+
+[node name="DialogueTarget" type="Node2D" parent="Ship"]
+script = ExtResource("16")
+nodeName = "Ship"
+
+[node name="ShipFaceSprite" type="Sprite2D" parent="Ship"]
+z_index = 1
+position = Vector2(-10, -199)
+
+[node name="Sally" type="Area2D" parent="."]
+position = Vector2(782, 1306)
+collision_layer = 2
+collision_mask = 0
+
+[node name="SallySprite" type="Sprite2D" parent="Sally"]
+z_index = 1
+position = Vector2(-2, -114)
+texture = ExtResource("6_0pnyi")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sally"]
+modulate = Color(0, 0.12549, 0.54902, 1)
+z_index = 6
+z_as_relative = false
+position = Vector2(-7, -102)
+shape = SubResource("3")
+
+[node name="DialogueTarget" type="Node2D" parent="Sally"]
+script = ExtResource("16")
+nodeName = "Sally"
+
+[node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("IntersectShape", "DialogueRunner")]
+position = Vector2(418, 1210)
+script = ExtResource("14")
+IntersectShape = NodePath("CollisionShape2D")
+DialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+
+[node name="PlayerSpite" type="Sprite2D" parent="Player"]
+z_index = 2
+position = Vector2(3, -1)
+texture = ExtResource("8_18hb1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+modulate = Color(0, 1, 0.415686, 1)
+z_index = 2
+position = Vector2(0, -4)
+shape = SubResource("2")
+
+[node name="Left Wall" type="StaticBody2D" parent="."]
+z_index = 1
+position = Vector2(283, -294)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left Wall"]
+position = Vector2(-153, -133)
+shape = SubResource("1")
+
+[node name="Right Wall" type="StaticBody2D" parent="."]
+z_index = 1
+position = Vector2(3351, -294)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right Wall"]
+position = Vector2(-153, -133)
+shape = SubResource("1")
+
+[node name="SpaceBackground" type="TextureRect" parent="."]
+offset_right = 3167.0
+offset_bottom = 2142.0
+texture = ExtResource("6_lstjv")
+
+[node name="wall" type="TextureRect" parent="."]
+texture = ExtResource("7_ld3rh")
+
+[node name="wall2" type="TextureRect" parent="."]
+texture = ExtResource("7_ld3rh")
+
+[node name="wall3" type="TextureRect" parent="."]
+offset_left = 2048.0
+offset_right = 4096.0
+offset_bottom = 1536.0
+texture = ExtResource("7_ld3rh")
+
+[node name="SpaceCamera" type="Camera2D" parent="."]
+position = Vector2(3, 630)
+anchor_mode = 0
+script = ExtResource("15")
+followTargetPath = NodePath("../Player")
+MinX = 3
+MaxX = 1200
+
+[node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("4")]
+
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("1")
+startNode = "Saly"
+
+[node name="LineText" parent="YarnSpinnerCanvasLayer/LineView/ViewControl" index="0"]
+theme_override_font_sizes/normal_font_size = 34
+
+[node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
+textLanguageCode = "en"
+
+[editable path="YarnSpinnerCanvasLayer"]

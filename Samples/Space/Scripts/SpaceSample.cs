@@ -1,30 +1,35 @@
 using Godot;
-using System;
-using Yarn.GodotIntegration;
-
-public class SpaceSample : Node
+using YarnDonut;
+public partial class SpaceSample : Node
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
+	[Export] public Texture2D ShipHappySprite;
+	[Export] public Texture2D ShipNeutralSprite;
+	[Export] public  DialogueRunner dialogueRunner;
+	[Export] public  Sprite2D shipFace;
+	private static SpaceSample _instance;
+	// Called when the node enters the scene tree for the first time.
+	public override void _Ready()
+	{
+		_instance = this;
+		dialogueRunner.onDialogueComplete += OnDialogueComplete;
+	}
 
-    [Export] public NodePath dialogueRunnerPath;
+	[YarnCommand("setsprite")]
+	public static void SetSprite(string character, string spriteName)
+	{
+		// assume ShipFace character as only one character uses this command right now 
+		if (spriteName.ToLower().Equals("happy"))
+		{
+			_instance.shipFace.Texture = _instance.ShipHappySprite;
+		} else if (spriteName.ToLower().Equals("neutral"))
+		{
+			_instance.shipFace.Texture = _instance.ShipNeutralSprite;
+		}
+	}
 
-    private DialogueRunner _dialogueRunner;
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        _dialogueRunner = GetNode<DialogueRunner>(dialogueRunnerPath);
-        _dialogueRunner.onDialogueComplete += OnDialogueComplete;
-    }
+	private void OnDialogueComplete()
+	{
+		GD.Print("Space sample has completed!");
+	}
 
-    private void OnDialogueComplete()
-    {
-        GD.Print("Space sample has completed!");
-    }
-//  // Called every frame. 'delta' is the elapsed time since the previous frame.
-//  public override void _Process(float delta)
-//  {
-//      
-//  }
 }

@@ -1,0 +1,72 @@
+[gd_scene load_steps=3 format=3 uid="uid://dnyy064638ly1"]
+
+[ext_resource type="Script" path="res://Samples/SampleEntryPoint.cs" id="1"]
+[ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
+
+[node name="Node2D" type="CanvasLayer"]
+script = ExtResource("1")
+_spaceButtonPath = NodePath("Space")
+_visualNovelButtonPath = NodePath("Visual Novel")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.101961, 0.184314, 0.215686, 1)
+
+[node name="Space" type="Button" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -570.0
+offset_top = -503.0
+offset_right = -370.0
+offset_bottom = -393.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("2")
+text = "Space"
+
+[node name="features" type="RichTextLabel" parent="Space"]
+layout_mode = 0
+offset_left = -9.0
+offset_top = 140.0
+offset_right = 226.0
+offset_bottom = 345.0
+bbcode_enabled = true
+text = "Basic dialogue demo
+Talking to NPCs
+"
+scroll_active = false
+
+[node name="Visual Novel" type="Button" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 335.0
+offset_top = -517.0
+offset_right = 535.0
+offset_bottom = -407.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("2")
+text = "Visual Novel"
+
+[node name="features" type="RichTextLabel" parent="Visual Novel"]
+layout_mode = 0
+offset_left = -20.0
+offset_top = 152.0
+offset_right = 262.0
+offset_bottom = 380.0
+bbcode_enabled = true
+text = "Localization
+Effect/ Animation Commands
+"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+bbcode_enabled = true
+text = "YarnDonut Samples"

@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+uid="uid://c3s1po5kclvp5"
+path="res://.godot/imported/Variables.yarn-8bdec9ac6a5d9be5b97daec7248a92be.tres"
+
+[deps]
+
+source_file="res://Samples/Space/Dialogue/Variables.yarn"
+dest_files=["res://.godot/imported/Variables.yarn-8bdec9ac6a5d9be5b97daec7248a92be.tres"]
+
+[params]
+
