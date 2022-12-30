@@ -9,9 +9,9 @@ namespace Yarn.GodotIntegration.Editor
 {
     /// <summary>
     /// Contains utility methods for working with Yarn Spinner content in
-    /// the Unity Editor.
+    /// the Godot editor.
     /// Note: this is no longer a static class unlike the Unity version because that causes
-    /// difficulties calling the methods from GDScript
+    /// difficulties calling the methods from GDScript.
     /// </summary>
     public partial class YarnEditorUtility : Object
     {
