@@ -1,8 +1,6 @@
-[gd_resource type="Resource" load_steps=23 format=2]
+[gd_resource type="Resource" load_steps=21 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
-[ext_resource path="res://Samples/Space/Dialogue/Sally.yarn" type="Resource" id=2]
-[ext_resource path="res://Samples/Space/Dialogue/Ship.yarn" type="Resource" id=3]
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" type="Script" id=4]
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs" type="Script" id=5]
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" type="Script" id=6]
@@ -157,7 +155,7 @@ _lineMetadata = {
 [resource]
 resource_name = "Space_YarnProject"
 script = ExtResource( 1 )
-SourceScripts = [ ExtResource( 2 ), ExtResource( 3 ) ]
+SourceScripts = null
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false

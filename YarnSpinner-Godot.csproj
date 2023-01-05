@@ -5,39 +5,16 @@
     <LangVersion>8</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime.Standard">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
-    </Reference>
-    <Reference Include="CsvHelper">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Buffers">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics.Vectors">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.TypeExtensions">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Reflection.TypeExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/YarnSpinner.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner.Compiler">
-      <HintPath>addons/YarnSpinnerGodot/Runtime/DLLs/YarnSpinner.Compiler.dll</HintPath>
-    </Reference>
-
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
+    <PackageReference Include="CsvHelper" Version="12.2.2" />
+    <PackageReference Include="Google.Protobuf" Version="3.21.12" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageReference Include="YarnSpinner" Version="2.2.4" />
+    <PackageReference Include="YarnSpinner.Compiler" Version="2.2.4" />
   </ItemGroup>
 </Project>

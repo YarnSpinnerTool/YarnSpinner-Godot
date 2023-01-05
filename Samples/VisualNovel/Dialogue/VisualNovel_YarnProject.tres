@@ -1,7 +1,6 @@
-[gd_resource type="Resource" load_steps=19 format=2]
+[gd_resource type="Resource" load_steps=18 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
-[ext_resource path="res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn" type="Resource" id=2]
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" type="Script" id=3]
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" type="Script" id=4]
 [ext_resource path="res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs" type="Script" id=5]
@@ -120,7 +119,7 @@ _lineMetadata = {
 [resource]
 resource_name = "VisualNovel_YarnProject"
 script = ExtResource( 1 )
-SourceScripts = [ ExtResource( 2 ) ]
+SourceScripts = null
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
