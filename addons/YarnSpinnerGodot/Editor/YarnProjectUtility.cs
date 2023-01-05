@@ -758,26 +758,33 @@ namespace Yarn.GodotIntegration.Editor
         {
             var projects = new List<YarnProject>();
             CleanUpMovedOrDeletedProjects();
-            var allProjects = (string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var allProjects = (Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
             foreach (var path in allProjects)
             {
-                projects.Add(ResourceLoader.Load<YarnProject>(path));
+                projects.Add(ResourceLoader.Load<YarnProject>(path.ToString()));
             }
             return projects;
         }
 
         private void CleanUpMovedOrDeletedProjects()
         {
-            var projects = ((string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey));
+            var projects = (Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
             var removeProjects = new List<string>();
             foreach (var path in projects)
             {
-                if (!File.Exists(ProjectSettings.GlobalizePath(path)))
+                if (!File.Exists(ProjectSettings.GlobalizePath((string)path)))
                 {
-                    removeProjects.Add(path);
+                    removeProjects.Add((string)path);
                 }
             }
-            var newProjects = projects.ToList().Where(p => !removeProjects.Contains(p)).ToArray();
+            var newProjects = new Array();
+            foreach (var project in projects)
+            {
+                if (!removeProjects.Contains(project))
+                {
+                    newProjects.Add(project);
+                }
+            }
             ProjectSettings.SetSetting(YarnProjectPathsSettingKey, newProjects);
         }
         /// <summary>
@@ -786,12 +793,12 @@ namespace Yarn.GodotIntegration.Editor
         public void AddProjectToList(YarnProject project)
         {
             CleanUpMovedOrDeletedProjects();
-            var projects = ((string[])ProjectSettings.GetSetting(YarnProjectPathsSettingKey)).ToList();
+            var projects = (Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
             if (project.ResourcePath != "" && !projects.Contains(project.ResourcePath))
             {
                 projects.Add(project.ResourcePath);
             }
-            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, projects.ToArray());
+            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, projects);
         }
     }
 
