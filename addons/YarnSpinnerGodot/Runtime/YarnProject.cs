@@ -5,7 +5,6 @@ using Godot;
 using Godot.Collections;
 using Newtonsoft.Json;
 using Yarn.Compiler;
-using Yarn.GodotIntegration.Editor;
 using Array = System.Array;
 
 namespace Yarn.GodotIntegration
@@ -150,7 +149,7 @@ namespace Yarn.GodotIntegration
                 if (doCompile)
                 {
                     GD.Print($"Re-compiling yarn scripts on project {ResourceName}.");
-                    var projectUtility = new YarnProjectUtility();
+                    var projectUtility = new Editor.YarnProjectUtility();
                     projectUtility.UpdateYarnProject(this);
                 }
             #endif

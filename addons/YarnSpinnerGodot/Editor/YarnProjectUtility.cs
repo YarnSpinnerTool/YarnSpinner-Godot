@@ -67,7 +67,7 @@ namespace Yarn.GodotIntegration.Editor
 
         public void SaveYarnProject(YarnProject project)
         {
-            var saveErr = ResourceSaver.Save( project.ResourcePath,project);
+            var saveErr = ResourceSaver.Save(project.ResourcePath, project);
             if (saveErr != Error.Ok)
             {
                 GD.PushError($"Error updating YarnProject {project.ResourceName} to {project.ResourcePath}: {saveErr}");
@@ -108,7 +108,7 @@ namespace Yarn.GodotIntegration.Editor
                         break;
                     }
                 }
-                newFunctionList.Add(existingFunc?? func);
+                newFunctionList.Add(existingFunc ?? func);
             }
             IEnumerable<Diagnostic> errors;
             project.ProjectErrors = System.Array.Empty<YarnProjectError>();
@@ -166,8 +166,8 @@ namespace Yarn.GodotIntegration.Editor
                 // Yarn public prefix. These are synthesized variables that are
                 // generated as a result of the compilation, and are not declared by
                 // the user.
-              
-                var newDeclarations =  new List<Declaration>() //localDeclarations
+
+                var newDeclarations = new List<Declaration>() //localDeclarations
                     .Concat(compilationResult.Value.Declarations)
                     .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
                     .Where(decl => !(decl.Type is FunctionType))
@@ -192,7 +192,7 @@ namespace Yarn.GodotIntegration.Editor
                 // Clear error messages from all scripts - they've all passed
                 // compilation
                 project.ProjectErrors = System.Array.Empty<YarnProjectError>();
-                
+
                 CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
                 project.localizationType = LocalizationType.YarnInternal;
 
@@ -208,7 +208,7 @@ namespace Yarn.GodotIntegration.Editor
             }
             project.ListOfFunctions = newFunctionList.ToArray();
             project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
-            ResourceSaver.Save(project.ResourcePath,project,  ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
+            ResourceSaver.Save(project.ResourcePath, project, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
         }
 
         private static void LogDiagnostic(Diagnostic diagnostic)
@@ -359,16 +359,26 @@ namespace Yarn.GodotIntegration.Editor
 
                 newLocalization.Clear();
                 newLocalization.LocaleCode = pair.languageID;
-
+                
                 // Add these new lines to the localisation's asset
                 foreach (var entry in stringTable)
                 {
-                    newLocalization.AddLocalisedStringToAsset(entry.ID, entry.Text);
+                    var lineID = entry.ID;
+                    if (entry.ID.Contains(".yarn") && entry.ID.Contains("/"))
+                    {
+                        // replace absolute paths in untagged lines with localized paths
+                        var idPrefix = "line:";
+                        var newID = entry.ID.Substring(idPrefix.Length);
+                        newID = $"{idPrefix}{ProjectSettings.LocalizePath(newID)}";
+                        lineID = newID;
+                    }
+                    newLocalization.AddLocalisedStringToAsset(lineID, entry.Text);
                 }
-
-                newLocalization.ResourceName = pair.languageID;
                 
+                newLocalization.ResourceName = pair.languageID;
+
                 #region localizable resources (todo)
+
 //             TODO: localizable resources
 //             if (pair.assetsFolder != null)
 //             {
@@ -411,8 +421,9 @@ namespace Yarn.GodotIntegration.Editor
 //
 //                 }
 //             }
+
                 #endregion
-                
+
                 if (pair.languageID == project.defaultLanguage)
                 {
                     // If this is our default language, set it as such
@@ -429,7 +440,7 @@ namespace Yarn.GodotIntegration.Editor
                         && !localization.ResourcePath.Contains("::"))
                     {
                         // only try to save it to disk if it's a standalone file and a sub resource
-                        var saveErr = ResourceSaver.Save( localization.ResourcePath, newLocalization);
+                        var saveErr = ResourceSaver.Save(localization.ResourcePath, newLocalization);
                         if (saveErr != Error.Ok)
                         {
                             GD.PushError($"Error saving localization {localization.LocaleCode} to {localization.ResourcePath}");
@@ -458,10 +469,13 @@ namespace Yarn.GodotIntegration.Editor
                 }
 
                 project.baseLocalization = developmentLocalization;
-                project.localizations = project.localizations.Concat(new List<Localization>{project.baseLocalization}).ToArray();
+                project.localizations = project.localizations.Concat(new List<Localization>
+                {
+                    project.baseLocalization
+                }).ToArray();
 
                 // Since this is the default language, also populate the line metadata.
-                project.lineMetadata =  _editorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
+                project.lineMetadata = _editorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
                 project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
             }
         }
@@ -680,7 +694,6 @@ namespace Yarn.GodotIntegration.Editor
                 var compilationJob = Yarn.Compiler.CompilationJob.CreateFromFiles(ProjectSettings.GlobalizePath(path));
                 compilationJob.CompilationType = Yarn.Compiler.CompilationJob.Type.StringsOnly;
                 compilationJob.Library = library;
-
                 var result = Yarn.Compiler.Compiler.Compile(compilationJob);
 
                 bool containsErrors = result.Diagnostics

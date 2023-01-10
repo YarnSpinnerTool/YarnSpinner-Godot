@@ -63,5 +63,5 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot.Editor
             EmitChanged(GetEditedProperty(), GetEditedObject().Get(GetEditedProperty()));
         }
     }
-#endif
 }
+#endif

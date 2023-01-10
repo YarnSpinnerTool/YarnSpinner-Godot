@@ -1,3 +1,4 @@
+#if TOOLS
 using System.Collections.Generic;
 using Godot;
 using Yarn.GodotIntegration;
@@ -134,3 +135,4 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         }
     }
 }
+#endif

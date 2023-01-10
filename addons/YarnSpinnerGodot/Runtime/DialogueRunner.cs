@@ -166,6 +166,13 @@ namespace Yarn.GodotIntegration
         public event OnDialogueCompleteHandler onDialogueComplete;
 
         /// <summary>
+        /// Clear all event handlers for <see cref="onDialogueComplete"/>
+        /// </summary>
+        public void ClearAllOnDialogueComplete()
+        {
+            onDialogueComplete = null;
+        }
+        /// <summary>
         /// An <see cref="Action"/> that is called when a  />
         /// <see
         /// cref="Command"/> is received.
@@ -229,6 +236,7 @@ namespace Yarn.GodotIntegration
         /// </summary>
         public void SetProject(YarnProject newProject)
         {
+            ActionManager.ClearAllActions();
             // Load all of the commands and functions from the assemblies that
             // this project wants to load from.
             ActionManager.AddActionsFromAssemblies();
@@ -345,7 +353,7 @@ namespace Yarn.GodotIntegration
             if (lineProvider.LinesAvailable == false)
             {
                 // The line provider isn't ready to give us our lines
-                // yet. We need to start a coroutine that waits for
+                // yet. We need to start a task that waits for
                 // them to finish loading, and then runs the dialogue.
                 ContinueDialogueWhenLinesAvailable();
             }

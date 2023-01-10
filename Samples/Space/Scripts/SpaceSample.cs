@@ -4,9 +4,6 @@ using Yarn.GodotIntegration;
 
 public class SpaceSample : Node
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
 
     [Export] public NodePath dialogueRunnerPath;
 

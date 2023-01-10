@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Godot;
 
 #if USE_ADDRESSABLES
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -11,7 +12,7 @@ namespace Yarn.GodotIntegration
         /// <summary>Specifies the language code to use for text content
         /// for this <see cref="TextLineProvider"/>.
         [Language]
-        public string textLanguageCode = System.Globalization.CultureInfo.CurrentCulture.Name;
+        [Export] public string textLanguageCode = System.Globalization.CultureInfo.CurrentCulture.Name;
 
         public override LocalizedLine GetLocalizedLine(Yarn.Line line)
         {
