@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres" type="Resource" id=2]
+[ext_resource path="res://Samples/Space/Dialogue/Space_YarnProject.tres" type="Resource" id=2]
 [ext_resource path="res://Samples/Space/Scripts/SpaceSample.cs" type="Script" id=3]
 [ext_resource path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" type="Script" id=4]
 
@@ -23,6 +23,10 @@ anchor_bottom = 1.0
 [node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" instance=ExtResource( 1 )]
+margin_left = 18.0
+margin_top = 2.0
+margin_right = 18.0
+margin_bottom = 2.0
 yarnProject = ExtResource( 2 )
 startNode = "Start"
 

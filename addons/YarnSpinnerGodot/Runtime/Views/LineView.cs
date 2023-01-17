@@ -187,10 +187,13 @@ namespace Yarn.GodotIntegration
 			var deltaTime = mainTree.Root.GetProcessDeltaTime();
 			var accumulator = deltaTime;
 
+
+			var ratioPerLetter = 1f/text.Text.Length;
 			while (text.PercentVisible < 1)
 			{
 				if (stopToken?.WasInterrupted ?? false)
 				{
+					text.PercentVisible = 1f;
 					return;
 				}
 
@@ -198,7 +201,7 @@ namespace Yarn.GodotIntegration
 				// time for.
 				while (accumulator >= secondsPerLetter)
 				{
-					text.PercentVisible += .03f;
+					text.PercentVisible += ratioPerLetter;
 					onCharacterTyped?.Invoke();
 					accumulator -= secondsPerLetter;
 				}
@@ -633,7 +636,7 @@ namespace Yarn.GodotIntegration
 					{
 						// The typewriter effect was interrupted. Stop this
 						// entire coroutine.
-						// todo: seems unnecessary to 'return' here
+						return;
 					}
 				}
 			}

@@ -36,8 +36,8 @@ namespace Yarn.GodotIntegration.Editor
         /// <returns>The instantiated script that will retain its connection to the related .cs file</returns>
         public T InstanceScript<T>(string scriptPath)
         {
-            var projectScript = (CSharpScript)ResourceLoader.Load(scriptPath);
-            return  (T)projectScript.New();
+            var scriptResource = (CSharpScript)ResourceLoader.Load(scriptPath);
+            return  (T)scriptResource.New();
         }
         /// <summary>
         /// Menu Item "Yarn Spinner/Create Yarn Script"

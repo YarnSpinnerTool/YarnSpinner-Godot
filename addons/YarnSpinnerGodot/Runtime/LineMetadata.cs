@@ -10,6 +10,10 @@ namespace Yarn.GodotIntegration
     public partial class LineMetadata: Resource
     {
         [Export] private Dictionary _lineMetadata = new Dictionary();
+        /// <summary>
+        /// File where a CSV will be written to describing the metadata (optional)
+        /// </summary>
+        [Export] public string stringsFile;
         public LineMetadata()
         {
             // empty constructor needed to instantiate from YarnProjectUtility
@@ -34,7 +38,7 @@ namespace Yarn.GodotIntegration
                     continue;
                 }
 
-                _lineMetadata.Add(entry.ID, String.Join(" ", entry.Metadata));
+                _lineMetadata.Add(entry.ID, entry);
             }
         }
 
@@ -48,7 +52,7 @@ namespace Yarn.GodotIntegration
             // sync with `_lineMetadata`.
             return _lineMetadata.Keys.Cast<string>();
         }
-
+        
         /// <summary>
         /// Returns metadata for a given line ID, if any is defined.
         /// </summary>
@@ -62,6 +66,17 @@ namespace Yarn.GodotIntegration
             }
 
             return null;
+        }
+
+        public List<LineMetadataTableEntry> GetAllMetadata()
+        {
+            var metadataList = new List<LineMetadataTableEntry>();
+            foreach (var key in _lineMetadata.Keys)
+            {
+                var meta = (LineMetadataTableEntry)_lineMetadata[key];
+                metadataList.Add(meta);
+            }
+            return metadataList;
         }
         public void Clear()
         {

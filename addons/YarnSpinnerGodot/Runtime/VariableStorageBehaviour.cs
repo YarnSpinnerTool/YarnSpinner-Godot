@@ -32,11 +32,6 @@ namespace Yarn.GodotIntegration
     /// A <see cref="Godot.Node"/> that a <see cref="DialogueRunner"/>
     /// uses to store and retrieve variables.
     /// </summary>
-    /// <remarks>
-    /// This abstract class inherits from <see cref="Godot.Node"/>,
-    /// which means that subclasses of this class can be attached to <see
-    /// cref="GameObject"/>s.
-    /// </remarks>
     public abstract partial  class VariableStorageBehaviour : Godot.Node, IVariableStorage
     {
         /// <inheritdoc/>

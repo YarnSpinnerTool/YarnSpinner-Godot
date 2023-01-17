@@ -14,6 +14,7 @@ using Yarn.Compiler;
 using Yarn.GodotIntegration;
 using Yarn.GodotIntegration.Editor;
 using Array = Godot.Collections.Array;
+using Directory = Godot.Directory;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
@@ -25,7 +26,10 @@ namespace Yarn.GodotIntegration.Editor
         public List<string> parseErrorMessages = new List<string>();
 
         public const string YarnProjectPathsSettingKey = "YarnSpinnerGodot/YarnProjectPaths";
-
+        /// <summary>
+        /// The contents of a .csv.import file to avoid importing it as a Godot localization csv file
+        /// </summary>
+        public const string KEEP_IMPORT_TEXT = "[remap]\n\nimporter=\"keep\"";
         private static string Base64Encode(string plainText)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
@@ -62,9 +66,59 @@ namespace Yarn.GodotIntegration.Editor
             if (project == null) return;
             if (string.IsNullOrEmpty(project.ResourcePath)) return;
             CompileAllScripts(project);
+            UpdateCSVFiles(project);
             SaveYarnProject(project);
         }
 
+        public void UpdateCSVFiles(YarnProject project)
+        {
+            if (project.lineMetadata != null && project.lineMetadata.stringsFile != null &&
+                project.lineMetadata.stringsFile.Trim() != "")
+            {
+                var csvPath = project.lineMetadata.stringsFile;
+
+                var csvText = LineMetadataTableEntry.CreateCSV(project.lineMetadata.GetAllMetadata());
+                GD.Print($"Updating metadata csv file to: {csvPath}");
+                csvPath = ProjectSettings.GlobalizePath(csvPath);
+                var parent = Path.GetDirectoryName(csvPath);
+                if (!System.IO.Directory.Exists(parent))
+                {
+                    System.IO.Directory.CreateDirectory(parent);
+                }
+                File.WriteAllText(csvPath, csvText);
+                var csvImport = $"{csvPath}.import";
+                if (!File.Exists(csvImport))
+                {
+                    File.WriteAllText(csvImport, KEEP_IMPORT_TEXT);
+                }
+            }
+            if (project.localizations != null)
+            {
+                foreach (var localization in project.localizations)
+                {
+                    if (localization.stringsFile != null &&
+                        localization.stringsFile.Trim().Length > 0)
+                    {
+                        var csvPath = localization.stringsFile;
+
+                        var csvText = StringTableEntry.CreateCSV(localization.GetStringTableEntries());
+                        GD.Print($"Updating locale {localization.LocaleCode} csv file to: {csvPath}");
+                        csvPath = ProjectSettings.GlobalizePath(csvPath);
+                        var parent = Path.GetDirectoryName(csvPath);
+                        if (!System.IO.Directory.Exists(parent))
+                        {
+                            System.IO.Directory.CreateDirectory(parent);
+                        }
+                        File.WriteAllText(csvPath, csvText);
+                        var csvImport = $"{csvPath}.import";
+                        if (!File.Exists(csvImport))
+                        {
+                            File.WriteAllText(csvImport, KEEP_IMPORT_TEXT);
+                        }
+                    }
+                }
+            }
+        }
         public void SaveYarnProject(YarnProject project)
         {
             var saveErr = ResourceSaver.Save(project.ResourcePath, project);
@@ -327,15 +381,22 @@ namespace Yarn.GodotIntegration.Editor
                 {
                     try
                     {
-                        if (pair.stringsFile == null)
+                        if (pair.stringsFile == null || pair.stringsFile.Trim() == "")
                         {
                             // We can't create this localization because we
                             // don't have any data for it.
                             GD.PrintErr($"Not creating a localization for {pair.languageID} in the Yarn Project {project.ResourceName} because a text asset containing the strings wasn't found. Add a .csv file containing the translated lines to the Yarn Project's inspector.");
                             continue;
                         }
+                        var globalizedCSV = ProjectSettings.GlobalizePath(pair.stringsFile);
 
-                        var csvText = System.IO.File.ReadAllText(ProjectSettings.GlobalizePath(pair.stringsFile));
+                        if (!File.Exists(globalizedCSV))
+                        {
+                            GD.PrintErr($"For the localization with locale code {pair.languageID}, the CSV file {pair.stringsFile} was specified under stringsFile, but the file does not exist.");
+                            continue;
+                        }
+
+                        var csvText = System.IO.File.ReadAllText(globalizedCSV);
 
                         stringTable = StringTableEntry.ParseFromCSV(csvText);
                     }
@@ -359,7 +420,7 @@ namespace Yarn.GodotIntegration.Editor
 
                 newLocalization.Clear();
                 newLocalization.LocaleCode = pair.languageID;
-                
+
                 // Add these new lines to the localisation's asset
                 foreach (var entry in stringTable)
                 {
@@ -372,9 +433,9 @@ namespace Yarn.GodotIntegration.Editor
                         newID = $"{idPrefix}{ProjectSettings.LocalizePath(newID)}";
                         lineID = newID;
                     }
-                    newLocalization.AddLocalisedStringToAsset(lineID, entry.Text);
+                    newLocalization.AddLocalisedStringToAsset(lineID, entry);
                 }
-                
+
                 newLocalization.ResourceName = pair.languageID;
 
                 #region localizable resources (todo)
@@ -446,7 +507,6 @@ namespace Yarn.GodotIntegration.Editor
                             GD.PushError($"Error saving localization {localization.LocaleCode} to {localization.ResourcePath}");
                         }
                     }
-                    break;
                 }
             }
 
@@ -465,7 +525,7 @@ namespace Yarn.GodotIntegration.Editor
                 // Add these new lines to the development localisation's asset
                 foreach (var entry in stringTableEntries)
                 {
-                    developmentLocalization.AddLocalisedStringToAsset(entry.ID, entry.Text);
+                    developmentLocalization.AddLocalisedStringToAsset(entry.ID, entry);
                 }
 
                 project.baseLocalization = developmentLocalization;
@@ -530,30 +590,37 @@ namespace Yarn.GodotIntegration.Editor
 
         private IEnumerable<LineMetadataTableEntry> LineMetadataTableEntriesFromCompilationResult(CompilationResult result)
         {
-            return result.StringTable.Select(x => new LineMetadataTableEntry
+            return result.StringTable.Select(x =>
             {
-                ID = x.Key,
-                File = ProjectSettings.LocalizePath(x.Value.fileName),
-                Node = x.Value.nodeName,
-                LineNumber = x.Value.lineNumber.ToString(),
-                Metadata = RemoveLineIDFromMetadata(x.Value.metadata).ToArray(),
+                var meta = _editorUtility.InstanceScript<LineMetadataTableEntry>("res://addons/YarnSpinnerGodot/Runtime/LineMetadataTableEntry.cs");
+                meta.ID = x.Key;
+                meta.File = ProjectSettings.LocalizePath(x.Value.fileName);
+                meta.Node = x.Value.nodeName;
+                meta.LineNumber = x.Value.lineNumber.ToString();
+                meta.Metadata = RemoveLineIDFromMetadata(x.Value.metadata).ToArray();
+                return meta;
             }).Where(x => x.Metadata.Length > 0);
         }
 
         private IEnumerable<StringTableEntry> GetStringTableEntries(YarnProject project, CompilationResult result)
         {
 
-            return result.StringTable.Select(x => new StringTableEntry
-            {
-                ID = x.Key,
-                Language = project.defaultLanguage,
-                Text = x.Value.text,
-                File = ProjectSettings.LocalizePath(x.Value.fileName),
-                Node = x.Value.nodeName,
-                LineNumber = x.Value.lineNumber.ToString(),
-                Lock = YarnImporter.GetHashString(x.Value.text, 8),
-                Comment = GenerateCommentWithLineMetadata(x.Value.metadata),
-            });
+            return result.StringTable.Select(x =>
+                {
+                    var entry = _editorUtility.InstanceScript<StringTableEntry>("res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs");
+
+                    entry.ID = x.Key;
+                    entry.Language = project.defaultLanguage;
+                    entry.Text = x.Value.text;
+                    entry.File = ProjectSettings.LocalizePath(x.Value.fileName);
+                    entry.Node = x.Value.nodeName;
+                    entry.LineNumber = x.Value.lineNumber.ToString();
+                    entry.Lock = YarnImporter.GetHashString(x.Value.text, 8);
+                    entry.Comment = GenerateCommentWithLineMetadata(x.Value.metadata);
+                    entry.ResourceName = $"{entry.Node}_{entry.ID}";
+                    return entry;
+                }
+            );
         }
 
         /// <summary>

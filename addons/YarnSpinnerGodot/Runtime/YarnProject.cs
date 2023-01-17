@@ -95,6 +95,10 @@ namespace Yarn.GodotIntegration
                 // check for any invalid files added
                 foreach (var script in value)
                 {
+                    if (script == null)
+                    {
+                        continue;
+                    }
                     var path = ProjectSettings.GlobalizePath(script.ResourcePath);
                     var ext = System.IO.Path.GetExtension(path);
                     if (ext == null || !ext.ToLowerInvariant().Equals(".yarn"))

@@ -4,11 +4,11 @@ using Godot;
 using Godot.Collections;
 
 #if UNITY_EDITOR
-
 using System.Linq;
 #endif
 
-namespace Yarn.GodotIntegration{
+namespace Yarn.GodotIntegration
+{
 
     /// <summary>
     /// List of valid locale codes
@@ -22,10 +22,10 @@ namespace Yarn.GodotIntegration{
 
         private string _LocaleCode;
 
-        [Export] 
+        [Export]
         public Dictionary _stringTable = new Dictionary();
 
-        [Export] 
+        [Export]
         private Dictionary _assetTable = new Dictionary();
 
         private System.Collections.Generic.Dictionary<string, string> _runtimeStringTable = new System.Collections.Generic.Dictionary<string, string>();
@@ -48,8 +48,9 @@ namespace Yarn.GodotIntegration{
         // CurrentProjectDefaultLanguageProperty.
         [Export]
         public string stringsFile = "";
-        
+
         #region Localized Strings
+
         public string GetLocalizedString(string key)
         {
             string result;
@@ -60,10 +61,19 @@ namespace Yarn.GodotIntegration{
 
             if (_stringTable.Contains(key))
             {
-                return _stringTable[key].ToString();
+                return ((StringTableEntry)_stringTable[key]).Text;
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Get <see cref="_stringTable"/> as a list of <see cref="StringTableEntry"/>
+        /// </summary>
+        /// <returns></returns>
+        public List<StringTableEntry> GetStringTableEntries()
+        {
+            return (from object key in _stringTable.Keys select (StringTableEntry)_stringTable[key]).ToList();
         }
 
         /// <summary>
@@ -79,15 +89,14 @@ namespace Yarn.GodotIntegration{
         /// Adds a new string to the string table.
         /// </summary>
         /// <remarks>
-        /// This method updates the localisation asset on disk. It is not
-        /// recommended to call this method during play mode, because changes
-        /// will persist after you leave and may cause conflicts.
+        /// This method updates the localisation asset on disk. 
         /// </remarks>
         /// <param name="key">The key for this string (generally, the line
         /// ID.)</param>
         /// <param name="value">The user-facing text for this string, in the
         /// language specified by <see cref="LocaleCode"/>.</param>
-        public void AddLocalisedStringToAsset(string key, string value) {
+        public void AddLocalisedStringToAsset(string key, StringTableEntry value)
+        {
             _stringTable.Add(key, value);
         }
 
@@ -166,6 +175,7 @@ namespace Yarn.GodotIntegration{
                 _assetTable.Add(entry.Key, entry.Value);
             }
         }
+
         #endregion
 
         public virtual void Clear()

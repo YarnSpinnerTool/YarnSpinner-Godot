@@ -1,33 +1,41 @@
 using System;
 using System.Collections.Generic;
 using CsvHelper;
-
+using Godot;
+#if TOOLS
+using Yarn.GodotIntegration.Editor;
+#endif
 namespace Yarn.GodotIntegration
 {
-    public struct StringTableEntry
+    [Serializable] [Tool]
+    public class StringTableEntry : Resource
     {
+        public StringTableEntry()
+        {
+            // parameterless constructor for Resource compatibility 
+        }
         /// <summary>
         /// The language that the line is written in.
         /// </summary>
-        public string Language;
+        [Export] public string Language;
 
         /// <summary>
         /// The line ID for this line. This value will be the same across
         /// all localizations.
         /// </summary>
-        public string ID;
+        [Export] public string ID;
 
         /// <summary>
         /// The text of this line, in the language specified by <see
         /// cref="Language"/>.
         /// </summary>
-        public string Text;
+        [Export] public string Text;
 
         /// <summary>
         /// The name of the Yarn script in which this line was originally
         /// found.
         /// </summary>
-        public string File;
+        [Export] public string File;
 
         /// <summary>
         /// The name of the node in which this line was originally found.
@@ -36,13 +44,13 @@ namespace Yarn.GodotIntegration
         /// This node can be found in the file indicated by <see
         /// cref="File"/>.
         /// </remarks>
-        public string Node;
+        [Export] public string Node;
 
         /// <summary>
         /// The line number in the file indicated by <see cref="File"/> at
         /// which the original version of this line can be found.
         /// </summary>
-        public string LineNumber;
+        [Export] public string LineNumber;
 
         /// <summary>
         /// A string used as part of a mechanism for checking if translated
@@ -66,12 +74,12 @@ namespace Yarn.GodotIntegration
         /// needs to be updated.
         /// </para>
         /// </remarks>
-        public string Lock;
+        [Export] public string Lock;
 
         /// <summary>
         /// A comment used to describe this line to translators.
         /// </summary>
-        public string Comment;
+        [Export] public string Comment;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StringTableEntry"/>
@@ -104,6 +112,9 @@ namespace Yarn.GodotIntegration
             return CsvConfiguration;
         }
 
+        #if TOOLS
+
+        private static YarnEditorUtility _editorUtility = new YarnEditorUtility();
         /// <summary>
         /// Reads comma-separated value data from <paramref name="sourceText"/>,
         /// and produces a collection of <see cref="StringTableEntry"/> structs.
@@ -142,17 +153,16 @@ namespace Yarn.GodotIntegration
                         csv.TryGetField<string>("node", out var node);
                         csv.TryGetField<string>("lineNumber", out var lineNumber);
 
-                        var record = new StringTableEntry
-                        {
-                            Language = language ?? string.Empty,
-                            ID = id ?? string.Empty,
-                            Text = text ?? string.Empty,
-                            File = file ?? string.Empty,
-                            Node = node ?? string.Empty,
-                            LineNumber = lineNumber ?? string.Empty,
-                            Lock = lockString ?? string.Empty,
-                            Comment = comment ?? string.Empty,
-                        };
+                        var record = _editorUtility.InstanceScript<StringTableEntry>("res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs");
+
+                        record.Language = language ?? string.Empty;
+                        record.ID = id ?? string.Empty;
+                        record.Text = text ?? string.Empty;
+                        record.File = file ?? string.Empty;
+                        record.Node = node ?? string.Empty;
+                        record.LineNumber = lineNumber ?? string.Empty;
+                        record.Lock = lockString ?? string.Empty;
+                        record.Comment = comment ?? string.Empty;
 
                         records.Add(record);
                     }
@@ -183,9 +193,10 @@ namespace Yarn.GodotIntegration
                 var csv = new CsvHelper.CsvWriter(
                     textWriter, // write into this stream
                     GetConfiguration() // use this configuration
-                    );
+                );
 
-                var fieldNames = new[] {
+                var fieldNames = new[]
+                {
                     "language",
                     "id",
                     "text",
@@ -204,7 +215,8 @@ namespace Yarn.GodotIntegration
 
                 foreach (var entry in entries)
                 {
-                    var values = new[] {
+                    var values = new[]
+                    {
                         entry.Language,
                         entry.ID,
                         entry.Text,
@@ -225,6 +237,8 @@ namespace Yarn.GodotIntegration
             }
         }
 
+        #endif
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -235,14 +249,14 @@ namespace Yarn.GodotIntegration
         public override bool Equals(object obj)
         {
             return obj is StringTableEntry entry &&
-                   Language == entry.Language &&
-                   ID == entry.ID &&
-                   Text == entry.Text &&
-                   File == entry.File &&
-                   Node == entry.Node &&
-                   LineNumber == entry.LineNumber &&
-                   Lock == entry.Lock &&
-                   Comment == entry.Comment;
+                Language == entry.Language &&
+                ID == entry.ID &&
+                Text == entry.Text &&
+                File == entry.File &&
+                Node == entry.Node &&
+                LineNumber == entry.LineNumber &&
+                Lock == entry.Lock &&
+                Comment == entry.Comment;
         }
 
         /// <inheritdoc/>
@@ -260,4 +274,3 @@ namespace Yarn.GodotIntegration
         }
     }
 }
-
