@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using Godot;
 
@@ -779,6 +780,7 @@ namespace Yarn.GodotIntegration
                 // Stop the current animation, and skip to the end of whatever
                 // started it.
                 currentStopToken.Interrupt();
+                return;
             }
             // No animation is now running. Signal that we want to
             // interrupt the line instead.
