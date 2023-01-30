@@ -43,8 +43,9 @@ namespace Yarn.GodotIntegration.Editor
                 {
                     // Does this project depend on this script? If so,
                     // then this is our destination asset.
-                    var importerDependsOnThisAsset = proj.SourceScripts.ToList()
-                        .ConvertAll(s => s.ResourcePath).Contains(assetPath);
+                    var importerDependsOnThisAsset = proj.SourceScripts
+                        .Where(s => s != null)
+                        .Select(s => s.ResourcePath).Contains(assetPath);
                     return importerDependsOnThisAsset;
                 })?.ResourcePath;
 
