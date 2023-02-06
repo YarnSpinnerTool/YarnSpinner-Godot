@@ -20,4 +20,10 @@
   <ItemGroup>
     <Folder Include="addons\YarnSpinnerGodot\yarnproject" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="addons\YarnSpinnerGodot\plugin.cfg" />
+    <Content Include="addons\YarnSpinnerGodot\Scenes\DialogueRunner.tscn" />
+    <Content Include="addons\YarnSpinnerGodot\Scenes\OptionView.tscn" />
+    <Content Include="addons\YarnSpinnerGodot\YarnSpinnerGodotMainPlugin.gd" />
+  </ItemGroup>
 </Project>

@@ -443,7 +443,7 @@ namespace Yarn.GodotIntegration
             {
                 viewControl = GetNode(viewControlPath) as Control;
             }
-            if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath))
+            if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath.ToString()))
             {
                 continueButton = (Control)GetNode(continueButtonPath);
             }
@@ -451,7 +451,7 @@ namespace Yarn.GodotIntegration
             {
                 continueButton.Connect("pressed", this, nameof(OnContinueClicked));
             }
-            if (characterNameText == null)
+            if (characterNameText == null && !string.IsNullOrEmpty(characterNameTextPath))
             {
                 characterNameText = GetNode<RichTextLabel>(characterNameTextPath);
             }

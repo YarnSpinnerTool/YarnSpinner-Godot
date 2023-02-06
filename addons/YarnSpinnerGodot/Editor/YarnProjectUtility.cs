@@ -67,11 +67,11 @@ namespace Yarn.GodotIntegration.Editor
             if (project == null) return;
             if (string.IsNullOrEmpty(project.ResourcePath)) return;
             CompileAllScripts(project);
-            UpdateCSVFiles(project);
+            UpdateMetadataCSV(project);
             SaveYarnProject(project);
         }
 
-        public void UpdateCSVFiles(YarnProject project)
+        public void UpdateMetadataCSV(YarnProject project)
         {
             if (project.lineMetadata != null && project.lineMetadata.stringsFile != null &&
                 project.lineMetadata.stringsFile.Trim() != "")
@@ -93,6 +93,9 @@ namespace Yarn.GodotIntegration.Editor
                     File.WriteAllText(csvImport, KEEP_IMPORT_TEXT);
                 }
             }
+        }
+        public void GenerateLocalizationCSVs(YarnProject project)
+        {
             if (project.localizations != null)
             {
                 foreach (var localization in project.localizations)

@@ -57,7 +57,7 @@ namespace Yarn.GodotIntegration
         [Export]
         public FunctionInfo[] ListOfFunctions;
 
-        [Export] public SerializedDeclaration[] SerializedDeclarations =Array.Empty<SerializedDeclaration>();
+        [Export] public SerializedDeclaration[] SerializedDeclarations = Array.Empty<SerializedDeclaration>();
 
         [Export] [Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
@@ -87,6 +87,7 @@ namespace Yarn.GodotIntegration
                 return _sourceScripts;
             }
             set {
+                #if TOOLS
                 if (value == null)
                 {
                     value = new Array<Resource>();
@@ -117,8 +118,8 @@ namespace Yarn.GodotIntegration
                 }
                 var existingScripts = _sourceScripts;
                 _sourceScripts = value;
-                
-            #if TOOLS
+
+
                 // if we are in the Godot editor, we can now automatically
                 // re-compile all scripts in this project, but 
                 // only if the list of scripts actually changed
