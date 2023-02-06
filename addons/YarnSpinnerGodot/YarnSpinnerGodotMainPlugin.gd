@@ -12,7 +12,7 @@ func print_load_error():
 func try_load_plugin():
 	if c_sharp_script_resource == null:
 		c_sharp_script_resource = load(c_sharp_script_path)
-		if c_sharp_script_resource == null or not c_sharp_script_resource.has_method("new"):
+		if c_sharp_script_resource == null or not c_sharp_script_resource.is_tool():
 			print_load_error()
 		else:
 			plugin = c_sharp_script_resource.new()
@@ -29,7 +29,7 @@ func build():
 	try_load_plugin()
 	if not loaded:
 		print_load_error()
-	return loaded 
+	return true
 	
 func _enter_tree():
 	# Initialization of the plugin goes here.
