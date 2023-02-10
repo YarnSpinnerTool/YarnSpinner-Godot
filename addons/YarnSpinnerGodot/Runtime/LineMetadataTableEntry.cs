@@ -2,7 +2,7 @@ using System;
 using CsvHelper;
 using System.Collections.Generic;
 using System.Linq;
-using addons.YarnSpinnerGodot.Editor;
+using YarnSpinnerGodot.Editor;
 using Godot;
 #if TOOLS
 #endif

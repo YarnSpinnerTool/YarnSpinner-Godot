@@ -5,7 +5,7 @@ using Godot;
 using Godot.Collections;
 using Array = Godot.Collections.Array;
 
-namespace addons.YarnSpinnerGodot.Editor
+namespace YarnSpinnerGodot.Editor
 {
 
     /// <summary>

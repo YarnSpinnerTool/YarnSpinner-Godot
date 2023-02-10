@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using addons.YarnSpinnerGodot.Editor;
+using YarnSpinnerGodot.Editor;
 using CsvHelper;
 using Godot;
 #if TOOLS

@@ -22,4 +22,6 @@
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cchris_005CYarnSpinner_002DGodot_005CRuntime_005CDLLs_005CSystem_002EReflection_002ETypeExtensions_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cchris_005CYarnSpinner_002DGodot_005CRuntime_005CDLLs_005CSystem_002ERuntime_002ECompilerServices_002EUnsafe_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cchris_005CYarnSpinner_002DGodot_005CRuntime_005CDLLs_005CYarnSpinner_002ECompiler_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cchris_005CYarnSpinner_002DGodot_005CRuntime_005CDLLs_005CYarnSpinner_002Edll/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cchris_005CYarnSpinner_002DGodot_005CRuntime_005CDLLs_005CYarnSpinner_002Edll/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">C:\Program Files\dotnet\sdk\6.0.400\MSBuild.dll</s:String>
+	<s:Int64 x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MsbuildVersion/@EntryValue">1114112</s:Int64></wpf:ResourceDictionary>

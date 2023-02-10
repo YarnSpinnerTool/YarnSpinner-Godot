@@ -1,6 +1,6 @@
 #if TOOLS
 using Godot;
-namespace addons.YarnSpinnerGodot.Editor
+namespace YarnSpinnerGodot.Editor
 {
     [Tool]
     public partial class YarnSpinnerEditorContainer : PanelContainer

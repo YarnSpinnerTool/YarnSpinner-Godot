@@ -1,7 +1,7 @@
 #if TOOLS
 using Godot;
 using Godot.Collections;
-namespace addons.YarnSpinnerGodot.Editor
+namespace YarnSpinnerGodot.Editor
 {
     [Tool]
     public partial class YarnCompileErrorsPropertyEditor : EditorProperty

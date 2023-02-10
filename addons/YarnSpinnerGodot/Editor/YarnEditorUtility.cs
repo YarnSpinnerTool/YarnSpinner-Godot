@@ -6,7 +6,7 @@ using File = System.IO.File;
 using Object = Godot.Object;
 using Path = System.IO.Path;
 
-namespace addons.YarnSpinnerGodot.Editor
+namespace YarnSpinnerGodot.Editor
 {
     /// <summary>
     /// Contains utility methods for working with Yarn Spinner content in

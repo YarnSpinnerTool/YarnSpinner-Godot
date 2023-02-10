@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using addons.YarnSpinnerGodot.Editor;
+using YarnSpinnerGodot.Editor;
 using Godot;
 using Godot.Collections;
 using Newtonsoft.Json;

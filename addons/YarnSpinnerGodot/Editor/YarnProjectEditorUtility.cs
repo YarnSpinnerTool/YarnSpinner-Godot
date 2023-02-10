@@ -15,7 +15,7 @@ using Yarn.GodotIntegration;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Path = System.IO.Path;
-namespace addons.YarnSpinnerGodot.Editor
+namespace YarnSpinnerGodot.Editor
 {
     [Tool]
     public class YarnProjectEditorUtility

@@ -7,7 +7,7 @@ using Godot.Collections;
 using Yarn.GodotIntegration;
 using Object = Godot.Object;
 
-namespace addons.YarnSpinnerGodot.Editor
+namespace YarnSpinnerGodot.Editor
 {
     [Tool]
     public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
