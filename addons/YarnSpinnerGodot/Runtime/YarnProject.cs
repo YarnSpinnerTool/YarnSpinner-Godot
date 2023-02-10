@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using addons.YarnSpinnerGodot.Editor;
 using Godot;
 using Godot.Collections;
 using Newtonsoft.Json;
 using Yarn.Compiler;
 using Array = System.Array;
 
+#if TOOLS
+#endif
 namespace Yarn.GodotIntegration
 {
     [Tool]
@@ -43,6 +46,8 @@ namespace Yarn.GodotIntegration
 
         //IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
         public bool Destroyed => false; // not sure when this is used yet
+
+        [Export] public Array<string> SourceScripts = new Array<string>();
         //[Export] 
         [Export] public Localization baseLocalization;
 
@@ -80,100 +85,84 @@ namespace Yarn.GodotIntegration
             }
         }
 
-        private Godot.Collections.Array<Resource> _sourceScripts;
-        [Export] public Godot.Collections.Array<Resource> SourceScripts
+        #if TOOLS
+        /// <summary>
+        /// Search all directories for .yarn files and save the list to the project
+        /// </summary>
+        /// <returns></returns>
+        public void SearchForSourceScripts()
         {
-            get {
-                return _sourceScripts;
+            try
+            {
+                if (ResourcePath == "" || ResourcePath == null)
+                {
+                    GD.Print($"{nameof(YarnProject)}s must be saved to a file in your project to be used with this plugin.");
+                    return;
+                }
+
+                var projectDir = ProjectSettings.GlobalizePath(ResourcePath);
+                projectDir = System.IO.Directory.GetParent(projectDir).FullName;
+                var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectEditorUtility.YarnProjectPathsSettingKey);
+                var nestedYarnProjects = new List<string>();
+                foreach (string project in allProjects)
+                {
+                    var absoluteOtherProjectDir = ProjectSettings.GlobalizePath(project);
+                    absoluteOtherProjectDir = System.IO.Directory.GetParent(absoluteOtherProjectDir).FullName;
+                    if (!project.Equals(ResourcePath) && absoluteOtherProjectDir.Contains(projectDir))
+                    {
+                        nestedYarnProjects.Add(absoluteOtherProjectDir);
+                    }
+                }
+                SourceScripts = new Array<string>(FindSourceScriptsRecursive(nestedYarnProjects,
+                    projectDir, new List<string>()).ToArray());
             }
-            set {
-                #if TOOLS
-                if (value == null)
-                {
-                    value = new Array<Resource>();
-                }
-                var removeScripts = new List<Resource>();
-                // check for any invalid files added
-                foreach (var script in value)
-                {
-                    if (script == null)
-                    {
-                        continue;
-                    }
-                    var path = ProjectSettings.GlobalizePath(script.ResourcePath);
-                    var ext = System.IO.Path.GetExtension(path);
-                    if (ext == null || !ext.ToLowerInvariant().Equals(".yarn"))
-                    {
-                        removeScripts.Add(script);
-                        GD.PushError($"The script {path} is not a .yarn File. Only add .yarn files to {nameof(SourceScripts)}.");
-                    }
-                    else if (!System.IO.File.Exists(path))
-                    {
-                        GD.PushError($"The script {path} seems to have been deleted or moved. Removing it from {ResourceName}");
-                    }
-                }
-                foreach (var script in removeScripts)
-                {
-                    value.Remove(script);
-                }
-                var existingScripts = _sourceScripts;
-                _sourceScripts = value;
-
-
-                // if we are in the Godot editor, we can now automatically
-                // re-compile all scripts in this project, but 
-                // only if the list of scripts actually changed
-                var doCompile = existingScripts == null; // if the old value was null, we definitely changed.
-                if (!doCompile)
-                {
-                    // if before and after were not null
-                    var sortedScriptList = existingScripts.ToList().ConvertAll(r => r.ResourcePath);
-                    sortedScriptList.Sort(string.Compare);
-                    var sortedNewList = value.ToList().ConvertAll(r => r.ResourcePath);
-                    sortedNewList.Sort(string.Compare);
-
-                    if (value.Count != existingScripts.Count)
-                    {
-                        doCompile = true;
-                    }
-                    else
-                    {
-                        for (var i = 0; i < value.Count; i++)
-                        {
-                            var existingScript = existingScripts[i];
-                            var newScript = _sourceScripts[i];
-                            if (newScript.ResourcePath.Equals(existingScript.ResourcePath))
-                            {
-                                // at least one script is changed
-                                doCompile = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (doCompile)
-                {
-                    GD.Print($"Re-compiling yarn scripts on project {ResourceName}.");
-                    var projectUtility = new Editor.YarnProjectUtility();
-                    projectUtility.UpdateYarnProject(this);
-                }
-            #endif
+            catch (Exception e)
+            {
+                GD.PushError($"Error searching for .yarn scripts in Yarn Project '{ResourcePath}': {e.Message}{e.StackTrace}");
             }
-
-
         }
+        /// <summary>
+        /// Find a list of all .yarn files that this YarnProject is responsible for compiling.
+        /// </summary>
+        /// <param name="nestedYarnProjectDirs">list of other yarn projects that are below this one. used to exclude .yarn files covered by deeper nested yarn projects from this project.</param>
+        /// <param name="dirPath">the directory to search for files and child directories</param>
+        /// <param name="scripts"></param>
+        /// <returns></returns>
+        private List<string> FindSourceScriptsRecursive(List<string> nestedYarnProjectDirs, string dirPath, List<string> scripts)
+        {
+            var files = System.IO.Directory.GetFiles(dirPath);
+            foreach (var file in files)
+            {
+                if (file.ToUpperInvariant().EndsWith(".YARN"))
+                {
+                    var scriptResPath = ProjectSettings.LocalizePath(file.Replace("\\", "/"));
+                    scripts.Add(scriptResPath);
+                }
+            }
+            var subdirectories = System.IO.Directory.GetDirectories(dirPath);
+            foreach (var subdirectory in subdirectories)
+            {
+                var coveredByNestedProject = false;
+                foreach (var nested in nestedYarnProjectDirs)
+                {
+                    if (subdirectory.Contains(nested))
+                    {
+                        coveredByNestedProject = true;
+                        break;
+                    }
+                }
+                if (!coveredByNestedProject)
+                {
+                    // ignore directories that are covered by other, nested yarn projects
+                    scripts = FindSourceScriptsRecursive(nestedYarnProjectDirs, subdirectory, scripts);
+                }
+            }
+            return scripts;
+        }
+        #endif
 
         [Export]
         public YarnProjectError[] ProjectErrors = Array.Empty<YarnProjectError>();
-
-        /// <summary>
-        /// Gets a value indicating whether this Yarn Project is able to
-        /// generate a strings table - that is, it has no compile errors,
-        /// it has at least one script, and all scripts are fully tagged.
-        /// </summary>
-        /// <inheritdoc path="exception"
-        /// cref="GetScriptHasLineTags(Resource)"/>
-        public bool CanGenerateStringsTable => this.ProjectErrors.Length == 0 && SourceScripts.Count > 0 && SourceScripts.All(s => GetScriptHasLineTags(s));
 
         /// <summary>
         /// Gets a value indicating whether the source script has line

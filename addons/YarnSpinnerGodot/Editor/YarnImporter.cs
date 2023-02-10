@@ -1,14 +1,11 @@
 #if TOOLS
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using Godot;
 using Godot.Collections;
-using File = System.IO.File;
 using Array = Godot.Collections.Array;
-using Google.Protobuf;
 
-namespace Yarn.GodotIntegration.Editor
+namespace addons.YarnSpinnerGodot.Editor
 {
 
     /// <summary>
@@ -18,7 +15,7 @@ namespace Yarn.GodotIntegration.Editor
     {
 
         private YarnEditorUtility _editorUtility = new YarnEditorUtility();
-        private YarnProjectUtility _projectUtility = new YarnProjectUtility();
+        private YarnProjectEditorUtility _projectEditorUtility = new YarnProjectEditorUtility();
         public override Array GetRecognizedExtensions() =>
             new Array(new[]
             {
@@ -71,13 +68,9 @@ namespace Yarn.GodotIntegration.Editor
             {
                 ImportYarn(assetPath);
             }
-            else if (extension == ".yarnc")
-            {
-                ImportCompiledYarn(assetPath);
-            }
             var importedMarkerResource = new Resource();
             importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
-            
+
             var saveErr = ResourceSaver.Save($"{savePath}.{GetSaveExtension()}", importedMarkerResource);
             if (saveErr != Error.Ok)
             {
@@ -136,41 +129,19 @@ namespace Yarn.GodotIntegration.Editor
 
         private void ImportYarn(string assetPath)
         {
-           var project = _projectUtility.GetDestinationProject(assetPath);
-           if (project == null)
-           {
-               GD.Print($"The yarn file {assetPath} is not currently associated with a Yarn Project. Create a Yarn Project via Tools > YarnSpinner > Create Yarn Project and add this script to it to compile it.");
-           }
-           else
-           {
-               _projectUtility.UpdateYarnProject(project);
-           }
-        }
-
-        /// <summary>
-        /// Import a .yarnrc file
-        /// </summary>
-        /// <param name="assetPath"></param>
-        private void ImportCompiledYarn(string assetPath)
-        {
-
-            var bytes = File.ReadAllBytes(assetPath);
-            try
+            GD.Print($"Importing Yarn script {assetPath}");
+            var project = _projectEditorUtility.GetDestinationProject(assetPath);
+            if (project == null)
             {
-                // Validate that this can be parsed as a Program protobuf
-                var _ = Program.Parser.ParseFrom(bytes);
+                GD.Print($"The yarn file {assetPath} is not currently associated with a Yarn Project." +
+                    " Create a Yarn Project via Tools > YarnSpinner > Create Yarn Project and make sure this" +
+                    " script is in the same directory as the YarnProject or" +
+                    " in a directory underneath that directory.");
             }
-            catch (InvalidProtocolBufferException)
+            else
             {
-                GD.PushError("Invalid compiled yarn file. Please re-compile the source code.");
-                return;
+                _projectEditorUtility.UpdateYarnProject(project);
             }
-            // Create a container for storing the bytes
-            var programContainer = new Resource(); // "<pre-compiled Yarn script>"
-
-            // Add this container to the imported asset; it will be what
-            // the user interacts with in Godot
-            GD.PrintErr("TODO: Need to save compiled yarn file asset.");
         }
     }
 }

@@ -1,11 +1,12 @@
 #if TOOLS
 using System.Collections.Generic;
 using Godot;
+using Yarn.GodotIntegration;
 using File = System.IO.File;
 using Object = Godot.Object;
 using Path = System.IO.Path;
 
-namespace Yarn.GodotIntegration.Editor
+namespace addons.YarnSpinnerGodot.Editor
 {
     /// <summary>
     /// Contains utility methods for working with Yarn Spinner content in
@@ -15,7 +16,7 @@ namespace Yarn.GodotIntegration.Editor
     /// </summary>
     public partial class YarnEditorUtility : Object
     {
-        private YarnProjectUtility _projectUtility;
+        private YarnProjectEditorUtility _projectEditorUtility;
         
         const string TemplateFilePath = "res://addons/YarnSpinnerGodot/Editor/YarnScriptTemplate.txt";
 
@@ -46,7 +47,7 @@ namespace Yarn.GodotIntegration.Editor
         /// <param name="projectPath"></param>
         public void CreateYarnProject(string projectPath)
         {
-            _projectUtility = new YarnProjectUtility();
+            _projectEditorUtility = new YarnProjectEditorUtility();
             var newYarnProject = InstanceScript<YarnProject>("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
             var absPath = ProjectSettings.GlobalizePath(projectPath);
             newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
@@ -59,7 +60,7 @@ namespace Yarn.GodotIntegration.Editor
             else
             {
                 GD.Print($"Saved new yarn project to {projectPath}");
-                _projectUtility.AddProjectToList(newYarnProject);
+                _projectEditorUtility.AddProjectToList(newYarnProject);
             }
         }
         

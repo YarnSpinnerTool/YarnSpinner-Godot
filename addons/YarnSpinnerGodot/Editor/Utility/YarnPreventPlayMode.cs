@@ -1,8 +1,7 @@
 #if TOOLS
 using System;
 using System.Collections.Generic;
-
-namespace Yarn.GodotIntegration.Editor
+namespace addons.YarnSpinnerGodot.Editor.Utility
 {
     using TypeRegistrationQuery = ValueTuple<Func<Type, IYarnErrorSource>, string>;
 

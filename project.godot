@@ -10,7 +10,7 @@ config_version=4
 
 [YarnSpinnerGodot]
 
-YarnProjectPaths=[ "res://Samples/Space/Dialogue/Space_YarnProject.tres" ]
+YarnProjectPaths=[ "res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://Samples/VisualNovel/Dialogue/VisualNovelYarnProject.tres" ]
 
 [application]
 

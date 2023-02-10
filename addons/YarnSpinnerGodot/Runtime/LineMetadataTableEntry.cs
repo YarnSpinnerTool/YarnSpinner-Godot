@@ -2,9 +2,9 @@ using System;
 using CsvHelper;
 using System.Collections.Generic;
 using System.Linq;
+using addons.YarnSpinnerGodot.Editor;
 using Godot;
 #if TOOLS
-using Yarn.GodotIntegration.Editor;
 #endif
 namespace Yarn.GodotIntegration
 {

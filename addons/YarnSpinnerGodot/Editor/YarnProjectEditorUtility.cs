@@ -2,26 +2,23 @@
 #define YARNSPINNER_DEBUG // todo remove
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Godot;
-using Godot.Collections;
 using Google.Protobuf;
-using Newtonsoft.Json;
 using Yarn;
 using Yarn.Compiler;
 using Yarn.GodotIntegration;
-using Yarn.GodotIntegration.Editor;
-using Array = Godot.Collections.Array;
-using Directory = Godot.Directory;
+using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Path = System.IO.Path;
-
-namespace Yarn.GodotIntegration.Editor
+namespace addons.YarnSpinnerGodot.Editor
 {
     [Tool]
-    public partial class YarnProjectUtility
+    public class YarnProjectEditorUtility
     {
         public List<string> parseErrorMessages = new List<string>();
 
@@ -36,26 +33,42 @@ namespace Yarn.GodotIntegration.Editor
             return Convert.ToBase64String(plainTextBytes);
         }
 
-        public YarnProject GetDestinationProject(string assetPath)
+        /// <summary>
+        /// Find an associated yarn project in the same or ancestor directory
+        /// </summary>
+        /// <param name="scriptPath"></param>
+        /// <returns></returns>
+        public YarnProject GetDestinationProject(string scriptPath)
         {
-            var destinationProjectPath = LoadAllYarnProjects()
-                .FirstOrDefault(proj =>
+            var projectRoot = ProjectSettings.GlobalizePath("res://");
+            var scriptDir = ProjectSettings.GlobalizePath(scriptPath);
+            scriptDir = Path.Combine(scriptDir, "..");
+            scriptDir = Path.GetFullPath(scriptDir).Replace("\\", "/");
+            string destinationProjectPath = null;
+
+            var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            foreach (var project in allProjects)
+            {
+                var projectPath = ProjectSettings.GlobalizePath(project.ToString())
+                    .Replace("\\", "/");
+                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("/", StringComparison.Ordinal));
+                if (scriptDir.Contains(projectPath) &&
+                    (destinationProjectPath == null ||
+                    destinationProjectPath.Length < projectPath.Length))
                 {
-                    // Does this project depend on this script? If so,
-                    // then this is our destination asset.
-                    var importerDependsOnThisAsset = proj.SourceScripts
-                        .Where(s => s != null)
-                        .Select(s => s.ResourcePath).Contains(assetPath);
-                    return importerDependsOnThisAsset;
-                })?.ResourcePath;
+                    // use the deepest matching directory
+                    destinationProjectPath = project.ToString();
+                }
+            }
 
             if (destinationProjectPath == null)
             {
                 return null;
             }
-
+            destinationProjectPath = ProjectSettings.LocalizePath(destinationProjectPath);
             return ResourceLoader.Load<YarnProject>(destinationProjectPath);
         }
+
 
         /// <summary>
         /// Re-compile scripts in a yarn project, add all associated data to the project,
@@ -66,9 +79,16 @@ namespace Yarn.GodotIntegration.Editor
         {
             if (project == null) return;
             if (string.IsNullOrEmpty(project.ResourcePath)) return;
-            CompileAllScripts(project);
-            UpdateMetadataCSV(project);
-            SaveYarnProject(project);
+            try
+            {
+                CompileAllScripts(project);
+                UpdateMetadataCSV(project);
+                SaveYarnProject(project);
+            }
+            catch (Exception e)
+            {
+                GD.PushError($"Error updating {nameof(YarnProject)} '{project.ResourcePath}': {e.Message}{e.StackTrace}");
+            }
         }
 
         public void UpdateMetadataCSV(YarnProject project)
@@ -82,9 +102,9 @@ namespace Yarn.GodotIntegration.Editor
                 GD.Print($"Updating metadata csv file to: {csvPath}");
                 csvPath = ProjectSettings.GlobalizePath(csvPath);
                 var parent = Path.GetDirectoryName(csvPath);
-                if (!System.IO.Directory.Exists(parent))
+                if (!Directory.Exists(parent))
                 {
-                    System.IO.Directory.CreateDirectory(parent);
+                    Directory.CreateDirectory(parent);
                 }
                 File.WriteAllText(csvPath, csvText);
                 var csvImport = $"{csvPath}.import";
@@ -109,9 +129,9 @@ namespace Yarn.GodotIntegration.Editor
                         GD.Print($"Updating locale {localization.LocaleCode} csv file to: {csvPath}");
                         csvPath = ProjectSettings.GlobalizePath(csvPath);
                         var parent = Path.GetDirectoryName(csvPath);
-                        if (!System.IO.Directory.Exists(parent))
+                        if (!Directory.Exists(parent))
                         {
-                            System.IO.Directory.CreateDirectory(parent);
+                            Directory.CreateDirectory(parent);
                         }
                         File.WriteAllText(csvPath, csvText);
                         var csvImport = $"{csvPath}.import";
@@ -142,8 +162,11 @@ namespace Yarn.GodotIntegration.Editor
             GD.Print($"Compiling all scripts in {assetPath}");
 
             project.ResourceName = Path.GetFileNameWithoutExtension(assetPath);
-            if (project.SourceScripts == null)
+            project.SearchForSourceScripts();
+
+            if (!project.SourceScripts.Any())
             {
+                GD.Print($"No .yarn files in directories below {project.ResourcePath}");
                 return;
             }
 
@@ -151,7 +174,7 @@ namespace Yarn.GodotIntegration.Editor
             ActionManager.ClearAllActions();
             ActionManager.AddActionsFromAssemblies();
             ActionManager.RegisterFunctions(library);
-            var existingFunctions = project.ListOfFunctions ?? System.Array.Empty<FunctionInfo>();
+            var existingFunctions = project.ListOfFunctions ?? Array.Empty<FunctionInfo>();
             var pretedermined = predeterminedFunctions().ToArray();
             foreach (var func in pretedermined)
             {
@@ -169,11 +192,11 @@ namespace Yarn.GodotIntegration.Editor
                 newFunctionList.Add(existingFunc ?? func);
             }
             IEnumerable<Diagnostic> errors;
-            project.ProjectErrors = System.Array.Empty<YarnProjectError>();
+            project.ProjectErrors = Array.Empty<YarnProjectError>();
 
             // We now now compile!
             var scriptAbsolutePaths = project.SourceScripts.ToList().Where(s => s != null)
-                .Select(scriptResource => ProjectSettings.GlobalizePath(scriptResource.ResourcePath)).ToList();
+                .Select(scriptResource => ProjectSettings.GlobalizePath(scriptResource)).ToList();
             // Store the compiled program
             byte[] compiledBytes = null;
             CompilationResult? compilationResult = new CompilationResult?();
@@ -249,7 +272,7 @@ namespace Yarn.GodotIntegration.Editor
                 project.SerializedDeclarations = newDeclarations;
                 // Clear error messages from all scripts - they've all passed
                 // compilation
-                project.ProjectErrors = System.Array.Empty<YarnProjectError>();
+                project.ProjectErrors = Array.Empty<YarnProjectError>();
 
                 CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
                 project.localizationType = LocalizationType.YarnInternal;
@@ -300,7 +323,7 @@ namespace Yarn.GodotIntegration.Editor
 
             try
             {
-                compilationResult = Compiler.Compiler.Compile(compilationJob);
+                compilationResult = Yarn.Compiler.Compiler.Compile(compilationJob);
             }
             catch (Exception e)
             {
@@ -315,7 +338,7 @@ namespace Yarn.GodotIntegration.Editor
 
             return compilationResult;
         }
-        public FunctionInfo CreateFunctionInfoFromMethodGroup(System.Reflection.MethodInfo method)
+        public FunctionInfo CreateFunctionInfoFromMethodGroup(MethodInfo method)
         {
             var returnType = $"-> {method.ReturnType.Name}";
 
@@ -356,7 +379,7 @@ namespace Yarn.GodotIntegration.Editor
             var shouldAddDefaultLocalization = true;
             if (project.localizations == null)
             {
-                project.localizations = System.Array.Empty<Localization>();
+                project.localizations = Array.Empty<Localization>();
             }
             foreach (var pair in project.languagesToSourceAssets)
             {
@@ -400,7 +423,7 @@ namespace Yarn.GodotIntegration.Editor
                             continue;
                         }
 
-                        var csvText = System.IO.File.ReadAllText(globalizedCSV);
+                        var csvText = File.ReadAllText(globalizedCSV);
 
                         stringTable = StringTableEntry.ParseFromCSV(csvText);
                     }
@@ -568,7 +591,7 @@ namespace Yarn.GodotIntegration.Editor
 
             if (errors.Count() > 0)
             {
-                GD.PrintErr($"Can't generate a strings table from a Yarn Project that contains compile errors", null);
+                GD.PrintErr("Can't generate a strings table from a Yarn Project that contains compile errors", null);
                 return null;
             }
 
@@ -577,7 +600,7 @@ namespace Yarn.GodotIntegration.Editor
 
         private CompilationResult? CompileStringsOnly(YarnProject project)
         {
-            var scriptPaths = project.SourceScripts.Where(s => s != null).Select(s => ProjectSettings.GlobalizePath(s.ResourcePath));
+            var scriptPaths = project.SourceScripts.Where(s => s != null).Select(s => ProjectSettings.GlobalizePath(s));
 
             if (scriptPaths.Count() == 0)
             {
@@ -589,7 +612,7 @@ namespace Yarn.GodotIntegration.Editor
             var job = CompilationJob.CreateFromFiles(scriptPaths);
             job.CompilationType = CompilationJob.Type.StringsOnly;
 
-            return Compiler.Compiler.Compile(job);
+            return Yarn.Compiler.Compiler.Compile(job);
         }
 
         private IEnumerable<LineMetadataTableEntry> LineMetadataTableEntriesFromCompilationResult(CompilationResult result)
@@ -743,12 +766,11 @@ namespace Yarn.GodotIntegration.Editor
                     // Get all of their source scripts, as a single sequence
                     .SelectMany(i => i.SourceScripts)
                     // Get the path for each asset
-                    .Select(sourceAsset => sourceAsset.ResourcePath)
                     // remove any nulls, in case any are found
                     .Where(path => path != null);
 
 #if YARNSPINNER_DEBUG
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 #endif
 
             var library = new Library();
@@ -762,13 +784,13 @@ namespace Yarn.GodotIntegration.Editor
             {
                 // Compile this script in strings-only mode to get
                 // string entries
-                var compilationJob = Yarn.Compiler.CompilationJob.CreateFromFiles(ProjectSettings.GlobalizePath(path));
-                compilationJob.CompilationType = Yarn.Compiler.CompilationJob.Type.StringsOnly;
+                var compilationJob = CompilationJob.CreateFromFiles(ProjectSettings.GlobalizePath(path));
+                compilationJob.CompilationType = CompilationJob.Type.StringsOnly;
                 compilationJob.Library = library;
                 var result = Yarn.Compiler.Compiler.Compile(compilationJob);
 
                 bool containsErrors = result.Diagnostics
-                    .Any(d => d.Severity == Compiler.Diagnostic.DiagnosticSeverity.Error);
+                    .Any(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
 
                 if (containsErrors)
                 {
@@ -793,8 +815,8 @@ namespace Yarn.GodotIntegration.Editor
 
                 foreach (var script in project.SourceScripts)
                 {
-                    var assetPath = ProjectSettings.GlobalizePath(script.ResourcePath);
-                    var contents = System.IO.File.ReadAllText(assetPath);
+                    var assetPath = ProjectSettings.GlobalizePath(script);
+                    var contents = File.ReadAllText(assetPath);
 
                     // Produce a version of this file that contains line
                     // tags added where they're needed.
@@ -813,7 +835,7 @@ namespace Yarn.GodotIntegration.Editor
                     {
                         modifiedFiles.Add(Path.GetFileNameWithoutExtension(assetPath));
 
-                        System.IO.File.WriteAllText(assetPath, taggedVersion, Encoding.UTF8);
+                        File.WriteAllText(assetPath, taggedVersion, Encoding.UTF8);
                     }
                 }
             }
@@ -842,7 +864,7 @@ namespace Yarn.GodotIntegration.Editor
         {
             var projects = new List<YarnProject>();
             CleanUpMovedOrDeletedProjects();
-            var allProjects = (Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
             foreach (var path in allProjects)
             {
                 projects.Add(ResourceLoader.Load<YarnProject>(path.ToString()));
@@ -852,7 +874,7 @@ namespace Yarn.GodotIntegration.Editor
 
         private void CleanUpMovedOrDeletedProjects()
         {
-            var projects = (Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var projects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
             var removeProjects = new List<string>();
             foreach (var path in projects)
             {
@@ -861,7 +883,7 @@ namespace Yarn.GodotIntegration.Editor
                     removeProjects.Add((string)path);
                 }
             }
-            var newProjects = new Array();
+            var newProjects = new Godot.Collections.Array();
             foreach (var project in projects)
             {
                 if (!removeProjects.Contains(project))
@@ -877,7 +899,7 @@ namespace Yarn.GodotIntegration.Editor
         public void AddProjectToList(YarnProject project)
         {
             CleanUpMovedOrDeletedProjects();
-            var projects = (Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var projects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
             if (project.ResourcePath != "" && !projects.Contains(project.ResourcePath))
             {
                 projects.Add(project.ResourcePath);

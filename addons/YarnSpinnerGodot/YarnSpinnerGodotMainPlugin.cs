@@ -1,8 +1,8 @@
 #if TOOLS
 using System.Collections.Generic;
+using addons.YarnSpinnerGodot.Editor;
 using Godot;
 using Yarn.GodotIntegration;
-using Yarn.GodotIntegration.Editor;
 namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
 {
     /// <summary>
@@ -16,7 +16,7 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         private YarnEditorUtility _editorUtility;
         private PopupMenu _popup;
         private const string PopupName = "YarnSpinner";
-        private EditorPlugin _yarnSpinnerPlugin;
+
         private const int CreateYarnScriptId = 1;
         public const int createYarnProjectID = 2;
         public const int createYarnLocalizationID = 3;
@@ -24,11 +24,11 @@ namespace YarnSpinnerGodot.addons.YarnSpinnerGodot
         public void Load(EditorPlugin yarnSpinnerPlugin)
         {
             _yarnSpinnerPlugin = yarnSpinnerPlugin;
-            if (!ProjectSettings.HasSetting(YarnProjectUtility.YarnProjectPathsSettingKey))
+            if (!ProjectSettings.HasSetting(YarnProjectEditorUtility.YarnProjectPathsSettingKey))
             {
-                ProjectSettings.SetSetting(YarnProjectUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
+                ProjectSettings.SetSetting(YarnProjectEditorUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
             }
-            ProjectSettings.SetInitialValue(YarnProjectUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
+            ProjectSettings.SetInitialValue(YarnProjectEditorUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
             // load script resources
             var scriptImporterScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs");
             var editorUtilityScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs");

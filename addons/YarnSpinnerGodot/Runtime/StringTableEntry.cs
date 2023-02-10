@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using addons.YarnSpinnerGodot.Editor;
 using CsvHelper;
 using Godot;
 #if TOOLS
-using Yarn.GodotIntegration.Editor;
 #endif
 namespace Yarn.GodotIntegration
 {

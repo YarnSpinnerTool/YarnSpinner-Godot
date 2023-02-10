@@ -1,17 +1,20 @@
 #if TOOLS
 using Godot;
-[Tool]
-public partial class YarnSpinnerEditorContainer : PanelContainer
+namespace addons.YarnSpinnerGodot.Editor
 {
-    public UndoRedo undoRedo;
+    [Tool]
+    public partial class YarnSpinnerEditorContainer : PanelContainer
+    {
+        public UndoRedo undoRedo;
 
-    public void SetUndoRedo(UndoRedo redo)
-    {
-        undoRedo = redo;
-    }
-    public override void _Ready()
-    {
+        public void SetUndoRedo(UndoRedo redo)
+        {
+            undoRedo = redo;
+        }
+        public override void _Ready()
+        {
         
+        }
     }
 }
 #endif

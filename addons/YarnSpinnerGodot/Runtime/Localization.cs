@@ -3,7 +3,7 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 
-#if UNITY_EDITOR
+#if TOOLS
 using System.Linq;
 #endif
 

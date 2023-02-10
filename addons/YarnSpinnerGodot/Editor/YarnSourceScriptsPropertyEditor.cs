@@ -4,19 +4,16 @@ using Godot.Collections;
 namespace addons.YarnSpinnerGodot.Editor
 {
     [Tool]
-    public partial class YarnCompileErrorsPropertyEditor : EditorProperty
+    public partial class YarnSourceScriptsPropertyEditor : EditorProperty
     {
         // The main control for editing the property.
         private Label _propertyControl = new Label();
         // An internal value of the property.
         private Array _currentValue;
 
-        public delegate void ErrorsUpdatedHandler(Object yarnProject);
-        public event ErrorsUpdatedHandler OnErrorsUpdated;
-
-        public YarnCompileErrorsPropertyEditor()
+        public YarnSourceScriptsPropertyEditor()
         {
-            Label = "Project Errors";
+            Label = "Source Scripts";
             // Add the control as a direct child of EditorProperty node.
             AddChild(_propertyControl);
             // Make sure the control is able to retain the focus.
@@ -36,7 +33,6 @@ namespace addons.YarnSpinnerGodot.Editor
             }
             _currentValue = newValue;
             RefreshControlText();
-            OnErrorsUpdated?.Invoke(GetEditedObject());
         }
 
         private void RefreshControlText()
@@ -51,7 +47,7 @@ namespace addons.YarnSpinnerGodot.Editor
             }
             else
             {
-                _propertyControl.Text = $"{_currentValue.Count} error{(_currentValue.Count > 1 ? "s" : "")}";
+                _propertyControl.Text = $"{_currentValue.Count} .yarn script{(_currentValue.Count > 1 ? "s" : "")}";
             }
         }
 

@@ -6,8 +6,8 @@ using Godot.Collections;
 
 namespace Yarn.GodotIntegration
 {
-    [Serializable][Tool]
-    public partial class LineMetadata: Resource
+    [Serializable] [Tool]
+    public partial class LineMetadata : Resource
     {
         [Export] private Dictionary _lineMetadata = new Dictionary();
         /// <summary>
@@ -37,7 +37,7 @@ namespace Yarn.GodotIntegration
                 {
                     continue;
                 }
-
+                entry.File = ProjectSettings.LocalizePath(entry.File);
                 _lineMetadata.Add(entry.ID, entry);
             }
         }
@@ -52,7 +52,7 @@ namespace Yarn.GodotIntegration
             // sync with `_lineMetadata`.
             return _lineMetadata.Keys.Cast<string>();
         }
-        
+
         /// <summary>
         /// Returns metadata for a given line ID, if any is defined.
         /// </summary>

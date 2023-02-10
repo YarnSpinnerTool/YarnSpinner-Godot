@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Samples/Space/Dialogue/Space_YarnProject.tres" type="Resource" id=2]
+[ext_resource path="res://Samples/VisualNovel/Dialogue/VisualNovelYarnProject.tres" type="Resource" id=2]
 [ext_resource path="res://Samples/Space/Scripts/SpaceSample.cs" type="Script" id=3]
 [ext_resource path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" type="Script" id=4]
 
