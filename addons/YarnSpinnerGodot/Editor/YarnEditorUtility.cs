@@ -11,12 +11,10 @@ namespace YarnSpinnerGodot.Editor
     /// <summary>
     /// Contains utility methods for working with Yarn Spinner content in
     /// the Godot editor.
-    /// Note: this is no longer a static class unlike the Unity version because that causes
-    /// difficulties calling the methods from GDScript.
     /// </summary>
-    public partial class YarnEditorUtility : Object
+    public static class YarnEditorUtility
     {
-        private YarnProjectEditorUtility _projectEditorUtility;
+
         
         const string TemplateFilePath = "res://addons/YarnSpinnerGodot/Editor/YarnScriptTemplate.txt";
 
@@ -24,7 +22,7 @@ namespace YarnSpinnerGodot.Editor
         /// Menu Item "Yarn Spinner/Create Yarn Scr ipt"
         ///
         /// </summary>    
-        public void CreateYarnScript(string scriptPath)
+        public static void CreateYarnScript(string scriptPath)
         {
             GD.Print($"Creating new yarn script at {scriptPath}");
             CreateYarnScriptAssetFromTemplate(scriptPath);
@@ -35,7 +33,7 @@ namespace YarnSpinnerGodot.Editor
         // and none of the script properties are saved. Simply calling the new TypeHere() constructor doesn't work.
         /// </summary>
         /// <returns>The instantiated script that will retain its connection to the related .cs file</returns>
-        public T InstanceScript<T>(string scriptPath)
+        public static T InstanceScript<T>(string scriptPath)
         {
             var scriptResource = (CSharpScript)ResourceLoader.Load(scriptPath);
             return  (T)scriptResource.New();
@@ -45,9 +43,8 @@ namespace YarnSpinnerGodot.Editor
         /// 
         /// </summary>
         /// <param name="projectPath"></param>
-        public void CreateYarnProject(string projectPath)
+        public static void CreateYarnProject(string projectPath)
         {
-            _projectEditorUtility = new YarnProjectEditorUtility();
             var newYarnProject = InstanceScript<YarnProject>("res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs");
             var absPath = ProjectSettings.GlobalizePath(projectPath);
             newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
@@ -60,7 +57,7 @@ namespace YarnSpinnerGodot.Editor
             else
             {
                 GD.Print($"Saved new yarn project to {projectPath}");
-                _projectEditorUtility.AddProjectToList(newYarnProject);
+                YarnProjectEditorUtility.AddProjectToList(newYarnProject);
             }
         }
         
@@ -69,7 +66,7 @@ namespace YarnSpinnerGodot.Editor
         /// 
         /// </summary>
         /// <param name="localizationPath"></param>
-        public void CreateYarnLocalization(string localizationPath)
+        public static void CreateYarnLocalization(string localizationPath)
         {
             var newLocalization =  InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
             var absPath = ProjectSettings.GlobalizePath(localizationPath);
@@ -79,7 +76,7 @@ namespace YarnSpinnerGodot.Editor
             GD.Print($"Saved new yarn localization to {localizationPath}");
         }
 
-        private void CreateYarnScriptAssetFromTemplate(string pathName)
+        private static void CreateYarnScriptAssetFromTemplate(string pathName)
         {
             // Read the contents of the template file
             string templateContent;
@@ -124,7 +121,7 @@ namespace YarnSpinnerGodot.Editor
         /// <typeparam name="T">AssetImporter type to search for. Should be convertible from AssetImporter.</typeparam>
         /// <param name="filterQuery">Asset query (see <see cref="AssetDatabase.FindAssets(string)"/> documentation for formatting).</param>
         /// <returns>Enumerable of all assets of a given type.</returns>
-        public IEnumerable<T> GetAllAssetsOf<T>(string filterQuery) where T : class
+        public static IEnumerable<T> GetAllAssetsOf<T>(string filterQuery) where T : class
         {
             // TODO: store list of yarn files in plugin settings?
             // not seeing an easy way to find all resources in the project 

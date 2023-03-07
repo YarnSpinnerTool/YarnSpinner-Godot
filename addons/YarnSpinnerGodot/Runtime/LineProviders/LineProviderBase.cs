@@ -100,18 +100,7 @@ namespace Yarn.GodotIntegration
         /// user's locale.)
         /// </remarks>
         public abstract string LocaleCode { get; }
-
-        /// <summary>
-        /// Called by Unity when the <see cref="LineProviderBehaviour"/>
-        /// has first appeared in the scene.
-        /// </summary>
-        /// <remarks>
-        /// This method is <see langword="public"/> <see
-        /// langword="virtual"/> to allow subclasses to override it.
-        /// </remarks>
-        public virtual void Start()
-        {
-        }
+        
     }
 
     /// <summary>

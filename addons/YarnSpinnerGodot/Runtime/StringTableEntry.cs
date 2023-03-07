@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using YarnSpinnerGodot.Editor;
 using CsvHelper;
 using Godot;
 #if TOOLS
+using YarnSpinnerGodot.Editor;
 #endif
 namespace Yarn.GodotIntegration
 {
@@ -114,7 +114,6 @@ namespace Yarn.GodotIntegration
 
         #if TOOLS
 
-        private static YarnEditorUtility _editorUtility = new YarnEditorUtility();
         /// <summary>
         /// Reads comma-separated value data from <paramref name="sourceText"/>,
         /// and produces a collection of <see cref="StringTableEntry"/> structs.
@@ -153,7 +152,7 @@ namespace Yarn.GodotIntegration
                         csv.TryGetField<string>("node", out var node);
                         csv.TryGetField<string>("lineNumber", out var lineNumber);
 
-                        var record = _editorUtility.InstanceScript<StringTableEntry>("res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs");
+                        var record = YarnEditorUtility.InstanceScript<StringTableEntry>("res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs");
 
                         record.Language = language ?? string.Empty;
                         record.ID = id ?? string.Empty;

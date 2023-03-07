@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using Godot;
 
-#if USE_ADDRESSABLES
-using UnityEngine.ResourceManagement.AsyncOperations;
-#endif
-
 namespace Yarn.GodotIntegration
 {
     public partial class TextLineProvider : LineProviderBehaviour

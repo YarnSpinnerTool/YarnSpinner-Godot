@@ -2,9 +2,9 @@ using System;
 using CsvHelper;
 using System.Collections.Generic;
 using System.Linq;
-using YarnSpinnerGodot.Editor;
 using Godot;
 #if TOOLS
+using YarnSpinnerGodot.Editor;
 #endif
 namespace Yarn.GodotIntegration
 {
@@ -67,7 +67,7 @@ namespace Yarn.GodotIntegration
         }
 
         #if TOOLS
-        private static YarnEditorUtility _editorUtility;
+        
         private static CsvHelper.Configuration.Configuration CsvConfiguration;
 
         private static CsvHelper.Configuration.Configuration GetConfiguration()
@@ -119,7 +119,7 @@ namespace Yarn.GodotIntegration
                         csv.TryGetField<string>("metadata", out var metadata);
 
 
-                        var record = _editorUtility.InstanceScript<LineMetadataTableEntry>("res://addons/YarnSpinnerGodot/Runtime/LineMetadataTableEntry.cs");
+                        var record = YarnEditorUtility.InstanceScript<LineMetadataTableEntry>("res://addons/YarnSpinnerGodot/Runtime/LineMetadataTableEntry.cs");
 
                         record.ID = id ?? string.Empty;
                         record.File = file ?? string.Empty;

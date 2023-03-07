@@ -197,6 +197,10 @@ namespace Yarn.GodotIntegration
             var ratioPerLetter = 1f / text.Text.Length;
             while (text.PercentVisible < 1)
             {
+                if (!Godot.Object.IsInstanceValid(text))
+                {
+                    return;
+                }
                 if (stopToken?.WasInterrupted ?? false)
                 {
                     text.PercentVisible = 1f;
@@ -229,7 +233,7 @@ namespace Yarn.GodotIntegration
     }
 
     /// <summary>
-    /// A Dialogue View that presents lines of dialogue, using Unity UI
+    /// A Dialogue View that presents lines of dialogue, using Godot UI Controls
     /// elements.
     /// </summary>
     public partial class LineView : DialogueViewBase
@@ -350,7 +354,7 @@ namespace Yarn.GodotIntegration
 
         public delegate void OnCharacterTypedHandler();
         /// <summary>
-        /// A Unity Event that is called each time a character is revealed
+        /// An event that is called each time a character is revealed
         /// during a typewriter effect.
         /// </summary>
         /// <remarks>

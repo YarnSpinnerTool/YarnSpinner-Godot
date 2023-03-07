@@ -76,7 +76,7 @@ namespace Yarn.GodotIntegration
 		
 		public override void _EnterTree()
 		{
-			if (debugTextViewPath != null && debugTextView == null)
+			if (!debugTextViewPath.IsEmpty() && debugTextView == null)
 			{
 				debugTextView = GetNode<RichTextLabel>(debugTextViewPath);
 			}

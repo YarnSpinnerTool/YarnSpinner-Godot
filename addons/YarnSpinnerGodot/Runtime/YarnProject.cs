@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using YarnSpinnerGodot.Editor;
 using Godot;
 using Godot.Collections;
 using Newtonsoft.Json;
@@ -9,6 +8,7 @@ using Yarn.Compiler;
 using Array = System.Array;
 
 #if TOOLS
+using YarnSpinnerGodot.Editor;
 #endif
 namespace Yarn.GodotIntegration
 {
@@ -102,7 +102,7 @@ namespace Yarn.GodotIntegration
 
                 var projectDir = ProjectSettings.GlobalizePath(ResourcePath);
                 projectDir = System.IO.Directory.GetParent(projectDir).FullName;
-                var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectEditorUtility.YarnProjectPathsSettingKey);
+                var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY);
                 var nestedYarnProjects = new List<string>();
                 foreach (string project in allProjects)
                 {

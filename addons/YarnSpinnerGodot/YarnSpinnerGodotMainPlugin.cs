@@ -13,7 +13,7 @@ namespace YarnSpinnerGodot
     {
         private YarnImporter _scriptImportPlugin;
         private YarnProjectInspectorPlugin _projectInspectorPlugin;
-        private YarnEditorUtility _editorUtility;
+  
         private PopupMenu _popup;
         private const string PopupName = "YarnSpinner";
         private const int CreateYarnScriptId = 1;
@@ -22,11 +22,11 @@ namespace YarnSpinnerGodot
 
         public override void _EnterTree()
         {
-            if (!ProjectSettings.HasSetting(YarnProjectEditorUtility.YarnProjectPathsSettingKey))
+            if (!ProjectSettings.HasSetting(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY))
             {
-                ProjectSettings.SetSetting(YarnProjectEditorUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
+                ProjectSettings.SetSetting(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY, new Godot.Collections.Array());
             }
-            ProjectSettings.SetInitialValue(YarnProjectEditorUtility.YarnProjectPathsSettingKey, new Godot.Collections.Array());
+            ProjectSettings.SetInitialValue(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY, new Godot.Collections.Array());
             // load script resources
             var scriptImporterScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/editor/YarnImporter.cs");
             var editorUtilityScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinnerGodot/Editor/YarnEditorUtility.cs");
@@ -41,7 +41,6 @@ namespace YarnSpinnerGodot
             var miniYarnProjectIcon = ResourceLoader.Load<Texture>("res://addons/YarnSpinnerGodot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
 
             _scriptImportPlugin = (YarnImporter)scriptImporterScript.New();
-            _editorUtility = (YarnEditorUtility)editorUtilityScript.New();
             _projectInspectorPlugin = (YarnProjectInspectorPlugin)projectInspectorScript.New();
             AddInspectorPlugin(_projectInspectorPlugin);
             AddImportPlugin(_scriptImportPlugin);
@@ -95,7 +94,7 @@ namespace YarnSpinnerGodot
         private void CreateYarnScriptDestinationSelected(string destination)
         {
             GD.Print("Creating a yarn script at " + destination);
-            _editorUtility.CreateYarnScript(destination);
+            YarnEditorUtility.CreateYarnScript(destination);
         }
         private void CreateYarnProject()
         {
@@ -124,13 +123,13 @@ namespace YarnSpinnerGodot
         private void CreateYarnProjectDestinationSelected(string destination)
         {
             GD.Print("Creating a yarn project at " + destination);
-            _editorUtility.CreateYarnProject(destination);
+            YarnEditorUtility.CreateYarnProject(destination);
         }
 
         private void CreateYarnLocalizationDestinationSelected(string destination)
         {
             GD.Print("Creating a yarn project at " + destination);
-            _editorUtility.CreateYarnLocalization(destination);
+            YarnEditorUtility.CreateYarnLocalization(destination);
         }
     }
 }

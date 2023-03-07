@@ -94,6 +94,7 @@ namespace Yarn.GodotIntegration
     /// accepted types. (Do be aware that it's a non-CLS compliant interface,
     /// according to its docs. Mono for Unity seems to implement it, but you may
     /// have trouble if you use any other CLS implementation.)
+    /// Godot note: untested in Godot.
     /// </item>
     /// <item>Otherwise, it will not be called, and a warning will be
     /// issued.</item>

@@ -18,11 +18,10 @@ using Path = System.IO.Path;
 namespace YarnSpinnerGodot.Editor
 {
     [Tool]
-    public class YarnProjectEditorUtility
+    public static class YarnProjectEditorUtility
     {
-        public List<string> parseErrorMessages = new List<string>();
 
-        public const string YarnProjectPathsSettingKey = "YarnSpinnerGodot/YarnProjectPaths";
+        public const string YARN_PROJECT_PATHS_SETTING_KEY = "YarnSpinnerGodot/YarnProjectPaths";
         /// <summary>
         /// The contents of a .csv.import file to avoid importing it as a Godot localization csv file
         /// </summary>
@@ -38,7 +37,7 @@ namespace YarnSpinnerGodot.Editor
         /// </summary>
         /// <param name="scriptPath"></param>
         /// <returns></returns>
-        public YarnProject GetDestinationProject(string scriptPath)
+        public static YarnProject GetDestinationProject(string scriptPath)
         {
             var projectRoot = ProjectSettings.GlobalizePath("res://");
             var scriptDir = ProjectSettings.GlobalizePath(scriptPath);
@@ -46,7 +45,7 @@ namespace YarnSpinnerGodot.Editor
             scriptDir = Path.GetFullPath(scriptDir).Replace("\\", "/");
             string destinationProjectPath = null;
 
-            var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
             foreach (var project in allProjects)
             {
                 var projectPath = ProjectSettings.GlobalizePath(project.ToString())
@@ -75,7 +74,7 @@ namespace YarnSpinnerGodot.Editor
         /// and save it back to disk in the same .tres file.
         /// </summary>
         /// <param name="project"></param>
-        public void UpdateYarnProject(YarnProject project)
+        public static void UpdateYarnProject(YarnProject project)
         {
             if (project == null) return;
             if (string.IsNullOrEmpty(project.ResourcePath)) return;
@@ -91,7 +90,7 @@ namespace YarnSpinnerGodot.Editor
             }
         }
 
-        public void UpdateMetadataCSV(YarnProject project)
+        public static void UpdateMetadataCSV(YarnProject project)
         {
             if (project.lineMetadata != null && project.lineMetadata.stringsFile != null &&
                 project.lineMetadata.stringsFile.Trim() != "")
@@ -114,7 +113,7 @@ namespace YarnSpinnerGodot.Editor
                 }
             }
         }
-        public void GenerateLocalizationCSVs(YarnProject project)
+        public static void GenerateLocalizationCSVs(YarnProject project)
         {
             if (project.localizations != null)
             {
@@ -143,7 +142,7 @@ namespace YarnSpinnerGodot.Editor
                 }
             }
         }
-        public void SaveYarnProject(YarnProject project)
+        public static void SaveYarnProject(YarnProject project)
         {
             var saveErr = ResourceSaver.Save(project.ResourcePath, project);
             if (saveErr != Error.Ok)
@@ -155,7 +154,7 @@ namespace YarnSpinnerGodot.Editor
                 GD.Print($"Wrote updated YarnProject {project.ResourceName} to {project.ResourcePath}");
             }
         }
-        public void CompileAllScripts(YarnProject project)
+        public static void CompileAllScripts(YarnProject project)
         {
             List<FunctionInfo> newFunctionList = new List<FunctionInfo>();
             var assetPath = project.ResourcePath;
@@ -204,12 +203,12 @@ namespace YarnSpinnerGodot.Editor
             {
                 var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
                 // job.VariableDeclarations = localDeclarations;
-
+                job.CompilationType = CompilationJob.Type.FullCompilation;
                 job.Library = library;
                 compilationResult = Yarn.Compiler.Compiler.Compile(job);
 
                 errors = compilationResult.Value.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
-
+                
                 if (errors.Count() > 0)
                 {
                     var errorGroups = errors.GroupBy(e => e.FileName);
@@ -264,7 +263,7 @@ namespace YarnSpinnerGodot.Editor
                                 break;
                             }
                         }
-                        var serialized = existingDeclaration ?? _editorUtility.InstanceScript<SerializedDeclaration>("res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs");
+                        var serialized = existingDeclaration ?? YarnEditorUtility.InstanceScript<SerializedDeclaration>("res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs");
                         serialized.SetDeclaration(decl);
                         serialized.ResourceName = serialized.name;
                         return serialized;
@@ -338,7 +337,7 @@ namespace YarnSpinnerGodot.Editor
 
             return compilationResult;
         }
-        public FunctionInfo CreateFunctionInfoFromMethodGroup(MethodInfo method)
+        public static FunctionInfo CreateFunctionInfoFromMethodGroup(MethodInfo method)
         {
             var returnType = $"-> {method.ReturnType.Name}";
 
@@ -350,7 +349,7 @@ namespace YarnSpinnerGodot.Editor
                 p[i] = parameters[i].Name;
             }
 
-            var info = _editorUtility.InstanceScript<FunctionInfo>("res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs");
+            var info = YarnEditorUtility.InstanceScript<FunctionInfo>("res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs");
             info.Name = method.Name;
             info.ReturnType = returnType;
             info.Parameters = p;
@@ -366,11 +365,10 @@ namespace YarnSpinnerGodot.Editor
         /// <see cref="assembliesToSearch"/> will be used.
         /// </summary>
         /// <seealso cref="assembliesToSearch"/>
-        public bool searchAllAssembliesForActions = true;
-        private Localization developmentLocalization;
-        private YarnEditorUtility _editorUtility = new YarnEditorUtility();
+        public static bool searchAllAssembliesForActions = true;
+        private static Localization developmentLocalization;
 
-        private void CreateYarnInternalLocalizationAssets(YarnProject project, CompilationResult compilationResult)
+        private static void CreateYarnInternalLocalizationAssets(YarnProject project, CompilationResult compilationResult)
         {
             // Will we need to create a default localization? This variable
             // will be set to false if any of the languages we've
@@ -443,7 +441,7 @@ namespace YarnSpinnerGodot.Editor
                         existingLocalization = localization;
                     }
                 }
-                var newLocalization = existingLocalization ?? _editorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
+                var newLocalization = existingLocalization ?? YarnEditorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
 
                 newLocalization.Clear();
                 newLocalization.LocaleCode = pair.languageID;
@@ -543,7 +541,7 @@ namespace YarnSpinnerGodot.Editor
                 // Create one for it now.
                 var stringTableEntries = GetStringTableEntries(project, compilationResult);
 
-                developmentLocalization = _editorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
+                developmentLocalization = YarnEditorUtility.InstanceScript<Localization>("res://addons/YarnSpinnerGodot/Runtime/Localization.cs");
 
                 developmentLocalization.ResourceName = $"Default ({project.defaultLanguage})";
                 developmentLocalization.LocaleCode = project.defaultLanguage;
@@ -562,7 +560,7 @@ namespace YarnSpinnerGodot.Editor
                 }).ToArray();
 
                 // Since this is the default language, also populate the line metadata.
-                project.lineMetadata = _editorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
+                project.lineMetadata = YarnEditorUtility.InstanceScript<LineMetadata>("res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs");
                 project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
             }
         }
@@ -575,7 +573,7 @@ namespace YarnSpinnerGodot.Editor
         /// cref="StringTableEntry"/> for each of the lines in the Yarn
         /// Project, or <see langword="null"/> if the Yarn Project contains
         /// errors.</returns>
-        public IEnumerable<StringTableEntry> GenerateStringsTable(YarnProject project)
+        public static IEnumerable<StringTableEntry> GenerateStringsTable(YarnProject project)
         {
             CompilationResult? compilationResult = CompileStringsOnly(project);
 
@@ -598,7 +596,7 @@ namespace YarnSpinnerGodot.Editor
             return GetStringTableEntries(project, compilationResult.Value);
         }
 
-        private CompilationResult? CompileStringsOnly(YarnProject project)
+        private static CompilationResult? CompileStringsOnly(YarnProject project)
         {
             var scriptPaths = project.SourceScripts.Where(s => s != null).Select(s => ProjectSettings.GlobalizePath(s));
 
@@ -615,11 +613,11 @@ namespace YarnSpinnerGodot.Editor
             return Yarn.Compiler.Compiler.Compile(job);
         }
 
-        private IEnumerable<LineMetadataTableEntry> LineMetadataTableEntriesFromCompilationResult(CompilationResult result)
+        private static IEnumerable<LineMetadataTableEntry> LineMetadataTableEntriesFromCompilationResult(CompilationResult result)
         {
             return result.StringTable.Select(x =>
             {
-                var meta = _editorUtility.InstanceScript<LineMetadataTableEntry>("res://addons/YarnSpinnerGodot/Runtime/LineMetadataTableEntry.cs");
+                var meta = YarnEditorUtility.InstanceScript<LineMetadataTableEntry>("res://addons/YarnSpinnerGodot/Runtime/LineMetadataTableEntry.cs");
                 meta.ID = x.Key;
                 meta.File = ProjectSettings.LocalizePath(x.Value.fileName);
                 meta.Node = x.Value.nodeName;
@@ -629,12 +627,12 @@ namespace YarnSpinnerGodot.Editor
             }).Where(x => x.Metadata.Length > 0);
         }
 
-        private IEnumerable<StringTableEntry> GetStringTableEntries(YarnProject project, CompilationResult result)
+        private static IEnumerable<StringTableEntry> GetStringTableEntries(YarnProject project, CompilationResult result)
         {
 
             return result.StringTable.Select(x =>
                 {
-                    var entry = _editorUtility.InstanceScript<StringTableEntry>("res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs");
+                    var entry = YarnEditorUtility.InstanceScript<StringTableEntry>("res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs");
 
                     entry.ID = x.Key;
                     entry.Language = project.defaultLanguage;
@@ -661,7 +659,7 @@ namespace YarnSpinnerGodot.Editor
         /// piece of metadata separated by whitespace. If no metadata exists or
         /// only the line ID is part of the metadata, returns an empty string
         /// instead.</returns>
-        private string GenerateCommentWithLineMetadata(string[] metadata)
+        private static string GenerateCommentWithLineMetadata(string[] metadata)
         {
             var cleanedMetadata = RemoveLineIDFromMetadata(metadata);
 
@@ -682,7 +680,7 @@ namespace YarnSpinnerGodot.Editor
         /// </summary>
         /// <param name="metadata">The array with line metadata.</param>
         /// <returns>An IEnumerable with any line ID entries removed.</returns>
-        private IEnumerable<string> RemoveLineIDFromMetadata(string[] metadata)
+        private static IEnumerable<string> RemoveLineIDFromMetadata(string[] metadata)
         {
             return metadata.Where(x => !x.StartsWith("line:"));
         }
@@ -734,7 +732,7 @@ namespace YarnSpinnerGodot.Editor
         //     return validAssemblies;
         // }
 
-        private List<FunctionInfo> predeterminedFunctions()
+        private static List<FunctionInfo> predeterminedFunctions()
         {
             var functions = ActionManager.FunctionsInfo();
 
@@ -753,7 +751,7 @@ namespace YarnSpinnerGodot.Editor
         {
             public string name;
         }
-        public void AddLineTagsToFilesInYarnProject(YarnProject project)
+        public static void AddLineTagsToFilesInYarnProject(YarnProject project)
         {
             // First, gather all existing line tags across ALL yarn
             // projects, so that we don't accidentally overwrite an
@@ -860,11 +858,11 @@ namespace YarnSpinnerGodot.Editor
         /// Load all known YarnProject resources in the project
         /// </summary>
         /// <returns>a list of all YarnProject resources</returns>
-        public List<YarnProject> LoadAllYarnProjects()
+        public static List<YarnProject> LoadAllYarnProjects()
         {
             var projects = new List<YarnProject>();
             CleanUpMovedOrDeletedProjects();
-            var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var allProjects = (Godot.Collections.Array)ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
             foreach (var path in allProjects)
             {
                 projects.Add(ResourceLoader.Load<YarnProject>(path.ToString()));
@@ -872,9 +870,9 @@ namespace YarnSpinnerGodot.Editor
             return projects;
         }
 
-        private void CleanUpMovedOrDeletedProjects()
+        private static void CleanUpMovedOrDeletedProjects()
         {
-            var projects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var projects = (Godot.Collections.Array)ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
             var removeProjects = new List<string>();
             foreach (var path in projects)
             {
@@ -891,20 +889,20 @@ namespace YarnSpinnerGodot.Editor
                     newProjects.Add(project);
                 }
             }
-            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, newProjects);
+            ProjectSettings.SetSetting(YARN_PROJECT_PATHS_SETTING_KEY, newProjects);
         }
         /// <summary>
         /// Add a yarn project to the list of known yarn projects, if it is not already in the list
         /// </summary>
-        public void AddProjectToList(YarnProject project)
+        public static void AddProjectToList(YarnProject project)
         {
             CleanUpMovedOrDeletedProjects();
-            var projects = (Godot.Collections.Array)ProjectSettings.GetSetting(YarnProjectPathsSettingKey);
+            var projects = (Godot.Collections.Array)ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
             if (project.ResourcePath != "" && !projects.Contains(project.ResourcePath))
             {
                 projects.Add(project.ResourcePath);
             }
-            ProjectSettings.SetSetting(YarnProjectPathsSettingKey, projects);
+            ProjectSettings.SetSetting(YARN_PROJECT_PATHS_SETTING_KEY, projects);
         }
     }
 

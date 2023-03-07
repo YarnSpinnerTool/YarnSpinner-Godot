@@ -21,7 +21,6 @@ namespace YarnSpinnerGodot.Editor
         private readonly PackedScene _fileNameLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/FilenameLabel.tscn");
         private readonly PackedScene _errorTextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ErrorTextLabel.tscn");
         private readonly PackedScene _contextLabelScene = ResourceLoader.Load<PackedScene>("res://addons/YarnSpinnerGodot/Editor/UI/ContextLabel.tscn");
-        private YarnProjectEditorUtility _projectEditorUtility = new YarnProjectEditorUtility();
         private VBoxContainer _errorContainer;
         private VBoxContainer _sourceScriptsContainer;
         private YarnSourceScriptsPropertyEditor _sourceScriptsPropertyEditor;
@@ -117,7 +116,7 @@ namespace YarnSpinnerGodot.Editor
             try
             {
                 _project = (YarnProject)@object;
-                _projectEditorUtility.AddProjectToList(_project);
+                YarnProjectEditorUtility.AddProjectToList(_project);
                 if (_recompileButton != null)
                 {
                     if (IsInstanceValid(_recompileButton))
@@ -156,8 +155,7 @@ namespace YarnSpinnerGodot.Editor
 
         private void OnRecompileClicked(YarnProject project)
         {
-            _projectEditorUtility = new YarnProjectEditorUtility();
-            _projectEditorUtility.UpdateYarnProject(project);
+            YarnProjectEditorUtility.UpdateYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
             PropertyListChangedNotify();
         }
@@ -230,7 +228,7 @@ namespace YarnSpinnerGodot.Editor
         }
         private void OnAddTagsClicked(YarnProject project)
         {
-            _projectEditorUtility.AddLineTagsToFilesInYarnProject(project);
+            YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
             PropertyListChangedNotify();
         }

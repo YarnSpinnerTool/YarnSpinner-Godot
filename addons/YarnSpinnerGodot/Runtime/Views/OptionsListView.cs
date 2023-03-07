@@ -18,7 +18,14 @@ namespace Yarn.GodotIntegration
         /// Used to modify the transparency/visibility of the UI.
         /// </summary>
         [Export] private NodePath viewControlPath;
-        private Control viewControl;
+        public Control viewControl;
+
+        /// <summary>
+        /// NodePath to a BoxContainer (HBoxContainer or VBoxContainer),
+        /// which will automatically lay out the options
+        /// </summary>
+        [Export] private NodePath boxContainerPath;
+        public BoxContainer boxContainer;
 
         [Export] float fadeTime = 0.1f;
 
@@ -42,6 +49,10 @@ namespace Yarn.GodotIntegration
             if (lastLineText == null && lastLineTextPath != null)
             {
                 lastLineText = GetNode<RichTextLabel>(lastLineTextPath);
+            }
+            if (boxContainer == null)
+            {
+                boxContainer = GetNode<VBoxContainer>(boxContainerPath);
             }
             viewControl.Visible = false;
         }
@@ -133,7 +144,7 @@ namespace Yarn.GodotIntegration
             OptionView CreateNewOptionView()
             {
                 var optionView = optionViewPrefab.Instance<OptionView>();
-                viewControl.AddChild(optionView);
+                boxContainer.AddChild(optionView);
 
                 optionView.OnOptionSelected = OptionViewWasSelected;
                 optionViews.Add(optionView);

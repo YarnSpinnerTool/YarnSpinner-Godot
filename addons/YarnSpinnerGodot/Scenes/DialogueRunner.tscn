@@ -90,14 +90,15 @@ script = ExtResource( 3 )
 optionViewPrefab = ExtResource( 6 )
 lastLineTextPath = NodePath("../LineView/ViewControl/LineText")
 viewControlPath = NodePath("VBoxContainer")
+boxContainerPath = NodePath("VBoxContainer")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="OptionsListView"]
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-margin_left = -265.0
-margin_top = -300.0
-margin_right = -105.0
-margin_bottom = 300.0
+margin_left = -259.0
+margin_top = -288.0
+margin_right = -66.0
+margin_bottom = 285.0
 rect_min_size = Vector2( 160, 0 )

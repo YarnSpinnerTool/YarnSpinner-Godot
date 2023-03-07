@@ -15,7 +15,7 @@ YarnProjectPaths=[ "res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://
 [application]
 
 config/name="YarnSpinner-Godot"
-run/main_scene="res://Samples/VisualNovel/VisualNovelSample.tscn"
+run/main_scene="res://Samples/Space/SpaceSample.tscn"
 boot_splash/image="res://addons/YarnSpinnerGodot/Editor/Icons/YarnSpinnerLogo.png"
 boot_splash/bg_color=Color( 0.0313726, 0.0705882, 0.0313726, 1 )
 config/icon="res://YarnSpinnerLogo.png"

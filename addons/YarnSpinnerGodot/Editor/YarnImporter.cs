@@ -13,9 +13,7 @@ namespace YarnSpinnerGodot.Editor
     /// </summary>
     public partial class YarnImporter : EditorImportPlugin
     {
-
-        private YarnEditorUtility _editorUtility = new YarnEditorUtility();
-        private YarnProjectEditorUtility _projectEditorUtility = new YarnProjectEditorUtility();
+        
         public override Array GetRecognizedExtensions() =>
             new Array(new[]
             {
@@ -130,7 +128,7 @@ namespace YarnSpinnerGodot.Editor
         private void ImportYarn(string assetPath)
         {
             GD.Print($"Importing Yarn script {assetPath}");
-            var project = _projectEditorUtility.GetDestinationProject(assetPath);
+            var project = YarnProjectEditorUtility.GetDestinationProject(assetPath);
             if (project == null)
             {
                 GD.Print($"The yarn file {assetPath} is not currently associated with a Yarn Project." +
@@ -140,7 +138,7 @@ namespace YarnSpinnerGodot.Editor
             }
             else
             {
-                _projectEditorUtility.UpdateYarnProject(project);
+                YarnProjectEditorUtility.UpdateYarnProject(project);
             }
         }
     }

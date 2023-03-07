@@ -115,13 +115,13 @@ namespace Yarn.GodotIntegration
         /// <remarks>
         /// The node specified by <see cref="startNode"/> will be used.
         /// </remarks>
-       [Export] public bool startAutomatically = true;
+        [Export] public bool startAutomatically = true;
 
         /// <summary>
         /// If true, when an option is selected, it's as though it were a
         /// line.
         /// </summary>
-       [Export] public bool runSelectedOptionAsLine;
+        [Export] public bool runSelectedOptionAsLine;
 
         public LineProviderBehaviour lineProvider;
 
@@ -139,7 +139,7 @@ namespace Yarn.GodotIntegration
 
         public delegate void StringEventHandler(string strArg);
         /// <summary>
-        /// A Unity event that is called when a node starts running.
+        /// An event that is called when a node starts running.
         /// </summary>
         /// <remarks>
         /// This event receives as a parameter the name of the node that is
@@ -149,7 +149,7 @@ namespace Yarn.GodotIntegration
         public event StringEventHandler onNodeStart;
 
         /// <summary>
-        /// A Unity event that is called when a node is complete.
+        /// An event that is called when a node is complete.
         /// </summary>
         /// <remarks>
         /// This event receives as a parameter the name of the node that
@@ -763,30 +763,19 @@ namespace Yarn.GodotIntegration
                 // If we don't have a line provider, create a
                 // TextLineProvider and make it use that.
 
-                if (yarnProject == null || yarnProject.localizationType == LocalizationType.YarnInternal)
-                {
-                    // Create the temporary line provider and the line database
-                    var textProvider = new TextLineProvider();
-                    textProvider.Name = nameof(TextLineProvider);
-                    lineProvider = textProvider;
-                    AddChild(textProvider);
-                    lineProvider.YarnProject = yarnProject;
+                // Create the temporary line provider and the line database
+                var textProvider = new TextLineProvider();
+                textProvider.Name = nameof(TextLineProvider);
+                lineProvider = textProvider;
+                AddChild(textProvider);
+                lineProvider.YarnProject = yarnProject;
 
-                    // Let the user know what we're doing.
-                    if (verboseLogging)
-                    {
-                        GD.Print($"Dialogue Runner has no LineProvider; creating a {nameof(TextLineProvider)}.", this);
-                    }
-
-                }
-                else
+                // Let the user know what we're doing.
+                if (verboseLogging)
                 {
-#if USE_UNITY_LOCALIZATION && YARN_ENABLE_EXPERIMENTAL_FEATURES
-                    GD.PrintErr($"The Yarn Project \"{yarnProject.name}\" uses the Unity Localization system. Please add a {nameof(UnityLocalization.UnityLocalisedLineProvider)} component.");
-#else
-                    GD.PrintErr($"The Yarn Project \"{yarnProject.ResourceName}\" uses the Unity Localization system, but the Unity Localization system is not currently installed. Please install it.");
-#endif
+                    GD.Print($"Dialogue Runner has no LineProvider; creating a {nameof(TextLineProvider)}.", this);
                 }
+
             }
             if (yarnProject != null && startAutomatically)
             {
@@ -794,7 +783,7 @@ namespace Yarn.GodotIntegration
             }
         }
 
-  
+
 
         Dialogue CreateDialogueInstance()
         {
@@ -944,7 +933,7 @@ namespace Yarn.GodotIntegration
             }
 
             // We didn't find a method in our C# code to invoke. Try invoking on
-            // the publicly exposed UnityEvent.
+            // the publicly exposed event.
             //
             // We can only do this if our onCommand event is not null and would
             // do something if we invoked it, so test this now.
@@ -960,7 +949,7 @@ namespace Yarn.GodotIntegration
                 GD.PrintErr($"No Command <<{command.Text}>> was found. Did you remember to use the YarnCommand attribute or AddCommandHandler() function in C#?");
             }
 
-            // Whether we successfully handled it via the Unity Event or not,
+            // Whether we successfully handled it via the onCommand event or not,
             // attempting to handle the command this way doesn't interrupt the
             // dialogue, so we'll continue it now.
             ContinueDialogue();

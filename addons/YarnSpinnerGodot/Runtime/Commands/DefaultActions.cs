@@ -11,7 +11,7 @@ namespace Yarn.GodotIntegration
         /// <summary>
         /// Yarn Spinner defines two built-in commands: "wait", and "stop".
         /// Stop is defined inside the Virtual Machine (the compiler traps it
-        /// and makes it a special case.) Wait is defined here in Unity.
+        /// and makes it a special case.) Wait is defined here in Godot.
         /// </summary>
         /// <param name="duration">How long to wait.</param>
         [YarnCommand("wait")]
