@@ -14,6 +14,7 @@ namespace Yarn.GodotIntegration
         {
             var localization = YarnProject.GetLocalization(textLanguageCode);
             var text= localization.GetLocalizedString(line.ID);
+            
             return new LocalizedLine()
             {
                 TextID = line.ID,

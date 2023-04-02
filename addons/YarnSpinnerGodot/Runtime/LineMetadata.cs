@@ -62,7 +62,7 @@ namespace Yarn.GodotIntegration
         {
             if (_lineMetadata.Contains(lineID))
             {
-                return _lineMetadata[lineID].ToString().Split(' ');
+                return ((LineMetadataTableEntry) _lineMetadata[lineID]).Metadata;
             }
 
             return null;

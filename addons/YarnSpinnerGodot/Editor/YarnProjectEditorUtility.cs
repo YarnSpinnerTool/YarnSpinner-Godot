@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Godot;
 using Google.Protobuf;
 using Yarn;
@@ -69,6 +70,9 @@ namespace YarnSpinnerGodot.Editor
         }
 
 
+        private const int PROJECT_UPDATE_TIMEOUT = 200; // ms 
+        private static Dictionary<string, DateTime> _projectPathToLastUpdateTime = new Dictionary<string, DateTime>();
+        private static Dictionary<string, Task> _projectPathToUpdateTask = new Dictionary<string, Task>();
         /// <summary>
         /// Re-compile scripts in a yarn project, add all associated data to the project,
         /// and save it back to disk in the same .tres file.
@@ -78,14 +82,29 @@ namespace YarnSpinnerGodot.Editor
         {
             if (project == null) return;
             if (string.IsNullOrEmpty(project.ResourcePath)) return;
+            _projectPathToLastUpdateTime[project.ResourcePath] = DateTime.Now;
+            if (_projectPathToUpdateTask.ContainsKey(project.ResourcePath))
+            {
+                return;
+            }
+            _projectPathToUpdateTask[project.ResourcePath] = UpdateYarnProjectTask(project);
+        }
+        private static async Task UpdateYarnProjectTask(YarnProject project)
+        {
+            while (DateTime.Now - _projectPathToLastUpdateTime[project.ResourcePath] < TimeSpan.FromMilliseconds(PROJECT_UPDATE_TIMEOUT))
+            {
+                await Task.Delay(PROJECT_UPDATE_TIMEOUT);
+            }
             try
             {
                 CompileAllScripts(project);
                 UpdateMetadataCSV(project);
                 SaveYarnProject(project);
+                _projectPathToUpdateTask.Remove(project.ResourcePath);
             }
             catch (Exception e)
             {
+                _projectPathToUpdateTask.Remove(project.ResourcePath);
                 GD.PushError($"Error updating {nameof(YarnProject)} '{project.ResourcePath}': {e.Message}{e.StackTrace}");
             }
         }
@@ -208,7 +227,7 @@ namespace YarnSpinnerGodot.Editor
                 compilationResult = Yarn.Compiler.Compiler.Compile(job);
 
                 errors = compilationResult.Value.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
-                
+
                 if (errors.Count() > 0)
                 {
                     var errorGroups = errors.GroupBy(e => e.FileName);

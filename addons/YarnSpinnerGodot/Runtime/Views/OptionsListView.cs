@@ -171,6 +171,8 @@ namespace Yarn.GodotIntegration
                     OnOptionSelected(selectedOption.DialogueOptionID);
                 }
             }
+            
+            optionViews[0].GrabFocus();
         }
     }
 }
