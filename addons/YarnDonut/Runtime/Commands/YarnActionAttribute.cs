@@ -1,7 +1,7 @@
 using System;
 
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public partial class YarnActionAttribute : Attribute

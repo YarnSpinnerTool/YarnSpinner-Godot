@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
 	public partial class OptionView : Button
 	{

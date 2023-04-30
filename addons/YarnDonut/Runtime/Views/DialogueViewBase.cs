@@ -1,6 +1,6 @@
 using System;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// A <see cref="Godot.Node"/> that can present lines and options to the

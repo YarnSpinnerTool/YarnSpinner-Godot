@@ -1,7 +1,6 @@
 using System;
 using Godot;
-using System.Linq;
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     [Serializable]
     [Tool]

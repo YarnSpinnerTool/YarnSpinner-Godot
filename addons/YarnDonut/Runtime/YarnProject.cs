@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 using Godot.Collections;
-using Newtonsoft.Json;
-using Yarn.Compiler;
+using Yarn;
 using Array = System.Array;
 
 #if TOOLS
 using YarnDonut.Editor;
 #endif
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     [Tool]
     public partial class YarnProject : Resource //, IYarnErrorSource

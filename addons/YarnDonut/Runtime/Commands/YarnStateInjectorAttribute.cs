@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 
 using System;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// Inject state for any commands in this class using this static method.

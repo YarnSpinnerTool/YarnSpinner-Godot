@@ -28,8 +28,9 @@ DEALINGS IN THE SOFTWARE.
 using System.Collections;
 using System;
 using System.ComponentModel;
+using Yarn;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     #region Class/Interface
 

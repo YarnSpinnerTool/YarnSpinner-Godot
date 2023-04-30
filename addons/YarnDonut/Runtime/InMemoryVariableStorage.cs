@@ -29,8 +29,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Mime;
 using Godot;
+using Google.Protobuf.WellKnownTypes;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
 	/// <summary>
 	/// A simple implementation of VariableStorageBehaviour.

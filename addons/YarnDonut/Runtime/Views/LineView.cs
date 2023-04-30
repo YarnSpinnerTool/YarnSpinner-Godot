@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 using Godot;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// Contains coroutine methods that apply visual effects. This class is used

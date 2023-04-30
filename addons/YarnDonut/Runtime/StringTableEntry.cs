@@ -5,7 +5,7 @@ using Godot;
 #if TOOLS
 using YarnDonut.Editor;
 #endif
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     [Serializable] [Tool]
     public class StringTableEntry : Resource

@@ -12,7 +12,6 @@ using Godot;
 using Google.Protobuf;
 using Yarn;
 using Yarn.Compiler;
-using Yarn.GodotIntegration;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Path = System.IO.Path;

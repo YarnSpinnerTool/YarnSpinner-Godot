@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     public partial class DialogueOption
     {

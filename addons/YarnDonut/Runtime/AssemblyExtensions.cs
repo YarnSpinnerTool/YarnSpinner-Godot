@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     public static class AssemblyExtensions
     {

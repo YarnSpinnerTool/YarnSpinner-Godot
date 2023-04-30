@@ -4,10 +4,9 @@ using Godot;
 using Godot.Collections;
 
 #if TOOLS
-using System.Linq;
 #endif
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
 
     /// <summary>

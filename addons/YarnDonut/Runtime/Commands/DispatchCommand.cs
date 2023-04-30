@@ -3,7 +3,7 @@ using System.Reflection;
 using Godot;
 
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     using Injector = Func<string, object>;
     using Converter = Func<string, object>;

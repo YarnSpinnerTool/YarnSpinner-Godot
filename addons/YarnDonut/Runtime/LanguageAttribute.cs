@@ -1,6 +1,6 @@
 
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     public partial class LanguageAttribute : System.Attribute
     {

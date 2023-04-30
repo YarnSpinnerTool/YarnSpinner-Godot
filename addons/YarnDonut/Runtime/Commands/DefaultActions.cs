@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Godot;
 
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     public partial class DefaultActions : Godot.Node
     {

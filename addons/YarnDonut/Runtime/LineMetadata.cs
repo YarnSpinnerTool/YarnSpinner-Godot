@@ -4,7 +4,7 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     [Serializable] [Tool]
     public partial class LineMetadata : Resource

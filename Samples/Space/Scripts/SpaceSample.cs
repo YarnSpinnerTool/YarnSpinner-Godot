@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using Yarn.GodotIntegration;
+using YarnDonut;
 public class SpaceSample : Node
 {
 

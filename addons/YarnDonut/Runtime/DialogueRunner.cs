@@ -32,8 +32,9 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 using Newtonsoft.Json;
+using Yarn;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// The DialogueRunner component acts as the interface between your game and

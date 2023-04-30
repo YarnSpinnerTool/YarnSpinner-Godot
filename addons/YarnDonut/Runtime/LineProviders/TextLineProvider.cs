@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     public partial class TextLineProvider : LineProviderBehaviour
     {

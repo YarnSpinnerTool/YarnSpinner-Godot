@@ -1,7 +1,7 @@
 using System;
 
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// Yarn parameter.

@@ -1,7 +1,6 @@
 using System;
 using Godot;
-using Newtonsoft.Json;
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// A class used to serialize errors in the yarn project so that they can be displayed

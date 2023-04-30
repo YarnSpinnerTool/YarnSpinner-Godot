@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// A <see cref="Godot.Node"/> that produces <see
@@ -160,7 +160,7 @@ namespace Yarn.GodotIntegration
         /// The underlying <see cref="Yarn.Markup.MarkupParseResult"/> for
         /// this line.
         /// </summary>
-        public Markup.MarkupParseResult Text { get; set; }
+        public Yarn.Markup.MarkupParseResult Text { get; set; }
 
         /// <summary>
         /// The underlying <see cref="Yarn.Markup.MarkupParseResult"/> for
@@ -170,7 +170,7 @@ namespace Yarn.GodotIntegration
         /// If the line has no `character` attribute, this method returns
         /// the same value as <see cref="Text"/>.
         /// </remarks>
-        public Markup.MarkupParseResult TextWithoutCharacterName
+        public Yarn.Markup.MarkupParseResult TextWithoutCharacterName
         {
             get
             {

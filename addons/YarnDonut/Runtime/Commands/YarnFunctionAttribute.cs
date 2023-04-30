@@ -1,7 +1,8 @@
 using System;
+using Yarn;
 
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// Marks the method as a function to be registered with the running

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Yarn;
 using Yarn.Compiler;
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// A declaration of a variable that is written to a yarn project

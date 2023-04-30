@@ -4,11 +4,12 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
 using Godot;
+using Yarn;
+using Node = Godot.Node;
 
 
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     using Injector = Func<string, object>;
     using Converter = Func<string, object>;
@@ -443,7 +444,7 @@ namespace Yarn.GodotIntegration
 
         /// <summary>
         /// Registers all functions known to this <see cref="ActionManager"/>
-        /// into a <see cref="Library"/>.
+        /// into a <see cref="Yarn.Library"/>.
         /// </summary>
         /// <remarks>
         /// Existing functions in the Library will not be modified.

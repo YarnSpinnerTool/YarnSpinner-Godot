@@ -1,6 +1,5 @@
 using System;
-using Godot;
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
 
     [Serializable]

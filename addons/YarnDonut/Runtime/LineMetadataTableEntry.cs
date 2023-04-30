@@ -6,7 +6,7 @@ using Godot;
 #if TOOLS
 using YarnDonut.Editor;
 #endif
-namespace Yarn.GodotIntegration
+namespace YarnDonut
 {
     /// <summary>
     /// Struct holding information about a line and its associated metadata.

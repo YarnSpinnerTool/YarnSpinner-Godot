@@ -1,9 +1,7 @@
 #if TOOLS
 using System.Collections.Generic;
 using Godot;
-using Yarn.GodotIntegration;
 using File = System.IO.File;
-using Object = Godot.Object;
 using Path = System.IO.Path;
 
 namespace YarnDonut.Editor

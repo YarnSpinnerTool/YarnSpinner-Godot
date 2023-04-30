@@ -1,9 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Net.Mime;
 using System.Threading.Tasks;
-using Yarn.GodotIntegration;
+using YarnDonut;
 
 public partial class VisualNovelManager : Node
 {

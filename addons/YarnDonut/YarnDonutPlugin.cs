@@ -1,7 +1,6 @@
 #if TOOLS
 using Godot;
 using Godot.Collections;
-using Yarn.GodotIntegration;
 using YarnDonut.Editor;
 namespace YarnDonut
 {

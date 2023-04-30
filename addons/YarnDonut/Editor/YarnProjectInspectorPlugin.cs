@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
-using Yarn.GodotIntegration;
 using Object = Godot.Object;
 
 namespace YarnDonut.Editor
