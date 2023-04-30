@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://addons/YarnSpinnerGodot/Scenes/DialogueRunner.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/YarnDonut/Scenes/DialogueRunner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Samples/Space/Dialogue/SpaceYarnProject.tres" type="Resource" id=2]
 [ext_resource path="res://Samples/Space/Scripts/SpaceSample.cs" type="Script" id=3]
 

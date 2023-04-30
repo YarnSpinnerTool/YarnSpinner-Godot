@@ -1,12 +1,12 @@
 [gd_resource type="Resource" load_steps=52 format=2]
 
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" type="Script" id=2]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs" type="Script" id=3]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/SerializedDeclaration.cs" type="Script" id=4]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs" type="Script" id=5]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" type="Script" id=6]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/LineMetadataTableEntry.cs" type="Script" id=7]
+[ext_resource path="res://addons/YarnDonut/Runtime/YarnProject.cs" type="Script" id=1]
+[ext_resource path="res://addons/YarnDonut/Runtime/Localization.cs" type="Script" id=2]
+[ext_resource path="res://addons/YarnDonut/Runtime/FunctionInfo.cs" type="Script" id=3]
+[ext_resource path="res://addons/YarnDonut/Runtime/SerializedDeclaration.cs" type="Script" id=4]
+[ext_resource path="res://addons/YarnDonut/Runtime/StringTableEntry.cs" type="Script" id=5]
+[ext_resource path="res://addons/YarnDonut/Runtime/LineMetadata.cs" type="Script" id=6]
+[ext_resource path="res://addons/YarnDonut/Runtime/LineMetadataTableEntry.cs" type="Script" id=7]
 
 [sub_resource type="Resource" id=1]
 resource_name = "Random"
@@ -109,16 +109,64 @@ description = "Implicitly declared in Sally.yarn, node Sally_Watch"
 isImplicit = true
 sourceYarnAssetPath = "res://Samples/Space/Dialogue/Sally.yarn"
 
-[sub_resource type="Resource" id=45]
-resource_name = "Sally_line:794945"
+[sub_resource type="Resource" id=52]
+resource_name = "Sally_line:0a7e39"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:794945"
-Text = "Player: Hey, Sally."
+ID = "line:0a7e39"
+Text = "Sorry about the console."
 File = "res://Samples/Space/Dialogue/Sally.yarn"
 Node = "Sally"
-LineNumber = "7"
-Lock = "2bc75173"
+LineNumber = "18"
+Lock = "6c4c5826"
+Comment = ""
+
+[sub_resource type="Resource" id=50]
+resource_name = "Sally_line:0af7f86"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:0af7f86"
+Text = "Sally: Hi."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "13"
+Lock = "41aa2f03"
+Comment = ""
+
+[sub_resource type="Resource" id=53]
+resource_name = "Sally_line:0facf7"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:0facf7"
+Text = "See you later."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "20"
+Lock = "e241648d"
+Comment = ""
+
+[sub_resource type="Resource" id=57]
+resource_name = "Sally_Watch_line:1fea6c"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:1fea6c"
+Text = "Player: Already done!"
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "34"
+Lock = "599299b9"
+Comment = ""
+
+[sub_resource type="Resource" id=55]
+resource_name = "Sally_Watch_line:24c418"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:24c418"
+Text = "Sally: Same old nebula, doing the same old thing."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "30"
+Lock = "d3a88d93"
 Comment = ""
 
 [sub_resource type="Resource" id=46]
@@ -145,41 +193,17 @@ LineNumber = "9"
 Lock = "35e4db4c"
 Comment = ""
 
-[sub_resource type="Resource" id=48]
-resource_name = "Sally_line:dcc2bc"
+[sub_resource type="Resource" id=61]
+resource_name = "Ship_line:5837f2"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:dcc2bc"
-Text = "Sally: Don't do that."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "10"
-Lock = "ac04c57a"
-Comment = ""
-
-[sub_resource type="Resource" id=49]
-resource_name = "Sally_line:a8e70c"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:a8e70c"
-Text = "Player: Hey."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "12"
-Lock = "52e9bd6e"
-Comment = ""
-
-[sub_resource type="Resource" id=50]
-resource_name = "Sally_line:0af7f86"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:0af7f86"
-Text = "Sally: Hi."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "13"
-Lock = "41aa2f03"
-Comment = ""
+ID = "line:5837f2"
+Text = "Ship: Hey, friend."
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "7"
+Lock = "b709c42e"
+Comment = "Line metadata: firstline"
 
 [sub_resource type="Resource" id=51]
 resource_name = "Sally_line:5d7a7c"
@@ -191,78 +215,6 @@ File = "res://Samples/Space/Dialogue/Sally.yarn"
 Node = "Sally"
 LineNumber = "16"
 Lock = "5a28d06b"
-Comment = ""
-
-[sub_resource type="Resource" id=52]
-resource_name = "Sally_line:0a7e39"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:0a7e39"
-Text = "Sorry about the console."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "18"
-Lock = "6c4c5826"
-Comment = ""
-
-[sub_resource type="Resource" id=53]
-resource_name = "Sally_line:0facf7"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:0facf7"
-Text = "See you later."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "20"
-Lock = "e241648d"
-Comment = ""
-
-[sub_resource type="Resource" id=54]
-resource_name = "Sally_Watch_line:8c3f98"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:8c3f98"
-Text = "Sally: Not really."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "29"
-Lock = "c6bcc3d6"
-Comment = ""
-
-[sub_resource type="Resource" id=55]
-resource_name = "Sally_Watch_line:24c418"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:24c418"
-Text = "Sally: Same old nebula, doing the same old thing."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "30"
-Lock = "d3a88d93"
-Comment = ""
-
-[sub_resource type="Resource" id=56]
-resource_name = "Sally_Watch_line:df4eaf"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:df4eaf"
-Text = "Sally: Oh, Ship wanted to see you. Go say hi to it."
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "31"
-Lock = "5f2cc23a"
-Comment = ""
-
-[sub_resource type="Resource" id=57]
-resource_name = "Sally_Watch_line:1fea6c"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:1fea6c"
-Text = "Player: Already done!"
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "34"
-Lock = "599299b9"
 Comment = ""
 
 [sub_resource type="Resource" id=58]
@@ -289,6 +241,42 @@ LineNumber = "44"
 Lock = "29ecd7c6"
 Comment = ""
 
+[sub_resource type="Resource" id=45]
+resource_name = "Sally_line:794945"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:794945"
+Text = "Player: Hey, Sally."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "7"
+Lock = "2bc75173"
+Comment = ""
+
+[sub_resource type="Resource" id=54]
+resource_name = "Sally_Watch_line:8c3f98"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:8c3f98"
+Text = "Sally: Not really."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "29"
+Lock = "c6bcc3d6"
+Comment = ""
+
+[sub_resource type="Resource" id=49]
+resource_name = "Sally_line:a8e70c"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:a8e70c"
+Text = "Player: Hey."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "12"
+Lock = "52e9bd6e"
+Comment = ""
+
 [sub_resource type="Resource" id=60]
 resource_name = "Sally_Sorry_line:d7df49"
 script = ExtResource( 5 )
@@ -301,76 +289,28 @@ LineNumber = "52"
 Lock = "0ce38920"
 Comment = ""
 
-[sub_resource type="Resource" id=61]
-resource_name = "Ship_line:5837f2"
+[sub_resource type="Resource" id=48]
+resource_name = "Sally_line:dcc2bc"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:5837f2"
-Text = "Ship: Hey, friend."
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "7"
-Lock = "b709c42e"
-Comment = "Line metadata: firstline"
-
-[sub_resource type="Resource" id=62]
-resource_name = "Ship_line:ship09"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship09"
-Text = "Player: Hi, Ship."
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "8"
-Lock = "0f857079"
-Comment = ""
-
-[sub_resource type="Resource" id=63]
-resource_name = "Ship_line:ship10"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship10"
-Text = "Player: How's space?"
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "9"
-Lock = "a741d6b2"
-Comment = ""
-
-[sub_resource type="Resource" id=64]
-resource_name = "Ship_line:ship11"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship11"
-Text = "Ship: Oh, man."
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
+ID = "line:dcc2bc"
+Text = "Sally: Don't do that."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
 LineNumber = "10"
-Lock = "778a5a83"
+Lock = "ac04c57a"
 Comment = ""
 
-[sub_resource type="Resource" id=65]
-resource_name = "Ship_line:ship12"
+[sub_resource type="Resource" id=56]
+resource_name = "Sally_Watch_line:df4eaf"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:ship12"
-Text = "Ship: It's HUGE!"
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "12"
-Lock = "88f3fb99"
-Comment = ""
-
-[sub_resource type="Resource" id=66]
-resource_name = "Ship_line:ship13"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship13"
-Text = "Ship: Hey!!"
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "16"
-Lock = "5a889e0a"
+ID = "line:df4eaf"
+Text = "Sally: Oh, Ship wanted to see you. Go say hi to it."
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "31"
+Lock = "5f2cc23a"
 Comment = ""
 
 [sub_resource type="Resource" id=67]
@@ -443,6 +383,66 @@ File = "res://Samples/Space/Dialogue/Ship.yarn"
 Node = "Ship"
 LineNumber = "31"
 Lock = "727bb97b"
+Comment = ""
+
+[sub_resource type="Resource" id=62]
+resource_name = "Ship_line:ship09"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship09"
+Text = "Player: Hi, Ship."
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "8"
+Lock = "0f857079"
+Comment = ""
+
+[sub_resource type="Resource" id=63]
+resource_name = "Ship_line:ship10"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship10"
+Text = "Player: How's space?"
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "9"
+Lock = "a741d6b2"
+Comment = ""
+
+[sub_resource type="Resource" id=64]
+resource_name = "Ship_line:ship11"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship11"
+Text = "Ship: Oh, man."
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "10"
+Lock = "778a5a83"
+Comment = ""
+
+[sub_resource type="Resource" id=65]
+resource_name = "Ship_line:ship12"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship12"
+Text = "Ship: It's HUGE!"
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "12"
+Lock = "88f3fb99"
+Comment = ""
+
+[sub_resource type="Resource" id=66]
+resource_name = "Ship_line:ship13"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship13"
+Text = "Ship: Hey!!"
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "16"
+Lock = "5a889e0a"
 Comment = ""
 
 [sub_resource type="Resource" id=42]

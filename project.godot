@@ -8,15 +8,19 @@
 
 config_version=4
 
+[YarnDonut]
+
+YarnProjectPaths=[ "res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres", "res://Samples/Space/Dialogue/SpaceYarnProject.tres" ]
+
 [YarnSpinnerGodot]
 
 YarnProjectPaths=[ "res://Samples/Space/Dialogue/Space_YarnProject.tres", "res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres" ]
 
 [application]
 
-config/name="YarnSpinner-Godot"
-run/main_scene="res://Samples/VisualNovel/VisualNovelSample.tscn"
-boot_splash/image="res://addons/YarnSpinnerGodot/Editor/Icons/YarnSpinnerLogo.png"
+config/name="YarnDonut"
+run/main_scene="res://Samples/Space/SpaceSample.tscn"
+boot_splash/image="res://addons/YarnDonut/Editor/Icons/YarnSpinnerLogo.png"
 boot_splash/bg_color=Color( 0.0313726, 0.0705882, 0.0313726, 1 )
 config/icon="res://YarnSpinnerLogo.png"
 config/features=PoolStringArray( "4.0", "C#" )
@@ -29,11 +33,11 @@ window/size/viewport_height=900
 
 [dotnet]
 
-project/assembly_name="YarnSpinnerGodot"
+project/assembly_name="YarnDonut"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/YarnSpinnerGodot/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/YarnDonut/plugin.cfg" )
 
 [gui]
 
@@ -41,7 +45,7 @@ common/drop_mouse_on_gui_input_disabled=true
 
 [mono]
 
-project/assembly_name="YarnSpinner-Godot"
+project/assembly_name="YarnDonut"
 
 [physics]
 

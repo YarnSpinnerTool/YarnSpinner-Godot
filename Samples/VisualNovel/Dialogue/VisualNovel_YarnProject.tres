@@ -1,10 +1,10 @@
 [gd_resource type="Resource" load_steps=37 format=2]
 
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" type="Script" id=1]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs" type="Script" id=2]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" type="Script" id=3]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=4]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs" type="Script" id=5]
+[ext_resource path="res://addons/YarnDonut/Runtime/Localization.cs" type="Script" id=1]
+[ext_resource path="res://addons/YarnDonut/Runtime/StringTableEntry.cs" type="Script" id=2]
+[ext_resource path="res://addons/YarnDonut/Runtime/LineMetadata.cs" type="Script" id=3]
+[ext_resource path="res://addons/YarnDonut/Runtime/YarnProject.cs" type="Script" id=4]
+[ext_resource path="res://addons/YarnDonut/Runtime/FunctionInfo.cs" type="Script" id=5]
 
 [sub_resource type="Resource" id=1]
 resource_name = "Random"
@@ -83,7 +83,7 @@ Name = "Int"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=12]
+[sub_resource type="Resource" id=32]
 resource_name = "Start_line:07ee50d"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -95,7 +95,7 @@ LineNumber = "12"
 Lock = "243448f9"
 Comment = ""
 
-[sub_resource type="Resource" id=13]
+[sub_resource type="Resource" id=33]
 resource_name = "Start_line:03a9f6d"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -107,7 +107,7 @@ LineNumber = "17"
 Lock = "498c5529"
 Comment = ""
 
-[sub_resource type="Resource" id=14]
+[sub_resource type="Resource" id=34]
 resource_name = "Start_line:07f4eac"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -119,7 +119,7 @@ LineNumber = "26"
 Lock = "459fb170"
 Comment = ""
 
-[sub_resource type="Resource" id=15]
+[sub_resource type="Resource" id=35]
 resource_name = "Start_line:0721506"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -131,7 +131,7 @@ LineNumber = "27"
 Lock = "62b75da4"
 Comment = ""
 
-[sub_resource type="Resource" id=16]
+[sub_resource type="Resource" id=36]
 resource_name = "Start_line:0b52843"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -143,7 +143,7 @@ LineNumber = "33"
 Lock = "8ace03d4"
 Comment = ""
 
-[sub_resource type="Resource" id=17]
+[sub_resource type="Resource" id=37]
 resource_name = "Start_line:09f21f4"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -155,7 +155,7 @@ LineNumber = "35"
 Lock = "0e3efc57"
 Comment = ""
 
-[sub_resource type="Resource" id=18]
+[sub_resource type="Resource" id=38]
 resource_name = "Start_line:0b7be61"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -167,7 +167,7 @@ LineNumber = "36"
 Lock = "0274533b"
 Comment = ""
 
-[sub_resource type="Resource" id=19]
+[sub_resource type="Resource" id=39]
 resource_name = "Start_line:01942dd"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -179,7 +179,7 @@ LineNumber = "37"
 Lock = "d9e33ebb"
 Comment = ""
 
-[sub_resource type="Resource" id=20]
+[sub_resource type="Resource" id=40]
 resource_name = "Start_line:0c481f8"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -191,7 +191,7 @@ LineNumber = "38"
 Lock = "8dc9fa94"
 Comment = ""
 
-[sub_resource type="Resource" id=21]
+[sub_resource type="Resource" id=41]
 resource_name = "Start_line:05eb26a"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -203,7 +203,7 @@ LineNumber = "39"
 Lock = "4fcb846b"
 Comment = ""
 
-[sub_resource type="Resource" id=22]
+[sub_resource type="Resource" id=42]
 resource_name = "Start_line:0e8ce79"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -215,7 +215,7 @@ LineNumber = "40"
 Lock = "37abe891"
 Comment = ""
 
-[sub_resource type="Resource" id=23]
+[sub_resource type="Resource" id=43]
 resource_name = "Start_line:0cb4316"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -227,7 +227,7 @@ LineNumber = "41"
 Lock = "0ed8f46b"
 Comment = ""
 
-[sub_resource type="Resource" id=24]
+[sub_resource type="Resource" id=44]
 resource_name = "Start_line:0794753"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -239,7 +239,7 @@ LineNumber = "48"
 Lock = "3a4e6cf6"
 Comment = ""
 
-[sub_resource type="Resource" id=25]
+[sub_resource type="Resource" id=45]
 resource_name = "Start_line:0c39b43"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -251,7 +251,7 @@ LineNumber = "51"
 Lock = "75318ced"
 Comment = ""
 
-[sub_resource type="Resource" id=26]
+[sub_resource type="Resource" id=46]
 resource_name = "Start_line:04432b5"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -263,7 +263,7 @@ LineNumber = "56"
 Lock = "3a394f4f"
 Comment = ""
 
-[sub_resource type="Resource" id=27]
+[sub_resource type="Resource" id=47]
 resource_name = "Start_line:0a21105"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -275,7 +275,7 @@ LineNumber = "58"
 Lock = "8b7f1f59"
 Comment = ""
 
-[sub_resource type="Resource" id=28]
+[sub_resource type="Resource" id=48]
 resource_name = "Start_line:062467b"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -287,7 +287,7 @@ LineNumber = "63"
 Lock = "3c0876b7"
 Comment = ""
 
-[sub_resource type="Resource" id=29]
+[sub_resource type="Resource" id=49]
 resource_name = "Start_line:0d7e78e"
 script = ExtResource( 2 )
 Language = "en-US"
@@ -300,28 +300,28 @@ Lock = "f953533f"
 Comment = ""
 
 [sub_resource type="Resource" id=30]
-resource_name = "Default (en-US)"
+resource_name = "en-US"
 script = ExtResource( 1 )
 LocaleCode = "en-US"
 _stringTable = {
-"line:01942dd": SubResource( 19 ),
-"line:03a9f6d": SubResource( 13 ),
-"line:04432b5": SubResource( 26 ),
-"line:05eb26a": SubResource( 21 ),
-"line:062467b": SubResource( 28 ),
-"line:0721506": SubResource( 15 ),
-"line:0794753": SubResource( 24 ),
-"line:07ee50d": SubResource( 12 ),
-"line:07f4eac": SubResource( 14 ),
-"line:09f21f4": SubResource( 17 ),
-"line:0a21105": SubResource( 27 ),
-"line:0b52843": SubResource( 16 ),
-"line:0b7be61": SubResource( 18 ),
-"line:0c39b43": SubResource( 25 ),
-"line:0c481f8": SubResource( 20 ),
-"line:0cb4316": SubResource( 23 ),
-"line:0d7e78e": SubResource( 29 ),
-"line:0e8ce79": SubResource( 22 )
+"line:01942dd": SubResource( 39 ),
+"line:03a9f6d": SubResource( 33 ),
+"line:04432b5": SubResource( 46 ),
+"line:05eb26a": SubResource( 41 ),
+"line:062467b": SubResource( 48 ),
+"line:0721506": SubResource( 35 ),
+"line:0794753": SubResource( 44 ),
+"line:07ee50d": SubResource( 32 ),
+"line:07f4eac": SubResource( 34 ),
+"line:09f21f4": SubResource( 37 ),
+"line:0a21105": SubResource( 47 ),
+"line:0b52843": SubResource( 36 ),
+"line:0b7be61": SubResource( 38 ),
+"line:0c39b43": SubResource( 45 ),
+"line:0c481f8": SubResource( 40 ),
+"line:0cb4316": SubResource( 43 ),
+"line:0d7e78e": SubResource( 49 ),
+"line:0e8ce79": SubResource( 42 )
 }
 _assetTable = {
 }

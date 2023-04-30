@@ -1,10 +1,10 @@
 [gd_resource type="Resource" load_steps=37 format=2]
 
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/YarnProject.cs" type="Script" id=1]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/Localization.cs" type="Script" id=2]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/FunctionInfo.cs" type="Script" id=3]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/StringTableEntry.cs" type="Script" id=4]
-[ext_resource path="res://addons/YarnSpinnerGodot/Runtime/LineMetadata.cs" type="Script" id=5]
+[ext_resource path="res://addons/YarnDonut/Runtime/YarnProject.cs" type="Script" id=1]
+[ext_resource path="res://addons/YarnDonut/Runtime/Localization.cs" type="Script" id=2]
+[ext_resource path="res://addons/YarnDonut/Runtime/FunctionInfo.cs" type="Script" id=3]
+[ext_resource path="res://addons/YarnDonut/Runtime/StringTableEntry.cs" type="Script" id=4]
+[ext_resource path="res://addons/YarnDonut/Runtime/LineMetadata.cs" type="Script" id=5]
 
 [sub_resource type="Resource" id=1]
 resource_name = "Random"
