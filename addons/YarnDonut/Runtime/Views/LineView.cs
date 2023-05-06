@@ -38,7 +38,7 @@ namespace YarnDonut
         /// a coroutine that's using it is currently running.)
         /// </para>
         /// </remarks>
-        public partial class CoroutineInterruptToken
+        public partial class TaskInterruptToken
         {
 
             /// <summary>
@@ -59,7 +59,7 @@ namespace YarnDonut
             {
                 if (CanInterrupt == false)
                 {
-                    throw new InvalidOperationException($"Cannot stop {nameof(CoroutineInterruptToken)}; state is {state} (and not {nameof(State.Running)}");
+                    throw new InvalidOperationException($"Cannot stop {nameof(TaskInterruptToken)}; state is {state} (and not {nameof(State.Running)}");
                 }
                 state = State.Interrupted;
             }
@@ -77,9 +77,9 @@ namespace YarnDonut
         /// from 0 to 1.</param>
         /// <param name="to">The opacity value to end fading at, ranging from 0
         /// to 1.</param>
-        /// <param name="stopToken">A <see cref="CoroutineInterruptToken"/> that
+        /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
         /// can be used to interrupt the coroutine.</param>
-        public static async Task FadeAlpha(Control canvasGroup, float from, float to, float fadeTime, CoroutineInterruptToken stopToken = null)
+        public static async Task FadeAlpha(Control canvasGroup, float from, float to, float fadeTime, TaskInterruptToken stopToken = null)
         {
 
             var mainTree = (SceneTree)Engine.GetMainLoop();
@@ -142,9 +142,9 @@ namespace YarnDonut
         /// <param name="lettersPerSecond">The number of letters that should be
         /// revealed per second.</param>
         /// <param name="onCharacterTyped">An <see cref="Action"/> that should be called for each character that was revealed.</param>
-        /// <param name="stopToken">A <see cref="CoroutineInterruptToken"/> that
+        /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
         /// can be used to interrupt the coroutine.</param>
-        public static async Task Typewriter(RichTextLabel text, float lettersPerSecond, Action onCharacterTyped, CoroutineInterruptToken stopToken = null)
+        public static async Task Typewriter(RichTextLabel text, float lettersPerSecond, Action onCharacterTyped, TaskInterruptToken stopToken = null)
         {
             var mainTree = (SceneTree)Engine.GetMainLoop();
             stopToken?.Start();
@@ -433,7 +433,7 @@ namespace YarnDonut
         /// <summary>
         /// A stop token that is used to interrupt the current animation.
         /// </summary>
-        Effects.CoroutineInterruptToken currentStopToken = new Effects.CoroutineInterruptToken();
+        Effects.TaskInterruptToken currentStopToken = new Effects.TaskInterruptToken();
 
         public override void _Ready()
         {
@@ -501,12 +501,10 @@ namespace YarnDonut
         public override void InterruptLine(LocalizedLine dialogueLine, Action onInterruptLineFinished)
         {
             currentLine = dialogueLine;
-
-            // Cancel all coroutines that we're currently running. This will
-            // stop the RunLinepublic coroutine, if it's running.
-            // TODO: equivalent to stop all coroutines
-            // StopAllCoroutines();
-
+            if (currentStopToken is { CanInterrupt: true })
+            {
+                currentStopToken.Interrupt();
+            }            
             // for now we are going to just immediately show everything
             // later we will make it fade in
             lineText.Visible = true;
@@ -577,10 +575,6 @@ namespace YarnDonut
         /// <inheritdoc/>
         public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
-            // Stop any coroutines currently running on this line view (for
-            // example, any other RunLine that might be running)
-            // StopAllCoroutines();
-
             // Begin running the line as a coroutine.
             RunLineInternal(dialogueLine, onDialogueLineFinished);
         }

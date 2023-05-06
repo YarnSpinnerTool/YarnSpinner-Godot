@@ -325,9 +325,7 @@ namespace YarnDonut
                 {
                     continue;
                 }
-
-                GD.PrintErr("TODO: cancel all async tasks in all views?");
-                //dialogueView.StopAllCoroutines();
+                dialogueView.requestInterrupt?.Invoke();
             }
 
             // Get it going
