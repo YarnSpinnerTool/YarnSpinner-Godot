@@ -13,6 +13,7 @@
     <Content Include="addons\YarnDonut\Scenes\OptionView.tscn" />
     <Content Include="addons\YarnDonut\YarnDonutMainPlugin.gd" />
     <Content Include="addons\YarnDonut\**.cs" />
+    <Content Include="**\*.yarn" />
   </ItemGroup>
   <!-- YarnSpinner dependencies -->
   <ItemGroup>

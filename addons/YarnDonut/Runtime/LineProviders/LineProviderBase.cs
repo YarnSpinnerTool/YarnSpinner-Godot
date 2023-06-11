@@ -172,17 +172,13 @@ namespace YarnDonut
         /// </remarks>
         public Yarn.Markup.MarkupParseResult TextWithoutCharacterName
         {
-            get
-            {
+            get {
                 // If a 'character' attribute is present, remove its text
                 if (Text.TryGetAttributeWithName("character", out var characterNameAttribute))
                 {
                     return Text.DeleteRange(characterNameAttribute);
                 }
-                else
-                {
-                    return Text;
-                }
+                return Text;
             }
         }
     }

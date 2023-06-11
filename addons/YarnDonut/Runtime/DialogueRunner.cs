@@ -318,16 +318,6 @@ namespace YarnDonut
                 return;
             }
 
-            // Stop any processes that might be running already
-            foreach (var dialogueView in dialogueViews)
-            {
-                if (dialogueView == null || dialogueView.IsInsideTree() == false)
-                {
-                    continue;
-                }
-                dialogueView.requestInterrupt?.Invoke();
-            }
-
             // Get it going
 
             // Mark that we're in conversation.

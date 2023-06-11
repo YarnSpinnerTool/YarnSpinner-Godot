@@ -156,7 +156,7 @@ namespace YarnDonut.Editor
         {
             YarnProjectEditorUtility.UpdateYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
-            PropertyListChangedNotify();
+            project.PropertyListChangedNotify();
         }
 
         public void RenderCompilationErrors(Object yarnProject)
@@ -164,7 +164,7 @@ namespace YarnDonut.Editor
             _project = (YarnProject)yarnProject;
             var errors = _project.ProjectErrors;
             SetErrors(errors);
-            PropertyListChangedNotify();
+            yarnProject.PropertyListChangedNotify();
         }
 
         public void RenderSourceScriptsList(Object yarnProject)
@@ -172,7 +172,7 @@ namespace YarnDonut.Editor
             _project = (YarnProject)yarnProject;
             var scripts = _project.SourceScripts;
             SetSourceScripts(scripts);
-            PropertyListChangedNotify();
+            yarnProject.PropertyListChangedNotify();
         }
 
         private void SetErrors(YarnProjectError[] errors)
