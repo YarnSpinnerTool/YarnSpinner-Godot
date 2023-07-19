@@ -46,12 +46,19 @@ namespace YarnDonut
         public bool Destroyed => false; // not sure when this is used yet
 
         [Export] public Array<string> SourceScripts = new Array<string>();
-        //[Export] 
         [Export] public Localization baseLocalization;
 
-        [Export]
-        public Localization[] localizations = Array.Empty<Localization>();
-
+        /// <summary>
+        /// Mapping of non-base locale codes to a path where Yarn will read & write
+        /// its localization CSV files. These will be automatically compiled into Godot
+        /// .translation files in the same directory as the csv.  YarnDonut will automatically
+        /// mark the .csv files as 'Keep file (no import)' when creating them, but if that setting changes,
+        /// it will cause Godot import errors as the CSVs are not in Godot localization's expected format.
+        /// If that happens, go to the import tab on the CSV and select the "Keep file (no import)" setting
+        /// under "Import As". 
+        /// </summary>
+        [Export] public Godot.Collections.Dictionary<string, string> LocaleCodeToCSVPath =
+            new Godot.Collections.Dictionary<string, string>();
         [Export]
         public LineMetadata lineMetadata = null;
 
@@ -64,24 +71,6 @@ namespace YarnDonut
 
         [Export] [Language]
         public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
-
-        public List<LanguageToSourceAsset> languagesToSourceAssets
-        {
-            get {
-                var result = new List<LanguageToSourceAsset>();
-                if (localizations != null)
-                {
-                    foreach (var localization in localizations)
-                    {
-                        var entry = new LanguageToSourceAsset();
-                        entry.languageID = localization.LocaleCode;
-                        entry.stringsFile = localization.stringsFile;
-                        result.Add(entry);
-                    }
-                }
-                return result;
-            }
-        }
 
         #if TOOLS
         /// <summary>
@@ -205,28 +194,6 @@ namespace YarnDonut
         /// <see cref="DialogueRunner"/>.
         /// </summary>
         public List<string> searchAssembliesForActions = new List<string>();
-
-        public Localization GetLocalization(string localeCode)
-        {
-
-            // If localeCode is null, we use the base localization.
-            if (localeCode == null)
-            {
-                return baseLocalization;
-            }
-
-            foreach (var loc in localizations)
-            {
-                if (loc.LocaleCode == localeCode)
-                {
-                    return loc;
-                }
-            }
-
-            // We didn't find a localization. Fall back to the Base
-            // localization.
-            return baseLocalization;
-        }
 
         /// <summary>
         /// Gets the Yarn Program stored in this project.

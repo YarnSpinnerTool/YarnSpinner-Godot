@@ -41,6 +41,7 @@ namespace YarnDonut
 
             _scriptImportPlugin = (YarnImporter)scriptImporterScript.New();
             _projectInspectorPlugin = (YarnProjectInspectorPlugin)projectInspectorScript.New();
+            _projectInspectorPlugin.editorInterface = GetEditorInterface();
             AddInspectorPlugin(_projectInspectorPlugin);
             AddImportPlugin(_scriptImportPlugin);
             _popup = new PopupMenu();

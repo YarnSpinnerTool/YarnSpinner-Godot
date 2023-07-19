@@ -22,22 +22,13 @@ namespace YarnDonut
         private string _LocaleCode;
 
         [Export]
-        public Dictionary _stringTable = new Dictionary();
+        public Dictionary stringTable = new Dictionary();
 
         [Export]
         private Dictionary _assetTable = new Dictionary();
 
         private System.Collections.Generic.Dictionary<string, string> _runtimeStringTable = new System.Collections.Generic.Dictionary<string, string>();
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="Localization"/>
-        /// contains assets that are linked to strings.
-        /// </summary>
-        public bool ContainsLocalizedAssets { get => _containsLocalizedAssets; set => _containsLocalizedAssets = value; }
-
-        [Export]
-        private bool _containsLocalizedAssets;
-
+        
         /// <summary>
         /// The Resource containing CSV data that the Localization
         /// should use.
@@ -58,21 +49,21 @@ namespace YarnDonut
                 return result;
             }
 
-            if (_stringTable.Contains(key))
+            if (stringTable.Contains(key))
             {
-                return ((StringTableEntry)_stringTable[key]).Text;
+                return ((StringTableEntry)stringTable[key]).Text;
             }
 
             return null;
         }
 
         /// <summary>
-        /// Get <see cref="_stringTable"/> as a list of <see cref="StringTableEntry"/>
+        /// Get <see cref="stringTable"/> as a list of <see cref="StringTableEntry"/>
         /// </summary>
         /// <returns></returns>
         public List<StringTableEntry> GetStringTableEntries()
         {
-            return (from object key in _stringTable.Keys select (StringTableEntry)_stringTable[key]).ToList();
+            return (from object key in stringTable.Keys select (StringTableEntry)stringTable[key]).ToList();
         }
 
         /// <summary>
@@ -82,7 +73,7 @@ namespace YarnDonut
         /// <param name="key">The key to search for.</param>
         /// <returns><see langword="true"/> if this Localization has a string
         /// for the given key; <see langword="false"/> otherwise.</returns>
-        public bool ContainsLocalizedString(string key) => _runtimeStringTable.ContainsKey(key) || _stringTable.Contains(key);
+        public bool ContainsLocalizedString(string key) => _runtimeStringTable.ContainsKey(key) || stringTable.Contains(key);
 
         /// <summary>
         /// Adds a new string to the string table.
@@ -96,7 +87,7 @@ namespace YarnDonut
         /// language specified by <see cref="LocaleCode"/>.</param>
         public void AddLocalisedStringToAsset(string key, StringTableEntry value)
         {
-            _stringTable.Add(key, value);
+            stringTable.Add(key, value);
         }
 
         /// <summary>
@@ -179,7 +170,7 @@ namespace YarnDonut
 
         public virtual void Clear()
         {
-            _stringTable.Clear();
+            stringTable.Clear();
             _assetTable.Clear();
             _runtimeStringTable.Clear();
         }
@@ -197,7 +188,7 @@ namespace YarnDonut
             var allKeys = new List<string>();
 
             var runtimeKeys = _runtimeStringTable.Keys;
-            var compileTimeKeys = _stringTable.Keys.Cast<string>();
+            var compileTimeKeys = stringTable.Keys.Cast<string>();
 
             allKeys.AddRange(runtimeKeys);
             allKeys.AddRange(compileTimeKeys);

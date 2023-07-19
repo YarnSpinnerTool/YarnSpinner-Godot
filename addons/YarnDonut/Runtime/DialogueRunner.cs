@@ -33,6 +33,7 @@ using Godot;
 using Godot.Collections;
 using Newtonsoft.Json;
 using Yarn;
+using Array = Godot.Collections.Array;
 
 namespace YarnDonut
 {
@@ -124,6 +125,10 @@ namespace YarnDonut
         /// </summary>
         [Export] public bool runSelectedOptionAsLine;
 
+        /// <summary>
+        /// NodePath locating the lineProvider for this dialogue runner
+        /// </summary>
+        [Export] public NodePath lineProviderPath;
         public LineProviderBehaviour lineProvider;
 
         /// <summary>
@@ -337,8 +342,15 @@ namespace YarnDonut
             // Request that the dialogue select the current node. This
             // will prepare the dialogue for running; as a side effect,
             // our prepareForLines delegate may be called.
-            Dialogue.SetNode(startNode);
-
+            try
+            {
+                Dialogue.SetNode(startNode);
+            }
+            catch (Exception e)
+            {
+                GD.PushError($"Failed to start dialogue on node '{startNode}': {e.Message}\n{e.StackTrace}");
+                throw;
+            }
             if (lineProvider.LinesAvailable == false)
             {
                 // The line provider isn't ready to give us our lines
@@ -747,6 +759,11 @@ namespace YarnDonut
                 SetProject(yarnProject);
             }
 
+            if (lineProviderPath != null && !lineProviderPath.IsEmpty() && lineProvider == null)
+            {
+                lineProvider = GetNode<LineProviderBehaviour>(lineProviderPath);
+            }
+
             if (lineProvider == null)
             {
                 // If we don't have a line provider, create a
@@ -766,9 +783,21 @@ namespace YarnDonut
                 }
 
             }
-            if (yarnProject != null && startAutomatically)
+            else if (lineProvider.YarnProject == null)
             {
-                StartDialogue(startNode);
+                lineProvider.YarnProject = yarnProject;
+            }
+            if (startAutomatically)
+            {
+                if (yarnProject == null)
+                {
+                    GD.PushError($"This {nameof(DialogueRunner)} is set to start automatically, but no {nameof(YarnProject)} is set. " +
+                        $"Assign a Yarn Project in the inspector of this dialogue runner.");
+                }
+                else
+                {
+                    CallDeferred(nameof(StartDialogue), startNode);
+                }
             }
         }
 

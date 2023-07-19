@@ -47,17 +47,17 @@ Eve: Oh no... #line:0721506
 
 Eve: Ok, now to finally write that visual novel. #line:0794753 
 <<Flip Eve>>
-<<PlayAudio music_romantic>>
+<<PlayAudio music_romantic 1.0 loop>>
 Eve: I can finally write my epic romance about - #line:0c39b43 
 <<StopAudioAll>>
 <<Flip Eve>>
 <<wait 1.5>>
 <<Flip Eve>>
 Eve: Wait... where's my laptop? It's not here. #line:04432b5 
-<<Shake Eve>>
+<<Shake Eve 1.0>>
 Eve: Adam! Have you seen my laptop??? #line:0a21105 
 
-<<PlayAudio music_funny>>
+<<PlayAudio music_funny 1.0 loop>>
 <<Flip Eve>>
 <<Move Eve 1.25 center 1.0>>
 Eve: ADDDDAAAMMMMMMM!!! #line:062467b 

@@ -10,7 +10,7 @@ config_version=4
 
 [YarnDonut]
 
-YarnProjectPaths=[ "res://Samples/VisualNovel/Dialogue/VisualNovel_YarnProject.tres", "res://Samples/Space/Dialogue/SpaceYarnProject.tres" ]
+YarnProjectPaths=[ "res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres" ]
 
 [YarnSpinnerGodot]
 
@@ -19,6 +19,7 @@ YarnProjectPaths=[ "res://Samples/Space/Dialogue/Space_YarnProject.tres", "res:/
 [application]
 
 config/name="YarnDonut"
+config/description="No Description"
 run/main_scene="res://Samples/Space/SpaceSample.tscn"
 boot_splash/image="res://addons/YarnDonut/Editor/Icons/YarnSpinnerLogo.png"
 boot_splash/bg_color=Color( 0.0313726, 0.0705882, 0.0313726, 1 )

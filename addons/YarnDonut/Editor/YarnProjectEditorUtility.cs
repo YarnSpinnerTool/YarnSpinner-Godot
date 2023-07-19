@@ -1,5 +1,4 @@
 #if TOOLS
-#define YARNSPINNER_DEBUG // todo remove
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
 using Google.Protobuf;
@@ -90,8 +90,10 @@ namespace YarnDonut.Editor
         }
         private static async Task UpdateYarnProjectTask(YarnProject project)
         {
-            while (DateTime.Now - _projectPathToLastUpdateTime[project.ResourcePath] < TimeSpan.FromMilliseconds(PROJECT_UPDATE_TIMEOUT))
+            while (DateTime.Now - _projectPathToLastUpdateTime[project.ResourcePath]
+                   < TimeSpan.FromMilliseconds(PROJECT_UPDATE_TIMEOUT))
             {
+                // wait to update the yarn project until we haven't received another request in PROJECT_UPDATE_TIMEOUT ms
                 await Task.Delay(PROJECT_UPDATE_TIMEOUT);
             }
             try
@@ -131,34 +133,195 @@ namespace YarnDonut.Editor
                 }
             }
         }
-        public static void GenerateLocalizationCSVs(YarnProject project)
+        public static void UpdateLocalizationCSVs(YarnProject project)
         {
-            if (project.localizations != null)
+            if (project.LocaleCodeToCSVPath.Count > 0)
             {
-                foreach (var localization in project.localizations)
-                {
-                    if (localization.stringsFile != null &&
-                        localization.stringsFile.Trim().Length > 0)
-                    {
-                        var csvPath = localization.stringsFile;
+                var modifiedFiles = new List<string>();
 
-                        var csvText = StringTableEntry.CreateCSV(localization.GetStringTableEntries());
-                        GD.Print($"Updating locale {localization.LocaleCode} csv file to: {csvPath}");
-                        csvPath = ProjectSettings.GlobalizePath(csvPath);
-                        var parent = Path.GetDirectoryName(csvPath);
-                        if (!Directory.Exists(parent))
-                        {
-                            Directory.CreateDirectory(parent);
-                        }
-                        File.WriteAllText(csvPath, csvText);
-                        var csvImport = $"{csvPath}.import";
-                        if (!File.Exists(csvImport))
-                        {
-                            File.WriteAllText(csvImport, KEEP_IMPORT_TEXT);
-                        }
+                foreach (var loc in project.LocaleCodeToCSVPath)
+                {
+                    if (string.IsNullOrEmpty(loc.Value))
+                    {
+                        GD.PrintErr($"Can't update localization for {loc.Key} because it doesn't have a strings file.");
+                        continue;
+                    }
+
+                    var fileWasChanged = UpdateLocalizationFile(project.baseLocalization.GetStringTableEntries(),
+                        loc.Key, loc.Value);
+
+                    if (fileWasChanged)
+                    {
+                        modifiedFiles.Add(loc.Value);
                     }
                 }
+
+                if (modifiedFiles.Count > 0)
+                {
+                    GD.Print($"Updated the following files: {string.Join(", ", modifiedFiles)}");
+                }
+                else
+                {
+                    GD.Print($"No files needed updating.");
+                }
+
             }
+        }
+
+        /// <summary>
+        /// Verifies the CSV file referred to by csvResourcePath and updates it if
+        /// necessary.
+        /// </summary>
+        /// <param name="baseLocalizationStrings">A collection of <see
+        /// cref="StringTableEntry"/></param>
+        /// <param name="language">The language that <paramref name="csvResourcePath"/> provides strings for.</param>
+        /// <param name="csvResourcePath">res:// path to the destination CSV to update</param>
+        /// <returns>Whether the contents of <paramref name="csvResourcePath"/> was modified.</returns>
+        private static bool UpdateLocalizationFile(IEnumerable<StringTableEntry> baseLocalizationStrings,
+            string language, string csvResourcePath)
+        {
+
+            var absoluteCSVPath = ProjectSettings.GlobalizePath(csvResourcePath);
+
+            IEnumerable<StringTableEntry> translatedStrings = new List<StringTableEntry>();
+            if (File.Exists(absoluteCSVPath))
+            {
+                var existingCSVText = File.ReadAllText(absoluteCSVPath);
+                translatedStrings = StringTableEntry.ParseFromCSV(existingCSVText);
+            }
+            else
+            {
+                GD.Print($"CSV file {csvResourcePath} did not exist for locale {language}. A new file will be created at that location.");
+            }
+
+            // Convert both enumerables to dictionaries, for easier lookup
+            var baseDictionary = baseLocalizationStrings.ToDictionary(entry => entry.ID);
+            var translatedDictionary = translatedStrings.ToDictionary(entry => entry.ID);
+
+            // The list of line IDs present in each localisation
+            var baseIDs = baseLocalizationStrings.Select(entry => entry.ID);
+            var translatedIDs = translatedStrings.Select(entry => entry.ID);
+
+            // The list of line IDs that are ONLY present in each
+            // localisation
+            var onlyInBaseIDs = baseIDs.Except(translatedIDs);
+            var onlyInTranslatedIDs = translatedIDs.Except(baseIDs);
+
+            // Tracks if the translated localisation needed modifications
+            // (either new lines added, old lines removed, or changed lines
+            // flagged)
+            var modificationsNeeded = false;
+
+            // Remove every entry whose ID is only present in the
+            // translated set. This entry has been removed from the base
+            // localization.
+            foreach (var id in onlyInTranslatedIDs.ToList())
+            {
+                translatedDictionary.Remove(id);
+                modificationsNeeded = true;
+            }
+
+            // Conversely, for every entry that is only present in the base
+            // localisation, we need to create a new entry for it.
+            foreach (var id in onlyInBaseIDs)
+            {
+                StringTableEntry baseEntry = baseDictionary[id];
+                var newEntry = new StringTableEntry(baseEntry)
+                {
+                    // Empty this text, so that it's apparent that a
+                    // translated version needs to be provided.
+                    Text = string.Empty,
+                    Language = language,
+                };
+                translatedDictionary.Add(id, newEntry);
+                modificationsNeeded = true;
+            }
+
+            // Finally, we need to check for any entries in the translated
+            // localisation that:
+            // 1. have the same line ID as one in the base, but
+            // 2. have a different Lock (the hash of the text), which
+            //    indicates that the base text has changed.
+
+            // First, get the list of IDs that are in both base and
+            // translated, and then filter this list to any where the lock
+            // values differ
+            var outOfDateLockIDs = baseDictionary.Keys
+                .Intersect(translatedDictionary.Keys)
+                .Where(id => baseDictionary[id].Lock != translatedDictionary[id].Lock);
+
+            // Now loop over all of these, and update our translated
+            // dictionary to include a note that it needs attention
+            foreach (var id in outOfDateLockIDs)
+            {
+                // Get the translated entry as it currently exists
+                var entry = translatedDictionary[id];
+
+                // Include a note that this entry is out of date
+                entry.Text = $"(NEEDS UPDATE) {entry.Text}";
+
+                // Update the lock to match the new one
+                entry.Lock = baseDictionary[id].Lock;
+
+                // Put this modified entry back in the table
+                translatedDictionary[id] = entry;
+
+                modificationsNeeded = true;
+            }
+
+            // We're all done!
+
+            if (modificationsNeeded == false)
+            {
+                GenerateGodotTranslation(language, csvResourcePath);
+                // No changes needed to be done to the translated string
+                // table entries. Stop here.
+                return false;
+            }
+
+            // We need to produce a replacement CSV file for the translated
+            // entries.
+
+            var outputStringEntries = translatedDictionary.Values
+                .OrderBy(entry => entry.File)
+                .ThenBy(entry => int.Parse(entry.LineNumber));
+
+            var outputCSV = StringTableEntry.CreateCSV(outputStringEntries);
+
+            // Write out the replacement text to this existing file,
+            // replacing its existing contents
+            File.WriteAllText(absoluteCSVPath, outputCSV, System.Text.Encoding.UTF8);
+            var csvImport = $"{absoluteCSVPath}.import";
+            if (!File.Exists(csvImport))
+            {
+                File.WriteAllText(csvImport, KEEP_IMPORT_TEXT);
+            }
+            GenerateGodotTranslation(language, csvResourcePath);
+            // Signal that the file was changed
+            return true;
+        }
+
+        private static void GenerateGodotTranslation(string language, string csvFilePath)
+        {
+            var absoluteCSVPath = ProjectSettings.GlobalizePath(csvFilePath);
+            var translation = new Translation();
+            translation.Locale = language;
+
+            var csvText = File.ReadAllText(absoluteCSVPath);
+            var stringEntries = StringTableEntry.ParseFromCSV(csvText);
+            foreach (var entry in stringEntries)
+            {
+                if (!string.IsNullOrEmpty(entry.Text))
+                {
+                    GD.Print($"key '{entry.ID}', {entry.Text}");
+                }
+                translation.AddMessage(entry.ID, entry.Text);
+            }
+            var extensionRegex = new Regex(@".csv$");
+            var translationPath = extensionRegex.Replace(absoluteCSVPath, ".translation");
+            var translationResPath = ProjectSettings.LocalizePath(translationPath);
+            ResourceSaver.Save(translationResPath, translation);
+            GD.Print($"Wrote translation file for {language} to {translationResPath}.");
         }
         public static void SaveYarnProject(YarnProject project)
         {
@@ -393,164 +556,9 @@ namespace YarnDonut.Editor
             // configured in languagesToSourceAssets is the default
             // language.
             var shouldAddDefaultLocalization = true;
-            if (project.localizations == null)
+            if (project.LocaleCodeToCSVPath == null)
             {
-                project.localizations = Array.Empty<Localization>();
-            }
-            foreach (var pair in project.languagesToSourceAssets)
-            {
-                // Don't create a localization if the language ID was not
-                // provided
-                if (string.IsNullOrEmpty(pair.languageID))
-                {
-                    GD.PrintErr($"Not creating a localization for {project.ResourceName} because the language ID wasn't provided. Add the language ID to the localization in the Yarn Project's inspector.");
-                    continue;
-                }
-
-                IEnumerable<StringTableEntry> stringTable;
-
-                // Where do we get our strings from? If it's the default
-                // language, we'll pull it from the scripts. If it's from
-                // any other source, we'll pull it from the CSVs.
-                if (pair.languageID == project.defaultLanguage)
-                {
-                    // We'll use the program-supplied string table.
-                    stringTable = GenerateStringsTable(project);
-
-                    // We don't need to add a default localization.
-                    shouldAddDefaultLocalization = false;
-                }
-                else
-                {
-                    try
-                    {
-                        if (pair.stringsFile == null || pair.stringsFile.Trim() == "")
-                        {
-                            // We can't create this localization because we
-                            // don't have any data for it.
-                            GD.PrintErr($"Not creating a localization for {pair.languageID} in the Yarn Project {project.ResourceName} because a text asset containing the strings wasn't found. Add a .csv file containing the translated lines to the Yarn Project's inspector.");
-                            continue;
-                        }
-                        var globalizedCSV = ProjectSettings.GlobalizePath(pair.stringsFile);
-
-                        if (!File.Exists(globalizedCSV))
-                        {
-                            GD.PrintErr($"For the localization with locale code {pair.languageID}, the CSV file {pair.stringsFile} was specified under stringsFile, but the file does not exist.");
-                            continue;
-                        }
-
-                        var csvText = File.ReadAllText(globalizedCSV);
-
-                        stringTable = StringTableEntry.ParseFromCSV(csvText);
-                    }
-                    catch (ArgumentException e)
-                    {
-                        GD.PrintErr($"Not creating a localization for {pair.languageID} in the Yarn Project {project.ResourceName} because an error was encountered during text parsing: {e}");
-                        continue;
-                    }
-                }
-
-                Localization existingLocalization = null;
-
-                foreach (var localization in project.localizations)
-                {
-                    if (localization.LocaleCode == pair.languageID)
-                    {
-                        existingLocalization = localization;
-                    }
-                }
-                var newLocalization = existingLocalization ?? YarnEditorUtility.InstanceScript<Localization>("res://addons/YarnDonut/Runtime/Localization.cs");
-
-                newLocalization.Clear();
-                newLocalization.LocaleCode = pair.languageID;
-
-                // Add these new lines to the localisation's asset
-                foreach (var entry in stringTable)
-                {
-                    var lineID = entry.ID;
-                    if (entry.ID.Contains(".yarn") && entry.ID.Contains("/"))
-                    {
-                        // replace absolute paths in untagged lines with localized paths
-                        var idPrefix = "line:";
-                        var newID = entry.ID.Substring(idPrefix.Length);
-                        newID = $"{idPrefix}{ProjectSettings.LocalizePath(newID)}";
-                        lineID = newID;
-                    }
-                    newLocalization.AddLocalisedStringToAsset(lineID, entry);
-                }
-
-                newLocalization.ResourceName = pair.languageID;
-
-                #region localizable resources (todo)
-
-//             TODO: localizable resources
-//             if (pair.assetsFolder != null)
-//             {
-//                 var assetsFolderPath = AssetDatabase.GetAssetPath(pair.assetsFolder);
-//
-//                 if (assetsFolderPath == null)
-//                 {
-//                     // This was somehow not a valid reference?
-//                     GD.PrintErr($"Can't find assets for localization {pair.languageID} in {project.name} because a path for the provided assets folder couldn't be found.");
-//                 }
-//                 else
-//                 {
-//                     newLocalization.ContainsLocalizedAssets = true;
-//
-//                     // We need to find the assets used by this
-//                     // localization now, and assign them to the
-//                     // Localization object.
-// #if YARNSPINNER_DEBUG
-//                             // This can take some time, so we'll measure
-//                             // how long it takes.
-//                             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-// #endif
-//
-//                     // Get the line IDs.
-//                     IEnumerable<string> lineIDs = stringTable.Select(s => s.ID);
-//
-//                     // Map each line ID to its asset path.
-//                     var stringIDsToAssetPaths = YarnProjectUtility.FindAssetPathsForLineIDs(lineIDs, assetsFolderPath);
-//
-//                     // Load the asset, so we can assign the reference.
-//                     var assetPaths = stringIDsToAssetPaths
-//                         .Select(a => new KeyValuePair<string, Resource>(a.Key, ResourceLoader.Load(a.Value)));
-//
-//                     newLocalization.AddLocalizedObjects(assetPaths);
-//
-// #if YARNSPINNER_DEBUG
-//                             stopwatch.Stop();
-//                             GD.Print($"Imported {stringIDsToAssetPaths.Count()} assets for {project.ResourceName} \"{pair.languageID}\" in {stopwatch.ElapsedMilliseconds}ms");
-// #endif
-//
-//                 }
-//             }
-
-                #endregion
-
-                if (pair.languageID == project.defaultLanguage)
-                {
-                    // If this is our default language, set it as such
-                    project.baseLocalization = newLocalization;
-
-                    // Since this is the default language, also populate the line metadata.
-                    project.lineMetadata.Clear();
-                    project.lineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
-                }
-                foreach (var localization in project.localizations)
-                {
-                    if (!localization.LocaleCode.Equals(newLocalization.LocaleCode)) continue;
-                    if (!localization.ResourcePath.Contains(project.ResourcePath)
-                        && !localization.ResourcePath.Contains("::"))
-                    {
-                        // only try to save it to disk if it's a standalone file and a sub resource
-                        var saveErr = ResourceSaver.Save(localization.ResourcePath, newLocalization);
-                        if (saveErr != Error.Ok)
-                        {
-                            GD.PushError($"Error saving localization {localization.LocaleCode} to {localization.ResourcePath}");
-                        }
-                    }
-                }
+                project.LocaleCodeToCSVPath = new Godot.Collections.Dictionary<string, string>();
             }
 
             if (shouldAddDefaultLocalization)
@@ -564,7 +572,6 @@ namespace YarnDonut.Editor
                 developmentLocalization.ResourceName = $"Default ({project.defaultLanguage})";
                 developmentLocalization.LocaleCode = project.defaultLanguage;
 
-
                 // Add these new lines to the development localisation's asset
                 foreach (var entry in stringTableEntries)
                 {
@@ -572,10 +579,6 @@ namespace YarnDonut.Editor
                 }
 
                 project.baseLocalization = developmentLocalization;
-                project.localizations = project.localizations.Concat(new List<Localization>
-                {
-                    project.baseLocalization
-                }).ToArray();
 
                 // Since this is the default language, also populate the line metadata.
                 project.lineMetadata = YarnEditorUtility.InstanceScript<LineMetadata>("res://addons/YarnDonut/Runtime/LineMetadata.cs");
@@ -921,42 +924,6 @@ namespace YarnDonut.Editor
                 projects.Add(project.ResourcePath);
             }
             ProjectSettings.SetSetting(YARN_PROJECT_PATHS_SETTING_KEY, projects);
-        }
-    }
-
-// A simple class lets us use a delegate as an IEqualityComparer from
-// https://stackoverflow.com/a/4607559
-    public static class Compare
-    {
-        public static IEqualityComparer<T> By<T>(Func<T, T, bool> comparison)
-        {
-            return new DelegateComparer<T>(comparison);
-        }
-
-        private class DelegateComparer<T> : EqualityComparer<T>
-        {
-            private readonly Func<T, T, bool> comparison;
-
-            public DelegateComparer(Func<T, T, bool> identitySelector)
-            {
-                comparison = identitySelector;
-            }
-
-            public override bool Equals(T x, T y)
-            {
-                return comparison(x, y);
-            }
-
-            public override int GetHashCode(T obj)
-            {
-                // Force LINQ to never refer to the hash of an object by
-                // returning a constant for all values. This is inefficient
-                // because LINQ can't use an public comparator, but we're
-                // already looking to use a delegate to do a more
-                // fine-grained test anyway, so we want to ensure that it's
-                // called.
-                return 0;
-            }
         }
     }
 

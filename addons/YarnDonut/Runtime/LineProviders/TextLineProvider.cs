@@ -12,8 +12,15 @@ namespace YarnDonut
 
         public override LocalizedLine GetLocalizedLine(Yarn.Line line)
         {
-            var localization = YarnProject.GetLocalization(textLanguageCode);
-            var text = localization.GetLocalizedString(line.ID);
+            string text;
+            if (textLanguageCode == YarnProject.baseLocalization.LocaleCode)
+            {
+                text = YarnProject.baseLocalization.GetLocalizedString(line.ID);
+            }
+            else
+            {
+                text = Tr($"{line.ID}");
+            }
 
             return new LocalizedLine()
             {

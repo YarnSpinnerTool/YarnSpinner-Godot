@@ -575,7 +575,7 @@ namespace YarnDonut
         /// <inheritdoc/>
         public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
-            // Begin running the line as a coroutine.
+            // Begin running the line asynchronously
             RunLineInternal(dialogueLine, onDialogueLineFinished);
         }
 
