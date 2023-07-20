@@ -302,14 +302,15 @@ public partial class VisualNovelManager : Node
         newColor.a = startAlpha;
         _colorOverlay.Color = newColor;
         var colorDifference = endAlpha - startAlpha;
-        while (elapsed < fadeTime && Mathf.Abs(endAlpha - newColor.a) < 0.001)
+        while (elapsed < fadeTime && Mathf.Abs(endAlpha - newColor.a) > 0.001)
         {
             var delta = GetProcessDeltaTime();
-            var timeRatio = delta / fadeTime;
-            newColor.a = timeRatio * colorDifference;
+            var timeRatio = elapsed / fadeTime;
+            newColor.a = startAlpha + timeRatio * colorDifference;
             _colorOverlay.Color = newColor;
             elapsed += delta;
             await DefaultActions.Wait(delta);
         }
+        GD.Print($"Finished fading to {fadeColorHex}");
     }
 }

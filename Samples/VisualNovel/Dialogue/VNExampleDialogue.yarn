@@ -63,7 +63,7 @@ Eve: Adam! Have you seen my laptop??? #line:0a21105
 Eve: ADDDDAAAMMMMMMM!!! #line:062467b 
 
 // fade to black, from 0% opacity to 100% opacity, in 2.0 seconds
-<<Fade black 0.0 1.0 2.0>>
+<<Fade 000000 0.0 1.0 2.0>>
 THE END. #line:0d7e78e 
 
 ===

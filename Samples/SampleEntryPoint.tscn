@@ -50,10 +50,10 @@ theme = ExtResource( 2 )
 text = "Visual Novel"
 
 [node name="features" type="RichTextLabel" parent="Visual Novel"]
-margin_left = -64.0
+margin_left = -93.0
 margin_top = 119.0
-margin_right = 295.0
-margin_bottom = 246.0
+margin_right = 319.0
+margin_bottom = 288.0
 bbcode_enabled = true
 bbcode_text = "[center]Localization
 Effect/ Animation Commands
