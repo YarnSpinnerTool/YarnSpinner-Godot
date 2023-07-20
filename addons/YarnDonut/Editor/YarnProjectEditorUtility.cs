@@ -200,6 +200,10 @@ namespace YarnDonut.Editor
 
             // The list of line IDs present in each localisation
             var baseIDs = baseLocalizationStrings.Select(entry => entry.ID);
+            foreach (var str in translatedStrings)
+            {
+                str.Original = baseDictionary[str.ID].Text;
+            }
             var translatedIDs = translatedStrings.Select(entry => entry.ID);
 
             // The list of line IDs that are ONLY present in each
@@ -314,10 +318,6 @@ namespace YarnDonut.Editor
             var stringEntries = StringTableEntry.ParseFromCSV(csvText);
             foreach (var entry in stringEntries)
             {
-                if (!string.IsNullOrEmpty(entry.Text))
-                {
-                    GD.Print($"key '{entry.ID}', {entry.Text}");
-                }
                 translation.AddMessage(entry.ID, entry.Text);
             }
             var extensionRegex = new Regex(@".csv$");

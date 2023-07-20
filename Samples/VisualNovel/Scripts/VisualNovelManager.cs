@@ -31,6 +31,7 @@ public partial class VisualNovelManager : Node
     {
         _background = GetNode<TextureRect>(_backgroundPath);
         _dialogueCanvas = GetNode<CanvasLayer>(_dialogueCanvasPath);
+        _dialogueCanvas.Visible = false;
         _englishButton = GetNode<Button>(_englishButtonPath);
         _spanishButton = GetNode<Button>(_spanishButtonPath);
         _japaneseButton = GetNode<Button>(_japaneseButtonPath);
@@ -297,8 +298,7 @@ public partial class VisualNovelManager : Node
     private async void FadeTask(string fadeColorHex, float startAlpha = 0, float endAlpha = 1, float fadeTime = 1)
     {
         var elapsed = 0f;
-
-        var newColor = _colorOverlay.Color;
+        var newColor = new Color(fadeColorHex);
         newColor.a = startAlpha;
         _colorOverlay.Color = newColor;
         var colorDifference = endAlpha - startAlpha;

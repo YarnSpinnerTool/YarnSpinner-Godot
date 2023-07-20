@@ -1,0 +1,16 @@
+[gd_resource type="Theme" load_steps=4 format=2]
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.3477, 0.50508, 0.61, 1 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.14902, 0.309804, 0.419608, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.1044, 0.21576, 0.29, 1 )
+
+[resource]
+Button/styles/focus = SubResource( 3 )
+Button/styles/hover = SubResource( 3 )
+Button/styles/normal = SubResource( 1 )
+Button/styles/pressed = SubResource( 2 )

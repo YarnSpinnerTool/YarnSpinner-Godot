@@ -1,0 +1,71 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Samples/SampleEntryPoint.cs" type="Script" id=1]
+[ext_resource path="res://Samples/sample_default_theme.tres" type="Theme" id=2]
+
+[node name="Node2D" type="CanvasLayer"]
+script = ExtResource( 1 )
+_spaceButtonPath = NodePath("Space")
+_visualNovelButtonPath = NodePath("Visual Novel")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.101961, 0.184314, 0.215686, 1 )
+
+[node name="Space" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -385.0
+margin_top = -295.0
+margin_right = -153.0
+margin_bottom = -195.0
+theme = ExtResource( 2 )
+text = "Space"
+
+[node name="features" type="RichTextLabel" parent="Space"]
+margin_left = -64.0
+margin_top = 119.0
+margin_right = 295.0
+margin_bottom = 246.0
+bbcode_enabled = true
+bbcode_text = "[center]Basic dialogue demo
+[/center]"
+text = "Basic dialogue demo
+"
+
+[node name="Visual Novel" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 158.0
+margin_top = -299.0
+margin_right = 390.0
+margin_bottom = -199.0
+rect_pivot_offset = Vector2( 426, 100 )
+theme = ExtResource( 2 )
+text = "Visual Novel"
+
+[node name="features" type="RichTextLabel" parent="Visual Novel"]
+margin_left = -64.0
+margin_top = 119.0
+margin_right = 295.0
+margin_bottom = 246.0
+bbcode_enabled = true
+bbcode_text = "[center]Localization
+Effect/ Animation Commands
+[/center]"
+text = "Localization
+Effect/ Animation Commands
+"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+margin_top = 76.0
+margin_right = 1024.0
+margin_bottom = 203.0
+bbcode_enabled = true
+bbcode_text = "[center]YarnDonut Samples[/center]"
+text = "YarnDonut Samples"
