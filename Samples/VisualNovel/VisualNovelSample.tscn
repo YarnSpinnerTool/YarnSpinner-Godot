@@ -17,15 +17,70 @@ anchor_bottom = 1.0
 [node name="VisualNovelManager" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_top = 1.0
+margin_bottom = 1.0
 script = ExtResource( 4 )
-dialogueRunnerPath = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
-backgroundPath = NodePath("BackgroundImage")
+_dialogueRunnerPath = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+_backgroundPath = NodePath("BackgroundImage")
+_colorOverlayPath = NodePath("../YarnSpinnerCanvasLayer/ColorOverlay")
+_dialogueStartUiPath = NodePath("DialogueStartUI")
+_englishButtonPath = NodePath("DialogueStartUI/EnglishButton")
+_spanishButtonPath = NodePath("DialogueStartUI/SpanishButton")
+_japaneseButtonPath = NodePath("DialogueStartUI/JapaneseButton")
+_dialogueCanvasPath = NodePath("../YarnSpinnerCanvasLayer")
 
 [node name="BackgroundImage" type="TextureRect" parent="VisualNovelManager"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
+[node name="DialogueStartUI" type="Control" parent="VisualNovelManager"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="PlayTheGameIn" type="RichTextLabel" parent="VisualNovelManager/DialogueStartUI"]
+margin_left = 346.0
+margin_top = 82.0
+margin_right = 715.0
+margin_bottom = 130.0
+bbcode_enabled = true
+bbcode_text = "Play the game in...."
+text = "Play the game in...."
+
+[node name="EnglishButton" type="Button" parent="VisualNovelManager/DialogueStartUI"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 375.0
+margin_top = 108.0
+margin_right = 607.0
+margin_bottom = 208.0
+text = "English"
+
+[node name="SpanishButton" type="Button" parent="VisualNovelManager/DialogueStartUI"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 375.0
+margin_top = 228.0
+margin_right = 607.0
+margin_bottom = 328.0
+text = "Español"
+
+[node name="JapaneseButton" type="Button" parent="VisualNovelManager/DialogueStartUI"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 377.0
+margin_top = 349.0
+margin_right = 609.0
+margin_bottom = 449.0
+text = "日本語"
+
 [node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="DialogueRunner" type="Control" parent="YarnSpinnerCanvasLayer"]
 anchor_right = 1.0
@@ -91,7 +146,7 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = 58.0
-margin_top = 78.0
+margin_top = 50.0
 margin_right = 944.0
 margin_bottom = 100.0
 bbcode_enabled = true

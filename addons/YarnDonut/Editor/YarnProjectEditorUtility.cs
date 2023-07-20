@@ -231,6 +231,7 @@ namespace YarnDonut.Editor
                     // Empty this text, so that it's apparent that a
                     // translated version needs to be provided.
                     Text = string.Empty,
+                    Original = baseEntry.Text,
                     Language = language,
                 };
                 translatedDictionary.Add(id, newEntry);
@@ -260,6 +261,8 @@ namespace YarnDonut.Editor
                 // Include a note that this entry is out of date
                 entry.Text = $"(NEEDS UPDATE) {entry.Text}";
 
+                // update the base language text
+                entry.Original = baseDictionary[id].Text;
                 // Update the lock to match the new one
                 entry.Lock = baseDictionary[id].Lock;
 

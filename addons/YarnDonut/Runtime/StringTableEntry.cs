@@ -30,7 +30,11 @@ namespace YarnDonut
         /// cref="Language"/>.
         /// </summary>
         [Export] public string Text;
-
+        
+        /// <summary>
+        /// For non-base languages, this contains the original text for the line in the base language.
+        /// </summary>
+        [Export] public string Original;
         /// <summary>
         /// The name of the Yarn script in which this line was originally
         /// found.
@@ -92,6 +96,7 @@ namespace YarnDonut
             Text = s.Text;
             File = s.File;
             Node = s.Node;
+            Original = s.Original;
             LineNumber = s.LineNumber;
             Lock = s.Lock;
             Comment = s.Comment;
@@ -199,11 +204,12 @@ namespace YarnDonut
                     "language",
                     "id",
                     "text",
+                    "original",
                     "file",
                     "node",
                     "lineNumber",
                     "lock",
-                    "comment",
+                    "comment"
                 };
 
                 foreach (var field in fieldNames)
@@ -219,6 +225,7 @@ namespace YarnDonut
                         entry.Language,
                         entry.ID,
                         entry.Text,
+                        entry.Original,
                         entry.File,
                         entry.Node,
                         entry.LineNumber,

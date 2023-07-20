@@ -3,22 +3,52 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using YarnDonut;
-
+using Array = Godot.Collections.Array;
 public partial class VisualNovelManager : Node
 {
 
-    [Export] private NodePath dialogueRunnerPath;
-    [Export] private NodePath backgroundPath;
-    [Export] private NodePath colorOverlayPath;
+    [Export] private NodePath _dialogueRunnerPath;
+    [Export] private NodePath _backgroundPath;
+    [Export] private NodePath _colorOverlayPath;
+    [Export] private NodePath _dialogueStartUiPath;
+    private Control _dialogueStartUi; 
+    [Export] private NodePath _englishButtonPath;
+    private Button _englishButton;
+    
+    [Export] private NodePath _spanishButtonPath;
+    private Button _spanishButton;
+    
+    [Export] private NodePath _japaneseButtonPath;
+    private Button _japaneseButton;
+
+    [Export] private NodePath _dialogueCanvasPath;
+    private CanvasLayer _dialogueCanvas;
     private DialogueRunner _dialogueRunner;
     private TextureRect _background;
     private ColorRect _colorOverlay;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        _background = GetNode<TextureRect>(backgroundPath);
-        _colorOverlay = GetNode<ColorRect>(colorOverlayPath);
-        _dialogueRunner = GetNode<DialogueRunner>(dialogueRunnerPath);
+        _background = GetNode<TextureRect>(_backgroundPath);
+        _dialogueCanvas = GetNode<CanvasLayer>(_dialogueCanvasPath);
+        _englishButton = GetNode<Button>(_englishButtonPath);
+        _spanishButton = GetNode<Button>(_spanishButtonPath);
+        _japaneseButton = GetNode<Button>(_japaneseButtonPath);
+        _dialogueStartUi = GetNode<Control>(_dialogueStartUiPath);
+        _englishButton.Connect("pressed", this, nameof(StartDialogue), new Array
+        {
+            "en-US"
+        });
+        _spanishButton.Connect("pressed", this, nameof(StartDialogue), new Array
+        {
+            "es"
+        });
+        _japaneseButton.Connect("pressed", this, nameof(StartDialogue), new Array
+        {
+            "ja"
+        });
+        _colorOverlay = GetNode<ColorRect>(_colorOverlayPath);
+        _dialogueRunner = GetNode<DialogueRunner>(_dialogueRunnerPath);
         _dialogueRunner.AddCommandHandler<string>("Scene", Scene);
         _dialogueRunner.AddCommandHandler<string, float, string>("PlayAudio", PlayAudio);
         _dialogueRunner.AddCommandHandler<string, string, string, string, string>("Act", SetActor);
@@ -31,12 +61,20 @@ public partial class VisualNovelManager : Node
         _dialogueRunner.onDialogueComplete += OnDialogueComplete;
     }
 
+    public void StartDialogue(string locale)
+    {
+        TranslationServer.SetLocale(locale);
+        ((TextLineProvider)_dialogueRunner.lineProvider).textLanguageCode = locale;
+        _dialogueStartUi.Visible = false;
+        _dialogueCanvas.Visible = true;
+        _dialogueRunner.StartDialogue(_dialogueRunner.startNode);
+    }
     private void OnDialogueComplete()
     {
         GD.Print("Visual novel sample has completed!");
     }
 
-    private Dictionary<string, string> bgShortNameToPath = new Dictionary<string, string>
+    private Dictionary<string, string> _bgShortNameToPath = new Dictionary<string, string>
     {
         {
             "bg_office", "res://Samples/VisualNovel/Sprites/bg_office.png"
@@ -44,16 +82,16 @@ public partial class VisualNovelManager : Node
     };
     private void Scene(string backgroundImage)
     {
-        if (!bgShortNameToPath.ContainsKey(backgroundImage))
+        if (!_bgShortNameToPath.ContainsKey(backgroundImage))
         {
-            GD.PrintErr($"The audio stream name {backgroundImage} was not defined in {nameof(bgShortNameToPath)}");
+            GD.PrintErr($"The audio stream name {backgroundImage} was not defined in {nameof(_bgShortNameToPath)}");
             return;
         }
 
-        var texture = ResourceLoader.Load<Texture>(bgShortNameToPath[backgroundImage]);
+        var texture = ResourceLoader.Load<Texture>(_bgShortNameToPath[backgroundImage]);
         _background.Texture = texture;
     }
-    private Dictionary<string, string> audioShortNameToUUID = new Dictionary<string, string>
+    private Dictionary<string, string> _audioShortNameToUuid = new Dictionary<string, string>
     {
         {
             "music_funny", "res://Samples/VisualNovel/Sounds/music_funny.mp3"
@@ -65,26 +103,26 @@ public partial class VisualNovelManager : Node
             "ambient_birds", "res://Samples/VisualNovel/Sounds/ambient_birds.ogg"
         }
     };
-    private List<AudioStreamPlayer2D> audioPlayers = new List<AudioStreamPlayer2D>();
+    private List<AudioStreamPlayer2D> _audioPlayers = new List<AudioStreamPlayer2D>();
     private async void PlayAudio(string streamName, float volume = 1.0f, string doLoop = "loop")
     {
-        if (!audioShortNameToUUID.ContainsKey(streamName))
+        if (!_audioShortNameToUuid.ContainsKey(streamName))
         {
-            GD.PrintErr($"The audio stream name {streamName} was not defined in {nameof(audioShortNameToUUID)}");
+            GD.PrintErr($"The audio stream name {streamName} was not defined in {nameof(_audioShortNameToUuid)}");
             return;
         }
-        var stream = ResourceLoader.Load<AudioStream>(audioShortNameToUUID[streamName]);
+        var stream = ResourceLoader.Load<AudioStream>(_audioShortNameToUuid[streamName]);
         var player = new AudioStreamPlayer2D();
         player.VolumeDb = GD.Linear2Db(volume);
         player.Stream = stream;
-        audioPlayers.Add(player);
+        _audioPlayers.Add(player);
         AddChild(player);
         player.Play();
         if (doLoop != "loop")
         {
             await DefaultActions.Wait(stream.GetLength());
             player.Stop();
-            audioPlayers.Remove(player);
+            _audioPlayers.Remove(player);
             player.QueueFree();
         }
     }
@@ -92,8 +130,8 @@ public partial class VisualNovelManager : Node
     {
         public TextureRect Rect;
     }
-    private Dictionary<string, Actor> actors = new Dictionary<string, Actor>();
-    private Dictionary<string, string> spriteShortNameToPath = new Dictionary<string, string>
+    private Dictionary<string, Actor> _actors = new Dictionary<string, Actor>();
+    private Dictionary<string, string> _spriteShortNameToPath = new Dictionary<string, string>
     {
         {
             "biz-guy", "res://Samples/VisualNovel/Sprites/biz-guy.png"
@@ -162,7 +200,7 @@ public partial class VisualNovelManager : Node
     // in seconds it will take to reach that position
     public async Task MoveSprite(string actorOrSpriteName, string screenPosX = "0.5", string screenPosY = "0.5", float moveTime = 1)
     {
-        var actor = actors[actorOrSpriteName];
+        var actor = _actors[actorOrSpriteName];
         var targetPosition = GetPosition(screenPosX, screenPosY);
         double elapsed = 0f;
 
@@ -194,7 +232,7 @@ public partial class VisualNovelManager : Node
         var rect = new TextureRect();
         AddChild(rect);
         newActor.Rect = rect;
-        var texture = ResourceLoader.Load<Texture>(spriteShortNameToPath[spriteName]);
+        var texture = ResourceLoader.Load<Texture>(_spriteShortNameToPath[spriteName]);
         rect.Texture = texture;
         var originalSize = texture.GetSize();
         var targetHeight = OS.WindowSize.y;
@@ -202,20 +240,20 @@ public partial class VisualNovelManager : Node
         var sizeRatio = originalSize.x / originalSize.y;
         // clamp the actor sprite size to the screen
         rect.RectSize = new Vector2(targetHeight * sizeRatio, targetHeight);
-        actors[actorName] = newActor;
+        _actors[actorName] = newActor;
         rect.RectPosition = GetPosition(positionX, positionY);
         MoveChild(rect, 1);
     }
 
     public void HideSprite(String actorOrSpriteName)
     {
-        actors[actorOrSpriteName].Rect.Visible = false;
+        _actors[actorOrSpriteName].Rect.Visible = false;
     }
     /// flip a sprite, or force the sprite to face a direction
     public void FlipSprite(string actorOrSpriteName, string xDirection = null)
     {
         bool newFlip;
-        var rect = actors[actorOrSpriteName].Rect;
+        var rect = _actors[actorOrSpriteName].Rect;
         if (string.IsNullOrEmpty(xDirection))
         {
             newFlip = !rect.FlipH;
@@ -239,14 +277,14 @@ public partial class VisualNovelManager : Node
     }
     private void StopAudioAll()
     {
-        foreach (var player in audioPlayers)
+        foreach (var player in _audioPlayers)
         {
             if (IsInstanceValid(player))
             {
                 player.QueueFree();
             }
         }
-        audioPlayers.Clear();
+        _audioPlayers.Clear();
     }
     /// <summary>typical screen fade effect, good for transitions?
     /// usage: Fade( #hexcolor, startAlpha, endAlpha, fadeTime

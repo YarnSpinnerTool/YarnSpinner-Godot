@@ -20,7 +20,7 @@ YarnProjectPaths=[ "res://Samples/Space/Dialogue/Space_YarnProject.tres", "res:/
 
 config/name="YarnDonut"
 config/description="No Description"
-run/main_scene="res://Samples/Space/SpaceSample.tscn"
+run/main_scene="res://Samples/SampleEntryPoint.tscn"
 boot_splash/image="res://addons/YarnDonut/Editor/Icons/YarnSpinnerLogo.png"
 boot_splash/bg_color=Color( 0.0313726, 0.0705882, 0.0313726, 1 )
 config/icon="res://YarnSpinnerLogo.png"
@@ -43,6 +43,12 @@ enabled=PoolStringArray( "res://addons/YarnDonut/plugin.cfg" )
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
+theme/custom="res://Samples/sample_default_theme.tres"
+theme/custom_font="res://Samples/NotoSerifJP-Regular.tres"
+
+[locale]
+
+translations=PoolStringArray( "res://Samples/VisualNovel/Localization/VisualNovel_es.translation", "res://Samples/VisualNovel/Localization/VisualNovel_ja.translation" )
 
 [mono]
 
