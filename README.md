@@ -20,9 +20,9 @@ Working:
 * Storing a compiled yarn program, a list of errors, line metadata, and string tables.
 * Dialogue runners, commands, and functions
 * Example line view and option view 
+* Generate CSV files for localizing your dialogue. The CSV files are not in the Godot format, but they have more context fields than Godot CSVS, and YarnDonut handles parsing and generating the CSVs, and converting them into Godot `.translation` files.
 
 TODO:
-* Generate Godot localization CSV files from yarn Localization resources
 * Bug fixes / resilience
 * Clean up code comments
 * Update code to kill all running async tasks within the example LineView
