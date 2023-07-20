@@ -458,7 +458,6 @@ namespace YarnDonut.Editor
                 project.ProjectErrors = Array.Empty<YarnProjectError>();
 
                 CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
-                project.localizationType = LocalizationType.YarnInternal;
 
                 using (var memoryStream = new MemoryStream())
                 using (var outputStream = new CodedOutputStream(memoryStream))

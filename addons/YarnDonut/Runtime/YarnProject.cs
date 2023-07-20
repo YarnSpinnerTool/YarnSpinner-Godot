@@ -62,8 +62,6 @@ namespace YarnDonut
         [Export]
         public LineMetadata lineMetadata = null;
 
-        public LocalizationType localizationType;
-
         [Export]
         public FunctionInfo[] ListOfFunctions;
 
@@ -222,11 +220,5 @@ namespace YarnDonut
                 return cachedProgram;
             }
         }
-    }
-
-    public enum LocalizationType
-    {
-        YarnInternal,
-        Unity,
     }
 }
