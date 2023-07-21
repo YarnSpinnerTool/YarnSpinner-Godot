@@ -4,8 +4,10 @@ colorID: 0
 position: 0,0
 ---
 
-// sets background image to sprite called "bg_office"
-<<Scene bg_office>>
+// sets background image to sprite called "bg_office" 
+// note: this command uses the [YarnCommand] attribute instead of AddCommandHandler, so 
+// the node name must be specified - in this case VisualNovelManager
+<<Scene VisualNovelManager bg_office>>
 // start playing audioclip "ambient_birds" at 50% volume, loop forever
 <<PlayAudio ambient_birds 0.5 loop>>
 

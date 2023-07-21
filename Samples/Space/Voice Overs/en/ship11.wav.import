@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/ship11.wav-c4960e36efa52082ed1bfc6bdc0346eb.sample"
+
+[deps]
+
+source_file="res://Samples/Space/Voice Overs/en/ship11.wav"
+dest_files=[ "res://.import/ship11.wav-c4960e36efa52082ed1bfc6bdc0346eb.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

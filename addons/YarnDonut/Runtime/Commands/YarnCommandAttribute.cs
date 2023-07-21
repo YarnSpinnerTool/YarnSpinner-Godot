@@ -45,9 +45,8 @@ namespace YarnDonut
     /// name of an object.
     /// </para>
     /// <para>
-    /// By default, it checks for any <see cref="GameObject"/>s in the scene. If
-    /// one is found, it is checked to see if any of the <see
-    /// cref="Godot.Node"/>s attached to the class has a <see
+    /// By default, it checks for any <see cref="Node"/>s in the scene. If
+    /// one is found, it is checked to see if the script attached to the Node has a <see
     /// cref="YarnCommandAttribute"/> whose <see
     /// cref="YarnCommandAttribute.CommandString"/> matching the first word of
     /// the command.
@@ -67,14 +66,14 @@ namespace YarnDonut
     /// as parameters.
     /// </item>
     /// <item>
-    /// If a parameter is a <see cref="GameObject"/>, we look up the object
-    /// using <see cref="GameObject.Find(string)"/>. As per the API, the game
+    /// If a parameter is a <see cref="Godot.Node"/>, we look up the object
+    /// using <see cref="Godot.Node.FindNode"/>. As per the API, the game
     /// object must be active.
     /// </item>
     /// <item>
     /// If a parameter is assignable to <see cref="Component"/>, we will locate
     /// the component based on the name of the object. As per the API of <see
-    /// cref="GameObject.Find(string)"/>, the game object must be active. If
+    /// cref="Godot.Node.FindNode"/>, the game object must be in the scene tree. If
     /// you'd like to have a custom injector for a parameter, use the <see
     /// cref="YarnParameterAttribute"/>.
     /// </item>

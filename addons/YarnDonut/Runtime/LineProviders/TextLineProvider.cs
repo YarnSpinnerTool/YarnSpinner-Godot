@@ -7,6 +7,7 @@ namespace YarnDonut
     {
         /// <summary>Specifies the language code to use for text content
         /// for this <see cref="TextLineProvider"/>.
+        /// </summary>
         [Language]
         [Export] public string textLanguageCode = System.Globalization.CultureInfo.CurrentCulture.Name;
 

@@ -83,17 +83,17 @@ Name = "Int"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=19]
-resource_name = "Start_line:01942dd"
+[sub_resource type="Resource" id=12]
+resource_name = "Start_line:07ee50d"
 script = ExtResource( 4 )
 Language = "en-US"
-ID = "line:01942dd"
-Text = "Eve: ... It's fine. Thanks. Now leave me alone."
+ID = "line:07ee50d"
+Text = "A VISUAL NOVEL EXAMPLE"
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "37"
-Lock = "d9e33ebb"
+LineNumber = "14"
+Lock = "243448f9"
 Comment = ""
 
 [sub_resource type="Resource" id=13]
@@ -105,86 +105,8 @@ Text = "Eve: Finally, a quiet day at the office. Maybe I'll be able to get some 
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "17"
+LineNumber = "19"
 Lock = "498c5529"
-Comment = ""
-
-[sub_resource type="Resource" id=26]
-resource_name = "Start_line:04432b5"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:04432b5"
-Text = "Eve: Wait... where's my laptop? It's not here."
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "56"
-Lock = "3a394f4f"
-Comment = ""
-
-[sub_resource type="Resource" id=21]
-resource_name = "Start_line:05eb26a"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:05eb26a"
-Text = "Adam: Do you think YarnDonut is easy to use?"
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "39"
-Lock = "5bfcb4b2"
-Comment = ""
-
-[sub_resource type="Resource" id=28]
-resource_name = "Start_line:062467b"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:062467b"
-Text = "Eve: ADDDDAAAMMMMMMM!!!"
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "63"
-Lock = "3c0876b7"
-Comment = ""
-
-[sub_resource type="Resource" id=15]
-resource_name = "Start_line:0721506"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:0721506"
-Text = "Eve: Oh no..."
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "27"
-Lock = "62b75da4"
-Comment = ""
-
-[sub_resource type="Resource" id=24]
-resource_name = "Start_line:0794753"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:0794753"
-Text = "Eve: Ok, now to finally write that visual novel."
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "48"
-Lock = "3a4e6cf6"
-Comment = ""
-
-[sub_resource type="Resource" id=12]
-resource_name = "Start_line:07ee50d"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:07ee50d"
-Text = "A VISUAL NOVEL EXAMPLE"
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "12"
-Lock = "243448f9"
 Comment = ""
 
 [sub_resource type="Resource" id=14]
@@ -196,34 +118,21 @@ Text = "Adam: Hey Eve! I have a question!"
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "26"
+LineNumber = "28"
 Lock = "459fb170"
 Comment = ""
 
-[sub_resource type="Resource" id=17]
-resource_name = "Start_line:09f21f4"
+[sub_resource type="Resource" id=15]
+resource_name = "Start_line:0721506"
 script = ExtResource( 4 )
 Language = "en-US"
-ID = "line:09f21f4"
-Text = "Eve: WHAT DO YOU WANT???"
+ID = "line:0721506"
+Text = "Eve: Oh no..."
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "35"
-Lock = "0e3efc57"
-Comment = ""
-
-[sub_resource type="Resource" id=27]
-resource_name = "Start_line:0a21105"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:0a21105"
-Text = "Eve: Adam! Have you seen my laptop???"
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "58"
-Lock = "8b7f1f59"
+LineNumber = "29"
+Lock = "62b75da4"
 Comment = ""
 
 [sub_resource type="Resource" id=16]
@@ -235,8 +144,21 @@ Text = "Eve gets upset with Adam"
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "33"
+LineNumber = "35"
 Lock = "8ace03d4"
+Comment = ""
+
+[sub_resource type="Resource" id=17]
+resource_name = "Start_line:09f21f4"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:09f21f4"
+Text = "Eve: WHAT DO YOU WANT???"
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "37"
+Lock = "0e3efc57"
 Comment = ""
 
 [sub_resource type="Resource" id=18]
@@ -248,21 +170,21 @@ Text = "Adam: I just wanted to see if you liked using YarnDonut."
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "36"
+LineNumber = "38"
 Lock = "1714374d"
 Comment = ""
 
-[sub_resource type="Resource" id=25]
-resource_name = "Start_line:0c39b43"
+[sub_resource type="Resource" id=19]
+resource_name = "Start_line:01942dd"
 script = ExtResource( 4 )
 Language = "en-US"
-ID = "line:0c39b43"
-Text = "Eve: I can finally write my epic romance about -"
+ID = "line:01942dd"
+Text = "Eve: ... It's fine. Thanks. Now leave me alone."
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "51"
-Lock = "75318ced"
+LineNumber = "39"
+Lock = "d9e33ebb"
 Comment = ""
 
 [sub_resource type="Resource" id=20]
@@ -274,34 +196,21 @@ Text = "Adam asks Eve a question"
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "38"
+LineNumber = "40"
 Lock = "8dc9fa94"
 Comment = ""
 
-[sub_resource type="Resource" id=23]
-resource_name = "Start_line:0cb4316"
+[sub_resource type="Resource" id=21]
+resource_name = "Start_line:05eb26a"
 script = ExtResource( 4 )
 Language = "en-US"
-ID = "line:0cb4316"
-Text = "Adam: Oh, I didn't realize you were busy. Sorry."
+ID = "line:05eb26a"
+Text = "Adam: Do you think YarnDonut is easy to use?"
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
 LineNumber = "41"
-Lock = "0ed8f46b"
-Comment = ""
-
-[sub_resource type="Resource" id=29]
-resource_name = "Start_line:0d7e78e"
-script = ExtResource( 4 )
-Language = "en-US"
-ID = "line:0d7e78e"
-Text = "THE END."
-Original = null
-File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
-Node = "Start"
-LineNumber = "67"
-Lock = "f953533f"
+Lock = "5bfcb4b2"
 Comment = ""
 
 [sub_resource type="Resource" id=22]
@@ -313,8 +222,99 @@ Text = "Eve: Not when you're bothering me."
 Original = null
 File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
 Node = "Start"
-LineNumber = "40"
+LineNumber = "42"
 Lock = "37abe891"
+Comment = ""
+
+[sub_resource type="Resource" id=23]
+resource_name = "Start_line:0cb4316"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:0cb4316"
+Text = "Adam: Oh, I didn't realize you were busy. Sorry."
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "43"
+Lock = "0ed8f46b"
+Comment = ""
+
+[sub_resource type="Resource" id=24]
+resource_name = "Start_line:0794753"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:0794753"
+Text = "Eve: Ok, now to finally write that visual novel."
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "50"
+Lock = "3a4e6cf6"
+Comment = ""
+
+[sub_resource type="Resource" id=25]
+resource_name = "Start_line:0c39b43"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:0c39b43"
+Text = "Eve: I can finally write my epic romance about -"
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "53"
+Lock = "75318ced"
+Comment = ""
+
+[sub_resource type="Resource" id=26]
+resource_name = "Start_line:04432b5"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:04432b5"
+Text = "Eve: Wait... where's my laptop? It's not here."
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "58"
+Lock = "3a394f4f"
+Comment = ""
+
+[sub_resource type="Resource" id=27]
+resource_name = "Start_line:0a21105"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:0a21105"
+Text = "Eve: Adam! Have you seen my laptop???"
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "60"
+Lock = "8b7f1f59"
+Comment = ""
+
+[sub_resource type="Resource" id=28]
+resource_name = "Start_line:062467b"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:062467b"
+Text = "Eve: ADDDDAAAMMMMMMM!!!"
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "65"
+Lock = "3c0876b7"
+Comment = ""
+
+[sub_resource type="Resource" id=29]
+resource_name = "Start_line:0d7e78e"
+script = ExtResource( 4 )
+Language = "en-US"
+ID = "line:0d7e78e"
+Text = "THE END."
+Original = null
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "69"
+Lock = "f953533f"
 Comment = ""
 
 [sub_resource type="Resource" id=30]
@@ -357,7 +357,7 @@ script = ExtResource( 1 )
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
-CompiledYarnProgramBase64 = "ErgLCgVTdGFydBKuCwoFU3RhcnQSHAgDEhEKD1NjZW5lIGJnX29mZmljZRIFHQAAAAASLQgDEiIKIFBsYXlBdWRpbyBhbWJpZW50X2JpcmRzIDAuNSBsb29wEgUdAAAAABIZCAISDgoMbGluZTowN2VlNTBkEgUdAAAAABIwCAMSJQojQWN0IEV2ZSBjb29sLWdpcmwgbGVmdCBjZW50ZXIgZ3JlZW4SBR0AAAAAEhkIAhIOCgxsaW5lOjAzYTlmNmQSBR0AAAAAEi4IAxIjCiFBY3QgQWRhbSBiaXotZ3V5IDEuMjUgdG9wICMyMjY2NzcSBR0AAAAAEicIAxIcChpNb3ZlIEFkYW0gcmlnaHQgY2VudGVyIDAuNRIFHQAAAAASKwgDEiAKHlBsYXlBdWRpbyBtdXNpY19mdW5ueSAxLjAgbG9vcBIFHQAAAAASGQgCEg4KDGxpbmU6MDdmNGVhYxIFHQAAAAASGQgCEg4KDGxpbmU6MDcyMTUwNhIFHQAAAAASGwgDEhAKDkZsaXAgRXZlIHJpZ2h0EgUdAAAAABI5CAQSDgoMbGluZTowYjUyODQzEhoKGEwyc2hvcnRjdXRvcHRpb25fU3RhcnRfMRIFHQAAAAASAhAAEjkIBBIOCgxsaW5lOjBjNDgxZjgSGgoYTDNzaG9ydGN1dG9wdGlvbl9TdGFydF8yEgUdAAAAABICEAASAggFEgIIARIaCAMSDwoNU2hha2UgRXZlIDEuMBIFHQAAAAASGQgCEg4KDGxpbmU6MDlmMjFmNBIFHQAAAAASGQgCEg4KDGxpbmU6MGI3YmU2MRIFHQAAAAASGQgCEg4KDGxpbmU6MDE5NDJkZBIFHQAAAAASDxINCgtMMWdyb3VwX2VuZBIZCAISDgoMbGluZTowNWViMjZhEgUdAAAAABIZCAISDgoMbGluZTowZThjZTc5EgUdAAAAABIZCAISDgoMbGluZTowY2I0MzE2EgUdAAAAABIPEg0KC0wxZ3JvdXBfZW5kEgIICxIWCAMSCwoJSGlkZSBBZGFtEgUdAAAAABIZCAMSDgoMU3RvcEF1ZGlvQWxsEgUdAAAAABIZCAISDgoMbGluZTowNzk0NzUzEgUdAAAAABIVCAMSCgoIRmxpcCBFdmUSBR0AAAAAEi4IAxIjCiFQbGF5QXVkaW8gbXVzaWNfcm9tYW50aWMgMS4wIGxvb3ASBR0AAAAAEhkIAhIOCgxsaW5lOjBjMzliNDMSBR0AAAAAEhkIAxIOCgxTdG9wQXVkaW9BbGwSBR0AAAAAEhUIAxIKCghGbGlwIEV2ZRIFHQAAAAASFQgDEgoKCHdhaXQgMS41EgUdAAAAABIVCAMSCgoIRmxpcCBFdmUSBR0AAAAAEhkIAhIOCgxsaW5lOjA0NDMyYjUSBR0AAAAAEhoIAxIPCg1TaGFrZSBFdmUgMS4wEgUdAAAAABIZCAISDgoMbGluZTowYTIxMTA1EgUdAAAAABIrCAMSIAoeUGxheUF1ZGlvIG11c2ljX2Z1bm55IDEuMCBsb29wEgUdAAAAABIVCAMSCgoIRmxpcCBFdmUSBR0AAAAAEiUIAxIaChhNb3ZlIEV2ZSAxLjI1IGNlbnRlciAxLjASBR0AAAAAEhkIAhIOCgxsaW5lOjA2MjQ2N2ISBR0AAAAAEiQIAxIZChdGYWRlIDAwMDAwMCAwLjAgMS4wIDIuMBIFHQAAAAASGQgCEg4KDGxpbmU6MGQ3ZTc4ZRIFHQAAAAASAggPGgQKAkwwGhwKGEwyc2hvcnRjdXRvcHRpb25fU3RhcnRfMRAPGhwKGEwzc2hvcnRjdXRvcHRpb25fU3RhcnRfMhAUGg8KC0wxZ3JvdXBfZW5kEBgyDgoFdGl0bGUSBVN0YXJ0MgYKBHRhZ3MyDAoHY29sb3JJRBIBMDIPCghwb3NpdGlvbhIDMCww"
+CompiledYarnProgramBase64 = "EssLCgVTdGFydBLBCwoFU3RhcnQSLwgDEiQKIlNjZW5lIFZpc3VhbE5vdmVsTWFuYWdlciBiZ19vZmZpY2USBR0AAAAAEi0IAxIiCiBQbGF5QXVkaW8gYW1iaWVudF9iaXJkcyAwLjUgbG9vcBIFHQAAAAASGQgCEg4KDGxpbmU6MDdlZTUwZBIFHQAAAAASMAgDEiUKI0FjdCBFdmUgY29vbC1naXJsIGxlZnQgY2VudGVyIGdyZWVuEgUdAAAAABIZCAISDgoMbGluZTowM2E5ZjZkEgUdAAAAABIuCAMSIwohQWN0IEFkYW0gYml6LWd1eSAxLjI1IHRvcCAjMjI2Njc3EgUdAAAAABInCAMSHAoaTW92ZSBBZGFtIHJpZ2h0IGNlbnRlciAwLjUSBR0AAAAAEisIAxIgCh5QbGF5QXVkaW8gbXVzaWNfZnVubnkgMS4wIGxvb3ASBR0AAAAAEhkIAhIOCgxsaW5lOjA3ZjRlYWMSBR0AAAAAEhkIAhIOCgxsaW5lOjA3MjE1MDYSBR0AAAAAEhsIAxIQCg5GbGlwIEV2ZSByaWdodBIFHQAAAAASOQgEEg4KDGxpbmU6MGI1Mjg0MxIaChhMMnNob3J0Y3V0b3B0aW9uX1N0YXJ0XzESBR0AAAAAEgIQABI5CAQSDgoMbGluZTowYzQ4MWY4EhoKGEwzc2hvcnRjdXRvcHRpb25fU3RhcnRfMhIFHQAAAAASAhAAEgIIBRICCAESGggDEg8KDVNoYWtlIEV2ZSAxLjASBR0AAAAAEhkIAhIOCgxsaW5lOjA5ZjIxZjQSBR0AAAAAEhkIAhIOCgxsaW5lOjBiN2JlNjESBR0AAAAAEhkIAhIOCgxsaW5lOjAxOTQyZGQSBR0AAAAAEg8SDQoLTDFncm91cF9lbmQSGQgCEg4KDGxpbmU6MDVlYjI2YRIFHQAAAAASGQgCEg4KDGxpbmU6MGU4Y2U3ORIFHQAAAAASGQgCEg4KDGxpbmU6MGNiNDMxNhIFHQAAAAASDxINCgtMMWdyb3VwX2VuZBICCAsSFggDEgsKCUhpZGUgQWRhbRIFHQAAAAASGQgDEg4KDFN0b3BBdWRpb0FsbBIFHQAAAAASGQgCEg4KDGxpbmU6MDc5NDc1MxIFHQAAAAASFQgDEgoKCEZsaXAgRXZlEgUdAAAAABIuCAMSIwohUGxheUF1ZGlvIG11c2ljX3JvbWFudGljIDEuMCBsb29wEgUdAAAAABIZCAISDgoMbGluZTowYzM5YjQzEgUdAAAAABIZCAMSDgoMU3RvcEF1ZGlvQWxsEgUdAAAAABIVCAMSCgoIRmxpcCBFdmUSBR0AAAAAEhUIAxIKCgh3YWl0IDEuNRIFHQAAAAASFQgDEgoKCEZsaXAgRXZlEgUdAAAAABIZCAISDgoMbGluZTowNDQzMmI1EgUdAAAAABIaCAMSDwoNU2hha2UgRXZlIDEuMBIFHQAAAAASGQgCEg4KDGxpbmU6MGEyMTEwNRIFHQAAAAASKwgDEiAKHlBsYXlBdWRpbyBtdXNpY19mdW5ueSAxLjAgbG9vcBIFHQAAAAASFQgDEgoKCEZsaXAgRXZlEgUdAAAAABIlCAMSGgoYTW92ZSBFdmUgMS4yNSBjZW50ZXIgMS4wEgUdAAAAABIZCAISDgoMbGluZTowNjI0NjdiEgUdAAAAABIkCAMSGQoXRmFkZSAwMDAwMDAgMC4wIDEuMCAyLjASBR0AAAAAEhkIAhIOCgxsaW5lOjBkN2U3OGUSBR0AAAAAEgIIDxoECgJMMBocChhMMnNob3J0Y3V0b3B0aW9uX1N0YXJ0XzEQDxocChhMM3Nob3J0Y3V0b3B0aW9uX1N0YXJ0XzIQFBoPCgtMMWdyb3VwX2VuZBAYMg4KBXRpdGxlEgVTdGFydDIGCgR0YWdzMgwKB2NvbG9ySUQSATAyDwoIcG9zaXRpb24SAzAsMA=="
 SourceScripts = [ "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn" ]
 baseLocalization = SubResource( 30 )
 LocaleCodeToCSVPath = {

@@ -112,8 +112,8 @@ namespace YarnDonut
 
         /// <summary>
         /// Truncates the number into an int. This is different to
-        /// <see cref="floor(float)"/> because it rounds to zero rather than
-        /// <see cref="Mathf.NegativeInfinity"/>.
+        /// <see cref="Floor(float)"/> because it rounds to zero rather than
+        /// negative <see cref="Mathf.Inf"/>.
         /// </summary>
         /// <param name="num">Number to truncate.</param>
         /// <returns>Truncated float value as int.</returns>

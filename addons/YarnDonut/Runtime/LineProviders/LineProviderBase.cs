@@ -17,11 +17,7 @@ namespace YarnDonut
     /// </para>
     /// <para>
     /// Subclasses of this abstract class may return subclasses of <see
-    /// cref="LocalizedLine"/>. For example, <see
-    /// cref="AudioLineProvider"/> returns an <see
-    /// cref="AudioLocalizedLine"/>, which includes <see
-    /// cref="AudioClip"/>; views that make use of audio can then access
-    /// this additional data.
+    /// cref="LocalizedLine"/>. 
     /// </para>
     /// </remarks>
     /// <seealso cref="DialogueViewBase"/>

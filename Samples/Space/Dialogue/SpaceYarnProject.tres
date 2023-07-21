@@ -85,18 +85,6 @@ Name = "Int"
 ReturnType = "-> Int32"
 Parameters = PoolStringArray( "num" )
 
-[sub_resource type="Resource" id=12]
-resource_name = "$sally_warning"
-script = ExtResource( 4 )
-name = "$sally_warning"
-typeName = "Bool"
-defaultValueBool = false
-defaultValueNumber = 0.0
-defaultValueString = null
-description = "Implicitly declared in Sally.yarn, node Sally"
-isImplicit = true
-sourceYarnAssetPath = "res://Samples/Space/Dialogue/Sally.yarn"
-
 [sub_resource type="Resource" id=13]
 resource_name = "$should_see_ship"
 script = ExtResource( 4 )
@@ -105,73 +93,33 @@ typeName = "Bool"
 defaultValueBool = false
 defaultValueNumber = 0.0
 defaultValueString = null
-description = "Implicitly declared in Sally.yarn, node Sally_Watch"
-isImplicit = true
-sourceYarnAssetPath = "res://Samples/Space/Dialogue/Sally.yarn"
+description = "Ship.yarn, node Ship, line 14"
+isImplicit = false
+sourceYarnAssetPath = "res://Samples/Space/Dialogue/Variables.yarn"
 
-[sub_resource type="Resource" id=21]
-resource_name = "Sally_line:0a7e39"
+[sub_resource type="Resource" id=12]
+resource_name = "$sally_warning"
+script = ExtResource( 4 )
+name = "$sally_warning"
+typeName = "Bool"
+defaultValueBool = false
+defaultValueNumber = 0.0
+defaultValueString = null
+description = "Ship.yarn, node Ship, line 14"
+isImplicit = false
+sourceYarnAssetPath = "res://Samples/Space/Dialogue/Variables.yarn"
+
+[sub_resource type="Resource" id=14]
+resource_name = "Sally_line:794945"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:0a7e39"
-Text = "Sorry about the console."
+ID = "line:794945"
+Text = "Player: Hey, Sally."
 Original = null
 File = "res://Samples/Space/Dialogue/Sally.yarn"
 Node = "Sally"
-LineNumber = "18"
-Lock = "6c4c5826"
-Comment = ""
-
-[sub_resource type="Resource" id=19]
-resource_name = "Sally_line:0af7f86"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:0af7f86"
-Text = "Sally: Hi."
-Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "13"
-Lock = "41aa2f03"
-Comment = ""
-
-[sub_resource type="Resource" id=22]
-resource_name = "Sally_line:0facf7"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:0facf7"
-Text = "See you later."
-Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "20"
-Lock = "e241648d"
-Comment = ""
-
-[sub_resource type="Resource" id=26]
-resource_name = "Sally_Watch_line:1fea6c"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:1fea6c"
-Text = "Player: Already done!"
-Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "34"
-Lock = "599299b9"
-Comment = ""
-
-[sub_resource type="Resource" id=24]
-resource_name = "Sally_Watch_line:24c418"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:24c418"
-Text = "Sally: Same old nebula, doing the same old thing."
-Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "30"
-Lock = "d3a88d93"
+LineNumber = "7"
+Lock = "2bc75173"
 Comment = ""
 
 [sub_resource type="Resource" id=15]
@@ -200,18 +148,44 @@ LineNumber = "9"
 Lock = "35e4db4c"
 Comment = ""
 
-[sub_resource type="Resource" id=30]
-resource_name = "Ship_line:5837f2"
+[sub_resource type="Resource" id=17]
+resource_name = "Sally_line:dcc2bc"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:5837f2"
-Text = "Ship: Hey, friend."
+ID = "line:dcc2bc"
+Text = "Sally: Don't do that."
 Original = null
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "7"
-Lock = "b709c42e"
-Comment = "Line metadata: firstline"
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "10"
+Lock = "ac04c57a"
+Comment = ""
+
+[sub_resource type="Resource" id=18]
+resource_name = "Sally_line:a8e70c"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:a8e70c"
+Text = "Player: Hey."
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "12"
+Lock = "52e9bd6e"
+Comment = ""
+
+[sub_resource type="Resource" id=19]
+resource_name = "Sally_line:0af7f86"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:0af7f86"
+Text = "Sally: Hi."
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "13"
+Lock = "41aa2f03"
+Comment = ""
 
 [sub_resource type="Resource" id=20]
 resource_name = "Sally_line:5d7a7c"
@@ -224,6 +198,84 @@ File = "res://Samples/Space/Dialogue/Sally.yarn"
 Node = "Sally"
 LineNumber = "16"
 Lock = "5a28d06b"
+Comment = ""
+
+[sub_resource type="Resource" id=21]
+resource_name = "Sally_line:0a7e39"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:0a7e39"
+Text = "Sorry about the console."
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "18"
+Lock = "6c4c5826"
+Comment = ""
+
+[sub_resource type="Resource" id=22]
+resource_name = "Sally_line:0facf7"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:0facf7"
+Text = "See you later."
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally"
+LineNumber = "20"
+Lock = "e241648d"
+Comment = ""
+
+[sub_resource type="Resource" id=23]
+resource_name = "Sally_Watch_line:8c3f98"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:8c3f98"
+Text = "Sally: Not really."
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "29"
+Lock = "c6bcc3d6"
+Comment = ""
+
+[sub_resource type="Resource" id=24]
+resource_name = "Sally_Watch_line:24c418"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:24c418"
+Text = "Sally: Same old nebula, doing the same old thing."
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "30"
+Lock = "d3a88d93"
+Comment = ""
+
+[sub_resource type="Resource" id=25]
+resource_name = "Sally_Watch_line:df4eaf"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:df4eaf"
+Text = "Sally: Oh, Ship wanted to see you. Go say hi to it."
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "31"
+Lock = "5f2cc23a"
+Comment = ""
+
+[sub_resource type="Resource" id=26]
+resource_name = "Sally_Watch_line:1fea6c"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:1fea6c"
+Text = "Player: Already done!"
+Original = null
+File = "res://Samples/Space/Dialogue/Sally.yarn"
+Node = "Sally_Watch"
+LineNumber = "34"
+Lock = "599299b9"
 Comment = ""
 
 [sub_resource type="Resource" id=27]
@@ -252,45 +304,6 @@ LineNumber = "44"
 Lock = "29ecd7c6"
 Comment = ""
 
-[sub_resource type="Resource" id=14]
-resource_name = "Sally_line:794945"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:794945"
-Text = "Player: Hey, Sally."
-Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "7"
-Lock = "2bc75173"
-Comment = ""
-
-[sub_resource type="Resource" id=23]
-resource_name = "Sally_Watch_line:8c3f98"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:8c3f98"
-Text = "Sally: Not really."
-Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "29"
-Lock = "c6bcc3d6"
-Comment = ""
-
-[sub_resource type="Resource" id=18]
-resource_name = "Sally_line:a8e70c"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:a8e70c"
-Text = "Player: Hey."
-Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "12"
-Lock = "52e9bd6e"
-Comment = ""
-
 [sub_resource type="Resource" id=29]
 resource_name = "Sally_Sorry_line:d7df49"
 script = ExtResource( 5 )
@@ -304,30 +317,82 @@ LineNumber = "52"
 Lock = "0ce38920"
 Comment = ""
 
-[sub_resource type="Resource" id=17]
-resource_name = "Sally_line:dcc2bc"
+[sub_resource type="Resource" id=30]
+resource_name = "Ship_line:5837f2"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:dcc2bc"
-Text = "Sally: Don't do that."
+ID = "line:5837f2"
+Text = "Ship: Hey, friend."
 Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally"
-LineNumber = "10"
-Lock = "ac04c57a"
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "7"
+Lock = "b709c42e"
+Comment = "Line metadata: firstline"
+
+[sub_resource type="Resource" id=31]
+resource_name = "Ship_line:ship09"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship09"
+Text = "Player: Hi, Ship."
+Original = null
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "8"
+Lock = "0f857079"
 Comment = ""
 
-[sub_resource type="Resource" id=25]
-resource_name = "Sally_Watch_line:df4eaf"
+[sub_resource type="Resource" id=32]
+resource_name = "Ship_line:ship10"
 script = ExtResource( 5 )
 Language = "en-US"
-ID = "line:df4eaf"
-Text = "Sally: Oh, Ship wanted to see you. Go say hi to it."
+ID = "line:ship10"
+Text = "Player: How's space?"
 Original = null
-File = "res://Samples/Space/Dialogue/Sally.yarn"
-Node = "Sally_Watch"
-LineNumber = "31"
-Lock = "5f2cc23a"
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "9"
+Lock = "a741d6b2"
+Comment = ""
+
+[sub_resource type="Resource" id=33]
+resource_name = "Ship_line:ship11"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship11"
+Text = "Ship: Oh, man."
+Original = null
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "10"
+Lock = "778a5a83"
+Comment = ""
+
+[sub_resource type="Resource" id=34]
+resource_name = "Ship_line:ship12"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship12"
+Text = "Ship: It's HUGE!"
+Original = null
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "12"
+Lock = "88f3fb99"
+Comment = ""
+
+[sub_resource type="Resource" id=35]
+resource_name = "Ship_line:ship13"
+script = ExtResource( 5 )
+Language = "en-US"
+ID = "line:ship13"
+Text = "Ship: Hey!!"
+Original = null
+File = "res://Samples/Space/Dialogue/Ship.yarn"
+Node = "Ship"
+LineNumber = "16"
+Lock = "5a889e0a"
 Comment = ""
 
 [sub_resource type="Resource" id=36]
@@ -408,71 +473,6 @@ LineNumber = "31"
 Lock = "727bb97b"
 Comment = ""
 
-[sub_resource type="Resource" id=31]
-resource_name = "Ship_line:ship09"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship09"
-Text = "Player: Hi, Ship."
-Original = null
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "8"
-Lock = "0f857079"
-Comment = ""
-
-[sub_resource type="Resource" id=32]
-resource_name = "Ship_line:ship10"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship10"
-Text = "Player: How's space?"
-Original = null
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "9"
-Lock = "a741d6b2"
-Comment = ""
-
-[sub_resource type="Resource" id=33]
-resource_name = "Ship_line:ship11"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship11"
-Text = "Ship: Oh, man."
-Original = null
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "10"
-Lock = "778a5a83"
-Comment = ""
-
-[sub_resource type="Resource" id=34]
-resource_name = "Ship_line:ship12"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship12"
-Text = "Ship: It's HUGE!"
-Original = null
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "12"
-Lock = "88f3fb99"
-Comment = ""
-
-[sub_resource type="Resource" id=35]
-resource_name = "Ship_line:ship13"
-script = ExtResource( 5 )
-Language = "en-US"
-ID = "line:ship13"
-Text = "Ship: Hey!!"
-Original = null
-File = "res://Samples/Space/Dialogue/Ship.yarn"
-Node = "Ship"
-LineNumber = "16"
-Lock = "5a889e0a"
-Comment = ""
-
 [sub_resource type="Resource" id=42]
 resource_name = "Default (en-US)"
 script = ExtResource( 2 )
@@ -532,13 +532,13 @@ script = ExtResource( 1 )
 LastImportHadImplicitStringIDs = false
 LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
-CompiledYarnProgramBase64 = "EscLCgVTYWxseRK9CwoFU2FsbHkSCwgGEgcKBVNhbGx5EgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSBggIEgIQABIJCAcSBR0AAABAEhIIDBIOCgxCb29sLkVxdWFsVG8SEggKEg4KDEwyc2tpcGNsYXVzZRIYCAISDQoLbGluZTo3OTQ5NDUSBR0AAAAAEhgIAhINCgtsaW5lOjJkYzM5YhIFHQAAAAASGAgCEg0KC2xpbmU6MzRkZTJmEgUdAAAAABIYCAISDQoLbGluZTpkY2MyYmMSBR0AAAAAEgsSCQoHTDFlbmRpZhICCAsSGAgCEg0KC2xpbmU6YThlNzBjEgUdAAAAABIZCAISDgoMbGluZTowYWY3Zjg2EgUdAAAAABILEgkKB0wxZW5kaWYSEQgGEg0KC1NhbGx5X1dhdGNoEgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSCQgHEgUdAACAPxIOCAwSCgoIQm9vbC5Ob3QSOAgEEg0KC2xpbmU6NWQ3YTdjEhoKGEw1c2hvcnRjdXRvcHRpb25fU2FsbHlfMRIFHQAAAAASAhABEhQIDRIQCg4kc2FsbHlfd2FybmluZxIRCAYSDQoLU2FsbHlfU29ycnkSCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIJCAcSBR0AAIA/Eg4IDBIKCghCb29sLk5vdBIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBI4CAQSDQoLbGluZTowYTdlMzkSGgoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yEgUdAAAAABICEAESOAgEEg0KC2xpbmU6MGZhY2Y3EhoKGEw3c2hvcnRjdXRvcHRpb25fU2FsbHlfMxIFHQAAAAASAhAAEgIIBRICCAESIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEhEIBhINCgtTYWxseV9XYXRjaBICCBASDxINCgtMNGdyb3VwX2VuZBIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSEQgGEg0KC1NhbGx5X1NvcnJ5EgIIEBIPEg0KC0w0Z3JvdXBfZW5kEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxIQCAYSDAoKU2FsbHlfRXhpdBICCBASDxINCgtMNGdyb3VwX2VuZBICCAsSIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDBoLCgdMMWVuZGlmEBAaHAoYTDVzaG9ydGN1dG9wdGlvbl9TYWxseV8xECIaHAoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yECsaHAoYTDdzaG9ydGN1dG9wdGlvbl9TYWxseV8zEDQaDwoLTDRncm91cF9lbmQQPTIOCgV0aXRsZRIFU2FsbHkyBgoEdGFnczIMCgdjb2xvcklEEgEwMhMKCHBvc2l0aW9uEgc1MjQsMTExEqMECgtTYWxseV9XYXRjaBKTBAoLU2FsbHlfV2F0Y2gSGAgCEg0KC2xpbmU6OGMzZjk4EgUdAAAAABIYCAISDQoLbGluZToyNGM0MTgSBR0AAAAAEhgIAhINCgtsaW5lOmRmNGVhZhIFHQAAAAASBggIEgIQARIWCA4SEgoQJHNob3VsZF9zZWVfc2hpcBICCAsSCggGEgYKBFNoaXASCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIGCAgSAhABEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxITCAoSDwoNTDEwc2tpcGNsYXVzZRIYCAISDQoLbGluZToxZmVhNmMSBR0AAAAAEhgIAhINCgtsaW5lOjVkZjMyMxIFHQAAAAASCxIJCgdMOWVuZGlmEgIICxIpCA0SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEikIDhIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9XYXRjaBICCAsSAggPGgQKAkw4GhEKDUwxMHNraXBjbGF1c2UQEBoLCgdMOWVuZGlmEBEyFAoFdGl0bGUSC1NhbGx5X1dhdGNoMgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHNTEyLDQzMBJ/CgpTYWxseV9FeGl0EnEKClNhbGx5X0V4aXQSGAgCEg0KC2xpbmU6NjBjMjgyEgUdAAAAABICCA8aBQoDTDExMhMKBXRpdGxlEgpTYWxseV9FeGl0MgYKBHRhZ3MyDAoHY29sb3JJRBIBNjITCghwb3NpdGlvbhIHMjExLDQxNxKFAgoLU2FsbHlfU29ycnkS9QEKC1NhbGx5X1NvcnJ5EhgIAhINCgtsaW5lOmQ3ZGY0ORIFHQAAAAASKQgNEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIpCA4SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfU29ycnkSAggLEgIIDxoFCgNMMTIyFAoFdGl0bGUSC1NhbGx5X1NvcnJ5MgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHODI3LDQzORLvCQoEU2hpcBLmCQoEU2hpcBIKCAYSBgoEU2hpcBIJCAcSBR0AAIA/Eg0IDBIJCgd2aXNpdGVkEgYICBICEAASCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhIIChIOCgxMMnNraXBjbGF1c2USGAgCEg0KC2xpbmU6NTgzN2YyEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDkSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAxMBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDExEgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTISBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEgIICxIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTMSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEhYIDRISChAkc2hvdWxkX3NlZV9zaGlwEgYICBICEAESCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhQIDRIQCg4kc2FsbHlfd2FybmluZxIGCAgSAhAAEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBISCAoSDgoMTDVza2lwY2xhdXNlEhgIAhINCgtsaW5lOnNoaXAwMRIFHQAAAAASJQgDEhoKGHNldHNwcml0ZSBTaGlwRmFjZSBoYXBweRIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDAzEgUdAAAAABInCAMSHAoac2V0c3ByaXRlIFNoaXBGYWNlIG5ldXRyYWwSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAwNBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDA1EgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDYSBR0AAAAAEgYICBICEAESFAgOEhAKDiRzYWxseV93YXJuaW5nEgIICxITCAMSCAoGd2FpdCAxEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDcSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMNGVuZGlmEgIICxIiCA0SHgocJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2hpcBIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIggOEh4KHCRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNoaXASAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDxoLCgdMMWVuZGlmEBQaEAoMTDVza2lwY2xhdXNlEC4aCwoHTDRlbmRpZhAvMg0KBXRpdGxlEgRTaGlwMgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHNzIxLDEzMBoUCg4kc2FsbHlfd2FybmluZxICEAAaFgoQJHNob3VsZF9zZWVfc2hpcBICEAAaJgodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSBR0AAAAAGiwKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1dhdGNoEgUdAAAAABosCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9Tb3JyeRIFHQAAAAAaJQocJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2hpcBIFHQAAAAA="
-SourceScripts = [ "res://Samples/Space/Dialogue/Sally.yarn", "res://Samples/Space/Dialogue/Ship.yarn" ]
+CompiledYarnProgramBase64 = "EscLCgVTYWxseRK9CwoFU2FsbHkSCwgGEgcKBVNhbGx5EgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSBggIEgIQABIJCAcSBR0AAABAEhIIDBIOCgxCb29sLkVxdWFsVG8SEggKEg4KDEwyc2tpcGNsYXVzZRIYCAISDQoLbGluZTo3OTQ5NDUSBR0AAAAAEhgIAhINCgtsaW5lOjJkYzM5YhIFHQAAAAASGAgCEg0KC2xpbmU6MzRkZTJmEgUdAAAAABIYCAISDQoLbGluZTpkY2MyYmMSBR0AAAAAEgsSCQoHTDFlbmRpZhICCAsSGAgCEg0KC2xpbmU6YThlNzBjEgUdAAAAABIZCAISDgoMbGluZTowYWY3Zjg2EgUdAAAAABILEgkKB0wxZW5kaWYSEQgGEg0KC1NhbGx5X1dhdGNoEgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSCQgHEgUdAACAPxIOCAwSCgoIQm9vbC5Ob3QSOAgEEg0KC2xpbmU6NWQ3YTdjEhoKGEw1c2hvcnRjdXRvcHRpb25fU2FsbHlfMRIFHQAAAAASAhABEhQIDRIQCg4kc2FsbHlfd2FybmluZxIRCAYSDQoLU2FsbHlfU29ycnkSCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIJCAcSBR0AAIA/Eg4IDBIKCghCb29sLk5vdBIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBI4CAQSDQoLbGluZTowYTdlMzkSGgoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yEgUdAAAAABICEAESOAgEEg0KC2xpbmU6MGZhY2Y3EhoKGEw3c2hvcnRjdXRvcHRpb25fU2FsbHlfMxIFHQAAAAASAhAAEgIIBRICCAESIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEhEIBhINCgtTYWxseV9XYXRjaBICCBASDxINCgtMNGdyb3VwX2VuZBIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSEQgGEg0KC1NhbGx5X1NvcnJ5EgIIEBIPEg0KC0w0Z3JvdXBfZW5kEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxIQCAYSDAoKU2FsbHlfRXhpdBICCBASDxINCgtMNGdyb3VwX2VuZBICCAsSIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDBoLCgdMMWVuZGlmEBAaHAoYTDVzaG9ydGN1dG9wdGlvbl9TYWxseV8xECIaHAoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yECsaHAoYTDdzaG9ydGN1dG9wdGlvbl9TYWxseV8zEDQaDwoLTDRncm91cF9lbmQQPTIOCgV0aXRsZRIFU2FsbHkyBgoEdGFnczIMCgdjb2xvcklEEgEwMhMKCHBvc2l0aW9uEgc1MjQsMTExEqMECgtTYWxseV9XYXRjaBKTBAoLU2FsbHlfV2F0Y2gSGAgCEg0KC2xpbmU6OGMzZjk4EgUdAAAAABIYCAISDQoLbGluZToyNGM0MTgSBR0AAAAAEhgIAhINCgtsaW5lOmRmNGVhZhIFHQAAAAASBggIEgIQARIWCA4SEgoQJHNob3VsZF9zZWVfc2hpcBICCAsSCggGEgYKBFNoaXASCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIGCAgSAhABEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxITCAoSDwoNTDEwc2tpcGNsYXVzZRIYCAISDQoLbGluZToxZmVhNmMSBR0AAAAAEhgIAhINCgtsaW5lOjVkZjMyMxIFHQAAAAASCxIJCgdMOWVuZGlmEgIICxIpCA0SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEikIDhIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9XYXRjaBICCAsSAggPGgQKAkw4GhEKDUwxMHNraXBjbGF1c2UQEBoLCgdMOWVuZGlmEBEyFAoFdGl0bGUSC1NhbGx5X1dhdGNoMgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHNTEyLDQzMBJ/CgpTYWxseV9FeGl0EnEKClNhbGx5X0V4aXQSGAgCEg0KC2xpbmU6NjBjMjgyEgUdAAAAABICCA8aBQoDTDExMhMKBXRpdGxlEgpTYWxseV9FeGl0MgYKBHRhZ3MyDAoHY29sb3JJRBIBNjITCghwb3NpdGlvbhIHMjExLDQxNxKFAgoLU2FsbHlfU29ycnkS9QEKC1NhbGx5X1NvcnJ5EhgIAhINCgtsaW5lOmQ3ZGY0ORIFHQAAAAASKQgNEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIpCA4SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfU29ycnkSAggLEgIIDxoFCgNMMTIyFAoFdGl0bGUSC1NhbGx5X1NvcnJ5MgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHODI3LDQzORLvCQoEU2hpcBLmCQoEU2hpcBIKCAYSBgoEU2hpcBIJCAcSBR0AAIA/Eg0IDBIJCgd2aXNpdGVkEgYICBICEAASCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhIIChIOCgxMMnNraXBjbGF1c2USGAgCEg0KC2xpbmU6NTgzN2YyEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDkSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAxMBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDExEgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTISBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEgIICxIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTMSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEhYIDRISChAkc2hvdWxkX3NlZV9zaGlwEgYICBICEAESCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhQIDRIQCg4kc2FsbHlfd2FybmluZxIGCAgSAhAAEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBISCAoSDgoMTDVza2lwY2xhdXNlEhgIAhINCgtsaW5lOnNoaXAwMRIFHQAAAAASJQgDEhoKGHNldHNwcml0ZSBTaGlwRmFjZSBoYXBweRIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDAzEgUdAAAAABInCAMSHAoac2V0c3ByaXRlIFNoaXBGYWNlIG5ldXRyYWwSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAwNBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDA1EgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDYSBR0AAAAAEgYICBICEAESFAgOEhAKDiRzYWxseV93YXJuaW5nEgIICxITCAMSCAoGd2FpdCAxEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDcSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMNGVuZGlmEgIICxIiCA0SHgocJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2hpcBIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIggOEh4KHCRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNoaXASAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDxoLCgdMMWVuZGlmEBQaEAoMTDVza2lwY2xhdXNlEC4aCwoHTDRlbmRpZhAvMg0KBXRpdGxlEgRTaGlwMgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHNzIxLDEzMBIwCgdQcm9ncmFtEiUKB1Byb2dyYW0SAggPGgQKAkwwMhAKBXRpdGxlEgdQcm9ncmFtGhYKECRzaG91bGRfc2VlX3NoaXASAhAAGhQKDiRzYWxseV93YXJuaW5nEgIQABomCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIFHQAAAAAaLAojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSBR0AAAAAGiwKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgUdAAAAABolChwkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TaGlwEgUdAAAAAA=="
+SourceScripts = [ "res://Samples/Space/Dialogue/Sally.yarn", "res://Samples/Space/Dialogue/Ship.yarn", "res://Samples/Space/Dialogue/Variables.yarn" ]
 baseLocalization = SubResource( 42 )
 LocaleCodeToCSVPath = {
 }
 lineMetadata = SubResource( 44 )
 ListOfFunctions = [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ) ]
-SerializedDeclarations = [ SubResource( 12 ), SubResource( 13 ) ]
+SerializedDeclarations = [ SubResource( 13 ), SubResource( 12 ) ]
 defaultLanguage = "en-US"
 ProjectErrors = [  ]

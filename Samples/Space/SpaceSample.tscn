@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Samples/Space/Dialogue/SpaceYarnProject.tres" type="Resource" id=1]
 [ext_resource path="res://addons/YarnDonut/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=2]
@@ -8,10 +8,54 @@
 [ext_resource path="res://addons/YarnDonut/Runtime/Views/LineView.cs" type="Script" id=6]
 [ext_resource path="res://addons/YarnDonut/Runtime/Views/OptionsListView.cs" type="Script" id=7]
 [ext_resource path="res://addons/YarnDonut/Runtime/DialogueRunner.cs" type="Script" id=8]
+[ext_resource path="res://Samples/Space/Sprites/Background.jpg" type="Texture" id=9]
+[ext_resource path="res://Samples/Space/Sprites/Wall.png" type="Texture" id=10]
+[ext_resource path="res://Samples/Space/Sprites/Player.png" type="Texture" id=11]
+[ext_resource path="res://Samples/Space/Sprites/Sally.png" type="Texture" id=12]
+[ext_resource path="res://Samples/Space/Sprites/Ship.png" type="Texture" id=13]
 
 [node name="SpaceDemo" type="Node2D"]
 script = ExtResource( 3 )
 dialogueRunnerPath = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
+
+[node name="Player" type="Sprite" parent="."]
+position = Vector2( 131, 602 )
+z_index = 2
+texture = ExtResource( 11 )
+
+[node name="Sally" type="Sprite" parent="."]
+position = Vector2( 1110, 602 )
+z_index = 1
+texture = ExtResource( 12 )
+
+[node name="Ship" type="Sprite" parent="."]
+position = Vector2( 2285, 602 )
+z_index = 1
+texture = ExtResource( 13 )
+
+[node name="SpaceBackground" type="TextureRect" parent="."]
+margin_left = -310.0
+margin_top = -1216.0
+margin_right = 1290.0
+margin_bottom = -134.0
+rect_scale = Vector2( 2.12511, 2.12511 )
+texture = ExtResource( 9 )
+
+[node name="wall" type="TextureRect" parent="."]
+margin_left = -279.0
+margin_top = -323.0
+margin_right = 1769.0
+margin_bottom = 1213.0
+rect_scale = Vector2( 0.807867, 0.807867 )
+texture = ExtResource( 10 )
+
+[node name="wall2" type="TextureRect" parent="."]
+margin_left = 1374.0
+margin_top = -323.0
+margin_right = 3422.0
+margin_bottom = 1213.0
+rect_scale = Vector2( 0.807867, 0.807867 )
+texture = ExtResource( 10 )
 
 [node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
 
@@ -27,13 +71,13 @@ yarnProject = ExtResource( 1 )
 variableStoragePath = NodePath("../InMemoryVariableStorage")
 dialogueViewPaths = [ NodePath("../LineView"), NodePath("../OptionsListView") ]
 startNode = "Sally"
+startAutomatically = false
 lineProviderPath = NodePath("../TextLineProvider")
 
 [node name="VariableDebugText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer"]
 
 [node name="LineView" type="Control" parent="YarnSpinnerCanvasLayer"]
 script = ExtResource( 6 )
-viewControlPath = NodePath("ViewControl")
 useFadeEffect = false
 lineTextPath = NodePath("ViewControl/LineText")
 characterNameTextPath = NodePath("ViewControl/CharacterNameText")
@@ -61,6 +105,7 @@ modulate = Color( 0.203922, 0.192157, 0.192157, 0.458824 )
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_bottom = -279.0
 
 [node name="CharacterNameText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LineView/ViewControl"]
 self_modulate = Color( 0.321569, 0.87451, 0.254902, 1 )
@@ -87,10 +132,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-margin_left = 397.0
-margin_top = 467.0
-margin_right = 629.0
-margin_bottom = 567.0
+margin_left = 684.0
+margin_top = 219.0
+margin_right = 916.0
+margin_bottom = 319.0
 text = "Continue"
 
 [node name="OptionsListView" type="Control" parent="YarnSpinnerCanvasLayer"]

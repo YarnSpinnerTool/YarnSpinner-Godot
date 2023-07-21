@@ -50,7 +50,6 @@ public partial class VisualNovelManager : Node
         });
         _colorOverlay = GetNode<ColorRect>(_colorOverlayPath);
         _dialogueRunner = GetNode<DialogueRunner>(_dialogueRunnerPath);
-        _dialogueRunner.AddCommandHandler<string>("Scene", Scene);
         _dialogueRunner.AddCommandHandler<string, float, string>("PlayAudio", PlayAudio);
         _dialogueRunner.AddCommandHandler<string, string, string, string, string>("Act", SetActor);
         _dialogueRunner.AddCommandHandler("Move", new Func<string, string, string, float, Task>(MoveSprite));
@@ -81,7 +80,13 @@ public partial class VisualNovelManager : Node
             "bg_office", "res://Samples/VisualNovel/Sprites/bg_office.png"
         }
     };
-    private void Scene(string backgroundImage)
+    
+    /// <summary>
+    /// Example of using YarnCommand attribute instead of AddCommandHandler
+    /// </summary>
+    /// <param name="backgroundImage">short name of the background to switch to</param>
+    [YarnCommand]
+    public void Scene(string backgroundImage)
     {
         if (!_bgShortNameToPath.ContainsKey(backgroundImage))
         {

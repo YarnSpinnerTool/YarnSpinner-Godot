@@ -70,8 +70,7 @@ namespace YarnDonut
         /// <summary>
         /// A coroutine that fades a <see cref="CanvasGroup"/> object's opacity
         /// from <paramref name="from"/> to <paramref name="to"/> over the
-        /// course of <see cref="fadeTime"/> seconds, and then invokes <paramref
-        /// name="onComplete"/>.
+        /// course of <see cref="fadeTime"/> seconds, and then returns.
         /// </summary>
         /// <param name="from">The opacity value to start fading from, ranging
         /// from 0 to 1.</param>
@@ -133,7 +132,7 @@ namespace YarnDonut
         /// cref="RichTextLabel"/> object over time.
         /// </summary>
         /// <remarks>
-        /// <para>This method works by adjusting the value of the <paramref name="text"/> parameter's <see cref="RichTextLabel.maxVisibleCharacters"/> property. This means that word wrapping will not change half-way through the presentation of a word.</para>
+        /// <para>This method works by adjusting the value of the <paramref name="text"/> parameter's <see cref="RichTextLabel.PercentVisible"/> property. This means that word wrapping will not change half-way through the presentation of a word.</para>
         /// <para style="note">Depending on the value of <paramref name="lettersPerSecond"/>, <paramref name="onCharacterTyped"/> may be called multiple times per frame.</para>
         /// <para>Due to an public implementation detail of RichTextLabel, this method will always take at least one frame to execute, regardless of the length of the <paramref name="text"/> parameter's text.</para>
         /// </remarks>
@@ -240,10 +239,15 @@ namespace YarnDonut
         /// <summary>
         /// The Control that is the parent of all UI elements in this line view.
         /// Used to modify the transparency/visibility of the UI.
+        ///
+        /// We don't want to constrain DialogueViewBase to only controls (in case
+        /// you wanted to make a Node2D or 3D based dialogue view), so this example
+        /// LineView uses a child control called <see cref="viewControl"/> as the parent
+        /// of all of the UI components for this view that can be hidden. 
         /// </summary>
         /// <remarks>
         /// If <see cref="useFadeEffect"/> is true, then the alpha value of this
-        /// <see cref="CanvasGroup"/> will be animated during line presentation
+        /// <see cref="Control"/> will be animated during line presentation
         /// and dismissal.
         /// </remarks>
         /// <seealso cref="useFadeEffect"/>
@@ -334,7 +338,7 @@ namespace YarnDonut
         /// </summary>
         /// <remarks><para>If this value is <see langword="true"/>, the <see
         /// cref="lineText"/> object's <see
-        /// cref="TMP_Text.maxVisibleCharacters"/> property will animate from 0
+        /// cref="RichTextLabel.PercentVisible"/> property will animate from 0
         /// to the length of the text, at a rate of <see
         /// cref="typewriterEffectSpeed"/> letters per second when the line
         /// appears. <see cref="onCharacterTyped"/> is called for every new

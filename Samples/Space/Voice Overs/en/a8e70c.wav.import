@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/a8e70c.wav-0c027a7baec35604152f93499316020e.sample"
+
+[deps]
+
+source_file="res://Samples/Space/Voice Overs/en/a8e70c.wav"
+dest_files=[ "res://.import/a8e70c.wav-0c027a7baec35604152f93499316020e.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

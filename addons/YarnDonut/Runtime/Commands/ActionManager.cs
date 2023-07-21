@@ -26,25 +26,18 @@ namespace YarnDonut
 
         private static Injector GetDefaultNodeInjector(Type behaviorType, string commandName)
         {
-            if (!typeof(Godot.Node).IsAssignableFrom(behaviorType)) { return null; }
+            if (!typeof(Node).IsAssignableFrom(behaviorType)) { return null; }
             return name =>
             {
-                Godot.Node node = null;
+                Node node = ((SceneTree)Engine.GetMainLoop()).Root.FindNode(name, true, false);
                 if (node == null)
                 {
-                    GD.PrintErr($"(TODO auto searching tree not implemented). Can't run command {commandName} on game object {name}'s {behaviorType.FullName} component: " +
+                    GD.PrintErr($"Can't run command {commandName} on game object {name}'s {behaviorType.FullName} component: " +
                         "an object with that name doesn't exist in the scene.");
                     return null;
                 }
 
-                var target = node.GetNode(behaviorType.Name);
-                if (target == null)
-                {
-                    GD.PrintErr($"Can't run command {commandName} on game object {name}: " +
-                        $"the command is only defined on {behaviorType.FullName} components, but {name} doesn't have one.");
-                    return null;
-                }
-                return target;
+                return node;
             };
         }
 
