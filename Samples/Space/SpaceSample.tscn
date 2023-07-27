@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://Samples/Space/Dialogue/SpaceYarnProject.tres" type="Resource" id=1]
 [ext_resource path="res://addons/YarnDonut/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=2]
@@ -13,47 +13,120 @@
 [ext_resource path="res://Samples/Space/Sprites/Player.png" type="Texture" id=11]
 [ext_resource path="res://Samples/Space/Sprites/Sally.png" type="Texture" id=12]
 [ext_resource path="res://Samples/Space/Sprites/Ship.png" type="Texture" id=13]
+[ext_resource path="res://Samples/Space/Player.cs" type="Script" id=14]
+[ext_resource path="res://Samples/Space/SpaceCamera.cs" type="Script" id=15]
+[ext_resource path="res://Samples/Space/DialogueTarget.cs" type="Script" id=16]
+
+[sub_resource type="CapsuleShape2D" id=3]
+radius = 93.98
+height = 80.04
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 132.53
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 157, 1061 )
 
 [node name="SpaceDemo" type="Node2D"]
 script = ExtResource( 3 )
 dialogueRunnerPath = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
 
-[node name="Player" type="Sprite" parent="."]
-position = Vector2( 131, 602 )
-z_index = 2
-texture = ExtResource( 11 )
+[node name="Ship" type="Area2D" parent="."]
+position = Vector2( 2571, 443 )
+collision_layer = 2
+collision_mask = 0
 
-[node name="Sally" type="Sprite" parent="."]
-position = Vector2( 1110, 602 )
-z_index = 1
-texture = ExtResource( 12 )
-
-[node name="Ship" type="Sprite" parent="."]
-position = Vector2( 2285, 602 )
+[node name="ShipSprite" type="Sprite" parent="Ship"]
+position = Vector2( -10, -126 )
 z_index = 1
 texture = ExtResource( 13 )
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ship"]
+modulate = Color( 0, 0.12549, 0.54902, 1 )
+position = Vector2( -7, -102 )
+z_index = 6
+z_as_relative = false
+shape = SubResource( 3 )
+
+[node name="DialogueTarget" type="Node2D" parent="Ship"]
+script = ExtResource( 16 )
+nodeName = "Ship"
+
+[node name="Sally" type="Area2D" parent="."]
+position = Vector2( 1362, 424 )
+collision_layer = 2
+collision_mask = 0
+
+[node name="SallySprite" type="Sprite" parent="Sally"]
+position = Vector2( -2, -114 )
+z_index = 1
+texture = ExtResource( 12 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sally"]
+modulate = Color( 0, 0.12549, 0.54902, 1 )
+position = Vector2( -7, -102 )
+z_index = 6
+z_as_relative = false
+shape = SubResource( 3 )
+
+[node name="DialogueTarget" type="Node2D" parent="Sally"]
+script = ExtResource( 16 )
+nodeName = "Sally"
+
+[node name="Player" type="KinematicBody2D" parent="."]
+position = Vector2( 423, 328 )
+script = ExtResource( 14 )
+intersectShapePath = NodePath("CollisionShape2D")
+dialogueRunnerPath = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+
+[node name="PlayerSpite" type="Sprite" parent="Player"]
+position = Vector2( 3, -1 )
+z_index = 2
+texture = ExtResource( 11 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+modulate = Color( 0, 1, 0.415686, 1 )
+position = Vector2( 0, -4 )
+z_index = 2
+shape = SubResource( 2 )
+
+[node name="Left Wall" type="StaticBody2D" parent="."]
+position = Vector2( 283, -294 )
+z_index = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left Wall"]
+position = Vector2( -153, -133 )
+shape = SubResource( 1 )
+
+[node name="Right Wall" type="StaticBody2D" parent="."]
+position = Vector2( 3351, -294 )
+z_index = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right Wall"]
+position = Vector2( -153, -133 )
+shape = SubResource( 1 )
+
 [node name="SpaceBackground" type="TextureRect" parent="."]
-margin_left = -310.0
-margin_top = -1216.0
-margin_right = 1290.0
-margin_bottom = -134.0
+margin_left = -27.0
+margin_top = -1510.0
+margin_right = 1573.0
+margin_bottom = -428.0
 rect_scale = Vector2( 2.12511, 2.12511 )
 texture = ExtResource( 9 )
 
 [node name="wall" type="TextureRect" parent="."]
-margin_left = -279.0
-margin_top = -323.0
-margin_right = 1769.0
-margin_bottom = 1213.0
+margin_left = 4.0
+margin_top = -617.0
+margin_right = 2052.0
+margin_bottom = 919.0
 rect_scale = Vector2( 0.807867, 0.807867 )
 texture = ExtResource( 10 )
 
 [node name="wall2" type="TextureRect" parent="."]
-margin_left = 1374.0
-margin_top = -323.0
-margin_right = 3422.0
-margin_bottom = 1213.0
+margin_left = 1657.0
+margin_top = -617.0
+margin_right = 3705.0
+margin_bottom = 919.0
 rect_scale = Vector2( 0.807867, 0.807867 )
 texture = ExtResource( 10 )
 
@@ -78,6 +151,7 @@ lineProviderPath = NodePath("../TextLineProvider")
 
 [node name="LineView" type="Control" parent="YarnSpinnerCanvasLayer"]
 script = ExtResource( 6 )
+viewControlPath = NodePath("ViewControl")
 useFadeEffect = false
 lineTextPath = NodePath("ViewControl/LineText")
 characterNameTextPath = NodePath("ViewControl/CharacterNameText")
@@ -165,3 +239,13 @@ debugTextViewPath = NodePath("../VariableDebugText")
 
 [node name="TextLineProvider" type="Node2D" parent="YarnSpinnerCanvasLayer"]
 script = ExtResource( 2 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 297, -639 )
+anchor_mode = 0
+current = true
+zoom = Vector2( 2, 2 )
+script = ExtResource( 15 )
+followTargetPath = NodePath("../Player")
+MinX = 297
+MaxX = 800

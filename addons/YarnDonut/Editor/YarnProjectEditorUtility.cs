@@ -790,7 +790,7 @@ namespace YarnDonut.Editor
                     // remove any nulls, in case any are found
                     .Where(path => path != null);
 
-#if YARNSPINNER_DEBUG
+#if YARNDONUT_DEBUG
             var stopwatch = Stopwatch.StartNew();
 #endif
 
@@ -824,7 +824,7 @@ namespace YarnDonut.Editor
                 return result.StringTable.Where(i => i.Value.isImplicitTag == false).Select(i => i.Key);
             }).ToList(); // immediately execute this query so we can determine timing information
 
-#if YARNSPINNER_DEBUG
+#if YARNDONUT_DEBUG
             stopwatch.Stop();
             GD.Print($"Checked {allYarnFiles.Count()} yarn files for line tags in {stopwatch.ElapsedMilliseconds}ms");
 #endif

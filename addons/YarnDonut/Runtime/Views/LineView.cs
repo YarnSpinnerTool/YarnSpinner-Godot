@@ -454,10 +454,7 @@ namespace YarnDonut
             {
                 continueButton = (Control)GetNode(continueButtonPath);
             }
-            if (continueButton != null)
-            {
-                continueButton.Connect("pressed", this, nameof(OnContinueClicked));
-            }
+            continueButton?.Connect("pressed", this, nameof(OnContinueClicked));
             if (characterNameText == null && !string.IsNullOrEmpty(characterNameTextPath))
             {
                 characterNameText = GetNode<RichTextLabel>(characterNameTextPath);
@@ -505,16 +502,15 @@ namespace YarnDonut
         public override void InterruptLine(LocalizedLine dialogueLine, Action onInterruptLineFinished)
         {
             currentLine = dialogueLine;
+
             if (currentStopToken is { CanInterrupt: true })
             {
                 currentStopToken.Interrupt();
-            }            
+            }
             // for now we are going to just immediately show everything
             // later we will make it fade in
             lineText.Visible = true;
             viewControl.Visible = true;
-
-            int length;
 
             if (characterNameText == null)
             {
@@ -528,7 +524,6 @@ namespace YarnDonut
                     {
                         lineText.Text = dialogueLine.Text.Text;
                     }
-                    length = dialogueLine.Text.Text.Length;
                 }
                 else
                 {
@@ -540,7 +535,6 @@ namespace YarnDonut
                     {
                         lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                     }
-                    length = dialogueLine.TextWithoutCharacterName.Text.Length;
                 }
             }
             else
@@ -562,7 +556,6 @@ namespace YarnDonut
                 {
                     lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                 }
-                length = dialogueLine.TextWithoutCharacterName.Text.Length;
             }
 
             // Show the entire line's text immediately.
@@ -689,12 +682,6 @@ namespace YarnDonut
                         () => onCharacterTyped?.Invoke(),
                         currentStopToken
                     );
-                    if (currentStopToken.WasInterrupted)
-                    {
-                        // The typewriter effect was interrupted. Stop this
-                        // entire coroutine.
-                        return;
-                    }
                 }
             }
 
@@ -755,6 +742,7 @@ namespace YarnDonut
             {
                 return;
             }
+            viewControl.MouseFilter = b ? Control.MouseFilterEnum.Pass : Control.MouseFilterEnum.Ignore;
             viewControl.SetProcessInput(b);
             viewControl.Visible = b;
         }

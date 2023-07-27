@@ -167,10 +167,11 @@ namespace YarnDonut
                 async Task OptionViewWasSelectedInternal(DialogueOption selectedOption)
                 {
                     await Effects.FadeAlpha(viewControl, 1, 0, fadeTime);
+                    viewControl.Visible = false;
                     OnOptionSelected(selectedOption.DialogueOptionID);
                 }
             }
-            
+
             optionViews[0].GrabFocus();
         }
     }
