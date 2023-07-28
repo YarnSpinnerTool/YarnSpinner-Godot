@@ -37,6 +37,7 @@ Talking to NPCs
 text = "Basic dialogue demo
 Talking to NPCs
 "
+scroll_active = false
 
 [node name="Visual Novel" type="Button" parent="."]
 anchor_left = 0.5

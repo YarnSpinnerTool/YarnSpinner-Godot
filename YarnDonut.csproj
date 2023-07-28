@@ -5,9 +5,6 @@
     <RootNamespace />
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="addons\YarnDonut\yarnproject" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="addons\YarnDonut\plugin.cfg" />
     <Content Include="addons\YarnDonut\Scenes\DialogueRunner.tscn" />
     <Content Include="addons\YarnDonut\Scenes\OptionView.tscn" />

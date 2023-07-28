@@ -13,8 +13,6 @@ namespace YarnDonut
         private YarnImporter _scriptImportPlugin;
         private YarnProjectInspectorPlugin _projectInspectorPlugin;
   
-        private PopupMenu _popup;
-        private const string PopupName = "YarnDonut";
         private const int CreateYarnScriptId = 1;
         public const int createYarnProjectID = 2;
         public const int createYarnLocalizationID = 3;
@@ -44,13 +42,7 @@ namespace YarnDonut
             _projectInspectorPlugin.editorInterface = GetEditorInterface();
             AddInspectorPlugin(_projectInspectorPlugin);
             AddImportPlugin(_scriptImportPlugin);
-            _popup = new PopupMenu();
 
-            _popup.AddItem("Create Yarn Script", CreateYarnScriptId);
-            _popup.AddItem("Create Yarn Project", createYarnProjectID);
-            _popup.AddItem("Create Yarn Localization", createYarnLocalizationID);
-            _popup.Connect("id_pressed", this, nameof(OnPopupIDPressed));
-            AddToolSubmenuItem(PopupName, _popup);
             AddCustomType(nameof(DialogueRunner), "Node", dialogueRunnerScript, miniYarnSpinnerIcon);
             AddCustomType(nameof(Localization), "Resource", localizationScript, miniLocalizationIcon);
             AddCustomType(nameof(YarnProject), "Resource", yarnProjectScript, miniYarnProjectIcon);
@@ -62,7 +54,6 @@ namespace YarnDonut
             RemoveCustomType(nameof(Localization));
             RemoveCustomType(nameof(YarnProject));
             RemoveInspectorPlugin(_projectInspectorPlugin);
-            RemoveToolMenuItem(PopupName);
         }
 
         /// <summary>

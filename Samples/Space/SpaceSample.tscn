@@ -1,13 +1,10 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://Samples/Space/Dialogue/SpaceYarnProject.tres" type="Resource" id=1]
-[ext_resource path="res://addons/YarnDonut/Runtime/LineProviders/TextLineProvider.cs" type="Script" id=2]
+[ext_resource path="res://Samples/Space/Sprites/Ship-Face-Neutral.png" type="Texture" id=2]
 [ext_resource path="res://Samples/Space/Scripts/SpaceSample.cs" type="Script" id=3]
-[ext_resource path="res://addons/YarnDonut/Scenes/OptionView.tscn" type="PackedScene" id=4]
-[ext_resource path="res://addons/YarnDonut/Runtime/InMemoryVariableStorage.cs" type="Script" id=5]
-[ext_resource path="res://addons/YarnDonut/Runtime/Views/LineView.cs" type="Script" id=6]
-[ext_resource path="res://addons/YarnDonut/Runtime/Views/OptionsListView.cs" type="Script" id=7]
-[ext_resource path="res://addons/YarnDonut/Runtime/DialogueRunner.cs" type="Script" id=8]
+[ext_resource path="res://addons/YarnDonut/Scenes/DefaultDialogueSystem.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Samples/Space/Sprites/Ship-Face-Happy.png" type="Texture" id=5]
 [ext_resource path="res://Samples/Space/Sprites/Background.jpg" type="Texture" id=9]
 [ext_resource path="res://Samples/Space/Sprites/Wall.png" type="Texture" id=10]
 [ext_resource path="res://Samples/Space/Sprites/Player.png" type="Texture" id=11]
@@ -27,9 +24,12 @@ radius = 132.53
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 157, 1061 )
 
-[node name="SpaceDemo" type="Node2D"]
+[node name="SpaceSample" type="Node2D"]
 script = ExtResource( 3 )
+ShipHappySprite = ExtResource( 5 )
+ShipNeutralSprite = ExtResource( 2 )
 dialogueRunnerPath = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
+shipFaceSpritePath = NodePath("Ship/ShipFaceSprite")
 
 [node name="Ship" type="Area2D" parent="."]
 position = Vector2( 2571, 443 )
@@ -51,6 +51,11 @@ shape = SubResource( 3 )
 [node name="DialogueTarget" type="Node2D" parent="Ship"]
 script = ExtResource( 16 )
 nodeName = "Ship"
+
+[node name="ShipFaceSprite" type="Sprite" parent="Ship"]
+position = Vector2( -10, -199 )
+z_index = 1
+texture = ExtResource( 2 )
 
 [node name="Sally" type="Area2D" parent="."]
 position = Vector2( 1362, 424 )
@@ -74,7 +79,7 @@ script = ExtResource( 16 )
 nodeName = "Sally"
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( 423, 328 )
+position = Vector2( 423, 318 )
 script = ExtResource( 14 )
 intersectShapePath = NodePath("CollisionShape2D")
 dialogueRunnerPath = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
@@ -116,132 +121,31 @@ texture = ExtResource( 9 )
 
 [node name="wall" type="TextureRect" parent="."]
 margin_left = 4.0
-margin_top = -617.0
+margin_top = -627.0
 margin_right = 2052.0
-margin_bottom = 919.0
+margin_bottom = 909.0
 rect_scale = Vector2( 0.807867, 0.807867 )
 texture = ExtResource( 10 )
 
 [node name="wall2" type="TextureRect" parent="."]
 margin_left = 1657.0
-margin_top = -617.0
+margin_top = -627.0
 margin_right = 3705.0
-margin_bottom = 919.0
+margin_bottom = 909.0
 rect_scale = Vector2( 0.807867, 0.807867 )
 texture = ExtResource( 10 )
 
-[node name="YarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
+[node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource( 4 )]
 
-[node name="DialogueRunner" type="Control" parent="YarnSpinnerCanvasLayer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 18.0
-margin_top = 2.0
-margin_right = 18.0
-margin_bottom = 2.0
-script = ExtResource( 8 )
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
+rect_scale = Vector2( 0.993217, 1 )
 yarnProject = ExtResource( 1 )
-variableStoragePath = NodePath("../InMemoryVariableStorage")
-dialogueViewPaths = [ NodePath("../LineView"), NodePath("../OptionsListView") ]
-startNode = "Sally"
-startAutomatically = false
-lineProviderPath = NodePath("../TextLineProvider")
 
-[node name="VariableDebugText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer"]
+[node name="CharacterNameText" parent="YarnSpinnerCanvasLayer/LineView/ViewControl" index="1"]
+self_modulate = Color( 0.572549, 0.960784, 0.988235, 1 )
 
-[node name="LineView" type="Control" parent="YarnSpinnerCanvasLayer"]
-script = ExtResource( 6 )
-viewControlPath = NodePath("ViewControl")
-useFadeEffect = false
-lineTextPath = NodePath("ViewControl/LineText")
-characterNameTextPath = NodePath("ViewControl/CharacterNameText")
-useTypewriterEffect = true
-typewriterEffectSpeed = 240.0
-continueButtonPath = NodePath("ViewControl/ContinueButton")
-
-[node name="ViewControl" type="Control" parent="YarnSpinnerCanvasLayer/LineView"]
-
-[node name="LineText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LineView/ViewControl"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = 57.0
-margin_top = 105.0
-margin_right = 943.0
-margin_bottom = 555.0
-bbcode_enabled = true
-bbcode_text = "The dialogue text should appear here!"
-text = "The dialogue text should appear here!"
-
-[node name="ColorRect" type="ColorRect" parent="YarnSpinnerCanvasLayer/LineView/ViewControl/LineText"]
-modulate = Color( 0.203922, 0.192157, 0.192157, 0.458824 )
-show_behind_parent = true
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_bottom = -279.0
-
-[node name="CharacterNameText" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LineView/ViewControl"]
-self_modulate = Color( 0.321569, 0.87451, 0.254902, 1 )
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = 58.0
-margin_top = 47.0
-margin_right = 944.0
-margin_bottom = 100.0
-bbcode_enabled = true
-bbcode_text = "Character Name"
-text = "Character Name"
-
-[node name="ColorRect" type="ColorRect" parent="YarnSpinnerCanvasLayer/LineView/ViewControl/CharacterNameText"]
-modulate = Color( 0.203922, 0.192157, 0.192157, 0.458824 )
-show_behind_parent = true
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="ContinueButton" type="Button" parent="YarnSpinnerCanvasLayer/LineView/ViewControl"]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-margin_left = 684.0
-margin_top = 219.0
-margin_right = 916.0
-margin_bottom = 319.0
-text = "Continue"
-
-[node name="OptionsListView" type="Control" parent="YarnSpinnerCanvasLayer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-script = ExtResource( 7 )
-optionViewPrefab = ExtResource( 4 )
-lastLineTextPath = NodePath("../LineView/ViewControl/LineText")
-viewControlPath = NodePath("VBoxContainer")
-boxContainerPath = NodePath("VBoxContainer")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="YarnSpinnerCanvasLayer/OptionsListView"]
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-margin_left = -649.0
-margin_top = -154.0
-margin_right = -373.0
-margin_bottom = 143.0
-rect_min_size = Vector2( 160, 0 )
-
-[node name="InMemoryVariableStorage" type="Node" parent="YarnSpinnerCanvasLayer"]
-script = ExtResource( 5 )
-debugTextViewPath = NodePath("../VariableDebugText")
-
-[node name="TextLineProvider" type="Node2D" parent="YarnSpinnerCanvasLayer"]
-script = ExtResource( 2 )
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( 297, -639 )
+[node name="SpaceCamera" type="Camera2D" parent="."]
+position = Vector2( 297, -624 )
 anchor_mode = 0
 current = true
 zoom = Vector2( 2, 2 )
@@ -249,3 +153,5 @@ script = ExtResource( 15 )
 followTargetPath = NodePath("../Player")
 MinX = 297
 MaxX = 800
+
+[editable path="YarnSpinnerCanvasLayer"]
