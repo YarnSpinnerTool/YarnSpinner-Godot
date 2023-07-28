@@ -17,9 +17,8 @@ Working:
 * Generate CSV files for localizing your dialogue. The CSV files are not in the Godot format, but they have more context fields than Godot CSVS, and YarnDonut handles parsing and generating the CSVs, and converting them into Godot `.translation` files.
 
 TODO:
-* Bug fixes / resilience
+* Bug fixes / resilience (bug reports welcome)
 * Clean up code comments
-* Update code to kill all running async tasks within the example LineView
 
 ### Thanks
 
