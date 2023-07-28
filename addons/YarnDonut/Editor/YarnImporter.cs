@@ -132,7 +132,7 @@ namespace YarnDonut.Editor
             if (project == null)
             {
                 GD.Print($"The yarn file {assetPath} is not currently associated with a Yarn Project." +
-                    " Create a Yarn Project via Tools > YarnSpinner > Create Yarn Project and make sure this" +
+                    " Create a Yarn Project via Tools > YarnDonut > Create Yarn Project and make sure this" +
                     " script is in the same directory as the YarnProject or" +
                     " in a directory underneath that directory.");
             }

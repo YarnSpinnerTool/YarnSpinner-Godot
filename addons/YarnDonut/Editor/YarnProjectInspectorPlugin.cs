@@ -58,7 +58,7 @@ namespace YarnDonut.Editor
                     _sourceScriptsPropertyEditor = new YarnSourceScriptsPropertyEditor();
                     AddPropertyEditor(path, _sourceScriptsPropertyEditor);
                     _sourceScriptsControl = new ScrollContainer();
-                    _sourceScriptsControl.HintTooltip = "YarnSpinner will search for all .yarn files" +
+                    _sourceScriptsControl.HintTooltip = "YarnDonut will search for all .yarn files" +
                         $" in the same directory as this {nameof(YarnProject)} (or a descendent directory)." +
                         " A list of .yarn files found this way will be displayed here.";
                     int scriptAreaHeight = 40;

@@ -5,7 +5,7 @@ using YarnDonut.Editor;
 namespace YarnDonut
 {
     /// <summary>
-    /// Main plugin script for the YarnSpinner-Godot plugin
+    /// Main plugin script for the YarnDonut plugin
     /// </summary>
     [Tool]
     public class YarnDonutPlugin : EditorPlugin
@@ -14,7 +14,7 @@ namespace YarnDonut
         private YarnProjectInspectorPlugin _projectInspectorPlugin;
   
         private PopupMenu _popup;
-        private const string PopupName = "YarnSpinner";
+        private const string PopupName = "YarnDonut";
         private const int CreateYarnScriptId = 1;
         public const int createYarnProjectID = 2;
         public const int createYarnLocalizationID = 3;
