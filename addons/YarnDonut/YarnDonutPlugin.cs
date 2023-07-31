@@ -26,7 +26,6 @@ namespace YarnDonut
             ProjectSettings.SetInitialValue(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY, new Array());
             // load script resources
             var scriptImporterScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnDonut/Editor/YarnImporter.cs");
-            var editorUtilityScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnDonut/Editor/YarnEditorUtility.cs");
             var projectInspectorScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnDonut/Editor/YarnProjectInspectorPlugin.cs");
             var localizationScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnDonut/Runtime/Localization.cs");
             var yarnProjectScript = ResourceLoader.Load<CSharpScript>("res://addons/YarnDonut/Runtime/YarnProject.cs");
