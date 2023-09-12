@@ -12,7 +12,7 @@ on:
       - '**/*.md'
       - 'docs/**'
 env:
-  GODOT_CLI: ./Godot_v3.5.1-stable_mono_linux_headless_64/Godot_v3.5.1-stable_mono_linux_headless.64
+  GODOT_CLI: ./Godot_v4.1.1-stable_mono_linux_x86_64/Godot_v4.1.1-stable_mono_linux.x86_64
 defaults:
   run:
     shell: bash
@@ -34,14 +34,14 @@ jobs:
       - name: Download Godot
         id: downloadGodot
         run: |
-          wget -O godot.zip https://downloads.tuxfamily.org/godotengine/3.5.1/mono/Godot_v3.5.1-stable_mono_linux_headless_64.zip
+          wget -O godot.zip https://downloads.tuxfamily.org/godotengine/4.1.1/mono/Godot_v4.1.1-stable_mono_linux_x86_64.zip
           unzip godot.zip
 
       - name: Build solution
         id: buildSolution
         run: |
           # https://serverfault.com/questions/989742/tee-and-assigning-to-variable
-          { GODOT_OUTPUT=$($GODOT_CLI --path . --verbose -q -e --build-solutions 2>&1 | tee /dev/fd/3); } 3>&1
+          { GODOT_OUTPUT=$($GODOT_CLI --headless --path . --verbose -q -e --build-solutions 2>&1 | tee /dev/fd/3); } 3>&1
           if [[ "$GODOT_OUTPUT" == *"the build callback failed"* ]]; then
             echo "Godot failed to build the solution."
             exit 1
