@@ -202,7 +202,10 @@ namespace YarnDonut.Editor
             var baseIDs = baseLocalizationStrings.Select(entry => entry.ID);
             foreach (var str in translatedStrings)
             {
-                str.Original = baseDictionary[str.ID].Text;
+                if (baseDictionary.ContainsKey(str.ID))
+                {
+                    str.Original = baseDictionary[str.ID].Text;
+                }
             }
             var translatedIDs = translatedStrings.Select(entry => entry.ID);
 
