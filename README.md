@@ -1,5 +1,5 @@
 # YarnDonut 🧶🍩
-Alpha port of [YarnSpinner-Unity](https://github.com/YarnSpinnerTool/YarnSpinner-Unity) integration to the Godot Mono engine v3.5
+Beta port of [YarnSpinner-Unity](https://github.com/YarnSpinnerTool/YarnSpinner-Unity) integration to the Godot Mono engine v4
 
 ## Documentation
 
