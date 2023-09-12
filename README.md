@@ -8,7 +8,7 @@ See the [wiki](https://github.com/dogboydog/YarnDonut/wiki) for documentation.
 ## Roadmap 
 
 Working:
-* Create a Yarn Project, Yarn Script, or Yarn Localization through the Tools > YarnSpinner menu
+* Create a Yarn Project, Yarn Script, or Yarn Localization through the create resource menu
 * Manage your Yarn Project with a custom inspector which provides buttons similar to the YarnSpinner-Unity inspector
 * Yarn scripts will re-import on change, triggering a compilation of all yarn scripts in the associated project
 * Storing a compiled yarn program, a list of errors, line metadata, and string tables.
