@@ -3,46 +3,5 @@
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="addons\YarnDonut\plugin.cfg" />
-    <Content Include="addons\YarnDonut\Scenes\DialogueRunner.tscn" />
-    <Content Include="addons\YarnDonut\Scenes\OptionView.tscn" />
-    <Content Include="addons\YarnDonut\YarnDonutMainPlugin.gd" />
-    <Content Include="addons\YarnDonut\**.cs" />
-    <Content Include="**\*.yarn" />
-  </ItemGroup>
-  <!-- YarnSpinner dependencies -->
-  <ItemGroup>
-    <Reference Include="Yarn.Antlr4.Runtime.Standard">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.Antlr4.Runtime.Standard.dll</HintPath>
-    </Reference>
-    <Reference Include="Yarn.CsvHelper">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="Yarn.Google.Protobuf">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="Yarn.System.Buffers">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="Yarn.System.Memory">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="Yarn.System.Numerics.Vectors">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="Yarn.System.Reflection.TypeExtensions">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.System.Reflection.TypeExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Yarn.System.Runtime.CompilerServices.Unsafe">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\Yarn.System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\YarnSpinner.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner.Compiler">
-      <HintPath>addons\YarnDonut\Runtime\DLLs\YarnSpinner.Compiler.dll</HintPath>
-    </Reference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
+  <Import Project="addons\YarnDonut\YarnDonut.props" />
 </Project>
