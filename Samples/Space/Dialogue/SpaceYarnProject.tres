@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=52 format=3 uid="uid://baf1cu6kwapdh"]
+[gd_resource type="Resource" load_steps=68 format=3 uid="uid://baf1cu6kwapdh"]
 
 [ext_resource type="Script" path="res://addons/YarnDonut/Runtime/YarnProject.cs" id="1"]
 [ext_resource type="Script" path="res://addons/YarnDonut/Runtime/LineMetadataTableEntry.cs" id="1_5vs3b"]
@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://addons/YarnDonut/Runtime/SerializedDeclaration.cs" id="4"]
 [ext_resource type="Script" path="res://addons/YarnDonut/Runtime/StringTableEntry.cs" id="5"]
 
-[sub_resource type="Resource" id="Resource_0ydlp"]
+[sub_resource type="Resource" id="Resource_dlvjv"]
 script = ExtResource("1_5vs3b")
 ID = "line:5837f2"
 File = "res://Samples/Space/Dialogue/Ship.yarn"
@@ -16,10 +16,10 @@ Node = "Ship"
 LineNumber = "7"
 Metadata = PackedStringArray("firstline")
 
-[sub_resource type="Resource" id="Resource_3nji4"]
+[sub_resource type="Resource" id="Resource_ffwwv"]
 script = ExtResource("2_8s2cj")
 _lineMetadata = {
-"line:5837f2": SubResource("Resource_0ydlp")
+"line:5837f2": SubResource("Resource_dlvjv")
 }
 stringsFile = ""
 
@@ -124,7 +124,124 @@ description = "Ship.yarn, node Ship, line 14"
 isImplicit = false
 sourceYarnAssetPath = "res://Samples/Space/Dialogue/Variables.yarn"
 
-[sub_resource type="Resource" id="Resource_qjlq4"]
+[sub_resource type="Resource" id="Resource_oh5ci"]
+resource_name = "Start_line:01942dd"
+script = ExtResource("5")
+Language = "en"
+ID = "line:01942dd"
+Text = "Eve: ... It's fine. Thanks. Now leave me alone."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "39"
+Lock = "d9e33ebb"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_jsni6"]
+resource_name = "Start_line:04432b5"
+script = ExtResource("5")
+Language = "en"
+ID = "line:04432b5"
+Text = "Eve: Wait... where's my laptop? It's not here."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "58"
+Lock = "3a394f4f"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_j3nh7"]
+resource_name = "Start_line:05eb26a"
+script = ExtResource("5")
+Language = "en"
+ID = "line:05eb26a"
+Text = "Adam: Do you think YarnDonut is easy to use?"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "41"
+Lock = "5bfcb4b2"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_lsiwp"]
+resource_name = "Start_line:062467b"
+script = ExtResource("5")
+Language = "en"
+ID = "line:062467b"
+Text = "Eve: ADDDDAAAMMMMMMM!!!"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "65"
+Lock = "3c0876b7"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_qvq6a"]
+resource_name = "Start_line:0721506"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0721506"
+Text = "Eve: Oh no..."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "29"
+Lock = "62b75da4"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_mxqfa"]
+resource_name = "Start_line:0794753"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0794753"
+Text = "Eve: Ok, now to finally write that visual novel."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "50"
+Lock = "3a4e6cf6"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_8emyx"]
+resource_name = "Start_line:07f4eac"
+script = ExtResource("5")
+Language = "en"
+ID = "line:07f4eac"
+Text = "Adam: Hey Eve! I have a question!"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "28"
+Lock = "459fb170"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_ihpiv"]
+resource_name = "Start_line:09f21f4"
+script = ExtResource("5")
+Language = "en"
+ID = "line:09f21f4"
+Text = "Eve: WHAT DO YOU WANT???"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "37"
+Lock = "0e3efc57"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_1xegn"]
+resource_name = "Start_line:0a21105"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0a21105"
+Text = "Eve: Adam! Have you seen my laptop???"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "60"
+Lock = "8b7f1f59"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_4kfra"]
 resource_name = "Sally_line:0a7e39"
 script = ExtResource("5")
 Language = "en"
@@ -137,7 +254,7 @@ LineNumber = "18"
 Lock = "6c4c5826"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_y5xbj"]
+[sub_resource type="Resource" id="Resource_wtbxb"]
 resource_name = "Sally_line:0af7f86"
 script = ExtResource("5")
 Language = "en"
@@ -150,7 +267,98 @@ LineNumber = "13"
 Lock = "41aa2f03"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_62og4"]
+[sub_resource type="Resource" id="Resource_b6lax"]
+resource_name = "Start_line:0b52843"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0b52843"
+Text = "Eve gets upset with Adam"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "35"
+Lock = "8ace03d4"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_baole"]
+resource_name = "Start_line:0b7be61"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0b7be61"
+Text = "Adam: I just wanted to see if you liked using YarnDonut."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "38"
+Lock = "1714374d"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_63vhm"]
+resource_name = "Start_line:0c39b43"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0c39b43"
+Text = "Eve: I can finally write my epic romance about -"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "53"
+Lock = "75318ced"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_2lu3x"]
+resource_name = "Start_line:0c481f8"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0c481f8"
+Text = "Adam asks Eve a question"
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "40"
+Lock = "8dc9fa94"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_fnhq0"]
+resource_name = "Start_line:0cb4316"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0cb4316"
+Text = "Adam: Oh, I didn't realize you were busy. Sorry."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "43"
+Lock = "0ed8f46b"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_04tto"]
+resource_name = "Start_line:0d7e78e"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0d7e78e"
+Text = "THE END."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "69"
+Lock = "f953533f"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_q6hyj"]
+resource_name = "Start_line:0e8ce79"
+script = ExtResource("5")
+Language = "en"
+ID = "line:0e8ce79"
+Text = "Eve: Not when you're bothering me."
+Original = ""
+File = "res://Samples/VisualNovel/Dialogue/VNExampleDialogue.yarn"
+Node = "Start"
+LineNumber = "42"
+Lock = "37abe891"
+Comment = ""
+
+[sub_resource type="Resource" id="Resource_rj30f"]
 resource_name = "Sally_line:0facf7"
 script = ExtResource("5")
 Language = "en"
@@ -163,7 +371,7 @@ LineNumber = "20"
 Lock = "e241648d"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_2sxsa"]
+[sub_resource type="Resource" id="Resource_5btfm"]
 resource_name = "Sally_Watch_line:1fea6c"
 script = ExtResource("5")
 Language = "en"
@@ -176,7 +384,7 @@ LineNumber = "34"
 Lock = "599299b9"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_3bvv4"]
+[sub_resource type="Resource" id="Resource_fwmwj"]
 resource_name = "Sally_Watch_line:24c418"
 script = ExtResource("5")
 Language = "en"
@@ -189,7 +397,7 @@ LineNumber = "30"
 Lock = "d3a88d93"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_xyqyr"]
+[sub_resource type="Resource" id="Resource_6cocl"]
 resource_name = "Sally_line:2dc39b"
 script = ExtResource("5")
 Language = "en"
@@ -202,7 +410,7 @@ LineNumber = "8"
 Lock = "b85fb55f"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_ehf2y"]
+[sub_resource type="Resource" id="Resource_b6w4o"]
 resource_name = "Sally_line:34de2f"
 script = ExtResource("5")
 Language = "en"
@@ -215,7 +423,7 @@ LineNumber = "9"
 Lock = "35e4db4c"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_ekb34"]
+[sub_resource type="Resource" id="Resource_13s2x"]
 resource_name = "Ship_line:5837f2"
 script = ExtResource("5")
 Language = "en"
@@ -228,7 +436,7 @@ LineNumber = "7"
 Lock = "b709c42e"
 Comment = "Line metadata: firstline"
 
-[sub_resource type="Resource" id="Resource_70v7j"]
+[sub_resource type="Resource" id="Resource_0uy0d"]
 resource_name = "Sally_line:5d7a7c"
 script = ExtResource("5")
 Language = "en"
@@ -241,7 +449,7 @@ LineNumber = "16"
 Lock = "5a28d06b"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_c8o26"]
+[sub_resource type="Resource" id="Resource_jepx3"]
 resource_name = "Sally_Watch_line:5df323"
 script = ExtResource("5")
 Language = "en"
@@ -254,7 +462,7 @@ LineNumber = "35"
 Lock = "fed05ceb"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_1ewkm"]
+[sub_resource type="Resource" id="Resource_tna7v"]
 resource_name = "Sally_Exit_line:60c282"
 script = ExtResource("5")
 Language = "en"
@@ -267,7 +475,7 @@ LineNumber = "44"
 Lock = "29ecd7c6"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_sekxn"]
+[sub_resource type="Resource" id="Resource_qjh3l"]
 resource_name = "Sally_line:794945"
 script = ExtResource("5")
 Language = "en"
@@ -280,7 +488,7 @@ LineNumber = "7"
 Lock = "2bc75173"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_lt4hq"]
+[sub_resource type="Resource" id="Resource_77y7l"]
 resource_name = "Sally_Watch_line:8c3f98"
 script = ExtResource("5")
 Language = "en"
@@ -293,7 +501,7 @@ LineNumber = "29"
 Lock = "c6bcc3d6"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_ojge3"]
+[sub_resource type="Resource" id="Resource_04tbt"]
 resource_name = "Sally_line:a8e70c"
 script = ExtResource("5")
 Language = "en"
@@ -306,7 +514,7 @@ LineNumber = "12"
 Lock = "52e9bd6e"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_svfpu"]
+[sub_resource type="Resource" id="Resource_cxufu"]
 resource_name = "Sally_Sorry_line:d7df49"
 script = ExtResource("5")
 Language = "en"
@@ -319,7 +527,7 @@ LineNumber = "52"
 Lock = "0ce38920"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_ieqf7"]
+[sub_resource type="Resource" id="Resource_0ukou"]
 resource_name = "Sally_line:dcc2bc"
 script = ExtResource("5")
 Language = "en"
@@ -332,7 +540,7 @@ LineNumber = "10"
 Lock = "ac04c57a"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_kbxi2"]
+[sub_resource type="Resource" id="Resource_5lgf1"]
 resource_name = "Sally_Watch_line:df4eaf"
 script = ExtResource("5")
 Language = "en"
@@ -345,7 +553,7 @@ LineNumber = "31"
 Lock = "5f2cc23a"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_d3cjb"]
+[sub_resource type="Resource" id="Resource_mqirb"]
 resource_name = "Ship_line:ship01"
 script = ExtResource("5")
 Language = "en"
@@ -358,7 +566,7 @@ LineNumber = "21"
 Lock = "be6b00c6"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_m4oc5"]
+[sub_resource type="Resource" id="Resource_ixiy5"]
 resource_name = "Ship_line:ship03"
 script = ExtResource("5")
 Language = "en"
@@ -371,7 +579,7 @@ LineNumber = "23"
 Lock = "171196c4"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_fra35"]
+[sub_resource type="Resource" id="Resource_s8q7e"]
 resource_name = "Ship_line:ship04"
 script = ExtResource("5")
 Language = "en"
@@ -384,7 +592,7 @@ LineNumber = "25"
 Lock = "e1980146"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_my76i"]
+[sub_resource type="Resource" id="Resource_xsa5o"]
 resource_name = "Ship_line:ship05"
 script = ExtResource("5")
 Language = "en"
@@ -397,7 +605,7 @@ LineNumber = "26"
 Lock = "b6808e22"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_ds6jf"]
+[sub_resource type="Resource" id="Resource_n1wro"]
 resource_name = "Ship_line:ship06"
 script = ExtResource("5")
 Language = "en"
@@ -410,7 +618,7 @@ LineNumber = "28"
 Lock = "c1c63254"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_vjmwm"]
+[sub_resource type="Resource" id="Resource_5vaip"]
 resource_name = "Ship_line:ship07"
 script = ExtResource("5")
 Language = "en"
@@ -423,7 +631,7 @@ LineNumber = "31"
 Lock = "727bb97b"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_k2fx2"]
+[sub_resource type="Resource" id="Resource_6xd0h"]
 resource_name = "Ship_line:ship09"
 script = ExtResource("5")
 Language = "en"
@@ -436,7 +644,7 @@ LineNumber = "8"
 Lock = "0f857079"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_kiukk"]
+[sub_resource type="Resource" id="Resource_ud7ac"]
 resource_name = "Ship_line:ship10"
 script = ExtResource("5")
 Language = "en"
@@ -449,7 +657,7 @@ LineNumber = "9"
 Lock = "a741d6b2"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_uh2ia"]
+[sub_resource type="Resource" id="Resource_v87pv"]
 resource_name = "Ship_line:ship11"
 script = ExtResource("5")
 Language = "en"
@@ -462,7 +670,7 @@ LineNumber = "10"
 Lock = "778a5a83"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_lquib"]
+[sub_resource type="Resource" id="Resource_xyuhx"]
 resource_name = "Ship_line:ship12"
 script = ExtResource("5")
 Language = "en"
@@ -475,7 +683,7 @@ LineNumber = "12"
 Lock = "88f3fb99"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_15yr6"]
+[sub_resource type="Resource" id="Resource_odhbo"]
 resource_name = "Ship_line:ship13"
 script = ExtResource("5")
 Language = "en"
@@ -488,39 +696,55 @@ LineNumber = "16"
 Lock = "5a889e0a"
 Comment = ""
 
-[sub_resource type="Resource" id="Resource_dsyfb"]
+[sub_resource type="Resource" id="Resource_atrn2"]
 resource_name = "Default (en)"
 script = ExtResource("2")
 LocaleCode = "en"
 stringTable = {
-"line:0a7e39": SubResource("Resource_qjlq4"),
-"line:0af7f86": SubResource("Resource_y5xbj"),
-"line:0facf7": SubResource("Resource_62og4"),
-"line:1fea6c": SubResource("Resource_2sxsa"),
-"line:24c418": SubResource("Resource_3bvv4"),
-"line:2dc39b": SubResource("Resource_xyqyr"),
-"line:34de2f": SubResource("Resource_ehf2y"),
-"line:5837f2": SubResource("Resource_ekb34"),
-"line:5d7a7c": SubResource("Resource_70v7j"),
-"line:5df323": SubResource("Resource_c8o26"),
-"line:60c282": SubResource("Resource_1ewkm"),
-"line:794945": SubResource("Resource_sekxn"),
-"line:8c3f98": SubResource("Resource_lt4hq"),
-"line:a8e70c": SubResource("Resource_ojge3"),
-"line:d7df49": SubResource("Resource_svfpu"),
-"line:dcc2bc": SubResource("Resource_ieqf7"),
-"line:df4eaf": SubResource("Resource_kbxi2"),
-"line:ship01": SubResource("Resource_d3cjb"),
-"line:ship03": SubResource("Resource_m4oc5"),
-"line:ship04": SubResource("Resource_fra35"),
-"line:ship05": SubResource("Resource_my76i"),
-"line:ship06": SubResource("Resource_ds6jf"),
-"line:ship07": SubResource("Resource_vjmwm"),
-"line:ship09": SubResource("Resource_k2fx2"),
-"line:ship10": SubResource("Resource_kiukk"),
-"line:ship11": SubResource("Resource_uh2ia"),
-"line:ship12": SubResource("Resource_lquib"),
-"line:ship13": SubResource("Resource_15yr6")
+"line:01942dd": SubResource("Resource_oh5ci"),
+"line:04432b5": SubResource("Resource_jsni6"),
+"line:05eb26a": SubResource("Resource_j3nh7"),
+"line:062467b": SubResource("Resource_lsiwp"),
+"line:0721506": SubResource("Resource_qvq6a"),
+"line:0794753": SubResource("Resource_mxqfa"),
+"line:07f4eac": SubResource("Resource_8emyx"),
+"line:09f21f4": SubResource("Resource_ihpiv"),
+"line:0a21105": SubResource("Resource_1xegn"),
+"line:0a7e39": SubResource("Resource_4kfra"),
+"line:0af7f86": SubResource("Resource_wtbxb"),
+"line:0b52843": SubResource("Resource_b6lax"),
+"line:0b7be61": SubResource("Resource_baole"),
+"line:0c39b43": SubResource("Resource_63vhm"),
+"line:0c481f8": SubResource("Resource_2lu3x"),
+"line:0cb4316": SubResource("Resource_fnhq0"),
+"line:0d7e78e": SubResource("Resource_04tto"),
+"line:0e8ce79": SubResource("Resource_q6hyj"),
+"line:0facf7": SubResource("Resource_rj30f"),
+"line:1fea6c": SubResource("Resource_5btfm"),
+"line:24c418": SubResource("Resource_fwmwj"),
+"line:2dc39b": SubResource("Resource_6cocl"),
+"line:34de2f": SubResource("Resource_b6w4o"),
+"line:5837f2": SubResource("Resource_13s2x"),
+"line:5d7a7c": SubResource("Resource_0uy0d"),
+"line:5df323": SubResource("Resource_jepx3"),
+"line:60c282": SubResource("Resource_tna7v"),
+"line:794945": SubResource("Resource_qjh3l"),
+"line:8c3f98": SubResource("Resource_77y7l"),
+"line:a8e70c": SubResource("Resource_04tbt"),
+"line:d7df49": SubResource("Resource_cxufu"),
+"line:dcc2bc": SubResource("Resource_0ukou"),
+"line:df4eaf": SubResource("Resource_5lgf1"),
+"line:ship01": SubResource("Resource_mqirb"),
+"line:ship03": SubResource("Resource_ixiy5"),
+"line:ship04": SubResource("Resource_s8q7e"),
+"line:ship05": SubResource("Resource_xsa5o"),
+"line:ship06": SubResource("Resource_n1wro"),
+"line:ship07": SubResource("Resource_5vaip"),
+"line:ship09": SubResource("Resource_6xd0h"),
+"line:ship10": SubResource("Resource_ud7ac"),
+"line:ship11": SubResource("Resource_v87pv"),
+"line:ship12": SubResource("Resource_xyuhx"),
+"line:ship13": SubResource("Resource_odhbo")
 }
 _assetTable = {}
 stringsFile = ""
@@ -533,9 +757,9 @@ LastImportHadAnyStrings = false
 IsSuccessfullyParsed = false
 CompiledYarnProgramBase64 = "EscLCgVTYWxseRK9CwoFU2FsbHkSCwgGEgcKBVNhbGx5EgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSBggIEgIQABIJCAcSBR0AAABAEhIIDBIOCgxCb29sLkVxdWFsVG8SEggKEg4KDEwyc2tpcGNsYXVzZRIYCAISDQoLbGluZTo3OTQ5NDUSBR0AAAAAEhgIAhINCgtsaW5lOjJkYzM5YhIFHQAAAAASGAgCEg0KC2xpbmU6MzRkZTJmEgUdAAAAABIYCAISDQoLbGluZTpkY2MyYmMSBR0AAAAAEgsSCQoHTDFlbmRpZhICCAsSGAgCEg0KC2xpbmU6YThlNzBjEgUdAAAAABIZCAISDgoMbGluZTowYWY3Zjg2EgUdAAAAABILEgkKB0wxZW5kaWYSEQgGEg0KC1NhbGx5X1dhdGNoEgkIBxIFHQAAgD8SDQgMEgkKB3Zpc2l0ZWQSCQgHEgUdAACAPxIOCAwSCgoIQm9vbC5Ob3QSOAgEEg0KC2xpbmU6NWQ3YTdjEhoKGEw1c2hvcnRjdXRvcHRpb25fU2FsbHlfMRIFHQAAAAASAhABEhQIDRIQCg4kc2FsbHlfd2FybmluZxIRCAYSDQoLU2FsbHlfU29ycnkSCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIJCAcSBR0AAIA/Eg4IDBIKCghCb29sLk5vdBIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBI4CAQSDQoLbGluZTowYTdlMzkSGgoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yEgUdAAAAABICEAESOAgEEg0KC2xpbmU6MGZhY2Y3EhoKGEw3c2hvcnRjdXRvcHRpb25fU2FsbHlfMxIFHQAAAAASAhAAEgIIBRICCAESIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEhEIBhINCgtTYWxseV9XYXRjaBICCBASDxINCgtMNGdyb3VwX2VuZBIjCA0SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEiMIDhIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRICCAsSEQgGEg0KC1NhbGx5X1NvcnJ5EgIIEBIPEg0KC0w0Z3JvdXBfZW5kEiMIDRIfCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIwgOEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgIICxIQCAYSDAoKU2FsbHlfRXhpdBICCBASDxINCgtMNGdyb3VwX2VuZBICCAsSIwgNEh8KHSRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIjCA4SHwodJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHkSAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDBoLCgdMMWVuZGlmEBAaHAoYTDVzaG9ydGN1dG9wdGlvbl9TYWxseV8xECIaHAoYTDZzaG9ydGN1dG9wdGlvbl9TYWxseV8yECsaHAoYTDdzaG9ydGN1dG9wdGlvbl9TYWxseV8zEDQaDwoLTDRncm91cF9lbmQQPTIOCgV0aXRsZRIFU2FsbHkyBgoEdGFnczIMCgdjb2xvcklEEgEwMhMKCHBvc2l0aW9uEgc1MjQsMTExEqMECgtTYWxseV9XYXRjaBKTBAoLU2FsbHlfV2F0Y2gSGAgCEg0KC2xpbmU6OGMzZjk4EgUdAAAAABIYCAISDQoLbGluZToyNGM0MTgSBR0AAAAAEhgIAhINCgtsaW5lOmRmNGVhZhIFHQAAAAASBggIEgIQARIWCA4SEgoQJHNob3VsZF9zZWVfc2hpcBICCAsSCggGEgYKBFNoaXASCQgHEgUdAACAPxINCAwSCQoHdmlzaXRlZBIGCAgSAhABEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxITCAoSDwoNTDEwc2tpcGNsYXVzZRIYCAISDQoLbGluZToxZmVhNmMSBR0AAAAAEhgIAhINCgtsaW5lOjVkZjMyMxIFHQAAAAASCxIJCgdMOWVuZGlmEgIICxIpCA0SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSCQgHEgUdAACAPxIJCAcSBR0AAABAEhAIDBIMCgpOdW1iZXIuQWRkEikIDhIlCiMkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseV9XYXRjaBICCAsSAggPGgQKAkw4GhEKDUwxMHNraXBjbGF1c2UQEBoLCgdMOWVuZGlmEBEyFAoFdGl0bGUSC1NhbGx5X1dhdGNoMgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHNTEyLDQzMBJ/CgpTYWxseV9FeGl0EnEKClNhbGx5X0V4aXQSGAgCEg0KC2xpbmU6NjBjMjgyEgUdAAAAABICCA8aBQoDTDExMhMKBXRpdGxlEgpTYWxseV9FeGl0MgYKBHRhZ3MyDAoHY29sb3JJRBIBNjITCghwb3NpdGlvbhIHMjExLDQxNxKFAgoLU2FsbHlfU29ycnkS9QEKC1NhbGx5X1NvcnJ5EhgIAhINCgtsaW5lOmQ3ZGY0ORIFHQAAAAASKQgNEiUKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgkIBxIFHQAAgD8SCQgHEgUdAAAAQBIQCAwSDAoKTnVtYmVyLkFkZBIpCA4SJQojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfU29ycnkSAggLEgIIDxoFCgNMMTIyFAoFdGl0bGUSC1NhbGx5X1NvcnJ5MgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHODI3LDQzORLvCQoEU2hpcBLmCQoEU2hpcBIKCAYSBgoEU2hpcBIJCAcSBR0AAIA/Eg0IDBIJCgd2aXNpdGVkEgYICBICEAASCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhIIChIOCgxMMnNraXBjbGF1c2USGAgCEg0KC2xpbmU6NTgzN2YyEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDkSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAxMBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDExEgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTISBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEgIICxIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMTMSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMMWVuZGlmEhYIDRISChAkc2hvdWxkX3NlZV9zaGlwEgYICBICEAESCQgHEgUdAAAAQBISCAwSDgoMQm9vbC5FcXVhbFRvEhQIDRIQCg4kc2FsbHlfd2FybmluZxIGCAgSAhAAEgkIBxIFHQAAAEASEggMEg4KDEJvb2wuRXF1YWxUbxIJCAcSBR0AAABAEg4IDBIKCghCb29sLkFuZBISCAoSDgoMTDVza2lwY2xhdXNlEhgIAhINCgtsaW5lOnNoaXAwMRIFHQAAAAASJQgDEhoKGHNldHNwcml0ZSBTaGlwRmFjZSBoYXBweRIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDAzEgUdAAAAABInCAMSHAoac2V0c3ByaXRlIFNoaXBGYWNlIG5ldXRyYWwSBR0AAAAAEhgIAhINCgtsaW5lOnNoaXAwNBIFHQAAAAASGAgCEg0KC2xpbmU6c2hpcDA1EgUdAAAAABIlCAMSGgoYc2V0c3ByaXRlIFNoaXBGYWNlIGhhcHB5EgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDYSBR0AAAAAEgYICBICEAESFAgOEhAKDiRzYWxseV93YXJuaW5nEgIICxITCAMSCAoGd2FpdCAxEgUdAAAAABIYCAISDQoLbGluZTpzaGlwMDcSBR0AAAAAEicIAxIcChpzZXRzcHJpdGUgU2hpcEZhY2UgbmV1dHJhbBIFHQAAAAASCxIJCgdMNGVuZGlmEgIICxIiCA0SHgocJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2hpcBIJCAcSBR0AAIA/EgkIBxIFHQAAAEASEAgMEgwKCk51bWJlci5BZGQSIggOEh4KHCRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNoaXASAggLEgIIDxoECgJMMBoQCgxMMnNraXBjbGF1c2UQDxoLCgdMMWVuZGlmEBQaEAoMTDVza2lwY2xhdXNlEC4aCwoHTDRlbmRpZhAvMg0KBXRpdGxlEgRTaGlwMgYKBHRhZ3MyDAoHY29sb3JJRBIBMDITCghwb3NpdGlvbhIHNzIxLDEzMBIwCgdQcm9ncmFtEiUKB1Byb2dyYW0SAggPGgQKAkwwMhAKBXRpdGxlEgdQcm9ncmFtGhYKECRzaG91bGRfc2VlX3NoaXASAhAAGhQKDiRzYWxseV93YXJuaW5nEgIQABomCh0kWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TYWxseRIFHQAAAAAaLAojJFlhcm4uSW50ZXJuYWwuVmlzaXRpbmcuU2FsbHlfV2F0Y2gSBR0AAAAAGiwKIyRZYXJuLkludGVybmFsLlZpc2l0aW5nLlNhbGx5X1NvcnJ5EgUdAAAAABolChwkWWFybi5JbnRlcm5hbC5WaXNpdGluZy5TaGlwEgUdAAAAAA=="
 SourceScripts = ["res://Samples/Space/Dialogue/Sally.yarn", "res://Samples/Space/Dialogue/Ship.yarn", "res://Samples/Space/Dialogue/Variables.yarn"]
-baseLocalization = SubResource("Resource_dsyfb")
+baseLocalization = SubResource("Resource_atrn2")
 LocaleCodeToCSVPath = {}
-LineMetadata = SubResource("Resource_3nji4")
+LineMetadata = SubResource("Resource_ffwwv")
 ListOfFunctions = [SubResource("1"), SubResource("2"), SubResource("3"), SubResource("4"), SubResource("5"), SubResource("6"), SubResource("7"), SubResource("8"), SubResource("9"), SubResource("10"), SubResource("11")]
 SerializedDeclarations = [SubResource("13"), SubResource("12")]
 defaultLanguage = "en"
