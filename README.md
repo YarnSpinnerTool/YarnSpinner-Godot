@@ -1,6 +1,12 @@
 # YarnDonut 🧶🍩
 Beta port of [YarnSpinner-Unity](https://github.com/YarnSpinnerTool/YarnSpinner-Unity) integration to the Godot Mono engine v4
 
+Here is a video of one of the samples included in thie repository showcasing animations and branching dialogue written via .yarn scripts:
+
+
+https://github.com/dogboydog/YarnDonut/assets/9920963/3eecbe38-65e5-4130-a838-8154405df013
+
+
 ## Documentation
 
 See the [wiki](https://github.com/dogboydog/YarnDonut/wiki) for documentation. 
