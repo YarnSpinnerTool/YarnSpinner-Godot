@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Godot.Collections;
 using Newtonsoft.Json;
 
 #if TOOLS
@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 
 namespace YarnDonut
 {
-
     /// <summary>
     /// List of valid locale codes
     /// https://docs.godotengine.org/en/stable/tutorials/i18n/locales.html#doc-locales
@@ -17,19 +16,55 @@ namespace YarnDonut
     [Tool]
     public partial class Localization : Resource
     {
-
-        [Export] public string LocaleCode { get => _LocaleCode; set => _LocaleCode = value; }
+        [Export]
+        public string LocaleCode
+        {
+            get => _LocaleCode;
+            set => _LocaleCode = value;
+        }
 
         private string _LocaleCode;
 
-        [Export]
-        public Dictionary stringTable = new Dictionary();
+        private Dictionary<string, StringTableEntry> _stringTable;
+        [Export] private string _stringTableJSON;
 
-        [Export]
-        private Dictionary _assetTable = new Dictionary();
+        public Dictionary<string, StringTableEntry> stringTable
+        {
+            get
+            {
+                if (_stringTable == null)
+                {
+                    if (!string.IsNullOrEmpty(_stringTableJSON))
+                    {
+                        try
+                        {
+                            _stringTable =
+                                JsonConvert.DeserializeObject<Dictionary<string, StringTableEntry>>(_stringTableJSON);
+                        }
+                        catch (Exception e)
+                        {
+                            GD.PushError(
+                                $"Error parsing {nameof(stringTable)} from {ResourcePath}. The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
+                        }
+                    }
+                    else
+                    {
+                        stringTable = new Dictionary<string, StringTableEntry>();
+                    }
+                }
 
-        private System.Collections.Generic.Dictionary<string, string> _runtimeStringTable = new System.Collections.Generic.Dictionary<string, string>();
+                return _stringTable;
+            }
+            set
+            {
+                _stringTable = value;
+                _stringTableJSON= JsonConvert.SerializeObject(_stringTable);
+            }
+        }
         
+        private System.Collections.Generic.Dictionary<string, string> _runtimeStringTable =
+            new System.Collections.Generic.Dictionary<string, string>();
+
         /// <summary>
         /// The Resource containing CSV data that the Localization
         /// should use.
@@ -37,8 +72,7 @@ namespace YarnDonut
         // Hide this when its value is equal to whatever property is
         // stored in the YarnProjectImporterEditor class's
         // CurrentProjectDefaultLanguageProperty.
-        [Export]
-        public string stringsFile = "";
+        [Export] public string stringsFile = "";
 
         #region Localized Strings
 
@@ -52,7 +86,7 @@ namespace YarnDonut
 
             if (stringTable.ContainsKey(key))
             {
-                return ((StringTableEntry)stringTable[key]).Text;
+                return ((StringTableEntry) stringTable[key]).Text;
             }
 
             return null;
@@ -64,7 +98,7 @@ namespace YarnDonut
         /// <returns></returns>
         public List<StringTableEntry> GetStringTableEntries()
         {
-            return (from object key in stringTable.Keys select (StringTableEntry)stringTable[key.ToString()]).ToList();
+            return (from object key in stringTable.Keys select (StringTableEntry) stringTable[key.ToString()]).ToList();
         }
 
         /// <summary>
@@ -74,7 +108,8 @@ namespace YarnDonut
         /// <param name="key">The key to search for.</param>
         /// <returns><see langword="true"/> if this Localization has a string
         /// for the given key; <see langword="false"/> otherwise.</returns>
-        public bool ContainsLocalizedString(string key) => _runtimeStringTable.ContainsKey(key) || stringTable.ContainsKey(key);
+        public bool ContainsLocalizedString(string key) =>
+            _runtimeStringTable.ContainsKey(key) || stringTable.ContainsKey(key);
 
         /// <summary>
         /// Adds a new string to the string table.
@@ -140,39 +175,9 @@ namespace YarnDonut
         }
 
         #endregion
-
-        #region Localised Objects
-
-        public T GetLocalizedObject<T>(string key) where T : Resource
-        {
-            if (_assetTable.ContainsKey(key) && _assetTable[key] is T resultAsTargetObject)
-            {
-                return resultAsTargetObject;
-            }
-
-            return null;
-        }
-
-        public void SetLocalizedObject<T>(string key, T value) where T : Resource => _assetTable.Add(key, value);
-
-        public bool ContainsLocalizedObject<T>(string key) where T : Resource => _assetTable.ContainsKey(key) && _assetTable[key] is T;
-
-        public void AddLocalizedObject<T>(string key, T value) where T : Resource => _assetTable.Add(key, value);
-
-        public void AddLocalizedObjects<T>(IEnumerable<KeyValuePair<string, T>> objects) where T : Resource
-        {
-            foreach (var entry in objects)
-            {
-                _assetTable.Add(entry.Key, entry.Value);
-            }
-        }
-
-        #endregion
-
         public virtual void Clear()
         {
             stringTable.Clear();
-            _assetTable.Clear();
             _runtimeStringTable.Clear();
         }
 

@@ -129,7 +129,6 @@ namespace YarnDonut
             Effects.FadeAlpha(viewControl, 0, 1, fadeTime)
                 .ContinueWith(t =>
                 {
-                    viewControl.Visible = true;
                     if (t.IsFaulted)
                     {
                         GD.PrintErr($"Error running {nameof(Effects.FadeAlpha)} on {nameof(OptionsListView)}: {t.Exception}");

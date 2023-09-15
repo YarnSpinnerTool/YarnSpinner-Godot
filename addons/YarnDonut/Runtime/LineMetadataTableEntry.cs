@@ -5,6 +5,7 @@ using System.Linq;
 using Godot;
 #if TOOLS
 #endif
+
 namespace YarnDonut
 {
     /// <summary>
@@ -12,24 +13,25 @@ namespace YarnDonut
     /// Only used internally as an intermediary before persisting information
     /// in either a `YarnProject` or a CSV file.
     /// </summary>
-    [Serializable] [Tool]
-    public partial class LineMetadataTableEntry : Resource
+    [Serializable]
+    [Tool]
+    public class LineMetadataTableEntry
     {
         public LineMetadataTableEntry()
         {
             // parameterless constructor for Resource compatibility 
         }
-        
+
         /// <summary>
         /// The line ID for this line.
         /// </summary>
-        [Export] public string ID;
+        public string ID;
 
         /// <summary>
         /// The name of the Yarn script in which this line was originally
         /// found.
         /// </summary>
-        [Export] public string File;
+        public string File;
 
         /// <summary>
         /// The name of the node in which this line was originally found.
@@ -38,18 +40,18 @@ namespace YarnDonut
         /// This node can be found in the file indicated by <see
         /// cref="File"/>.
         /// </remarks>
-        [Export] public string Node;
+        public string Node;
 
         /// <summary>
         /// The line number in the file indicated by <see cref="File"/> at
         /// which the original version of this line can be found.
         /// </summary>
-        [Export] public string LineNumber;
+        public string LineNumber;
 
         /// <summary>
         /// Additional metadata included in this line.
         /// </summary>
-        [Export] public string[] Metadata;
+        public string[] Metadata;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LineMetadataTableEntry"/>
@@ -65,19 +67,21 @@ namespace YarnDonut
             Metadata = s.Metadata;
         }
 
-        #if TOOLS
-        
+#if TOOLS
+
         private static CsvHelper.Configuration.Configuration CsvConfiguration;
 
         private static CsvHelper.Configuration.Configuration GetConfiguration()
         {
             if (CsvConfiguration == null)
             {
-                CsvConfiguration = new CsvHelper.Configuration.Configuration(System.Globalization.CultureInfo.InvariantCulture)
-                {
-                    MemberTypes = CsvHelper.Configuration.MemberTypes.Fields,
-                };
+                CsvConfiguration =
+                    new CsvHelper.Configuration.Configuration(System.Globalization.CultureInfo.InvariantCulture)
+                    {
+                        MemberTypes = CsvHelper.Configuration.MemberTypes.Fields,
+                    };
             }
+
             return CsvConfiguration;
         }
 
@@ -169,6 +173,7 @@ namespace YarnDonut
                 {
                     csv.WriteField(field);
                 }
+
                 csv.NextRecord();
 
                 foreach (var entry in entries)
@@ -185,29 +190,31 @@ namespace YarnDonut
                     {
                         csv.WriteField(value);
                     }
+
                     csv.NextRecord();
                 }
 
                 return textWriter.ToString();
             }
         }
-        #endif
+#endif
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"LineMetadataTableEntry: id={ID} file={File} node={Node} line={LineNumber} metadata={string.Join(" ", Metadata)}";
+            return
+                $"LineMetadataTableEntry: id={ID} file={File} node={Node} line={LineNumber} metadata={string.Join(" ", Metadata)}";
         }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj is LineMetadataTableEntry entry &&
-                ID == entry.ID &&
-                File == entry.File &&
-                Node == entry.Node &&
-                LineNumber == entry.LineNumber &&
-                Enumerable.SequenceEqual(Metadata, entry.Metadata);
+                   ID == entry.ID &&
+                   File == entry.File &&
+                   Node == entry.Node &&
+                   LineNumber == entry.LineNumber &&
+                   Enumerable.SequenceEqual(Metadata, entry.Metadata);
         }
 
         /// <inheritdoc/>

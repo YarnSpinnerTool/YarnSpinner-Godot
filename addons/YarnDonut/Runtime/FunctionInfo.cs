@@ -1,14 +1,14 @@
 using System;
 using Godot;
+
 namespace YarnDonut
 {
     [Serializable]
     [Tool]
-    public partial class FunctionInfo : Resource
+    public class FunctionInfo
     {
-        [Export] public string Name;
-        [Export] public string ReturnType;
-        [Export] public string[] Parameters;
-        
+        public string Name;
+        public string ReturnType;
+        public string[] Parameters;
     }
 }

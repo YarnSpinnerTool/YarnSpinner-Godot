@@ -57,14 +57,26 @@ text = "Play the game in...."
 
 [node name="EnglishButton" type="Button" parent="VisualNovelManager/DialogueStartUI/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../JapaneseButton")
+focus_neighbor_bottom = NodePath("../SpanishButton")
+focus_next = NodePath("../SpanishButton")
+focus_previous = NodePath("../JapaneseButton")
 text = "English"
 
 [node name="SpanishButton" type="Button" parent="VisualNovelManager/DialogueStartUI/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../EnglishButton")
+focus_neighbor_bottom = NodePath("../JapaneseButton")
+focus_next = NodePath("../JapaneseButton")
+focus_previous = NodePath("../EnglishButton")
 text = "Español"
 
 [node name="JapaneseButton" type="Button" parent="VisualNovelManager/DialogueStartUI/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../SpanishButton")
+focus_neighbor_bottom = NodePath("../EnglishButton")
+focus_next = NodePath("../EnglishButton")
+focus_previous = NodePath("../SpanishButton")
 text = "日本語"
 
 [node name="InMemoryVariableStorage" type="Node" parent="."]

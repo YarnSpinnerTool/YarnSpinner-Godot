@@ -21,6 +21,7 @@ public partial class SampleEntryPoint : CanvasLayer
         _visualNovelButton.Connect("pressed", Callable.From(() => LoadSample(
             "res://Samples/VisualNovel/VisualNovelSample.tscn"
         )));
+        _spaceButton.GrabFocus();
     }
 
     public void LoadSample(string samplePath)

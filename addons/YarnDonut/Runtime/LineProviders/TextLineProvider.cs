@@ -14,7 +14,9 @@ namespace YarnDonut
         public override LocalizedLine GetLocalizedLine(Yarn.Line line)
         {
             string text;
-            if (textLanguageCode == YarnProject.baseLocalization.LocaleCode)
+            // By default this provider will treat "en" as matching "en-UK", "en-US" etc. You can 
+            // remap language codes how you like if you don't want this behavior 
+            if (textLanguageCode.ToLower().StartsWith(YarnProject.baseLocalization.LocaleCode.ToLower()))
             {
                 text = YarnProject.baseLocalization.GetLocalizedString(line.ID);
             }

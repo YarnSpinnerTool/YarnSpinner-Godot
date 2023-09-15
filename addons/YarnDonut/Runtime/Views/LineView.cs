@@ -40,7 +40,6 @@ namespace YarnDonut
         /// </remarks>
         public partial class TaskInterruptToken
         {
-
             /// <summary>
             /// The state that the token is in.
             /// </summary>
@@ -50,17 +49,21 @@ namespace YarnDonut
                 Running,
                 Interrupted,
             }
+
             private State state = State.NotRunning;
 
             public bool CanInterrupt => state == State.Running;
             public bool WasInterrupted => state == State.Interrupted;
             public void Start() => state = State.Running;
+
             public void Interrupt()
             {
                 if (CanInterrupt == false)
                 {
-                    throw new InvalidOperationException($"Cannot stop {nameof(TaskInterruptToken)}; state is {state} (and not {nameof(State.Running)}");
+                    throw new InvalidOperationException(
+                        $"Cannot stop {nameof(TaskInterruptToken)}; state is {state} (and not {nameof(State.Running)}");
                 }
+
                 state = State.Interrupted;
             }
 
@@ -78,16 +81,16 @@ namespace YarnDonut
         /// to 1.</param>
         /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
         /// can be used to interrupt the coroutine.</param>
-        public static async Task FadeAlpha(Control canvasGroup, float from, float to, float fadeTime, TaskInterruptToken stopToken = null)
+        public static async Task FadeAlpha(Control control, float from, float to, float fadeTime,
+            TaskInterruptToken stopToken = null)
         {
-
-            var mainTree = (SceneTree)Engine.GetMainLoop();
+            var mainTree = (SceneTree) Engine.GetMainLoop();
 
             stopToken?.Start();
 
-            var color = canvasGroup.Modulate;
+            var color = control.Modulate;
             color.A = from;
-            canvasGroup.Modulate = color;
+            control.Modulate = color;
 
             var timeElapsed = 0d;
 
@@ -101,29 +104,19 @@ namespace YarnDonut
                 var fraction = timeElapsed / fadeTime;
                 timeElapsed += mainTree.Root.GetProcessDeltaTime();
 
-                float a = Mathf.Lerp(from, to, (float)fraction);
+                float a = Mathf.Lerp(from, to, (float) fraction);
                 color.A = a;
-                canvasGroup.Modulate = color;
+                control.Modulate = color;
                 await DefaultActions.Wait(mainTree.Root.GetProcessDeltaTime());
             }
 
             color.A = to;
-            canvasGroup.Modulate = color;
+            if (color.A == 1f)
+            {
+                control.Visible = true;
+            }
 
-            // If our destination alpha is zero, disable interactibility,
-            // because the canvas group is now invisible.
-            // if (to == 0)
-            // {
-            //     canvasGroup. = false;
-            //     canvasGroup.blocksRaycasts = false;
-            // }
-            // else
-            // {
-            //     // Otherwise, enable interactibility, because it's visible.
-            //     canvasGroup.interactable = true;
-            //     canvasGroup.blocksRaycasts = true;
-            // }
-
+            control.Modulate = color;
             stopToken?.Complete();
         }
 
@@ -143,9 +136,10 @@ namespace YarnDonut
         /// <param name="onCharacterTyped">An <see cref="Action"/> that should be called for each character that was revealed.</param>
         /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
         /// can be used to interrupt the coroutine.</param>
-        public static async Task Typewriter(RichTextLabel text, float lettersPerSecond, Action onCharacterTyped, TaskInterruptToken stopToken = null)
+        public static async Task Typewriter(RichTextLabel text, float lettersPerSecond, Action onCharacterTyped,
+            TaskInterruptToken stopToken = null)
         {
-            var mainTree = (SceneTree)Engine.GetMainLoop();
+            var mainTree = (SceneTree) Engine.GetMainLoop();
             stopToken?.Start();
 
             // Start with everything invisible
@@ -159,11 +153,13 @@ namespace YarnDonut
             {
                 return;
             }
+
             if (stopToken?.WasInterrupted ?? false)
             {
                 text.VisibleRatio = 1f;
                 return;
             }
+
             // How many visible characters are present in the text?
             var characterCount = text.Text.Length;
 
@@ -199,6 +195,7 @@ namespace YarnDonut
                 {
                     return;
                 }
+
                 if (stopToken?.WasInterrupted ?? false)
                 {
                     text.VisibleRatio = 1f;
@@ -213,10 +210,12 @@ namespace YarnDonut
                     {
                         return;
                     }
+
                     text.VisibleRatio += ratioPerLetter;
                     onCharacterTyped?.Invoke();
                     accumulator -= secondsPerLetter;
                 }
+
                 accumulator += deltaTime;
 
                 await DefaultActions.Wait(deltaTime);
@@ -251,8 +250,8 @@ namespace YarnDonut
         /// and dismissal.
         /// </remarks>
         /// <seealso cref="useFadeEffect"/>
-        [Export]
-        public NodePath viewControlPath;
+        [Export] public NodePath viewControlPath;
+
         public Control viewControl;
 
         /// <summary>
@@ -270,8 +269,7 @@ namespace YarnDonut
         /// <seealso cref="viewControl"/>
         /// <seealso cref="fadeInTime"/>
         /// <seealso cref="fadeOutTime"/>
-        [Export]
-        public bool useFadeEffect = true;
+        [Export] public bool useFadeEffect = true;
 
         /// <summary>
         /// The time that the fade effect will take to fade lines in.
@@ -279,8 +277,7 @@ namespace YarnDonut
         /// <remarks>This value is only used when <see cref="useFadeEffect"/> is
         /// <see langword="true"/>.</remarks>
         /// <seealso cref="useFadeEffect"/>
-        [Export]
-        public float fadeInTime = 0.25f;
+        [Export] public float fadeInTime = 0.25f;
 
         /// <summary>
         /// The time that the fade effect will take to fade lines out.
@@ -288,15 +285,15 @@ namespace YarnDonut
         /// <remarks>This value is only used when <see cref="useFadeEffect"/> is
         /// <see langword="true"/>.</remarks>
         /// <seealso cref="useFadeEffect"/>
-        [Export]
-        public float fadeOutTime = 0.05f;
+        [Export] public float fadeOutTime = 0.05f;
 
         public const float FrameWaitTime = 0.16f;
+
         /// <summary>
         /// Node path from the inspector for <see cref="lineText"/>
         /// </summary>
-        [Export]
-        public NodePath lineTextPath;
+        [Export] public NodePath lineTextPath;
+
         /// <summary>
         /// The <see cref="RichTextLabel"/> object that displays the text of
         /// dialogue lines.
@@ -316,8 +313,7 @@ namespace YarnDonut
         /// <para>If this value is <see langword="false"/>, character names will
         /// not be shown in the <see cref="lineText"/> object.</para>
         /// </remarks>
-        [Export]
-        public bool showCharacterNameInLineView = true;
+        [Export] public bool showCharacterNameInLineView = true;
 
         /// <summary>
         /// The <see cref="RichTextLabel"/> object that displays the character
@@ -327,8 +323,7 @@ namespace YarnDonut
         /// If the <see cref="LineView"/> receives a line that does not contain
         /// a character name, this object will be left blank.
         /// </remarks>
-        [Export]
-        public NodePath characterNameTextPath;
+        [Export] public NodePath characterNameTextPath;
 
         public RichTextLabel characterNameText = null;
 
@@ -352,10 +347,10 @@ namespace YarnDonut
         /// <seealso cref="lineText"/>
         /// <seealso cref="onCharacterTyped"/>
         /// <seealso cref="typewriterEffectSpeed"/>
-        [Export]
-        public bool useTypewriterEffect = false;
+        [Export] public bool useTypewriterEffect = false;
 
         public delegate void OnCharacterTypedHandler();
+
         /// <summary>
         /// An event that is called each time a character is revealed
         /// during a typewriter effect.
@@ -372,8 +367,7 @@ namespace YarnDonut
         /// typewriter effect.
         /// </summary>
         /// <seealso cref="useTypewriterEffect"/>
-        [Export]
-        public float typewriterEffectSpeed = 0f;
+        [Export] public float typewriterEffectSpeed = 0f;
 
         /// <summary>
         /// The game object that represents an on-screen button that the user
@@ -389,8 +383,7 @@ namespace YarnDonut
         /// UI needs, you can provide any object you need.</para>
         /// </remarks>
         /// <seealso cref="autoAdvance"/>
-        [Export]
-        public NodePath continueButtonPath;
+        [Export] public NodePath continueButtonPath;
 
         /// <summary>
         /// A node with a signal named "pressed" that advances the dialogue to the
@@ -401,8 +394,7 @@ namespace YarnDonut
         /// <summary>
         /// The amount of time to wait after any line
         /// </summary>
-        [Export]
-        public float holdTime = 1f;
+        [Export] public float holdTime = 1f;
 
         /// <summary>
         /// Controls whether this Line View will wait for user input before
@@ -425,8 +417,7 @@ namespace YarnDonut
         /// read lines of dialogue at their own pace, and give them control over
         /// when to advance to the next line.</para></para>
         /// </remarks>
-        [Export]
-        public bool autoAdvance = false;
+        [Export] public bool autoAdvance = false;
 
         /// <summary>
         /// The current <see cref="LocalizedLine"/> that this line view is
@@ -446,14 +437,17 @@ namespace YarnDonut
                 lineText = GetNode<RichTextLabel>(lineTextPath);
                 lineText.BbcodeEnabled = true;
             }
+
             if (viewControl == null)
             {
                 viewControl = GetNode(viewControlPath) as Control;
             }
+
             if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath.ToString()))
             {
-                continueButton = (Control)GetNode(continueButtonPath);
+                continueButton = (Control) GetNode(continueButtonPath);
             }
+
             continueButton?.Connect("pressed", new Callable(this, nameof(OnContinueClicked)));
             if (characterNameText == null && !string.IsNullOrEmpty(characterNameTextPath))
             {
@@ -471,6 +465,7 @@ namespace YarnDonut
             color.A = alpha;
             viewControl.Modulate = color;
         }
+
         /// <inheritdoc/>
         public override void DismissLine(Action onDismissalComplete)
         {
@@ -503,10 +498,11 @@ namespace YarnDonut
         {
             currentLine = dialogueLine;
 
-            if (currentStopToken is { CanInterrupt: true })
+            if (currentStopToken is {CanInterrupt: true})
             {
                 currentStopToken.Interrupt();
             }
+
             // for now we are going to just immediately show everything
             // later we will make it fade in
             lineText.Visible = true;
@@ -623,7 +619,6 @@ namespace YarnDonut
                     {
                         lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                     }
-
                 }
                 else
                 {
@@ -712,7 +707,9 @@ namespace YarnDonut
                 {
                     textureButton.Disabled = false;
                 }
+
                 continueButton.Visible = true;
+                continueButton.GrabFocus();
             }
 
             // If we have a hold time, wait that amount of time, and then
@@ -742,6 +739,7 @@ namespace YarnDonut
             {
                 return;
             }
+
             viewControl.MouseFilter = b ? Control.MouseFilterEnum.Pass : Control.MouseFilterEnum.Ignore;
             viewControl.SetProcessInput(b);
             viewControl.Visible = b;
@@ -771,6 +769,7 @@ namespace YarnDonut
                 currentStopToken.Interrupt();
                 return;
             }
+
             // No animation is now running. Signal that we want to
             // interrupt the line instead.
             requestInterrupt?.Invoke();
