@@ -354,6 +354,13 @@ namespace YarnDonut.Editor
             {
                 ContractResolver = new OrderedContractResolver(),
             };
+             
+            // force the JSON serialization to update before saving 
+
+            project.baseLocalization.stringTable = project.baseLocalization.stringTable;
+            project.LineMetadata = project.LineMetadata;
+            project.ListOfFunctions = project.ListOfFunctions;
+            
             var saveErr = ResourceSaver.Save(project, project.ResourcePath);
             if (saveErr != Error.Ok)
             {
@@ -562,7 +569,6 @@ namespace YarnDonut.Editor
             info.Name = method.Name;
             info.ReturnType = returnType;
             info.Parameters = p;
-            info.ResourceName = info.Name;
             return info;
         }
 
@@ -595,8 +601,8 @@ namespace YarnDonut.Editor
                 // Create one for it now.
                 var stringTableEntries = GetStringTableEntries(project, compilationResult);
 
-                developmentLocalization = new Localization();
-
+                developmentLocalization = project.baseLocalization ?? new Localization();
+                developmentLocalization.Clear();
                 developmentLocalization.ResourceName = $"Default ({project.defaultLanguage})";
                 developmentLocalization.LocaleCode = project.defaultLanguage;
 
@@ -609,7 +615,8 @@ namespace YarnDonut.Editor
                 project.baseLocalization = developmentLocalization;
 
                 // Since this is the default language, also populate the line metadata.
-                project.LineMetadata = new LineMetadata();
+                project.LineMetadata ??= new LineMetadata();
+                project.LineMetadata.Clear();
                 project.LineMetadata.AddMetadata(LineMetadataTableEntriesFromCompilationResult(compilationResult));
             }
         }

@@ -39,14 +39,12 @@ namespace YarnDonut
         /// compiled into a full program.
         /// </remarks> 
         [Export] public bool IsSuccessfullyParsed = false;
+
         public byte[] CompiledYarnProgram => Convert.FromBase64String(CompiledYarnProgramBase64);
 
         [Export] public string CompiledYarnProgramBase64;
-        // TODO: filter scripts by parse errors
-        public List<Resource> ScriptsWithParseErrors => new List<Resource>();
 
-        //IList<string> IYarnErrorSource.CompileErrors => ParseErrorMessages;
-        public bool Destroyed => false; // not sure when this is used yet
+        public List<Resource> ScriptsWithParseErrors => new List<Resource>();
 
         [Export] public Array<string> SourceScripts = new Array<string>();
         [Export] public Localization baseLocalization;
@@ -62,18 +60,72 @@ namespace YarnDonut
         /// </summary>
         [Export] public Godot.Collections.Dictionary<string, string> LocaleCodeToCSVPath =
             new Godot.Collections.Dictionary<string, string>();
-        [Export]
-        public LineMetadata LineMetadata = null;
 
-        [Export]
-        public FunctionInfo[] ListOfFunctions;
+        private LineMetadata _lineMetadata;
+
+        public LineMetadata LineMetadata
+        {
+            get
+            {
+                if (_lineMetadata == null && !string.IsNullOrEmpty(_lineMetadataJSON))
+                {
+                    try
+                    {
+                        _lineMetadata = JsonConvert.DeserializeObject<LineMetadata>(_lineMetadataJSON);
+                    }
+                    catch (Exception e)
+                    {
+                        GD.PushError(
+                            $"Error parsing {nameof(LineMetadata)} from {ResourcePath}. The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
+                    }
+                }
+
+                return _lineMetadata;
+            }
+            set
+            {
+                _lineMetadata = value;
+                _lineMetadataJSON = JsonConvert.SerializeObject(_lineMetadata);
+            }
+        }
+
+        [Export] private string _lineMetadataJSON;
+
+        private FunctionInfo[] _listOfFunctions;
+
+        public FunctionInfo[] ListOfFunctions
+        {
+            get
+            {
+                if (_listOfFunctions == null && !string.IsNullOrEmpty(_listOfFunctionsJSON))
+                {
+                    try
+                    {
+                        _listOfFunctions = JsonConvert.DeserializeObject<FunctionInfo[]>(_listOfFunctionsJSON);
+                    }
+                    catch (Exception e)
+                    {
+                        GD.PushError(
+                            $"Error parsing {nameof(ListOfFunctions)} from {ResourcePath}. The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
+                    }
+                }
+
+                return _listOfFunctions;
+            }
+            set
+            {
+                _listOfFunctions = value;
+                _listOfFunctionsJSON = JsonConvert.SerializeObject(_listOfFunctions);
+            }
+        }
+
+        [Export] private string _listOfFunctionsJSON;
 
         [Export] public SerializedDeclaration[] SerializedDeclarations = Array.Empty<SerializedDeclaration>();
 
-        [Export] [Language]
-        public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
+        [Export] [Language] public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
 
-        #if TOOLS
+#if TOOLS
         /// <summary>
         /// Search all directories for .yarn files and save the list to the project
         /// </summary>
@@ -84,13 +136,16 @@ namespace YarnDonut
             {
                 if (ResourcePath == "" || ResourcePath == null)
                 {
-                    GD.Print($"{nameof(YarnProject)}s must be saved to a file in your project to be used with this plugin.");
+                    GD.Print(
+                        $"{nameof(YarnProject)}s must be saved to a file in your project to be used with this plugin.");
                     return;
                 }
 
                 var projectDir = ProjectSettings.GlobalizePath(ResourcePath);
                 projectDir = System.IO.Directory.GetParent(projectDir).FullName;
-                var allProjects = (Godot.Collections.Array) ProjectSettings.GetSetting(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY);
+                var allProjects =
+                    (Godot.Collections.Array) ProjectSettings.GetSetting(YarnProjectEditorUtility
+                        .YARN_PROJECT_PATHS_SETTING_KEY);
                 var nestedYarnProjects = new List<string>();
                 foreach (string project in allProjects)
                 {
@@ -107,7 +162,8 @@ namespace YarnDonut
             }
             catch (Exception e)
             {
-                GD.PushError($"Error searching for .yarn scripts in Yarn Project '{ResourcePath}': {e.Message}{e.StackTrace}");
+                GD.PushError(
+                    $"Error searching for .yarn scripts in Yarn Project '{ResourcePath}': {e.Message}{e.StackTrace}");
             }
         }
 
@@ -118,7 +174,8 @@ namespace YarnDonut
         /// <param name="dirPath">the directory to search for files and child directories</param>
         /// <param name="scripts"></param>
         /// <returns></returns>
-        private List<string> FindSourceScriptsRecursive(List<string> nestedYarnProjectDirs, string dirPath, List<string> scripts)
+        private List<string> FindSourceScriptsRecursive(List<string> nestedYarnProjectDirs, string dirPath,
+            List<string> scripts)
         {
             var files = System.IO.Directory.GetFiles(dirPath);
             foreach (var file in files)
@@ -152,7 +209,7 @@ namespace YarnDonut
 
             return scripts;
         }
-        #endif
+#endif
 
         [Export] public YarnProjectError[] ProjectErrors = Array.Empty<YarnProjectError>();
 

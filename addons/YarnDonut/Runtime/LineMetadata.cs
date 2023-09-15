@@ -2,22 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Godot.Collections;
+using Newtonsoft.Json;
 
 namespace YarnDonut
 {
-    [Serializable] [Tool]
-    public partial class LineMetadata : Resource
+    [Serializable]
+    [Tool]
+    public class LineMetadata
     {
-        [Export] private Dictionary _lineMetadata = new Dictionary();
+
+        public Dictionary<string, LineMetadataTableEntry> lineMetadata =
+            new Dictionary<string, LineMetadataTableEntry>();
+
         /// <summary>
         /// File where a CSV will be written to describing the metadata (optional)
         /// </summary>
-        [Export] public string stringsFile;
+        public string stringsFile;
+
         public LineMetadata()
         {
             // empty constructor needed to instantiate from YarnProjectUtility
         }
+
         public LineMetadata(IEnumerable<LineMetadataTableEntry> lineMetadataTableEntries)
         {
             AddMetadata(lineMetadataTableEntries);
@@ -37,8 +43,9 @@ namespace YarnDonut
                 {
                     continue;
                 }
+
                 entry.File = ProjectSettings.LocalizePath(entry.File);
-                _lineMetadata.Add(entry.ID, entry);
+                lineMetadata.Add(entry.ID, entry);
             }
         }
 
@@ -50,7 +57,7 @@ namespace YarnDonut
         {
             // The object returned doesn't allow modifications and is kept in
             // sync with `_lineMetadata`.
-            return _lineMetadata.Keys.Cast<string>();
+            return lineMetadata.Keys.Cast<string>();
         }
 
         /// <summary>
@@ -60,9 +67,9 @@ namespace YarnDonut
         /// <returns>An array of each piece of metadata if defined, otherwise returns null.</returns>
         public string[] GetMetadata(string lineID)
         {
-            if (_lineMetadata.ContainsKey(lineID))
+            if (lineMetadata.ContainsKey(lineID))
             {
-                return ((LineMetadataTableEntry) _lineMetadata[lineID]).Metadata;
+                return ((LineMetadataTableEntry) lineMetadata[lineID]).Metadata;
             }
 
             return null;
@@ -71,16 +78,18 @@ namespace YarnDonut
         public List<LineMetadataTableEntry> GetAllMetadata()
         {
             var metadataList = new List<LineMetadataTableEntry>();
-            foreach (var key in _lineMetadata.Keys)
+            foreach (var key in lineMetadata.Keys)
             {
-                var meta = (LineMetadataTableEntry)_lineMetadata[key];
+                var meta = (LineMetadataTableEntry) lineMetadata[key];
                 metadataList.Add(meta);
             }
+
             return metadataList;
         }
+
         public void Clear()
         {
-            _lineMetadata.Clear();
+            lineMetadata.Clear();
         }
     }
 }

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Samples/SampleEntryPoint.cs" id="1"]
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
 
-[node name="Node2D" type="CanvasLayer"]
+[node name="SampleEntryPoint" type="CanvasLayer"]
 script = ExtResource("1")
 _spaceButtonPath = NodePath("Space")
 _visualNovelButtonPath = NodePath("Visual Novel")
@@ -13,6 +13,18 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.101961, 0.184314, 0.215686, 1)
+
+[node name="Title" type="RichTextLabel" parent="."]
+clip_contents = false
+offset_left = 541.0
+offset_top = 83.0
+offset_right = 1132.0
+offset_bottom = 190.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "YarnDonut Samples"
 
 [node name="Space" type="Button" parent="."]
 anchors_preset = 7
@@ -26,6 +38,8 @@ offset_right = -370.0
 offset_bottom = -393.0
 grow_horizontal = 2
 grow_vertical = 0
+focus_neighbor_right = NodePath("../Visual Novel")
+focus_next = NodePath("../Visual Novel")
 theme = ExtResource("2")
 text = "Space"
 
@@ -53,6 +67,8 @@ offset_right = 535.0
 offset_bottom = -407.0
 grow_horizontal = 2
 grow_vertical = 0
+focus_neighbor_left = NodePath("../Space")
+focus_previous = NodePath("../Space")
 theme = ExtResource("2")
 text = "Visual Novel"
 
@@ -66,7 +82,3 @@ bbcode_enabled = true
 text = "Localization
 Effect/ Animation Commands
 "
-
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
-bbcode_enabled = true
-text = "YarnDonut Samples"

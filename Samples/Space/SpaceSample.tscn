@@ -1,9 +1,9 @@
 [gd_scene load_steps=17 format=3 uid="uid://ddbq27wcm6emj"]
 
 [ext_resource type="Resource" uid="uid://baf1cu6kwapdh" path="res://Samples/Space/Dialogue/SpaceYarnProject.tres" id="1"]
-[ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_xb3ul"]
+[ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_3dm8d"]
 [ext_resource type="Script" path="res://Samples/Space/Scripts/SpaceSample.cs" id="3"]
-[ext_resource type="Texture2D" uid="uid://dsxwawdra77cw" path="res://Samples/Space/Sprites/Ship-Face-Neutral.png" id="3_jhhyl"]
+[ext_resource type="Texture2D" uid="uid://dsxwawdra77cw" path="res://Samples/Space/Sprites/Ship-Face-Neutral.png" id="3_b3htj"]
 [ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnDonut/Scenes/DefaultDialogueSystem.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://b47akckvwuptw" path="res://Samples/Space/Sprites/Ship.png" id="4_adhl1"]
 [ext_resource type="Texture2D" uid="uid://cran3pr6dgduh" path="res://Samples/Space/Sprites/Sally.png" id="6_0pnyi"]
@@ -16,7 +16,7 @@
 
 [sub_resource type="CapsuleShape2D" id="3"]
 radius = 40.02
-height = 80.04
+height = 156.0
 
 [sub_resource type="CapsuleShape2D" id="2"]
 radius = 132.53
@@ -25,12 +25,10 @@ height = 265.06
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(314, 2122)
 
-[node name="SpaceSample" type="Node2D" node_paths=PackedStringArray("dialogueRunner", "shipFace")]
+[node name="SpaceSample" type="Node2D"]
 script = ExtResource("3")
-ShipHappySprite = ExtResource("2_xb3ul")
-ShipNeutralSprite = ExtResource("3_jhhyl")
-dialogueRunner = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
-shipFace = NodePath("Ship/ShipFaceSprite")
+ShipHappySprite = ExtResource("2_3dm8d")
+ShipNeutralSprite = ExtResource("3_b3htj")
 
 [node name="Ship" type="Area2D" parent="."]
 position = Vector2(1828, 1328)
@@ -56,6 +54,7 @@ nodeName = "Ship"
 [node name="ShipFaceSprite" type="Sprite2D" parent="Ship"]
 z_index = 1
 position = Vector2(-10, -199)
+texture = ExtResource("3_b3htj")
 
 [node name="Sally" type="Area2D" parent="."]
 position = Vector2(782, 1306)
@@ -78,11 +77,10 @@ shape = SubResource("3")
 script = ExtResource("16")
 nodeName = "Sally"
 
-[node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("IntersectShape", "DialogueRunner")]
+[node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(418, 1210)
+collision_mask = 3
 script = ExtResource("14")
-IntersectShape = NodePath("CollisionShape2D")
-DialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
 
 [node name="PlayerSpite" type="Sprite2D" parent="Player"]
 z_index = 2

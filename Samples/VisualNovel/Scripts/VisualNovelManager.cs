@@ -55,6 +55,7 @@ public partial class VisualNovelManager : Node
         _dialogueRunner.AddCommandHandler("StopAudioAll", StopAudioAll);
         _dialogueRunner.AddCommandHandler<string, float, float, float>("Fade", Fade);
         _dialogueRunner.onDialogueComplete += OnDialogueComplete;
+        _englishButton.GrabFocus();
     }
 
     public void StartDialogue(string locale)
