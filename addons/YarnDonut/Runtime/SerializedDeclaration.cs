@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using Godot;
 using Yarn;
 using Yarn.Compiler;
+
 namespace YarnDonut
 {
     /// <summary>
     /// A declaration of a variable that is written to a yarn project
     /// </summary>
-    [Serializable] [Tool]
-    public partial class SerializedDeclaration : Resource
+    [Serializable]
+    [Tool]
+    public class SerializedDeclaration
     {
         public static List<IType> BuiltInTypesList = new List<IType>
         {
@@ -18,19 +20,19 @@ namespace YarnDonut
             BuiltinTypes.Number
         };
 
-        [Export] public string name = "$variable";
+        public string name = "$variable";
 
-        [Export] public string typeName = BuiltinTypes.String.Name;
+        public string typeName = BuiltinTypes.String.Name;
 
-        [Export] public bool defaultValueBool;
-        [Export] public float defaultValueNumber;
-        [Export] public string defaultValueString;
+        public bool defaultValueBool;
+        public float defaultValueNumber;
+        public string defaultValueString;
 
-        [Export] public string description;
+        public string description;
 
-        [Export] public bool isImplicit;
+        public bool isImplicit;
 
-        [Export] public string sourceYarnAssetPath;
+        public string sourceYarnAssetPath;
 
         /// <summary>
         /// Set all of the serialized properties from a <see cref="Declaration"/> instance.
@@ -63,5 +65,4 @@ namespace YarnDonut
             }
         }
     }
-
 }
