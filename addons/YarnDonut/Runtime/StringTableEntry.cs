@@ -4,41 +4,45 @@ using CsvHelper;
 using Godot;
 #if TOOLS
 #endif
+
 namespace YarnDonut
 {
-    [Serializable] [Tool]
-    public partial class StringTableEntry : Resource
+    [Serializable]
+    [Tool]
+    public class StringTableEntry
     {
         public StringTableEntry()
         {
             // parameterless constructor for Resource compatibility 
         }
+
         /// <summary>
         /// The language that the line is written in.
         /// </summary>
-        [Export] public string Language;
+        public string Language;
 
         /// <summary>
         /// The line ID for this line. This value will be the same across
         /// all localizations.
         /// </summary>
-        [Export] public string ID;
+        public string ID;
 
         /// <summary>
         /// The text of this line, in the language specified by <see
         /// cref="Language"/>.
         /// </summary>
-        [Export] public string Text;
-        
+        public string Text;
+
         /// <summary>
         /// For non-base languages, this contains the original text for the line in the base language.
         /// </summary>
-        [Export] public string Original;
+        public string Original;
+
         /// <summary>
         /// The name of the Yarn script in which this line was originally
         /// found.
         /// </summary>
-        [Export] public string File;
+        public string File;
 
         /// <summary>
         /// The name of the node in which this line was originally found.
@@ -47,13 +51,13 @@ namespace YarnDonut
         /// This node can be found in the file indicated by <see
         /// cref="File"/>.
         /// </remarks>
-        [Export] public string Node;
+        public string Node;
 
         /// <summary>
         /// The line number in the file indicated by <see cref="File"/> at
         /// which the original version of this line can be found.
         /// </summary>
-        [Export] public string LineNumber;
+        public string LineNumber;
 
         /// <summary>
         /// A string used as part of a mechanism for checking if translated
@@ -77,12 +81,12 @@ namespace YarnDonut
         /// needs to be updated.
         /// </para>
         /// </remarks>
-        [Export] public string Lock;
+        public string Lock;
 
         /// <summary>
         /// A comment used to describe this line to translators.
         /// </summary>
-        [Export] public string Comment;
+        public string Comment;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StringTableEntry"/>
@@ -108,15 +112,17 @@ namespace YarnDonut
         {
             if (CsvConfiguration == null)
             {
-                CsvConfiguration = new CsvHelper.Configuration.Configuration(System.Globalization.CultureInfo.InvariantCulture)
-                {
-                    MemberTypes = CsvHelper.Configuration.MemberTypes.Fields,
-                };
+                CsvConfiguration =
+                    new CsvHelper.Configuration.Configuration(System.Globalization.CultureInfo.InvariantCulture)
+                    {
+                        MemberTypes = CsvHelper.Configuration.MemberTypes.Fields,
+                    };
             }
+
             return CsvConfiguration;
         }
 
-        #if TOOLS
+#if TOOLS
 
         /// <summary>
         /// Reads comma-separated value data from <paramref name="sourceText"/>,
@@ -215,6 +221,7 @@ namespace YarnDonut
                 {
                     csv.WriteField(field);
                 }
+
                 csv.NextRecord();
 
                 foreach (var entry in entries)
@@ -235,6 +242,7 @@ namespace YarnDonut
                     {
                         csv.WriteField(value);
                     }
+
                     csv.NextRecord();
                 }
 
@@ -242,26 +250,27 @@ namespace YarnDonut
             }
         }
 
-        #endif
+#endif
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"StringTableEntry: lang={Language} id={ID} text=\"{Text}\" file={File} node={Node} line={LineNumber} lock={Lock} comment={Comment}";
+            return
+                $"StringTableEntry: lang={Language} id={ID} text=\"{Text}\" file={File} node={Node} line={LineNumber} lock={Lock} comment={Comment}";
         }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             return obj is StringTableEntry entry &&
-                Language == entry.Language &&
-                ID == entry.ID &&
-                Text == entry.Text &&
-                File == entry.File &&
-                Node == entry.Node &&
-                LineNumber == entry.LineNumber &&
-                Lock == entry.Lock &&
-                Comment == entry.Comment;
+                   Language == entry.Language &&
+                   ID == entry.ID &&
+                   Text == entry.Text &&
+                   File == entry.File &&
+                   Node == entry.Node &&
+                   LineNumber == entry.LineNumber &&
+                   Lock == entry.Lock &&
+                   Comment == entry.Comment;
         }
 
         /// <inheritdoc/>

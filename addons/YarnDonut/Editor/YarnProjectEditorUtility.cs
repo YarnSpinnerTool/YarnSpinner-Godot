@@ -482,7 +482,6 @@ namespace YarnDonut.Editor
                         }
                         var serialized = existingDeclaration ?? new SerializedDeclaration();
                         serialized.SetDeclaration(decl);
-                        serialized.ResourceName = serialized.name;
                         return serialized;
                     }).ToArray();
                 project.SerializedDeclarations = newDeclarations;
@@ -698,7 +697,6 @@ namespace YarnDonut.Editor
                     entry.LineNumber = x.Value.lineNumber.ToString();
                     entry.Lock = YarnImporter.GetHashString(x.Value.text, 8);
                     entry.Comment = GenerateCommentWithLineMetadata(x.Value.metadata);
-                    entry.ResourceName = $"{entry.Node}_{entry.ID}";
                     return entry;
                 }
             );

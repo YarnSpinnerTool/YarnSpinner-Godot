@@ -67,7 +67,11 @@ namespace YarnDonut
         {
             get
             {
-                if (_lineMetadata == null && !string.IsNullOrEmpty(_lineMetadataJSON))
+                if (_lineMetadata != null)
+                {
+                    return _lineMetadata;
+                }
+                if (!string.IsNullOrEmpty(_lineMetadataJSON))
                 {
                     try
                     {
@@ -78,6 +82,10 @@ namespace YarnDonut
                         GD.PushError(
                             $"Error parsing {nameof(LineMetadata)} from {ResourcePath}. The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
                     }
+                }
+                else
+                {
+                    LineMetadata = new LineMetadata();
                 }
 
                 return _lineMetadata;
@@ -97,7 +105,11 @@ namespace YarnDonut
         {
             get
             {
-                if (_listOfFunctions == null && !string.IsNullOrEmpty(_listOfFunctionsJSON))
+                if (_listOfFunctions != null)
+                {
+                    return _listOfFunctions;
+                }
+                if (!string.IsNullOrEmpty(_listOfFunctionsJSON))
                 {
                     try
                     {
@@ -126,14 +138,21 @@ namespace YarnDonut
         [Export] private string _listOfFunctionsJSON;
 
         private SerializedDeclaration[] _serializedDeclarations;
-        public SerializedDeclaration[] SerializedDeclarations  {
+
+        public SerializedDeclaration[] SerializedDeclarations
+        {
             get
             {
-                if ( _serializedDeclarations == null && !string.IsNullOrEmpty(_serializedDeclarationsJSON))
+                if (_serializedDeclarations != null)
+                {
+                    return _serializedDeclarations;
+                }
+                if (!string.IsNullOrEmpty(_serializedDeclarationsJSON))
                 {
                     try
                     {
-                        _serializedDeclarations= JsonConvert.DeserializeObject<SerializedDeclaration[]>(_serializedDeclarationsJSON);
+                        _serializedDeclarations =
+                            JsonConvert.DeserializeObject<SerializedDeclaration[]>(_serializedDeclarationsJSON);
                     }
                     catch (Exception e)
                     {
@@ -145,13 +164,12 @@ namespace YarnDonut
                 {
                     SerializedDeclarations = System.Array.Empty<SerializedDeclaration>();
                 }
-
-                return  _serializedDeclarations;
+                return _serializedDeclarations;
             }
             set
             {
-                _serializedDeclarations= value;
-                _serializedDeclarationsJSON = JsonConvert.SerializeObject( _serializedDeclarations);
+                _serializedDeclarations = value;
+                _serializedDeclarationsJSON = JsonConvert.SerializeObject(_serializedDeclarations);
             }
         }
 
@@ -168,7 +186,7 @@ namespace YarnDonut
         {
             try
             {
-                if (ResourcePath == "" || ResourcePath == null)
+                if (string.IsNullOrEmpty(ResourcePath))
                 {
                     GD.Print(
                         $"{nameof(YarnProject)}s must be saved to a file in your project to be used with this plugin.");
