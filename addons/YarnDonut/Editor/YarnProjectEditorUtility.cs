@@ -356,10 +356,10 @@ namespace YarnDonut.Editor
             };
              
             // force the JSON serialization to update before saving 
-
             project.baseLocalization.stringTable = project.baseLocalization.stringTable;
             project.LineMetadata = project.LineMetadata;
             project.ListOfFunctions = project.ListOfFunctions;
+            project.SerializedDeclarations = project.SerializedDeclarations; 
             
             var saveErr = ResourceSaver.Save(project, project.ResourcePath);
             if (saveErr != Error.Ok)

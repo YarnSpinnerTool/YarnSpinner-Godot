@@ -109,6 +109,10 @@ namespace YarnDonut
                             $"Error parsing {nameof(ListOfFunctions)} from {ResourcePath}. The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
                     }
                 }
+                else
+                {
+                    ListOfFunctions = System.Array.Empty<FunctionInfo>();
+                }
 
                 return _listOfFunctions;
             }
@@ -121,7 +125,37 @@ namespace YarnDonut
 
         [Export] private string _listOfFunctionsJSON;
 
-        [Export] public SerializedDeclaration[] SerializedDeclarations = Array.Empty<SerializedDeclaration>();
+        private SerializedDeclaration[] _serializedDeclarations;
+        public SerializedDeclaration[] SerializedDeclarations  {
+            get
+            {
+                if ( _serializedDeclarations == null && !string.IsNullOrEmpty(_serializedDeclarationsJSON))
+                {
+                    try
+                    {
+                        _serializedDeclarations= JsonConvert.DeserializeObject<SerializedDeclaration[]>(_serializedDeclarationsJSON);
+                    }
+                    catch (Exception e)
+                    {
+                        GD.PushError(
+                            $"Error parsing {nameof(SerializedDeclarations)} from {ResourcePath}. The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
+                    }
+                }
+                else
+                {
+                    SerializedDeclarations = System.Array.Empty<SerializedDeclaration>();
+                }
+
+                return  _serializedDeclarations;
+            }
+            set
+            {
+                _serializedDeclarations= value;
+                _serializedDeclarationsJSON = JsonConvert.SerializeObject( _serializedDeclarations);
+            }
+        }
+
+        [Export] private string _serializedDeclarationsJSON;
 
         [Export] [Language] public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
 
