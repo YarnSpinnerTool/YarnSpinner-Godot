@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text.Json;
 using Godot;
 using Godot.Collections;
-using Newtonsoft.Json;
 using Yarn;
 using Array = System.Array;
-
 #if TOOLS
 using YarnDonut.Editor;
 #endif
@@ -15,6 +16,8 @@ namespace YarnDonut
     [Tool]
     public partial class YarnProject : Resource
     {
+        public static JsonSerializerOptions JSONOptions = new JsonSerializerOptions {IncludeFields = true};
+
         /// <summary>
         /// Indicates whether the last time this file was imported, the
         /// file contained lines that did not have a line tag (and
@@ -38,7 +41,7 @@ namespace YarnDonut
         /// not. Other errors may exist that prevent this script from being
         /// compiled into a full program.
         /// </remarks> 
-        [Export] public bool IsSuccessfullyParsed = false;
+        [Export] public bool IsSuccessfullyParsed;
 
         public byte[] CompiledYarnProgram => Convert.FromBase64String(CompiledYarnProgramBase64);
 
@@ -75,7 +78,7 @@ namespace YarnDonut
                 {
                     try
                     {
-                        _lineMetadata = JsonConvert.DeserializeObject<LineMetadata>(_lineMetadataJSON);
+                        _lineMetadata = JsonSerializer.Deserialize<LineMetadata>(_lineMetadataJSON, JSONOptions);
                     }
                     catch (Exception e)
                     {
@@ -93,7 +96,10 @@ namespace YarnDonut
             set
             {
                 _lineMetadata = value;
-                _lineMetadataJSON = JsonConvert.SerializeObject(_lineMetadata);
+                _lineMetadataJSON = JsonSerializer.Serialize(_lineMetadata, JSONOptions);
+#if TOOLS
+                YarnProjectEditorUtility.ClearJSONCache();
+#endif
             }
         }
 
@@ -113,7 +119,7 @@ namespace YarnDonut
                 {
                     try
                     {
-                        _listOfFunctions = JsonConvert.DeserializeObject<FunctionInfo[]>(_listOfFunctionsJSON);
+                        _listOfFunctions = JsonSerializer.Deserialize<FunctionInfo[]>(_listOfFunctionsJSON);
                     }
                     catch (Exception e)
                     {
@@ -123,7 +129,7 @@ namespace YarnDonut
                 }
                 else
                 {
-                    ListOfFunctions = System.Array.Empty<FunctionInfo>();
+                    ListOfFunctions = Array.Empty<FunctionInfo>();
                 }
 
                 return _listOfFunctions;
@@ -131,7 +137,10 @@ namespace YarnDonut
             set
             {
                 _listOfFunctions = value;
-                _listOfFunctionsJSON = JsonConvert.SerializeObject(_listOfFunctions);
+                _listOfFunctionsJSON = JsonSerializer.Serialize(_listOfFunctions, JSONOptions);
+#if TOOLS
+                YarnProjectEditorUtility.ClearJSONCache();
+#endif
             }
         }
 
@@ -152,7 +161,7 @@ namespace YarnDonut
                     try
                     {
                         _serializedDeclarations =
-                            JsonConvert.DeserializeObject<SerializedDeclaration[]>(_serializedDeclarationsJSON);
+                            JsonSerializer.Deserialize<SerializedDeclaration[]>(_serializedDeclarationsJSON);
                     }
                     catch (Exception e)
                     {
@@ -162,20 +171,23 @@ namespace YarnDonut
                 }
                 else
                 {
-                    SerializedDeclarations = System.Array.Empty<SerializedDeclaration>();
+                    SerializedDeclarations = Array.Empty<SerializedDeclaration>();
                 }
                 return _serializedDeclarations;
             }
             set
             {
                 _serializedDeclarations = value;
-                _serializedDeclarationsJSON = JsonConvert.SerializeObject(_serializedDeclarations);
+                _serializedDeclarationsJSON =  JsonSerializer.Serialize(_serializedDeclarations, JSONOptions);
+#if TOOLS
+                YarnProjectEditorUtility.ClearJSONCache();
+#endif
             }
         }
 
         [Export] private string _serializedDeclarationsJSON;
 
-        [Export] [Language] public string defaultLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
+        [Export] [Language] public string defaultLanguage = CultureInfo.CurrentCulture.Name;
 
 #if TOOLS
         /// <summary>
@@ -194,7 +206,7 @@ namespace YarnDonut
                 }
 
                 var projectDir = ProjectSettings.GlobalizePath(ResourcePath);
-                projectDir = System.IO.Directory.GetParent(projectDir).FullName;
+                projectDir = Directory.GetParent(projectDir).FullName;
                 var allProjects =
                     (Godot.Collections.Array) ProjectSettings.GetSetting(YarnProjectEditorUtility
                         .YARN_PROJECT_PATHS_SETTING_KEY);
@@ -202,7 +214,7 @@ namespace YarnDonut
                 foreach (string project in allProjects)
                 {
                     var absoluteOtherProjectDir = ProjectSettings.GlobalizePath(project);
-                    absoluteOtherProjectDir = System.IO.Directory.GetParent(absoluteOtherProjectDir).FullName;
+                    absoluteOtherProjectDir = Directory.GetParent(absoluteOtherProjectDir).FullName;
                     if (!project.Equals(ResourcePath) && absoluteOtherProjectDir.Contains(projectDir))
                     {
                         nestedYarnProjects.Add(absoluteOtherProjectDir);
@@ -229,7 +241,7 @@ namespace YarnDonut
         private List<string> FindSourceScriptsRecursive(List<string> nestedYarnProjectDirs, string dirPath,
             List<string> scripts)
         {
-            var files = System.IO.Directory.GetFiles(dirPath);
+            var files = Directory.GetFiles(dirPath);
             foreach (var file in files)
             {
                 if (file.ToUpperInvariant().EndsWith(".YARN"))
@@ -239,7 +251,7 @@ namespace YarnDonut
                 }
             }
 
-            var subdirectories = System.IO.Directory.GetDirectories(dirPath);
+            var subdirectories = Directory.GetDirectories(dirPath);
             foreach (var subdirectory in subdirectories)
             {
                 var coveredByNestedProject = false;
@@ -300,7 +312,7 @@ namespace YarnDonut
         /// The cached result of deserializing <see
         /// cref="CompiledYarnProgram"/>.
         /// </summary>
-        private Program cachedProgram = null;
+        private Program cachedProgram;
 
         /// <summary>
         /// The names of assemblies that <see cref="ActionManager"/> should look
@@ -312,7 +324,7 @@ namespace YarnDonut
         /// <summary>
         /// Gets the Yarn Program stored in this project.
         /// </summary>
-        [System.Obsolete("Use the Program property instead, which caches its return value.")]
+        [Obsolete("Use the Program property instead, which caches its return value.")]
         public Program GetProgram()
         {
             return Program.Parser.ParseFrom(CompiledYarnProgram);

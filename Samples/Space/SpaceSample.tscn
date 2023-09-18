@@ -143,9 +143,22 @@ MaxX = 1200
 [node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("1")
 startNode = "Saly"
+runSelectedOptionAsLine = false
+verboseLogging = true
+
+[node name="LineView" parent="YarnSpinnerCanvasLayer" index="2"]
+fadeInTime = 0.25
+fadeOutTime = 0.05
+showCharacterNameInLineView = true
+holdTime = 1.0
+autoAdvance = false
 
 [node name="LineText" parent="YarnSpinnerCanvasLayer/LineView/ViewControl" index="0"]
 theme_override_font_sizes/normal_font_size = 34
+
+[node name="OptionsListView" parent="YarnSpinnerCanvasLayer" index="3"]
+fadeTime = 0.1
+showUnavailableOptions = false
 
 [node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
 textLanguageCode = "en"
