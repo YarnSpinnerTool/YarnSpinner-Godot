@@ -7,11 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
 using Google.Protobuf;
-using Newtonsoft.Json;
 using Yarn;
 using Yarn.Compiler;
 using File = System.IO.File;
@@ -21,7 +21,6 @@ namespace YarnDonut.Editor
     [Tool]
     public static class YarnProjectEditorUtility
     {
-
         public const string YARN_PROJECT_PATHS_SETTING_KEY = "YarnDonut/YarnProjectPaths";
         /// <summary>
         /// The contents of a .csv.import file to avoid importing it as a Godot localization csv file
@@ -348,19 +347,27 @@ namespace YarnDonut.Editor
             ResourceSaver.Save(translation, translationResPath);
             GD.Print($"Wrote translation file for {language} to {translationResPath}.");
         }
+
+        /// <summary>
+        ///  Workaround for https://github.com/godotengine/godot/issues/78513
+        /// </summary>
+        public static void ClearJSONCache()
+        {
+            var assembly = typeof(JsonSerializerOptions).Assembly;
+            var updateHandlerType = assembly.GetType("System.Text.Json.JsonSerializerOptionsUpdateHandler");
+            var clearCacheMethod = updateHandlerType?.GetMethod("ClearCache", BindingFlags.Static | BindingFlags.Public);
+            clearCacheMethod?.Invoke(null, new object?[] { null }); 
+            }
         public static void SaveYarnProject(YarnProject project)
         {
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new OrderedContractResolver(),
-            };
-             
             // force the JSON serialization to update before saving 
             project.baseLocalization.stringTable = project.baseLocalization.stringTable;
             project.LineMetadata = project.LineMetadata;
             project.ListOfFunctions = project.ListOfFunctions;
-            project.SerializedDeclarations = project.SerializedDeclarations; 
-            
+            project.SerializedDeclarations = project.SerializedDeclarations;
+
+            // Prevent plugin failing to load when code is rebuilt
+            ClearJSONCache();
             var saveErr = ResourceSaver.Save(project, project.ResourcePath);
             if (saveErr != Error.Ok)
             {
@@ -800,7 +807,6 @@ namespace YarnDonut.Editor
 
         // A data class used for deserialising the JSON AssemblyDefinitionAssets
         // into.
-        [Serializable]
         private class AssemblyDefinition
         {
             public string name;

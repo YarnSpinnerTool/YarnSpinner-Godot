@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using Godot;
-using Newtonsoft.Json;
+
 
 #if TOOLS
+using YarnDonut.Editor;
 #endif
 
 namespace YarnDonut
@@ -39,7 +42,7 @@ namespace YarnDonut
                         try
                         {
                             _stringTable =
-                                JsonConvert.DeserializeObject<Dictionary<string, StringTableEntry>>(_stringTableJSON);
+                                JsonSerializer.Deserialize<Dictionary<string, StringTableEntry>>(_stringTableJSON, YarnProject.JSONOptions);
                         }
                         catch (Exception e)
                         {
@@ -58,7 +61,10 @@ namespace YarnDonut
             set
             {
                 _stringTable = value;
-                _stringTableJSON= JsonConvert.SerializeObject(_stringTable);
+                _stringTableJSON= JsonSerializer.Serialize(_stringTable, YarnProject.JSONOptions);
+                #if TOOLS
+                                YarnProjectEditorUtility.ClearJSONCache();
+                #endif
             }
         }
         

@@ -30,6 +30,5 @@
         <Reference Include="YarnSpinner.Compiler">
             <HintPath>addons\YarnDonut\Runtime\DLLs\YarnSpinner.Compiler.dll</HintPath>
         </Reference>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
     </ItemGroup>
 </Project>

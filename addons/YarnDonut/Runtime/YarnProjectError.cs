@@ -6,7 +6,7 @@ namespace YarnDonut
     /// A class used to serialize errors in the yarn project so that they can be displayed
     /// in more detail in the inspector
     /// </summary>
-    [Serializable] [Tool]
+    [Tool]
     public partial class YarnProjectError : Resource
     {
         [Export]public string FileName;

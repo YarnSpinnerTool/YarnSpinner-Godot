@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Newtonsoft.Json;
+
 
 namespace YarnDonut
 {
+
     [Serializable]
     [Tool]
     public class LineMetadata

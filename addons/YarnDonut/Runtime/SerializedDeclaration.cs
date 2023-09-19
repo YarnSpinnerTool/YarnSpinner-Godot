@@ -9,7 +9,6 @@ namespace YarnDonut
     /// <summary>
     /// A declaration of a variable that is written to a yarn project
     /// </summary>
-    [Serializable]
     [Tool]
     public class SerializedDeclaration
     {

@@ -13,7 +13,6 @@ namespace YarnDonut
     /// Only used internally as an intermediary before persisting information
     /// in either a `YarnProject` or a CSV file.
     /// </summary>
-    [Serializable]
     [Tool]
     public class LineMetadataTableEntry
     {
