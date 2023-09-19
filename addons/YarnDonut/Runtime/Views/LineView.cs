@@ -233,7 +233,7 @@ namespace YarnDonut
     /// A Dialogue View that presents lines of dialogue, using Godot UI Controls
     /// elements.
     /// </summary>
-    public partial class LineView : DialogueViewBase
+    public partial class LineView : Node, DialogueViewBase
     {
         /// <summary>
         /// The Control that is the parent of all UI elements in this line view.
@@ -467,7 +467,7 @@ namespace YarnDonut
         }
 
         /// <inheritdoc/>
-        public override void DismissLine(Action onDismissalComplete)
+        public void DismissLine(Action onDismissalComplete)
         {
             currentLine = null;
 
@@ -494,7 +494,7 @@ namespace YarnDonut
         }
 
         /// <inheritdoc/>
-        public override void InterruptLine(LocalizedLine dialogueLine, Action onInterruptLineFinished)
+        public void InterruptLine(LocalizedLine dialogueLine, Action onInterruptLineFinished)
         {
             currentLine = dialogueLine;
 
@@ -565,8 +565,10 @@ namespace YarnDonut
             onInterruptLineFinished();
         }
 
+        public Action requestInterrupt { get; set; }
+
         /// <inheritdoc/>
-        public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
+        public void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
             // Begin running the line asynchronously
             RunLineInternal(dialogueLine, onDialogueLineFinished);
@@ -746,7 +748,7 @@ namespace YarnDonut
         }
 
         /// <inheritdoc/>
-        public override void UserRequestedViewAdvancement()
+        public void UserRequestedViewAdvancement()
         {
             // We received a request to advance the view. If we're in the middle of
             // an animation, skip to the end of it. If we're not current in an

@@ -36,7 +36,7 @@ namespace YarnDonut
     /// </remarks>
     /// <seealso cref="LineProviderBehaviour"/>
     /// <seealso cref="DialogueRunner.dialogueViews"/>
-    public abstract partial class DialogueViewBase : Godot.Node
+    public interface DialogueViewBase
     {
         /// <summary>
         /// Represents the method that should be called when this view wants the
@@ -60,7 +60,7 @@ namespace YarnDonut
         /// next line of dialogue.
         /// </para>
         /// </remarks>
-        public Action requestInterrupt;
+        public Action requestInterrupt { get; set; }
 
         /// <summary>Called by the <see cref="DialogueRunner"/> to signal that
         /// dialogue has started.</summary>
@@ -74,7 +74,7 @@ namespace YarnDonut
         /// <para style="note">The default implementation of this method does
         /// nothing.</para>
         /// </remarks>
-        public virtual void DialogueStarted()
+        public void DialogueStarted()
         {
             // Default implementation does nothing.
         }
@@ -134,7 +134,7 @@ namespace YarnDonut
         /// <seealso cref="InterruptLine(LocalizedLine, Action)"/>
         /// <seealso cref="DismissLine(Action)"/>
         /// <seealso cref="RunOptions(DialogueOption[], Action{int})"/>
-        public virtual void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
+        public void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
             // The default implementation does nothing, and immediately calls
             // onDialogueLineFinished.
@@ -189,7 +189,7 @@ namespace YarnDonut
         /// called after the line has finished being presented.</param>
         /// <seealso cref="RunLine(LocalizedLine, Action)"/>
         /// <seealso cref="DismissLine(Action)"/>
-        public virtual void InterruptLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
+        public void InterruptLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
             // the default implementation does nothing
             onDialogueLineFinished?.Invoke();
@@ -232,7 +232,7 @@ namespace YarnDonut
         /// </remarks>
         /// <param name="onDismissalComplete">The method that should be called
         /// when the view has finished dismissing the line.</param>
-        public virtual void DismissLine(Action onDismissalComplete)
+        public void DismissLine(Action onDismissalComplete)
         {
             // The default implementation does nothing, and immediately calls
             // onDialogueLineFinished.
@@ -287,7 +287,7 @@ namespace YarnDonut
         /// displayed to the user.</param>
         /// <param name="onOptionSelected">A method that should be called when
         /// the user has made a selection.</param>
-        public virtual void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
+        public void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
         {
             // The default implementation does nothing.
         }
@@ -306,7 +306,7 @@ namespace YarnDonut
         /// <para style="note">The default implementation of this method does
         /// nothing.</para>
         /// </remarks>
-        public virtual void DialogueComplete()
+        public void DialogueComplete()
         {
             // Default implementation does nothing.
         }
@@ -354,7 +354,7 @@ namespace YarnDonut
         /// <para style="note">The default implementation of this method does
         /// nothing.</para>
         /// </remarks>
-        public virtual void UserRequestedViewAdvancement()
+        public void UserRequestedViewAdvancement()
         {
             // default implementation does nothing
         }

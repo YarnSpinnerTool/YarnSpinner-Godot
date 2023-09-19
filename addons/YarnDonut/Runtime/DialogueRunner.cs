@@ -32,6 +32,7 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 using Yarn;
+using Node = Godot.Node;
 
 namespace YarnDonut
 {
@@ -98,15 +99,17 @@ namespace YarnDonut
 
         /// <summary>
         /// The View classes that will present the dialogue to the user.
+        /// An error will be logged if any of these objects do not implement
+        /// the interface <see cref="DialogueViewBase"/>
         /// </summary>
-        public List<DialogueViewBase> dialogueViews;
+        public List<Node> dialogueViews;
 
         /// <summary>The name of the node to start from.</summary>
         /// <remarks>
         /// This value is used to select a node to start from when <see
         /// cref="startAutomatically"/> is called.
         /// </remarks>
-        [Export] public string startNode = Yarn.Dialogue.DefaultStartNodeName;
+        [Export] public string startNode;
 
         /// <summary>
         /// Whether the DialogueRunner should automatically start running
@@ -334,7 +337,10 @@ namespace YarnDonut
                     continue;
                 }
 
-                dialogueView.DialogueStarted();
+                if (dialogueView is DialogueViewBase view)
+                {
+                   view.DialogueStarted();
+                }
             }
 
             // Request that the dialogue select the current node. This
@@ -656,9 +662,11 @@ namespace YarnDonut
         /// <summary>
         /// Sets the dialogue views and makes sure the callback <see cref="DialogueViewBase.MarkLineComplete"/>
         /// will respond correctly.
+        ///
+        /// Each view in the list must implement the interface <see cref="DialogueViewBase"/>
         /// </summary>
         /// <param name="views">The array of views to be assigned.</param>
-        public void SetDialogueViews(List<DialogueViewBase> views)
+        public void SetDialogueViews(List<Node> views)
         {
             foreach (var view in views)
             {
@@ -666,7 +674,15 @@ namespace YarnDonut
                 {
                     continue;
                 }
-                view.requestInterrupt = OnViewRequestedInterrupt;
+
+                if (view is DialogueViewBase baseView)
+                {
+                    baseView.requestInterrupt = OnViewRequestedInterrupt;
+                }
+                else
+                {
+                    GD.PushError($"{view.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
+                }
             }
             dialogueViews = views;
         }
@@ -683,7 +699,7 @@ namespace YarnDonut
         ///  The collection of dialogue views that are currently either
         ///  delivering a line, or dismissing a line from being on screen.
         /// </summary>
-        private readonly HashSet<DialogueViewBase> ActiveDialogueViews = new HashSet<DialogueViewBase>();
+        private readonly HashSet<Node> ActiveDialogueViews = new HashSet<Node>();
 
         Action<int> selectAction;
 
@@ -713,21 +729,21 @@ namespace YarnDonut
             _variableStorage = GetNode<VariableStorageBehaviour>(variableStoragePath);
             if (dialogueViews == null)
             {
-                dialogueViews = new List<DialogueViewBase>();
+                dialogueViews = new List<Node>();
             }
             foreach (var path in dialogueViewPaths)
             {
                 var potentialView = GetNode(path);
-                if (potentialView is DialogueViewBase view)
+                if (potentialView is DialogueViewBase baseView)
                 {
                     if (!dialogueViews.Contains(potentialView))
                     {
-                        dialogueViews.Add(view);
+                        dialogueViews.Add(potentialView);
                     }
                 }
                 else
                 {
-                    GD.PushError($"{potentialView.Name} is not derived from {nameof(DialogueViewBase)}");
+                    GD.PushError($"{potentialView.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
                 }
 
 
@@ -743,7 +759,7 @@ namespace YarnDonut
                 {
                     continue;
                 }
-                view.requestInterrupt = OnViewRequestedInterrupt;
+                (view as DialogueViewBase).requestInterrupt = OnViewRequestedInterrupt;
             }
 
             if (yarnProject != null)
@@ -902,7 +918,7 @@ namespace YarnDonut
             {
                 if (dialogueView == null || dialogueView.IsInsideTree() == false) continue;
 
-                dialogueView.RunOptions(optionSet, selectAction);
+                ((DialogueViewBase)dialogueView).RunOptions(optionSet, selectAction);
             }
 
             IsOptionSelectionAllowed = true;
@@ -915,7 +931,7 @@ namespace YarnDonut
             {
                 if (dialogueView == null || dialogueView.IsInsideTree() == false) continue;
 
-                dialogueView.DialogueComplete();
+                ((DialogueViewBase)dialogueView).DialogueComplete();
             }
             onDialogueComplete?.Invoke();
         }
@@ -1040,8 +1056,8 @@ namespace YarnDonut
                     continue;
                 }
 
-                dialogueView.RunLine(CurrentLine,
-                    () => DialogueViewCompletedDelivery(dialogueView));
+                ((DialogueViewBase)dialogueView).RunLine(CurrentLine,
+                    () => DialogueViewCompletedDelivery((DialogueViewBase)dialogueView));
             }
         }
 
@@ -1062,7 +1078,8 @@ namespace YarnDonut
 
             foreach (var dialogueView in dialogueViews)
             {
-                dialogueView.InterruptLine(CurrentLine, () => DialogueViewCompletedInterrupt(dialogueView));
+                ((DialogueViewBase)dialogueView).InterruptLine(CurrentLine, 
+                    () => DialogueViewCompletedInterrupt((DialogueViewBase)dialogueView));
             }
         }
 
@@ -1298,7 +1315,7 @@ namespace YarnDonut
         {
             // A dialogue view just completed its delivery. RemoveAt it from
             // the set of active views.
-            ActiveDialogueViews.Remove(dialogueView);
+            ActiveDialogueViews.Remove(dialogueView as Node);
 
             // Have all of the views completed? 
             if (ActiveDialogueViews.Count == 0)
@@ -1311,7 +1328,7 @@ namespace YarnDonut
         // main difference is a line continues automatically every interrupt finishes
         private void DialogueViewCompletedInterrupt(DialogueViewBase dialogueView)
         {
-            ActiveDialogueViews.Remove(dialogueView);
+            ActiveDialogueViews.Remove((Node)dialogueView);
 
             if (ActiveDialogueViews.Count == 0)
             {
@@ -1352,7 +1369,7 @@ namespace YarnDonut
             InterruptLine();
         }
 
-        private void DismissLineFromViews(IEnumerable<DialogueViewBase> dialogueViews)
+        private void DismissLineFromViews(IEnumerable<Node> dialogueViews)
         {
             ActiveDialogueViews.Clear();
 
@@ -1382,7 +1399,7 @@ namespace YarnDonut
                     continue;
                 }
 
-                dialogueView.DismissLine(() => DialogueViewCompletedDismissal(dialogueView));
+                ((DialogueViewBase)dialogueView).DismissLine(() => DialogueViewCompletedDismissal(((DialogueViewBase)dialogueView)));
             }
         }
 
@@ -1390,7 +1407,7 @@ namespace YarnDonut
         {
             // A dialogue view just completed dismissing its line. RemoveAt
             // it from the set of active views.
-            ActiveDialogueViews.Remove(dialogueView);
+            ActiveDialogueViews.Remove((Node)dialogueView);
 
             // Have all of the views completed dismissal? 
             if (ActiveDialogueViews.Count == 0)
