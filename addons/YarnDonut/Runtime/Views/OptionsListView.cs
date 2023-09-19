@@ -5,7 +5,7 @@ using Godot;
 
 namespace YarnDonut
 {
-    public partial class OptionsListView : DialogueViewBase
+    public partial class OptionsListView : Node, DialogueViewBase
     {
         [Export] PackedScene optionViewPrefab;
 
@@ -56,7 +56,9 @@ namespace YarnDonut
             viewControl.Visible = false;
         }
 
-        public override void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
+        public Action requestInterrupt { get; set; }
+
+        public void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
             // Don't do anything with this line except note it and
             // immediately indicate that we're finished with it. RunOptions
@@ -65,7 +67,7 @@ namespace YarnDonut
             onDialogueLineFinished();
         }
 
-        public override void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
+        public void RunOptions(DialogueOption[] dialogueOptions, Action<int> onOptionSelected)
         {
             viewControl.Visible = false;
             // Hide all existing option views
