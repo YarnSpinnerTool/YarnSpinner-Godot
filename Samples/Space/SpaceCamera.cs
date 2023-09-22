@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 /// <summary>
-/// Simple barebones camera following script for the YarnDonut Space sample
+/// Simple barebones camera following script for the YarnSpinner-Godot Space sample
 /// </summary>
 public partial class SpaceCamera : Camera2D
 {

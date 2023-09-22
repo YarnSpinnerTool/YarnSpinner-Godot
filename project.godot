@@ -8,14 +8,14 @@
 
 config_version=5
 
-[YarnDonut]
+[YarnSpinner-Godot]
 
 YarnProjectPaths=["res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres"]
 
 [application]
 
-config/name="YarnDonut"
-config/description="Samples for YarnDonut dialogue system plugin"
+config/name="YarnSpinner-Godot"
+config/description="Samples for YarnSpinner-Godot dialogue system plugin"
 run/main_scene="res://Samples/SampleEntryPoint.tscn"
 config/features=PackedStringArray("4.1", "C#")
 boot_splash/bg_color=Color(0.0313726, 0.0705882, 0.0313726, 1)
@@ -28,11 +28,11 @@ window/size/resizable=false
 
 [dotnet]
 
-project/assembly_name="YarnDonut"
+project/assembly_name="YarnSpinner-Godot"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/YarnDonut/plugin.cfg")
+enabled=PackedStringArray("res://addons/YarnSpinner-Godot/plugin.cfg")
 
 [filesystem]
 
@@ -103,7 +103,7 @@ locale/translations=PackedStringArray("res://Samples/VisualNovel/Localization/Vi
 
 [mono]
 
-project/assembly_name="YarnDonut"
+project/assembly_name="YarnSpinner-Godot"
 
 [physics]
 

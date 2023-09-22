@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using YarnDonut;
+using YarnSpinnerGodot;
 using Array = Godot.Collections.Array;
 
 public partial class VisualNovelManager : Node

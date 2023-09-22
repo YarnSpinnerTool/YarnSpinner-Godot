@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_3dm8d"]
 [ext_resource type="Script" path="res://Samples/Space/Scripts/SpaceSample.cs" id="3"]
 [ext_resource type="Texture2D" uid="uid://dsxwawdra77cw" path="res://Samples/Space/Sprites/Ship-Face-Neutral.png" id="3_b3htj"]
-[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnDonut/Scenes/DefaultDialogueSystem.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://b47akckvwuptw" path="res://Samples/Space/Sprites/Ship.png" id="4_adhl1"]
 [ext_resource type="Texture2D" uid="uid://cran3pr6dgduh" path="res://Samples/Space/Sprites/Sally.png" id="6_0pnyi"]
 [ext_resource type="Texture2D" uid="uid://u2fbx0x644y6" path="res://Samples/Space/Sprites/Background.jpg" id="6_lstjv"]

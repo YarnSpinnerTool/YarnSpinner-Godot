@@ -13,7 +13,7 @@ https://github.com/dogboydog/YarnDonut/assets/9920963/3eecbe38-65e5-4130-a838-81
 
 ## Documentation
 
-See the [wiki](https://github.com/dogboydog/YarnDonut/wiki) for documentation. 
+See the [wiki](https://github.com/YarnSpinnerTool/YarnSpinner-Godot/wiki) for documentation. 
 
 ## Roadmap 
 
@@ -24,7 +24,7 @@ Working:
 * Storing a compiled yarn program, a list of errors, line metadata, and string tables.
 * Dialogue runners, commands, and functions
 * Example line view and option view 
-* Generate CSV files for localizing your dialogue. The CSV files are not in the Godot format, but they have more context fields than Godot CSVS, and YarnDonut handles parsing and generating the CSVs, and converting them into Godot `.translation` files.
+* Generate CSV files for localizing your dialogue. The CSV files are not in the Godot format, but they have more context fields than Godot CSVS, and YarnSpinner handles parsing and generating the CSVs, and converting them into Godot `.translation` files.
 
 TODO:
 * Bug fixes / resilience (bug reports welcome)
@@ -33,5 +33,3 @@ TODO:
 ### Thanks
 
 Thanks to the YarnSpinner team for answering questions as this plugin was developed, to Taedan for providing an initial example C# import plugin, and to KXI and fmoo for giving feedback.
-
-🧶🍩
