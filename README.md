@@ -1,5 +1,9 @@
-# YarnDonut 🧶🍩
-Beta port of [YarnSpinner-Unity](https://github.com/YarnSpinnerTool/YarnSpinner-Unity) integration to the Godot Engine v4 (requires C# support).
+# Yarn Spinner for Godot
+
+> **Note:**
+> Yarn Spinner for Godot is a work-in-progress project. We don't currently offer any official support for it. We encourage you to file [issues](https://github.com/YarnSpinnerTool/YarnSpinner-Godot/issues/new) if you have them, and to join the official [Yarn Spinner Discord](https://discord.gg/yarnspinner) to discuss the project!
+
+Yarn Spinner for Godot is a beta port of [YarnSpinner-Unity](https://github.com/YarnSpinnerTool/YarnSpinner-Unity) integration to the Godot Engine v4 (requires C# support).
 
 Here is a video of one of the samples included in thie repository showcasing animations and branching dialogue written via .yarn scripts:
 
@@ -29,3 +33,5 @@ TODO:
 ### Thanks
 
 Thanks to the YarnSpinner team for answering questions as this plugin was developed, to Taedan for providing an initial example C# import plugin, and to KXI and fmoo for giving feedback.
+
+🧶🍩
