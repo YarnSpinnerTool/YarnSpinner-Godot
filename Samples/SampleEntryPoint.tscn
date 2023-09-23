@@ -12,19 +12,25 @@ _visualNovelButtonPath = NodePath("Visual Novel")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.101961, 0.184314, 0.215686, 1)
 
 [node name="Title" type="RichTextLabel" parent="."]
 clip_contents = false
-offset_left = 541.0
-offset_top = 83.0
-offset_right = 1132.0
-offset_bottom = 190.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -295.5
+offset_top = 156.0
+offset_right = 295.5
+offset_bottom = 263.0
+grow_horizontal = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 48
 bbcode_enabled = true
-text = "YarnSpinner Samples"
+text = "[center]YarnSpinner Samples[/center]"
 
 [node name="Space" type="Button" parent="."]
 anchors_preset = 7
@@ -61,10 +67,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 335.0
-offset_top = -517.0
-offset_right = 535.0
-offset_bottom = -407.0
+offset_left = 224.0
+offset_top = -641.0
+offset_right = 537.0
+offset_bottom = -390.0
 grow_horizontal = 2
 grow_vertical = 0
 focus_neighbor_left = NodePath("../Space")
@@ -74,10 +80,10 @@ text = "Visual Novel"
 
 [node name="features" type="RichTextLabel" parent="Visual Novel"]
 layout_mode = 0
-offset_left = -20.0
-offset_top = 152.0
-offset_right = 262.0
-offset_bottom = 380.0
+offset_left = 25.0
+offset_top = 293.0
+offset_right = 307.0
+offset_bottom = 521.0
 bbcode_enabled = true
 text = "Localization
 Effect/ Animation Commands
