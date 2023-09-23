@@ -2,9 +2,9 @@
 
 [ext_resource type="Resource" uid="uid://c245gwv8qwsod" path="res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres" id="2"]
 [ext_resource type="Script" path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" id="4"]
-[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnDonut/Scenes/DefaultDialogueSystem.tscn" id="4_rci1f"]
-[ext_resource type="Script" path="res://addons/YarnDonut/Runtime/InMemoryVariableStorage.cs" id="6"]
-[ext_resource type="Script" path="res://addons/YarnDonut/Runtime/LineProviders/TextLineProvider.cs" id="9"]
+[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="4_rci1f"]
+[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="6"]
+[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="9"]
 
 [node name="VisualNovelSample" type="Control"]
 layout_mode = 3

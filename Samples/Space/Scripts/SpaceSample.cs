@@ -1,5 +1,5 @@
 using Godot;
-using YarnDonut;
+using YarnSpinnerGodot;
 public partial class SpaceSample : Node
 {
 	[Export] public Texture2D ShipHappySprite;

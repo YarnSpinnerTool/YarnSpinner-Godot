@@ -1,6 +1,6 @@
 using Godot;
 using Godot.Collections;
-using YarnDonut;
+using YarnSpinnerGodot;
 namespace Samples.Space
 {
     /// <summary>

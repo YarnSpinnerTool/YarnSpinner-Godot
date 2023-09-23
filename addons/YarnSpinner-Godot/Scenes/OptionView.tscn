@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionView.cs" type="Script" id=1]
+
+[node name="OptionView" type="Button"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -113.0
+offset_top = -142.0
+offset_right = 119.0
+offset_bottom = -42.0
+text = "Option View"
+script = ExtResource( 1 )
