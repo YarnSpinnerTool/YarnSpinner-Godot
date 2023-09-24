@@ -21,7 +21,7 @@ namespace YarnSpinnerGodot.Editor
     [Tool]
     public static class YarnProjectEditorUtility
     {
-        public const string YARN_PROJECT_PATHS_SETTING_KEY = "YarnSpiner-Godot/YarnProjectPaths";
+        public const string YARN_PROJECT_PATHS_SETTING_KEY = "YarnSpinerGodot/YarnProjectPaths";
         /// <summary>
         /// The contents of a .csv.import file to avoid importing it as a Godot localization csv file
         /// </summary>
