@@ -16,11 +16,16 @@ namespace Samples.Space
         [Export] public CollisionShape2D IntersectShape;
 
         [Export] public  DialogueRunner DialogueRunner;
-        private bool _dialoguePlaying;
+        // we start the intro dialogue automatically, so prevent the player from moving at first
+        private bool _dialoguePlaying = true; 
 
         private const float X_SPEED = 480f;
         private const int NPC_LAYER = 2; // NPCs in the demo are in layer 2
 
+        public override void _Ready()
+        {
+            DialogueRunner.onDialogueComplete += SetDialogueNotPlaying;
+        }
         public override void _PhysicsProcess(double delta)
         {
             if (_dialoguePlaying)
@@ -64,16 +69,17 @@ namespace Samples.Space
                         {
                             var target = colliderNode.GetNode<DialogueTarget>(nameof(DialogueTarget));
                             _dialoguePlaying = true;
-                            DialogueRunner.onDialogueComplete += () =>
-                            {
-                                _dialoguePlaying = false;
-                            };
                             DialogueRunner.StartDialogue(target.nodeName);
                             break;
                         }
                     }
                 }
             }
+        }
+
+        private void SetDialogueNotPlaying()
+        {
+                _dialoguePlaying = false;
         }
     }
 }

@@ -1,0 +1,7 @@
+
+title: SpaceIntro
+tags:
+---
+<<declare $sampleName to "Space">>
+Welcome to the {$sampleName} Sample! Try talking to Sally and the Ship.
+===

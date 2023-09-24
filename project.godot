@@ -8,7 +8,7 @@
 
 config_version=5
 
-[YarnSpinner-Godot]
+[YarnSpinnerGodot]
 
 YarnProjectPaths=["res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres"]
 
