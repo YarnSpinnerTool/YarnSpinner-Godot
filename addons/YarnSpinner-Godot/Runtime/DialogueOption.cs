@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 
 namespace YarnSpinnerGodot
 {
-    public partial class DialogueOption
+    public class DialogueOption
     {
         /// <summary>
         /// The ID of this dialogue option

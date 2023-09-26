@@ -4,7 +4,7 @@ using System;
 namespace YarnSpinnerGodot
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public partial class YarnActionAttribute : Attribute
+    public class YarnActionAttribute : Attribute
     {
         /// <summary>
         /// The name of the command or function, as it exists in Yarn.

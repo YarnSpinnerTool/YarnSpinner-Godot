@@ -38,7 +38,7 @@ namespace YarnSpinnerGodot
         /// a coroutine that's using it is currently running.)
         /// </para>
         /// </remarks>
-        public partial class TaskInterruptToken
+        public class TaskInterruptToken
         {
             /// <summary>
             /// The state that the token is in.

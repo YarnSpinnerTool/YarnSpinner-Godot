@@ -109,7 +109,7 @@ namespace YarnSpinnerGodot
     /// until the coroutine ends.
     /// </para>
     /// </remarks>
-    public partial class YarnCommandAttribute : YarnActionAttribute
+    public class YarnCommandAttribute : YarnActionAttribute
     {
         [Obsolete("Use " + nameof(Name) + " instead.")]
         public string CommandString {

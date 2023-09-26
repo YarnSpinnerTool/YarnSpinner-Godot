@@ -7,7 +7,7 @@ namespace YarnSpinnerGodot
     /// Yarn parameter.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
-    public partial class YarnParameterAttribute : Attribute
+    public class YarnParameterAttribute : Attribute
     {
         /// <summary>
         /// The custom injector for this parameter.

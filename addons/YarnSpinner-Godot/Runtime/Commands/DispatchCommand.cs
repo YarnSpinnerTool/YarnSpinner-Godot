@@ -8,7 +8,7 @@ namespace YarnSpinnerGodot
     using Injector = Func<string, object>;
     using Converter = Func<string, object>;
 
-    public partial class DispatchCommand
+    public class DispatchCommand
     {
         public MethodInfo Method { get; set; }
         public Injector Injector { get; set; }
