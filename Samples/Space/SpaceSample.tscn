@@ -142,7 +142,8 @@ MaxX = 1200
 
 [node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("1")
-startNode = "Sally"
+startNode = "SpaceIntro"
+startAutomatically = true
 
 [node name="LineText" parent="YarnSpinnerCanvasLayer/LineView/ViewControl" index="0"]
 theme_override_font_sizes/normal_font_size = 34
