@@ -437,6 +437,7 @@ namespace YarnSpinnerGodot
                 lineText = GetNode<RichTextLabel>(lineTextPath);
                 lineText.BbcodeEnabled = true;
             }
+            lineText.VisibleCharactersBehavior = TextServer.VisibleCharactersBehavior.CharsAfterShaping;
 
             if (viewControl == null)
             {
