@@ -13,7 +13,7 @@ https://github.com/dogboydog/YarnDonut/assets/9920963/3eecbe38-65e5-4130-a838-81
 
 ## Documentation
 
-See the [wiki](https://github.com/YarnSpinnerTool/YarnSpinner-Godot/wiki) for documentation. 
+See the [docs directory](./docs/Home.md) for documentation. 
 
 ## Roadmap 
 
