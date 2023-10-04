@@ -39,7 +39,9 @@ Keep in mind you can also write smaller, single-purpose views, such as a dialogu
 
 You should periodically press the "Add Line Tags To Scripts" button on your YarnProject inspector to auto-generate [unique IDs](https://docs.yarnspinner.dev/getting-started/writing-in-yarn/tags-metadata#line) for your lines. This will allow YarnSpinner to correlate lines across languages.
 
-Your dialogue will work by default in the base language you write your .yarn files in. In order to assist in the task of localizing your dialogue, you can register language codes by clicking this "Add" button on the inspector of your YarnProject: 
+Your dialogue will work by default in the base language you write your .yarn files in. You can change the base locale code by expanding the resource under Base Localization in the screenshot below and editing the locale code. 
+
+In order to assist in the task of localizing your dialogue, you can register language codes by clicking this "Add" button on the inspector of your YarnProject: 
 
 ![image](https://github.com/dogboydog/YarnDonut/assets/9920963/588b24a6-3cfd-46a2-93c4-5ae1b683c534)
 
