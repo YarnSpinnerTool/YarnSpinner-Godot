@@ -5,6 +5,8 @@ You then write your dialogue .yarn files throughout your Godot project. The .yar
 
 You can follow [this documentation](https://docs.yarnspinner.dev/getting-started/writing-in-yarn) to learn about writing `.yarn` scripts. I suggest reading through the introductory sections of this link to get a sense of the syntax and capabilities of the Yarn scripting language.
 
+There is a [Visual Studio Code Extension](https://github.com/YarnSpinnerTool/VSCodeExtension) for writing .yarn scripts with syntax highlighting and many other useful features.
+
 The YarnProject will search for all .yarn files in the directory to which you have saved it, and any child/descendant directories.  It is not necessary to manually associate a .yarn file with your project. 
 
 So for instance you can create this setup: 
