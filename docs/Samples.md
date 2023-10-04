@@ -1,6 +1,6 @@
 This repository contains a few sample scenes that demonstrate the basic functionality of YarnSpinner-Godot. 
 
-Clone this project and open it as a Godot project. Enabled the Plugin as described on the [Installation](https://github.com/dogboydog/YarnDonut/wiki/Installation) page. 
+Clone this project and open it as a Godot project. Enabled the Plugin as described on the [Installation](./Installation.md) page. 
 
 You can then open the sample scenes  under `Samples/` and run them to see a demonstration of the functionality. 
 
