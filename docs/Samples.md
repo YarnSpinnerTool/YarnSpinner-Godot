@@ -6,7 +6,7 @@ You can then open the sample scenes  under `Samples/` and run them to see a demo
 
 # Space 
 
-The space sample is a simple dialogue sample which shows a player sprite moving throughout a small level, pressing the space key to interact with two characters, Sally and Computer. It demonstrates how to have different logic when re-entering a dialogue node, and yarn commands. The .yarn files also contain examples of <<declare>> statements which can optionally declare a yarn variable at compile time. 
+The space sample is a simple dialogue sample which shows a player sprite moving throughout a small level, pressing the space key to interact with two characters, Sally and Computer. It demonstrates how to have different logic when re-entering a dialogue node, and yarn commands. The .yarn files also contain examples of `<<declare>>` statements which can optionally declare a yarn variable at compile time. 
 
 # Visual Novel
 
