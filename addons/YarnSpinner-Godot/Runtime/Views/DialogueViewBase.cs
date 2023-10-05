@@ -358,5 +358,6 @@ namespace YarnSpinnerGodot
         {
             // default implementation does nothing
         }
+        
     }
 }

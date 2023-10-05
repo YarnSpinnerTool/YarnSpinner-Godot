@@ -175,5 +175,19 @@ namespace YarnSpinnerGodot
 
             optionViews[0].GrabFocus();
         }
+        
+        /// <inheritdoc />
+        public void DialogueComplete()
+        {   
+            // do we still have a line lying around?
+            if (viewControl.Visible)
+            {
+                lastSeenLine = null;
+                OnOptionSelected = null;
+                viewControl.Visible = false;
+                Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime);
+            }
+        }
     }
+    
 }
