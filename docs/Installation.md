@@ -8,4 +8,6 @@ This will add references to all of YarnSpinner-Godot's dependencies to your C# p
 
 Build your Godot project's C# solution, and then enable the plugin in Project > Project Settings > Plugins, checking Enabled next to YarnSpinner-Godot.
 
-Note: In Godot, if the C# code for a plugin is not built when you open the Godot editor, the plugin in question will be automatically disabled, and you must re-enable it manually after building. 
+Note: In Godot, if the C# code for a plugin is not built when you open the Godot editor, the plugin in question will be automatically disabled, and you must re-enable it manually after building.
+
+After you have installed the plugin, see [Usage](./Usage.md)
