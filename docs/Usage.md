@@ -5,6 +5,8 @@ You then write your dialogue .yarn files throughout your Godot project. The .yar
 
 You can follow [this documentation](https://docs.yarnspinner.dev/getting-started/writing-in-yarn) to learn about writing `.yarn` scripts. I suggest reading through the introductory sections of this link to get a sense of the syntax and capabilities of the Yarn scripting language.
 
+There is a [Visual Studio Code Extension](https://github.com/YarnSpinnerTool/VSCodeExtension) for writing .yarn scripts with syntax highlighting and many other useful features.
+
 The YarnProject will search for all .yarn files in the directory to which you have saved it, and any child/descendant directories.  It is not necessary to manually associate a .yarn file with your project. 
 
 So for instance you can create this setup: 
@@ -37,7 +39,9 @@ Keep in mind you can also write smaller, single-purpose views, such as a dialogu
 
 You should periodically press the "Add Line Tags To Scripts" button on your YarnProject inspector to auto-generate [unique IDs](https://docs.yarnspinner.dev/getting-started/writing-in-yarn/tags-metadata#line) for your lines. This will allow YarnSpinner to correlate lines across languages.
 
-Your dialogue will work by default in the base language you write your .yarn files in. In order to assist in the task of localizing your dialogue, you can register language codes by clicking this "Add" button on the inspector of your YarnProject: 
+Your dialogue will work by default in the base language you write your .yarn files in. You can change the base locale code by expanding the resource under Base Localization in the screenshot below and editing the locale code. 
+
+In order to assist in the task of localizing your dialogue, you can register language codes by clicking this "Add" button on the inspector of your YarnProject: 
 
 ![image](https://github.com/dogboydog/YarnDonut/assets/9920963/588b24a6-3cfd-46a2-93c4-5ae1b683c534)
 
