@@ -491,7 +491,10 @@ namespace YarnSpinnerGodot
 
             SetViewAlpha(0f);
             SetCanvasInteractable(interactable);
-            onDismissalComplete();
+            if (onDismissalComplete != null)
+            {
+                onDismissalComplete();
+            }
         }
 
         /// <inheritdoc/>
@@ -787,6 +790,18 @@ namespace YarnSpinnerGodot
             // if we'd received a signal from any other part of the game (for
             // example, if a DialogueAdvanceInput had signalled us.)
             UserRequestedViewAdvancement();
+        }
+        
+        
+        /// <inheritdoc />
+        public void DialogueComplete()
+        {
+            // do we still have a line lying around?
+            if (currentLine != null)
+            {
+                currentLine = null;
+                DismissLineInternal(null);
+            }
         }
     }
 }

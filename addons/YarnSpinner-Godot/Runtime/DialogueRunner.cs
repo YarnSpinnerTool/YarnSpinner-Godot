@@ -924,7 +924,7 @@ namespace YarnSpinnerGodot
             IsOptionSelectionAllowed = true;
         }
 
-        async void HandleDialogueComplete()
+        void HandleDialogueComplete()
         {
             IsDialogueRunning = false;
             foreach (var dialogueView in dialogueViews)

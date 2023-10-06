@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://ddbq27wcm6emj"]
+[gd_scene load_steps=18 format=3 uid="uid://ddbq27wcm6emj"]
 
 [ext_resource type="Resource" uid="uid://baf1cu6kwapdh" path="res://Samples/Space/Dialogue/SpaceYarnProject.tres" id="1"]
 [ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_3dm8d"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://bof87dtlnbrt0" path="res://Samples/Space/Sprites/Wall.png" id="7_ld3rh"]
 [ext_resource type="Texture2D" uid="uid://d3utr21wvs3n6" path="res://Samples/Space/Sprites/Player.png" id="8_18hb1"]
 [ext_resource type="Script" path="res://Samples/Space/Player.cs" id="14"]
+[ext_resource type="Script" path="res://Samples/Space/Scripts/StopButton.cs" id="14_1b0fg"]
 [ext_resource type="Script" path="res://Samples/Space/SpaceCamera.cs" id="15"]
 [ext_resource type="Script" path="res://Samples/Space/DialogueTarget.cs" id="16"]
 
@@ -150,5 +151,16 @@ theme_override_font_sizes/normal_font_size = 34
 
 [node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
 textLanguageCode = "en"
+
+[node name="StopButton" type="Button" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("DialogueRunner")]
+self_modulate = Color(1, 0, 0, 1)
+custom_minimum_size = Vector2(180, 120)
+offset_left = 56.0
+offset_top = 712.0
+offset_right = 236.0
+offset_bottom = 832.0
+text = "Stop Dialogue"
+script = ExtResource("14_1b0fg")
+DialogueRunner = NodePath("../DialogueRunner")
 
 [editable path="YarnSpinnerCanvasLayer"]
