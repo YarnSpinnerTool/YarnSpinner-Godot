@@ -187,7 +187,11 @@ namespace YarnSpinnerGodot
             var connections = GetSignalConnectionList(SignalName.onDialogueComplete);
             foreach (var connection in connections)
             {
-                Disconnect(SignalName.onDialogueComplete, connection["callable"].AsCallable());
+                var callable = connection["callable"].AsCallable();
+                if (IsConnected(SignalName.onDialogueComplete, callable))
+                {
+                    Disconnect(SignalName.onDialogueComplete, callable);
+                }
             }
         }
 

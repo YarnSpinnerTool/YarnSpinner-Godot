@@ -13,7 +13,8 @@ namespace YarnSpinnerGodot
     /// Dialogue Runner then waits until all Dialogue Views have reported that
     /// they have finished presenting the content.</para>
     /// <para>
-    /// To use this class, subclass it, and override its methods. Some of the
+    /// To use this interface, make your class implement it as in <see cref="LineView"/>,
+    /// and implement its methods. Some of the
     /// more common methods you may wish to override are: <see cref="RunLine"/>,
     /// <see cref="InterruptLine"/>, <see cref="DismissLine"/> and <see
     /// cref="RunOptions"/>. 

@@ -194,7 +194,7 @@ namespace YarnSpinnerGodot.Editor
                 }
                 else
                 {
-                    GD.Print($"No files needed updating.");
+                    GD.Print($"No Localization CSV files needed updating.");
                 }
             }
         }
