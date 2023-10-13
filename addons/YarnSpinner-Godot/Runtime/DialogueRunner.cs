@@ -69,21 +69,21 @@ namespace YarnSpinnerGodot
         /// The <see cref="YarnProject"/> asset that should be loaded on
         /// scene start.
         /// </summary>
-        [Export]
-        public YarnProject yarnProject;
+        [Export] public YarnProject yarnProject;
 
         /// <summary>
         /// The variable storage object.
         /// </summary>
-        [Export]
-        public NodePath variableStoragePath;
+        [Export] public NodePath variableStoragePath;
+
         public VariableStorageBehaviour _variableStorage;
 
         /// <inheritdoc cref="_variableStorage"/>
         public VariableStorageBehaviour VariableStorage
         {
             get => _variableStorage;
-            set {
+            set
+            {
                 _variableStorage = value;
                 if (_dialogue != null)
                 {
@@ -130,6 +130,7 @@ namespace YarnSpinnerGodot
         /// NodePath locating the lineProvider for this dialogue runner
         /// </summary>
         [Export] public NodePath lineProviderPath;
+
         public LineProviderBehaviour lineProvider;
 
         /// <summary>
@@ -144,7 +145,6 @@ namespace YarnSpinnerGodot
         /// </summary>
         public bool IsDialogueRunning { get; set; }
 
-        public delegate void StringEventHandler(string strArg);
         /// <summary>
         /// An event that is called when a node starts running.
         /// </summary>
@@ -153,32 +153,44 @@ namespace YarnSpinnerGodot
         /// about to start running.
         /// </remarks>
         /// <seealso cref="NodeStartHandler"/>
-        public event StringEventHandler onNodeStart;
+        [Signal]
+        public delegate void onNodeStartEventHandler(string nodeName);
 
         /// <summary>
-        /// An event that is called when a node is complete.
+        /// An signal that is emitted when a node is complete.
         /// </summary>
         /// <remarks>
         /// This event receives as a parameter the name of the node that
         /// just finished running.
         /// </remarks>
         /// <seealso cref="NodeCompleteHandler"/>
-        public event StringEventHandler onNodeComplete;
+        [Signal]
+        public delegate void onNodeCompleteEventHandler(string nodeName);
 
-        public delegate void OnDialogueCompleteHandler();
         /// <summary>
-        /// An action that is called once the dialogue has completed.
+        /// A signal that is emitted when the dialogue starts running.
         /// </summary>
-        /// <seealso cref="DialogueCompleteHandler"/>
-        public event OnDialogueCompleteHandler onDialogueComplete;
+        [Signal]
+        public delegate void onDialogueStartEventHandler();
+
+        /// <summary>
+        /// A signal that is emitted once the dialogue has completed.
+        /// </summary>
+        [Signal]
+        public delegate void onDialogueCompleteEventHandler();
 
         /// <summary>
         /// Clear all event handlers for <see cref="onDialogueComplete"/>
         /// </summary>
         public void ClearAllOnDialogueComplete()
         {
-            onDialogueComplete = null;
+            var connections = GetSignalConnectionList(SignalName.onDialogueComplete);
+            foreach (var connection in connections)
+            {
+                Disconnect(SignalName.onDialogueComplete, connection["callable"].AsCallable());
+            }
         }
+
         /// <summary>
         /// An <see cref="Action"/> that is called when a  />
         /// <see
@@ -204,7 +216,6 @@ namespace YarnSpinnerGodot
         /// between the <c>&lt;&lt;</c> and <c>&gt;&gt;</c> markers.
         /// </para>
         /// </remarks>
-        /// <seealso cref="AddCommandHandler(string, CommandHandler)"/>
         /// <seealso cref="AddCommandHandler(string, CommandHandler)"/>
         /// <seealso cref="YarnCommandAttribute"/>
         public Action<String> onCommand;
@@ -281,29 +292,30 @@ namespace YarnSpinnerGodot
                 {
                     continue;
                 }
+
                 var value = pair.Value;
                 switch (value.ValueCase)
                 {
                     case Yarn.Operand.ValueOneofCase.StringValue:
-                        {
-                            VariableStorage.SetValue(pair.Key, value.StringValue);
-                            break;
-                        }
+                    {
+                        VariableStorage.SetValue(pair.Key, value.StringValue);
+                        break;
+                    }
                     case Yarn.Operand.ValueOneofCase.BoolValue:
-                        {
-                            VariableStorage.SetValue(pair.Key, value.BoolValue);
-                            break;
-                        }
+                    {
+                        VariableStorage.SetValue(pair.Key, value.BoolValue);
+                        break;
+                    }
                     case Yarn.Operand.ValueOneofCase.FloatValue:
-                        {
-                            VariableStorage.SetValue(pair.Key, value.FloatValue);
-                            break;
-                        }
+                    {
+                        VariableStorage.SetValue(pair.Key, value.FloatValue);
+                        break;
+                    }
                     default:
-                        {
-                            GD.PrintErr($"{pair.Key} is of an invalid type: {value.ValueCase}");
-                            break;
-                        }
+                    {
+                        GD.PrintErr($"{pair.Key} is of an invalid type: {value.ValueCase}");
+                        break;
+                    }
                 }
             }
         }
@@ -320,7 +332,8 @@ namespace YarnSpinnerGodot
             // cause confusing results. Report an error and stop here.
             if (Dialogue.IsActive)
             {
-                GD.PrintErr($"Can't start dialogue from node {startNode}: the dialogue is currently in the middle of running. Stop the dialogue first.");
+                GD.PrintErr(
+                    $"Can't start dialogue from node {startNode}: the dialogue is currently in the middle of running. Stop the dialogue first.");
                 return;
             }
 
@@ -329,6 +342,7 @@ namespace YarnSpinnerGodot
             // Mark that we're in conversation.
             IsDialogueRunning = true;
 
+            EmitSignal(SignalName.onDialogueStart);
             // Signal that we're starting up.
             foreach (var dialogueView in dialogueViews)
             {
@@ -339,7 +353,7 @@ namespace YarnSpinnerGodot
 
                 if (dialogueView is DialogueViewBase view)
                 {
-                   view.DialogueStarted();
+                    view.DialogueStarted();
                 }
             }
 
@@ -355,6 +369,7 @@ namespace YarnSpinnerGodot
                 GD.PushError($"Failed to start dialogue on node '{startNode}': {e.Message}\n{e.StackTrace}");
                 throw;
             }
+
             if (lineProvider.LinesAvailable == false)
             {
                 // The line provider isn't ready to give us our lines
@@ -394,7 +409,9 @@ namespace YarnSpinnerGodot
         [Obsolete("Use " + nameof(StartDialogue) + "(nodeName) instead.")]
         public void ResetDialogue(string nodeName = null)
         {
-            nodeName = nodeName ?? startNode ?? CurrentNodeName ?? throw new ArgumentNullException($"Cannot reset dialogue: couldn't figure out a node to restart the dialogue from.");
+            nodeName = nodeName ?? startNode ?? CurrentNodeName ??
+                throw new ArgumentNullException(
+                    $"Cannot reset dialogue: couldn't figure out a node to restart the dialogue from.");
 
             StartDialogue(nodeName);
         }
@@ -408,6 +425,7 @@ namespace YarnSpinnerGodot
             {
                 throw new ApplicationException("You cannot clear the dialogue system while a dialogue is running.");
             }
+
             Dialogue.UnloadAll();
         }
 
@@ -466,91 +484,95 @@ namespace YarnSpinnerGodot
                 GD.PrintErr($"Cannot add a command handler for {commandName}: one already exists");
                 return;
             }
+
             commandHandlers.Add(commandName, handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler(string commandName, System.Func<Task> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1>(string commandName, System.Func<T1, Task> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1, T2>(string commandName, System.Func<T1, T2, Task> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1, T2, T3>(string commandName, System.Func<T1, T2, T3, Task> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1, T2, T3, T4>(string commandName, System.Func<T1, T2, T3, T4, Task> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3, T4, T5>(string commandName, System.Func<T1, T2, T3, T4, T5, Task> handler)
+        public void AddCommandHandler<T1, T2, T3, T4, T5>(string commandName,
+            System.Func<T1, T2, T3, T4, T5, Task> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3, T4, T5, T6>(string commandName, System.Func<T1, T2, T3, T4, T5, T6, Task> handler)
+        public void AddCommandHandler<T1, T2, T3, T4, T5, T6>(string commandName,
+            System.Func<T1, T2, T3, T4, T5, T6, Task> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler(string commandName, System.Action handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1>(string commandName, System.Action<T1> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1, T2>(string commandName, System.Action<T1, T2> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1, T2, T3>(string commandName, System.Action<T1, T2, T3> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1, T2, T3, T4>(string commandName, System.Action<T1, T2, T3, T4> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
         public void AddCommandHandler<T1, T2, T3, T4, T5>(string commandName, System.Action<T1, T2, T3, T4, T5> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3, T4, T5, T6>(string commandName, System.Action<T1, T2, T3, T4, T5, T6> handler)
+        public void AddCommandHandler<T1, T2, T3, T4, T5, T6>(string commandName,
+            System.Action<T1, T2, T3, T4, T5, T6> handler)
         {
-            AddCommandHandler(commandName, (Delegate)handler);
+            AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <summary>
@@ -601,49 +623,52 @@ namespace YarnSpinnerGodot
         /// <typeparam name="TResult">The type of the value that the function should return.</typeparam>
         public void AddFunction<TResult>(string name, System.Func<TResult> implementation)
         {
-            AddFunction(name, (Delegate)implementation);
+            AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult}(string, Func{TResult})" />
         /// <typeparam name="T1">The type of the first parameter to the function.</typeparam>
         public void AddFunction<TResult, T1>(string name, System.Func<TResult, T1> implementation)
         {
-            AddFunction(name, (Delegate)implementation);
+            AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult,T1}(string, Func{TResult,T1})" />
         /// <typeparam name="T2">The type of the second parameter to the function.</typeparam>
         public void AddFunction<TResult, T1, T2>(string name, System.Func<TResult, T1, T2> implementation)
         {
-            AddFunction(name, (Delegate)implementation);
+            AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult,T1,T2}(string, Func{TResult,T1,T2})" />
         /// <typeparam name="T3">The type of the third parameter to the function.</typeparam>
         public void AddFunction<TResult, T1, T2, T3>(string name, System.Func<TResult, T1, T2, T3> implementation)
         {
-            AddFunction(name, (Delegate)implementation);
+            AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult,T1,T2,T3}(string, Func{TResult,T1,T2,T3})" />
         /// <typeparam name="T4">The type of the fourth parameter to the function.</typeparam>
-        public void AddFunction<TResult, T1, T2, T3, T4>(string name, System.Func<TResult, T1, T2, T3, T4> implementation)
+        public void AddFunction<TResult, T1, T2, T3, T4>(string name,
+            System.Func<TResult, T1, T2, T3, T4> implementation)
         {
-            AddFunction(name, (Delegate)implementation);
+            AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult,T1,T2,T3,T4}(string, Func{TResult,T1,T2,T3,T4})" />
         /// <typeparam name="T5">The type of the fifth parameter to the function.</typeparam>
-        public void AddFunction<TResult, T1, T2, T3, T4, T5>(string name, System.Func<TResult, T1, T2, T3, T4, T5> implementation)
+        public void AddFunction<TResult, T1, T2, T3, T4, T5>(string name,
+            System.Func<TResult, T1, T2, T3, T4, T5> implementation)
         {
-            AddFunction(name, (Delegate)implementation);
+            AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult,T1,T2,T3,T4,T5}(string, Func{TResult,T1,T2,T3,T4,T5})" />
         /// <typeparam name="T6">The type of the sixth parameter to the function.</typeparam>
-        public void AddFunction<TResult, T1, T2, T3, T4, T5, T6>(string name, System.Func<TResult, T1, T2, T3, T4, T5, T6> implementation)
+        public void AddFunction<TResult, T1, T2, T3, T4, T5, T6>(string name,
+            System.Func<TResult, T1, T2, T3, T4, T5, T6> implementation)
         {
-            AddFunction(name, (Delegate)implementation);
+            AddFunction(name, (Delegate) implementation);
         }
 
         /// <summary>
@@ -681,9 +706,11 @@ namespace YarnSpinnerGodot
                 }
                 else
                 {
-                    GD.PushError($"{view.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
+                    GD.PushError(
+                        $"{view.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
                 }
             }
+
             dialogueViews = views;
         }
 
@@ -704,7 +731,8 @@ namespace YarnSpinnerGodot
         Action<int> selectAction;
 
         /// Maps the names of commands to action delegates.
-        System.Collections.Generic.Dictionary<string, Delegate> commandHandlers = new System.Collections.Generic.Dictionary<string, Delegate>();
+        System.Collections.Generic.Dictionary<string, Delegate> commandHandlers =
+            new System.Collections.Generic.Dictionary<string, Delegate>();
 
         /// <summary>
         /// The underlying object that executes Yarn instructions
@@ -731,6 +759,7 @@ namespace YarnSpinnerGodot
             {
                 dialogueViews = new List<Node>();
             }
+
             foreach (var path in dialogueViewPaths)
             {
                 var potentialView = GetNode(path);
@@ -743,14 +772,15 @@ namespace YarnSpinnerGodot
                 }
                 else
                 {
-                    GD.PushError($"{potentialView.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
+                    GD.PushError(
+                        $"{potentialView.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
                 }
-
-
             }
+
             if (dialogueViews.Count == 0)
             {
-                GD.PrintErr("Dialogue Runner doesn't have any dialogue views set up. No lines or options will be visible.");
+                GD.PrintErr(
+                    "Dialogue Runner doesn't have any dialogue views set up. No lines or options will be visible.");
             }
 
             foreach (var view in dialogueViews)
@@ -759,6 +789,7 @@ namespace YarnSpinnerGodot
                 {
                     continue;
                 }
+
                 (view as DialogueViewBase).requestInterrupt = OnViewRequestedInterrupt;
             }
 
@@ -766,7 +797,8 @@ namespace YarnSpinnerGodot
             {
                 if (Dialogue.IsActive)
                 {
-                    GD.PrintErr($"DialogueRunner wanted to load a Yarn Project in its Start method, but the Dialogue was already running one. The Dialogue Runner may not behave as you expect.");
+                    GD.PrintErr(
+                        $"DialogueRunner wanted to load a Yarn Project in its Start method, but the Dialogue was already running one. The Dialogue Runner may not behave as you expect.");
                 }
 
                 // Load this new Yarn Project.
@@ -795,17 +827,18 @@ namespace YarnSpinnerGodot
                 {
                     GD.Print($"Dialogue Runner has no LineProvider; creating a {nameof(TextLineProvider)}.", this);
                 }
-
             }
             else if (lineProvider.YarnProject == null)
             {
                 lineProvider.YarnProject = yarnProject;
             }
+
             if (startAutomatically)
             {
                 if (yarnProject == null)
                 {
-                    GD.PushError($"This {nameof(DialogueRunner)} is set to start automatically, but no {nameof(YarnProject)} is set. " +
+                    GD.PushError(
+                        $"This {nameof(DialogueRunner)} is set to start automatically, but no {nameof(YarnProject)} is set. " +
                         $"Assign a Yarn Project in the inspector of this dialogue runner.");
                 }
                 else
@@ -814,7 +847,6 @@ namespace YarnSpinnerGodot
                 }
             }
         }
-
 
 
         Dialogue CreateDialogueInstance()
@@ -832,7 +864,8 @@ namespace YarnSpinnerGodot
                 // Let the user know what we're doing.
                 if (verboseLogging)
                 {
-                    GD.Print($"Dialogue Runner has no Variable Storage; creating a {nameof(InMemoryVariableStorage)}", this);
+                    GD.Print($"Dialogue Runner has no Variable Storage; creating a {nameof(InMemoryVariableStorage)}",
+                        this);
                 }
             }
 
@@ -848,22 +881,13 @@ namespace YarnSpinnerGodot
                         GD.Print(message);
                     }
                 },
-                LogErrorMessage = delegate(string message)
-                {
-                    GD.PrintErr(message);
-                },
+                LogErrorMessage = delegate(string message) { GD.PrintErr(message); },
 
                 LineHandler = HandleLine,
                 CommandHandler = HandleCommand,
                 OptionsHandler = HandleOptions,
-                NodeStartHandler = (node) =>
-                {
-                    onNodeStart?.Invoke(node);
-                },
-                NodeCompleteHandler = (node) =>
-                {
-                    onNodeComplete?.Invoke(node);
-                },
+                NodeStartHandler = (node) => { EmitSignal(SignalName.onNodeStart, node); },
+                NodeCompleteHandler = (node) => { EmitSignal(SignalName.onNodeComplete, node); },
                 DialogueCompleteHandler = HandleDialogueComplete,
                 PrepareForLinesHandler = PrepareForLines
             };
@@ -918,7 +942,7 @@ namespace YarnSpinnerGodot
             {
                 if (dialogueView == null || dialogueView.IsInsideTree() == false) continue;
 
-                ((DialogueViewBase)dialogueView).RunOptions(optionSet, selectAction);
+                ((DialogueViewBase) dialogueView).RunOptions(optionSet, selectAction);
             }
 
             IsOptionSelectionAllowed = true;
@@ -931,9 +955,10 @@ namespace YarnSpinnerGodot
             {
                 if (dialogueView == null || dialogueView.IsInsideTree() == false) continue;
 
-                ((DialogueViewBase)dialogueView).DialogueComplete();
+                ((DialogueViewBase) dialogueView).DialogueComplete();
             }
-            onDialogueComplete?.Invoke();
+
+            EmitSignal(SignalName.onDialogueComplete);
         }
 
         async void HandleCommand(Command command)
@@ -978,7 +1003,8 @@ namespace YarnSpinnerGodot
             {
                 // We're out of ways to handle this command! Log this as an
                 // error.
-                GD.PrintErr($"No Command <<{command.Text}>> was found. Did you remember to use the YarnCommand attribute or AddCommandHandler() function in C#?");
+                GD.PrintErr(
+                    $"No Command <<{command.Text}>> was found. Did you remember to use the YarnCommand attribute or AddCommandHandler() function in C#?");
             }
 
             // Whether we successfully handled it via the onCommand event or not,
@@ -1001,7 +1027,8 @@ namespace YarnSpinnerGodot
 
             if (text == null)
             {
-                GD.PrintErr($"Dialogue Runner couldn't expand substitutions in Yarn Project [{yarnProject.ResourceName}] node [{CurrentNodeName}] with line ID [{CurrentLine.TextID}]. "
+                GD.PrintErr(
+                    $"Dialogue Runner couldn't expand substitutions in Yarn Project [{yarnProject.ResourceName}] node [{CurrentNodeName}] with line ID [{CurrentLine.TextID}]. "
                     + "This usually happens because it couldn't find text in the Localization. The line may not be tagged properly. "
                     + "Try re-importing this Yarn Program. "
                     + "For now, Dialogue Runner will swap in CurrentLine.RawText.");
@@ -1048,6 +1075,7 @@ namespace YarnSpinnerGodot
 
                 ActiveDialogueViews.Add(dialogueView);
             }
+
             // Send line to all active dialogue views
             foreach (var dialogueView in dialogueViews)
             {
@@ -1056,8 +1084,8 @@ namespace YarnSpinnerGodot
                     continue;
                 }
 
-                ((DialogueViewBase)dialogueView).RunLine(CurrentLine,
-                    () => DialogueViewCompletedDelivery((DialogueViewBase)dialogueView));
+                ((DialogueViewBase) dialogueView).RunLine(CurrentLine,
+                    () => DialogueViewCompletedDelivery((DialogueViewBase) dialogueView));
             }
         }
 
@@ -1078,8 +1106,8 @@ namespace YarnSpinnerGodot
 
             foreach (var dialogueView in dialogueViews)
             {
-                ((DialogueViewBase)dialogueView).InterruptLine(CurrentLine, 
-                    () => DialogueViewCompletedInterrupt((DialogueViewBase)dialogueView));
+                ((DialogueViewBase) dialogueView).InterruptLine(CurrentLine,
+                    () => DialogueViewCompletedInterrupt((DialogueViewBase) dialogueView));
             }
         }
 
@@ -1098,7 +1126,8 @@ namespace YarnSpinnerGodot
         {
             if (IsOptionSelectionAllowed == false)
             {
-                throw new InvalidOperationException("Selecting an option on the same frame that options are provided is not allowed. Wait at least one frame before selecting an option.");
+                throw new InvalidOperationException(
+                    "Selecting an option on the same frame that options are provided is not allowed. Wait at least one frame before selecting an option.");
             }
 
             // Mark that this is the currently selected option in the
@@ -1116,14 +1145,14 @@ namespace YarnSpinnerGodot
                     }
                 }
 
-                GD.PrintErr($"Can't run selected option ({optionIndex}) as a line: couldn't find the option's associated {nameof(Line)} object");
+                GD.PrintErr(
+                    $"Can't run selected option ({optionIndex}) as a line: couldn't find the option's associated {nameof(Line)} object");
                 ContinueDialogue();
             }
             else
             {
                 ContinueDialogue();
             }
-
         }
 
         /// <summary>
@@ -1198,7 +1227,8 @@ namespace YarnSpinnerGodot
             }
             else
             {
-                GD.PrintErr($"Cannot run command {firstWord}: the provided delegate does not return a valid type (permitted return types are YieldInstruction or void)");
+                GD.PrintErr(
+                    $"Cannot run command {firstWord}: the provided delegate does not return a valid type (permitted return types are YieldInstruction or void)");
                 return CommandDispatchResult.Failed;
             }
 
@@ -1220,10 +1250,11 @@ namespace YarnSpinnerGodot
         /// name="theDelegate"/> has finished.</param>
         /// <returns>An <see cref="IEnumerator"/> to use with <see
         /// cref="StartCoroutine"/>.</returns>
-        private static async void WaitForAsyncTask(Delegate @theDelegate, object[] finalParametersToUse, Action onSuccessfulDispatch)
+        private static async void WaitForAsyncTask(Delegate @theDelegate, object[] finalParametersToUse,
+            Action onSuccessfulDispatch)
         {
             // Invoke the delegate.
-            var task = (Task)theDelegate.DynamicInvoke(finalParametersToUse);
+            var task = (Task) theDelegate.DynamicInvoke(finalParametersToUse);
 
             await task;
 
@@ -1244,7 +1275,8 @@ namespace YarnSpinnerGodot
         /// <returns><see langword="true"/> if the command was successfully
         /// dispatched to a game object; <see langword="false"/> if no game
         /// object was registered as a handler for the command.</returns>
-        public async Task<CommandDispatchResult> DispatchCommandToGameObject(Command command, Action onSuccessfulDispatch)
+        public async Task<CommandDispatchResult> DispatchCommandToGameObject(Command command,
+            Action onSuccessfulDispatch)
         {
             // Call out to the string version of this method, because
             // Yarn.Command's constructor is only accessible from inside
@@ -1257,7 +1289,8 @@ namespace YarnSpinnerGodot
         /// <inheritdoc cref="DispatchCommandToGameObject(Command, Action)"/>
         /// <param name="command">The text of the command to
         /// dispatch.</param>
-        public async Task<CommandDispatchResult> DispatchCommandToGameObject(string command, System.Action onSuccessfulDispatch)
+        public async Task<CommandDispatchResult> DispatchCommandToGameObject(string command,
+            System.Action onSuccessfulDispatch)
         {
             if (string.IsNullOrEmpty(command))
             {
@@ -1270,7 +1303,8 @@ namespace YarnSpinnerGodot
             }
 
 
-            CommandDispatchResult commandExecutionResult = ActionManager.TryExecuteCommand(SplitCommandText(command).ToArray(), out object returnValue);
+            CommandDispatchResult commandExecutionResult =
+                ActionManager.TryExecuteCommand(SplitCommandText(command).ToArray(), out object returnValue);
             if (commandExecutionResult != CommandDispatchResult.Success)
             {
                 return commandExecutionResult;
@@ -1288,6 +1322,7 @@ namespace YarnSpinnerGodot
                 // no coroutine, so we're done!
                 onSuccessfulDispatch();
             }
+
             return CommandDispatchResult.Success;
 
             async Task DoYarnCommand(Task source, Action onDispatch)
@@ -1328,7 +1363,7 @@ namespace YarnSpinnerGodot
         // main difference is a line continues automatically every interrupt finishes
         private void DialogueViewCompletedInterrupt(DialogueViewBase dialogueView)
         {
-            ActiveDialogueViews.Remove((Node)dialogueView);
+            ActiveDialogueViews.Remove((Node) dialogueView);
 
             if (ActiveDialogueViews.Count == 0)
             {
@@ -1399,7 +1434,8 @@ namespace YarnSpinnerGodot
                     continue;
                 }
 
-                ((DialogueViewBase)dialogueView).DismissLine(() => DialogueViewCompletedDismissal(((DialogueViewBase)dialogueView)));
+                ((DialogueViewBase) dialogueView).DismissLine(() =>
+                    DialogueViewCompletedDismissal(((DialogueViewBase) dialogueView)));
             }
         }
 
@@ -1407,7 +1443,7 @@ namespace YarnSpinnerGodot
         {
             // A dialogue view just completed dismissing its line. RemoveAt
             // it from the set of active views.
-            ActiveDialogueViews.Remove((Node)dialogueView);
+            ActiveDialogueViews.Remove((Node) dialogueView);
 
             // Have all of the views completed dismissal? 
             if (ActiveDialogueViews.Count == 0)
@@ -1459,7 +1495,7 @@ namespace YarnSpinnerGodot
 
             while ((c = reader.Read()) != -1)
             {
-                if (char.IsWhiteSpace((char)c))
+                if (char.IsWhiteSpace((char) c))
                 {
                     if (currentComponent.Length > 0)
                     {
@@ -1500,13 +1536,13 @@ namespace YarnSpinnerGodot
                             {
                                 // It is! Skip the \ and use the character after it.
                                 reader.Read();
-                                currentComponent.Append((char)next);
+                                currentComponent.Append((char) next);
                             }
                             else
                             {
                                 // Oops, an invalid escape. Add the \ and
                                 // whatever is after it.
-                                currentComponent.Append((char)c);
+                                currentComponent.Append((char) c);
                             }
                         }
                         else if (c == '\"')
@@ -1517,7 +1553,7 @@ namespace YarnSpinnerGodot
                         else
                         {
                             // Any other character. Add it to the buffer.
-                            currentComponent.Append((char)c);
+                            currentComponent.Append((char) c);
                         }
                     }
 
@@ -1526,7 +1562,7 @@ namespace YarnSpinnerGodot
                 }
                 else
                 {
-                    currentComponent.Append((char)c);
+                    currentComponent.Append((char) c);
                 }
             }
 

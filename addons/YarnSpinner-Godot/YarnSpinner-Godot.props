@@ -9,17 +9,8 @@
         <Reference Include="Yarn.Google.Protobuf">
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.Google.Protobuf.dll</HintPath>
         </Reference>
-        <Reference Include="Yarn.System.Buffers">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Buffers.dll</HintPath>
-        </Reference>
         <Reference Include="Yarn.System.Memory">
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Memory.dll</HintPath>
-        </Reference>
-        <Reference Include="Yarn.System.Numerics.Vectors">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Numerics.Vectors.dll</HintPath>
-        </Reference>
-        <Reference Include="Yarn.System.Reflection.TypeExtensions">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Reflection.TypeExtensions.dll</HintPath>
         </Reference>
         <Reference Include="Yarn.System.Runtime.CompilerServices.Unsafe">
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Runtime.CompilerServices.Unsafe.dll</HintPath>

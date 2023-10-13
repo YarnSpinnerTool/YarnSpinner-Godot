@@ -25,6 +25,8 @@ namespace Samples.Space
         public override void _Ready()
         {
             DialogueRunner.onDialogueComplete += SetDialogueNotPlaying;
+            DialogueRunner.onDialogueStart += DialogueStarted;
+            DialogueRunner.onNodeComplete += NodeCompleted;
         }
         public override void _PhysicsProcess(double delta)
         {
@@ -77,9 +79,24 @@ namespace Samples.Space
             }
         }
 
+        /// <summary>
+        /// Example of connecting to onDialogueStart from <see cref="DialogueRunner"/>
+        /// </summary>
+        private void DialogueStarted()
+        {
+            GD.Print("Dialogue started in space sample");
+        }
+        
+        /// <summary>
+        /// Example of connecting to onNodeComplete from <see cref="DialogueRunner"/>
+        /// </summary>
+        private void NodeCompleted(string nodeName)
+        {
+            GD.Print($"Dialogue node {nodeName} completed in space sample");
+        }
         private void SetDialogueNotPlaying()
         {
-                _dialoguePlaying = false;
+            _dialoguePlaying = false;
         }
     }
 }
