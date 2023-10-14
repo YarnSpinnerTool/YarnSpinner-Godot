@@ -100,7 +100,7 @@ shape = SubResource("2")
 
 [node name="Left Wall" type="StaticBody2D" parent="."]
 z_index = 1
-position = Vector2(283, -294)
+position = Vector2(283, 984)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Left Wall"]
 position = Vector2(-153, -133)
@@ -108,7 +108,7 @@ shape = SubResource("1")
 
 [node name="Right Wall" type="StaticBody2D" parent="."]
 z_index = 1
-position = Vector2(3351, -294)
+position = Vector2(3351, 984)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Right Wall"]
 position = Vector2(-153, -133)
