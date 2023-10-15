@@ -49,6 +49,12 @@ a simple way to use HTML style tags and convert them to BBCode at runtime, but t
 It will attempt to convert paired instances of `<`and `>` to `[` and `]`. For example `<wave amp=5>Hello!</wave>` would be converted
 to the BBCode `[wave amp=5]Hello![/wave]`
 
+Here's an example of this feature in action, using some built-in BBCode effects. 
+
+
+https://github.com/YarnSpinnerTool/YarnSpinner-Godot/assets/9920963/5e372fcf-07c3-4764-90d1-43d789a1c6b6
+
+
 Keep in mind you can also write smaller, single-purpose views, such as a dialogue view that reads each line of dialogue,
 checks for a `#portrait:` metadata tag on the line, and if it is present, and displays the appropriate dialogue portrait texture. 
 
