@@ -146,6 +146,9 @@ yarnProject = ExtResource("1")
 startNode = "SpaceIntro"
 startAutomatically = true
 
+[node name="LineView" parent="YarnSpinnerCanvasLayer" index="2"]
+ConvertHTMLToBBCode = true
+
 [node name="LineText" parent="YarnSpinnerCanvasLayer/LineView/ViewControl" index="0"]
 theme_override_font_sizes/normal_font_size = 34
 

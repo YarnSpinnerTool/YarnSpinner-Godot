@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
 
@@ -84,7 +85,7 @@ namespace YarnSpinnerGodot
         public static async Task FadeAlpha(Control control, float from, float to, float fadeTime,
             TaskInterruptToken stopToken = null)
         {
-            var mainTree = (SceneTree) Engine.GetMainLoop();
+            var mainTree = (SceneTree)Engine.GetMainLoop();
 
             stopToken?.Start();
 
@@ -104,7 +105,7 @@ namespace YarnSpinnerGodot
                 var fraction = timeElapsed / fadeTime;
                 timeElapsed += mainTree.Root.GetProcessDeltaTime();
 
-                float a = Mathf.Lerp(from, to, (float) fraction);
+                float a = Mathf.Lerp(from, to, (float)fraction);
                 color.A = a;
                 control.Modulate = color;
                 await DefaultActions.Wait(mainTree.Root.GetProcessDeltaTime());
@@ -139,7 +140,7 @@ namespace YarnSpinnerGodot
         public static async Task Typewriter(RichTextLabel text, float lettersPerSecond, Action onCharacterTyped,
             TaskInterruptToken stopToken = null)
         {
-            var mainTree = (SceneTree) Engine.GetMainLoop();
+            var mainTree = (SceneTree)Engine.GetMainLoop();
             stopToken?.Start();
 
             // Start with everything invisible
@@ -251,6 +252,19 @@ namespace YarnSpinnerGodot
         /// </remarks>
         /// <seealso cref="useFadeEffect"/>
         [Export] public NodePath viewControlPath;
+        /// <summary>
+        /// If enabled, matched pairs of the characters '<' and `>`  will be replaced by
+        /// [ and ] respectively, so that you can write, for example, 
+        /// writing <b>my text</b> in your yarn script would be converted to
+        /// [b]my text[/b] at runtime to take advantage of the RichTextLabel's
+        /// BBCode feature. Turning this feature on, would prevent you from using the characters
+        /// '<' or '>' in your dialogue.
+        /// If you need a more advanced or nuanced way to use
+        /// BBCode in your yarn scripts, it's recommended to implement your own custom
+        /// dialogue view. 
+        /// https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+        /// </summary>
+        [Export] public bool ConvertHTMLToBBCode;
 
         public Control viewControl;
 
@@ -446,7 +460,7 @@ namespace YarnSpinnerGodot
 
             if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath.ToString()))
             {
-                continueButton = (Control) GetNode(continueButtonPath);
+                continueButton = (Control)GetNode(continueButtonPath);
             }
 
             continueButton?.Connect("pressed", new Callable(this, nameof(OnContinueClicked)));
@@ -457,6 +471,17 @@ namespace YarnSpinnerGodot
 
             SetViewAlpha(0);
             SetCanvasInteractable(false);
+            if (ConvertHTMLToBBCode)
+            {
+                if (characterNameText != null)
+                {
+                    characterNameText.BbcodeEnabled = true;
+                }
+                if (lineText != null)
+                {
+                    lineText.BbcodeEnabled = true;
+                }
+            }
         }
 
         private void SetViewAlpha(float alpha)
@@ -502,7 +527,7 @@ namespace YarnSpinnerGodot
         {
             currentLine = dialogueLine;
 
-            if (currentStopToken is {CanInterrupt: true})
+            if (currentStopToken is { CanInterrupt: true })
             {
                 currentStopToken.Interrupt();
             }
@@ -608,23 +633,8 @@ namespace YarnSpinnerGodot
                     // If we have a character name text view, show the character
                     // name in it, and show the rest of the text in our main
                     // text view.
-                    if (characterNameText.BbcodeEnabled)
-                    {
-                        characterNameText.Text = dialogueLine.CharacterName;
-                    }
-                    else
-                    {
-                        characterNameText.Text = dialogueLine.CharacterName;
-                    }
-
-                    if (lineText.BbcodeEnabled)
-                    {
-                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                    }
-                    else
-                    {
-                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                    }
+                    characterNameText.Text = dialogueLine.CharacterName;
+                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                 }
                 else
                 {
@@ -642,6 +652,15 @@ namespace YarnSpinnerGodot
                     }
                 }
 
+                if (ConvertHTMLToBBCode)
+                {
+                    const string htmlTagPattern= @"<(.*?)>";
+                    if (characterNameText != null)
+                    {
+                        characterNameText.Text =  Regex.Replace(characterNameText.Text , htmlTagPattern, "[$1]"); 
+                    }
+                    lineText.Text = Regex.Replace(lineText.Text, htmlTagPattern, "[$1]"); 
+                }
                 if (useTypewriterEffect)
                 {
                     // If we're using the typewriter effect, hide all of the
@@ -652,9 +671,10 @@ namespace YarnSpinnerGodot
                 else
                 {
                     // Show all characters
-                    lineText.VisibleRatio = 100;
+                    lineText.VisibleRatio = 1;
                 }
 
+                
                 // If we're using the fade effect, start it, and wait for it to
                 // finish.
                 if (useFadeEffect)
@@ -791,8 +811,8 @@ namespace YarnSpinnerGodot
             // example, if a DialogueAdvanceInput had signalled us.)
             UserRequestedViewAdvancement();
         }
-        
-        
+
+
         /// <inheritdoc />
         public void DialogueComplete()
         {
