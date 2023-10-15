@@ -30,9 +30,33 @@ You can integrate the story in your .yarn scripts with your C# code in several w
 
 This repository also comes with a few default [dialogue views](https://docs.yarnspinner.dev/using-yarnspinner-with-unity/components/dialogue-view). These will do the basics for you of displaying lines and options in Godot UI components.
 
-The [samples](./Samples) in this repository give an example of how to set up a scene in Godot with the necessary views. You can try out the DefaultDialogueSystem.tscn sample file in the Scenes/ directory as a base of your own view. In the likely event you want to change the look and feel of this provided UI, you may be able to accomplish this just by theming and rearranging the components. For more customization, consider basing your view on the provided samples. You might want to include custom text animations, font changes, etc., in your custom view. See [Creating Custom Dialogue Views](https://docs.yarnspinner.dev/using-yarnspinner-with-unity/components/dialogue-view/custom-dialogue-views). Rather than subclassing DialogueViewBase as in Unity, however, you implement the DialogueViewBase interface and can subclass any type which derives from Godot's Node class.
+The [samples](./Samples) in this repository give an example of how to set up a scene in Godot with the necessary views. 
 
-Keep in mind you can also write smaller, single-purpose views, such as a dialogue view that reads each line of dialogue, checks for a `#portrait:` metadata tag on the line, and if it is present, and sets the appropriate dialogue portrait texture. 
+You can try out the DefaultDialogueSystem.tscn sample file in the Scenes/ directory as a base of your own view. 
+In the likely event you want to change the look and feel of this provided UI, you may be able to accomplish this just by
+theming and rearranging the components.
+For more customization, consider creating your own view based on the provided samples. You might want to include custom text 
+animations, font changes, etc., in your custom view. See [Creating Custom Dialogue Views](https://docs.yarnspinner.dev/using-yarnspinner-with-unity/components/dialogue-view/custom-dialogue-views). 
+Rather than subclassing DialogueViewBase as in Unity, however, you implement the DialogueViewBase interface and can subclass any type which derives from Godot's Node class.
+
+
+If you would like to use [BBCode](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html) in your yarn scripts to style and animate your text, you have a few options.  
+You can't use BBCode directly in .yarn scripts, as YarnSpinner uses the `[]` characters for its own [Markup](https://yarnspinner.dev/docs/writing/markup/) feature.
+One option is to use the Markup feature in your .yarn scripts, and write a custom view that fills in BBCode tags based on your markup.
+
+The example LineView in the plugin provides the `ConvertHTMLToBBCode` setting,
+a simple way to use HTML style tags and convert them to BBCode at runtime, but this may not suit every use case. 
+It will attempt to convert paired instances of `<`and `>` to `[` and `]`. For example `<wave amp=5>Hello!</wave>` would be converted
+to the BBCode `[wave amp=5]Hello![/wave]`
+
+Here's an example of this feature in action, using some built-in BBCode effects. 
+
+
+https://github.com/YarnSpinnerTool/YarnSpinner-Godot/assets/9920963/5e372fcf-07c3-4764-90d1-43d789a1c6b6
+
+
+Keep in mind you can also write smaller, single-purpose views, such as a dialogue view that reads each line of dialogue,
+checks for a `#portrait:` metadata tag on the line, and if it is present, and displays the appropriate dialogue portrait texture. 
 
 # Localization 
 

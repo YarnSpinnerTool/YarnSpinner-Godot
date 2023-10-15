@@ -5,8 +5,10 @@ position: 524,111
 ---
 <<if visited("Sally") is false>>
     Player: Hey, Sally. #line:794945
-    Sally: Uah! #line:2dc39b
-    Sally: You snuck up on me. #line:34de2f
+    // these HTML-style tags will only work with the ConvertHTMLToBBCode setting 
+    // enabled on  the provided example LineView
+    Sally: <wave freq=20 amp=14>Uah!</wave> #line:2dc39b
+    Sally: <shake rate=20.0 level=5 connected=1>You snuck up on me!</shake> #line:34de2f
     Sally: Don't do that. #line:dcc2bc
 <<else>>
     Player: Hey. #line:a8e70c
