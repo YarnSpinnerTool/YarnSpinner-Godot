@@ -48,6 +48,7 @@ namespace YarnSpinnerGodot
             if (lastLineText == null && lastLineTextPath != null)
             {
                 lastLineText = GetNode<RichTextLabel>(lastLineTextPath);
+                lastLineText.Visible = false;
             }
             if (boxContainer == null)
             {
@@ -169,6 +170,10 @@ namespace YarnSpinnerGodot
                 {
                     await Effects.FadeAlpha(viewControl, 1, 0, fadeTime);
                     viewControl.Visible = false;
+                    if (lastLineText != null)
+                    {
+                        lastLineText.Visible = false;
+                    }
                     OnOptionSelected(selectedOption.DialogueOptionID);
                 }
             }
@@ -184,6 +189,10 @@ namespace YarnSpinnerGodot
             {
                 lastSeenLine = null;
                 OnOptionSelected = null;
+                if (lastLineText != null)
+                {
+                    lastLineText.Visible = false;
+                }
                 viewControl.Visible = false;
                 Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime);
             }

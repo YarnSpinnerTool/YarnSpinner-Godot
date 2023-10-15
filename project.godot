@@ -30,6 +30,10 @@ window/size/resizable=false
 
 project/assembly_name="YarnSpinner-Godot"
 
+[editor]
+
+import/use_multiple_threads=false
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/YarnSpinner-Godot/plugin.cfg")
