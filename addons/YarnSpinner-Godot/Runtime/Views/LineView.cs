@@ -7,7 +7,6 @@ using Yarn.Markup;
 
 namespace YarnSpinnerGodot
 {
-
     /// <summary>
     /// A Dialogue View that presents lines of dialogue, using Godot UI Controls
     /// elements.
@@ -30,6 +29,7 @@ namespace YarnSpinnerGodot
         /// </remarks>
         /// <seealso cref="useFadeEffect"/>
         [Export] public NodePath viewControlPath;
+
         /// <summary>
         /// If enabled, matched pairs of the characters '<' and `>`  will be replaced by
         /// [ and ] respectively, so that you can write, for example, 
@@ -140,8 +140,9 @@ namespace YarnSpinnerGodot
         /// <seealso cref="onCharacterTyped"/>
         /// <seealso cref="typewriterEffectSpeed"/>
         [Export] public bool useTypewriterEffect = true;
+
         /// <summary>
-    /// A signal that is emitted each time a character is revealed
+        /// A signal that is emitted each time a character is revealed
         /// during a typewriter effect.
         /// </summary>
         /// <remarks>
@@ -149,24 +150,28 @@ namespace YarnSpinnerGodot
         /// <see langword="true"/>.
         /// </remarks>
         /// <seealso cref="useTypewriterEffect"/>
-    [Signal] public delegate void onCharacterTypedEventHandler();
-    
-    /// <summary>
-    /// A Unity Event that is called when a pause inside of the typewriter effect occurs.
-    /// </summary>
-    /// <remarks>
-    /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
-    /// </remarks>
-    /// <seealso cref="useTypewriterEffect"/>
-    [Signal] public delegate void onPauseStartedEventHandler();
-    /// <summary>
-    /// A Unity Event that is called when a pause inside of the typewriter effect finishes and the typewriter has started once again.
-    /// </summary>
-    /// <remarks>
-    /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
-    /// </remarks>
-    /// <seealso cref="useTypewriterEffect"/>
-    [Signal] public delegate void onPauseEndedEventHandler();
+        [Signal]
+        public delegate void onCharacterTypedEventHandler();
+
+        /// <summary>
+        /// A Unity Event that is called when a pause inside of the typewriter effect occurs.
+        /// </summary>
+        /// <remarks>
+        /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
+        /// </remarks>
+        /// <seealso cref="useTypewriterEffect"/>
+        [Signal]
+        public delegate void onPauseStartedEventHandler();
+
+        /// <summary>
+        /// A Unity Event that is called when a pause inside of the typewriter effect finishes and the typewriter has started once again.
+        /// </summary>
+        /// <remarks>
+        /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
+        /// </remarks>
+        /// <seealso cref="useTypewriterEffect"/>
+        [Signal]
+        public delegate void onPauseEndedEventHandler();
 
         /// <summary>
         /// The number of characters per second that should appear during a
@@ -176,26 +181,21 @@ namespace YarnSpinnerGodot
         [Export] public float typewriterEffectSpeed = 0f;
 
         /// <summary>
-        /// The game object that represents an on-screen button that the user
+        /// The Control that represents an on-screen button that the user
         /// can click to continue to the next piece of dialogue.
         /// </summary>
         /// <remarks>
-        /// <para>This game object will be made inactive when a line begins
-        /// appearing, and active when the line has finished appearing.</para>
+        /// <para>This Control will be disabled if it is a Button when a line begins
+        /// appearing, and enabled when the line has finished appearing.</para>
         /// <para>
         /// This field will generally refer to an object that has a <see
         /// cref="Button"/> component on it that, when clicked, calls <see
         /// cref="OnContinueClicked"/>. However, if your game requires specific
-        /// UI needs, you can provide any object you need.</para>
+        /// UI needs, you can provide any object you need, as long as it emits a signal
+        /// called  when you want the dialogue to continue.</para>
         /// </remarks>
         /// <seealso cref="autoAdvance"/>
-        [Export] public NodePath continueButtonPath;
-
-        /// <summary>
-        /// A node with a signal named "pressed" that advances the dialogue to the
-        /// next line.
-        /// </summary>
-        public Control continueButton = null;
+        [Export] public Control continueButton = null;
 
         /// <summary>
         /// The amount of time to wait after any line
@@ -206,7 +206,7 @@ namespace YarnSpinnerGodot
         /// Optional MarkupPalette resource
         /// </summary>
         [Export] public MarkupPalette palette;
-        
+
         /// <summary>
         /// Controls whether this Line View will wait for user input before
         /// indicating that it has finished presenting a line.
@@ -248,16 +248,12 @@ namespace YarnSpinnerGodot
                 lineText = GetNode<RichTextLabel>(lineTextPath);
                 lineText.BbcodeEnabled = true;
             }
+
             lineText.VisibleCharactersBehavior = TextServer.VisibleCharactersBehavior.CharsAfterShaping;
 
             if (viewControl == null)
             {
                 viewControl = GetNode(viewControlPath) as Control;
-            }
-
-            if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath.ToString()))
-            {
-                continueButton = (Control)GetNode(continueButtonPath);
             }
 
             continueButton?.Connect("pressed", new Callable(this, nameof(OnContinueClicked)));
@@ -274,6 +270,7 @@ namespace YarnSpinnerGodot
                 {
                     characterNameText.BbcodeEnabled = true;
                 }
+
                 if (lineText != null)
                 {
                     lineText.BbcodeEnabled = true;
@@ -324,7 +321,7 @@ namespace YarnSpinnerGodot
         {
             currentLine = dialogueLine;
 
-            if (currentStopToken is { CanInterrupt: true })
+            if (currentStopToken is {CanInterrupt: true})
             {
                 currentStopToken.Interrupt();
             }
@@ -424,6 +421,7 @@ namespace YarnSpinnerGodot
                         textureButton.Disabled = true;
                     }
                 }
+
                 MarkupParseResult text = dialogueLine.TextWithoutCharacterName;
                 if (characterNameText != null)
                 {
@@ -460,13 +458,15 @@ namespace YarnSpinnerGodot
 
                 if (ConvertHTMLToBBCode)
                 {
-                    const string htmlTagPattern= @"<(.*?)>";
+                    const string htmlTagPattern = @"<(.*?)>";
                     if (characterNameText != null)
                     {
-                        characterNameText.Text =  Regex.Replace(characterNameText.Text , htmlTagPattern, "[$1]"); 
+                        characterNameText.Text = Regex.Replace(characterNameText.Text, htmlTagPattern, "[$1]");
                     }
-                    lineText.Text = Regex.Replace(lineText.Text, htmlTagPattern, "[$1]"); 
+
+                    lineText.Text = Regex.Replace(lineText.Text, htmlTagPattern, "[$1]");
                 }
+
                 if (useTypewriterEffect)
                 {
                     // If we're using the typewriter effect, hide all of the
@@ -480,7 +480,7 @@ namespace YarnSpinnerGodot
                     lineText.VisibleRatio = 1;
                 }
 
-                
+
                 // If we're using the fade effect, start it, and wait for it to
                 // finish.
                 if (useFadeEffect)
@@ -489,7 +489,7 @@ namespace YarnSpinnerGodot
                     if (currentStopToken.WasInterrupted)
                     {
                         // The fade effect was interrupted. Stop this entire
-                        // coroutine.
+                        // task.
                         return;
                     }
                 }
@@ -518,19 +518,20 @@ namespace YarnSpinnerGodot
 
             currentLine = dialogueLine;
 
-            // Run any presentations as a single coroutine. If this is stopped,
+            // Run any presentations as a single async Task. If this is stopped,
             // which UserRequestedViewAdvancement can do, then we will stop all
             // of the animations at once.
             await PresentLine();
 
-        if (!IsInstanceValid(this))
-        {
-            return;
-        }
-        currentStopToken.Complete();
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
 
-        // All of our text should now be visible.
-        lineText.VisibleRatio = 1;
+            currentStopToken.Complete();
+
+            // All of our text should now be visible.
+            lineText.VisibleRatio = 1;
 
             // Our view should at be at full opacity.
             SetViewAlpha(1f);
@@ -565,7 +566,7 @@ namespace YarnSpinnerGodot
                 // auto-advance to the next line. Stop here, and don't call the
                 // completion handler - we'll wait for a call to
                 // UserRequestedViewAdvancement, which will interrupt this
-                // coroutine.
+                // Task.
                 return;
             }
 
@@ -599,7 +600,7 @@ namespace YarnSpinnerGodot
             }
 
             // we may want to change this later so the interrupted
-            // animation coroutine is what actually interrupts
+            // animation Task is what actually interrupts
             // for now this is fine.
             // Is an animation running that we can stop?
             if (currentStopToken.CanInterrupt)
@@ -637,7 +638,7 @@ namespace YarnSpinnerGodot
                 DismissLineInternal(null);
             }
         }
-        
+
         /// <summary>
         /// Applies the <paramref name="palette"/> to the line based on it's markup.
         /// </summary>
@@ -664,6 +665,7 @@ namespace YarnSpinnerGodot
                     lineOfText = lineOfText.Insert(attribute.Position, $"[color=#{markerColour.ToHtml()}]");
                 }
             }
+
             return lineOfText;
         }
 
@@ -680,11 +682,12 @@ namespace YarnSpinnerGodot
         /// </remarks>
         /// <param name="line">The line from which we covet the pauses</param>
         /// <returns>A stack of positions and duration pause tuples from within the line</returns>
-        public static Stack<(int position, float duration)> GetPauseDurationsInsideLine(Yarn.Markup.MarkupParseResult line)
+        public static Stack<(int position, float duration)> GetPauseDurationsInsideLine(
+            Yarn.Markup.MarkupParseResult line)
         {
             var pausePositions = new Stack<(int, float)>();
             var label = "pause";
-            
+
             // sorting all the attributes in reverse positional order
             // this is so we can build the stack up in the right positioning
             var attributes = line.Attributes;
@@ -717,7 +720,8 @@ namespace YarnSpinnerGodot
                             pausePositions.Push((attribute.Position, value.FloatValue / 1000));
                             break;
                         default:
-                            GD.PrintErr($"Pause property is of type {value.Type}, which is not allowed. Defaulting to one second.");
+                            GD.PrintErr(
+                                $"Pause property is of type {value.Type}, which is not allowed. Defaulting to one second.");
                             pausePositions.Push((attribute.Position, 1));
                             break;
                     }
@@ -728,8 +732,8 @@ namespace YarnSpinnerGodot
                     pausePositions.Push((attribute.Position, 1));
                 }
             }
+
             return pausePositions;
         }
     }
-    
 }

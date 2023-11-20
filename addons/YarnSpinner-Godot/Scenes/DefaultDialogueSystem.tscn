@@ -16,6 +16,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("5")
 variableStoragePath = NodePath("../InMemoryVariableStorage")
 dialogueViewPaths = [NodePath("../LineView"), NodePath("../OptionsListView")]
@@ -24,7 +25,7 @@ lineProviderPath = NodePath("../TextLineProvider")
 
 [node name="VariableDebugText" type="RichTextLabel" parent="."]
 
-[node name="LineView" type="Control" parent="."]
+[node name="LineView" type="Control" parent="." node_paths=PackedStringArray("continueButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,9 +37,8 @@ viewControlPath = NodePath("ViewControl")
 useFadeEffect = false
 lineTextPath = NodePath("ViewControl/LineText")
 characterNameTextPath = NodePath("ViewControl/CharacterNameText")
-useTypewriterEffect = true
-typewriterEffectSpeed = 240.0
-continueButtonPath = NodePath("ViewControl/ContinueButton")
+typewriterEffectSpeed = 80.0
+continueButton = NodePath("ViewControl/ContinueButton")
 
 [node name="ViewControl" type="Control" parent="LineView"]
 layout_mode = 1
@@ -124,6 +124,7 @@ offset_right = 569.0
 offset_bottom = -363.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 36
 text = "Continue"
 

@@ -6,37 +6,37 @@ using Godot;
 namespace YarnSpinnerGodot
 {
     /// <summary>
-    /// Contains coroutine methods that apply visual effects. This class is used
+    /// Contains async methods that apply visual effects. This class is used
     /// by <see cref="LineView"/> to handle animating the presentation of lines.
     /// </summary>
     public static class Effects
     {
         /// <summary>
-        /// An object that can be used to signal to a coroutine that it should
+        /// An object that can be used to signal to a Task that it should
         /// terminate early.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Instances of this class may be passed as a parameter to a coroutine
+        /// Instances of this class may be passed as a parameter to a Task
         /// that they can periodically poll to see if they should terminate
         /// earlier than planned.
         /// </para>
         /// <para>
         /// To use this class, create an instance of it, and pass it as a
-        /// parameter to your coroutine. In the coroutine, call <see
-        /// cref="Start"/> to mark that the coroutine is running. During the
-        /// coroutine's execution, periodically check the <see
-        /// cref="WasInterrupted"/> property to determine if the coroutine
-        /// should exit. If it is <see langword="true"/>, the coroutine should
+        /// parameter to your task. In the task, call <see
+        /// cref="Start"/> to mark that the task is running. During the
+        /// task's execution, periodically check the <see
+        /// cref="WasInterrupted"/> property to determine if the task
+        /// should exit. If it is <see langword="true"/>, the task should
         /// exit (via the <c>yield break</c> statement.) At the normal exit of
-        /// your coroutine, call the <see cref="Complete"/> method to mark that the
-        /// coroutine is no longer running. To make a coroutine stop, call the
+        /// your task, call the <see cref="Complete"/> method to mark that the
+        /// task is no longer running. To make a task stop, call the
         /// <see cref="Interrupt"/> method.
         /// </para>
         /// <para>
         /// You can also use the <see cref="CanInterrupt"/> property to
         /// determine if the token is in a state in which it can stop (that is,
-        /// a coroutine that's using it is currently running.)
+        /// a task that's using it is currently running.)
         /// </para>
         /// </remarks>
         public class TaskInterruptToken
@@ -72,7 +72,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// A coroutine that fades a <see cref="CanvasGroup"/> object's opacity
+        /// A Task that fades a <see cref="CanvasGroup"/> object's opacity
         /// from <paramref name="from"/> to <paramref name="to"/> over the
         /// course of <see cref="fadeTime"/> seconds, and then returns.
         /// </summary>
@@ -81,7 +81,7 @@ namespace YarnSpinnerGodot
         /// <param name="to">The opacity value to end fading at, ranging from 0
         /// to 1.</param>
         /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
-        /// can be used to interrupt the coroutine.</param>
+        /// can be used to interrupt the task.</param>
         public static async Task FadeAlpha(Control control, float from, float to, float fadeTime,
             TaskInterruptToken stopToken = null)
         {
@@ -136,7 +136,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// A basic wait coroutine that can be interrupted.
+        /// A basic wait task that can be interrupted.
         /// </summary>
         /// <remarks>
         /// This is designed to be used as part of the <see cref="PausableTypewriter"/> but theoretically anything can use it.
@@ -161,7 +161,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// A coroutine that gradually reveals the text in a <see
+        /// A Task that gradually reveals the text in a <see
         /// cref="RichTextLabel"/> object over time.
         /// </summary>
         /// <remarks>
@@ -178,7 +178,7 @@ namespace YarnSpinnerGodot
         /// <param name="onPauseEnded">An <see cref="Action"/> that will be called when the typewriter effect is restarted.</param>
         /// <param name="pausePositions">A stack of character position and pause duration tuples used to pause the effect. Generally created by <see cref="LineView.GetPauseDurationsInsideLine"/></param>
         /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
-        /// can be used to interrupt the coroutine.</param>
+        /// can be used to interrupt the task.</param>
         public static async Task PausableTypewriter(RichTextLabel text, float lettersPerSecond, Action onCharacterTyped,
             Action onPauseStarted, Action onPauseEnded, Stack<(int position, float duration)> pausePositions,
             TaskInterruptToken stopToken = null)

@@ -58,37 +58,6 @@ namespace YarnSpinnerGodot
         private PopupMenu _popup;
         public const string YARN_PROJECT_EXTENSION = ".yarnproject";
 
-        public override bool _Handles(GodotObject @object)
-        {
-            return IsJSONYarnProject(@object);
-        }
-
-        private static bool IsJSONYarnProject(GodotObject @object) => @object is Resource res
-                                                                      && res.ResourcePath.EndsWith(
-                                                                          YARN_PROJECT_EXTENSION);
-
-        /// <summary>
-        /// If @object is a Resource with the extension .yarnproject,
-        /// redirect to edit the Godot <see cref="YarnProject"/>
-        /// associated with it instead.
-        /// </summary>
-        /// <param name="object"></param>
-        public override void _Edit(GodotObject @object)
-        {
-            if (!IsJSONYarnProject(@object))
-            {
-                return;
-            }
-
-            var godotProject = YarnProjectEditorUtility.LocateGodotYarnProject(((Resource) @object).ResourcePath);
-            if (!IsInstanceValid(godotProject))
-            {
-                return;
-            }
-
-            GetEditorInterface().EditResource(godotProject);
-        }
-
         public override void _EnterTree()
         {
             _editorInterface = GetEditorInterface();

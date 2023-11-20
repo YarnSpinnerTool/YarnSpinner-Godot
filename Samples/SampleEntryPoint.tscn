@@ -4,10 +4,12 @@
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
 [ext_resource type="Texture2D" uid="uid://pbrr5yyepbx8" path="res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png" id="3_bcudv"]
 
-[node name="SampleEntryPoint" type="CanvasLayer"]
+[node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton")]
 script = ExtResource("1")
-_spaceButtonPath = NodePath("Space")
-_visualNovelButtonPath = NodePath("Visual Novel")
+_spaceButton = NodePath("HBoxContainer/VBoxContainer/Space")
+_visualNovelButton = NodePath("HBoxContainer/VBoxContainer2/Visual Novel")
+_markupPaletteButton = NodePath("HBoxContainer/VBoxContainer3/MarkupPalette")
+_pausingTypewriterButton = NodePath("HBoxContainer/VBoxContainer4/PausingTypewriter")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -17,42 +19,59 @@ color = Color(0.0431373, 0.0901961, 0.0470588, 1)
 
 [node name="Title" type="RichTextLabel" parent="."]
 clip_contents = false
-offset_left = 310.0
-offset_top = 186.0
-offset_right = 901.0
-offset_bottom = 293.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -502.0
+offset_top = 185.0
+offset_right = 89.0
+offset_bottom = 292.0
+grow_horizontal = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 48
 bbcode_enabled = true
-text = "YarnSpinner Samples"
+text = "[u]YarnSpinner Samples[/u]"
 
-[node name="Space" type="Button" parent="."]
-anchors_preset = 7
+[node name="Logo" type="TextureRect" parent="."]
+offset_left = 76.0
+offset_top = 55.0
+offset_right = 314.0
+offset_bottom = 269.0
+texture = ExtResource("3_bcudv")
+expand_mode = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 1.0
+anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -651.0
-offset_top = -417.0
-offset_right = -451.0
-offset_bottom = -307.0
+anchor_bottom = 0.5
+offset_left = -696.0
+offset_top = -64.0
+offset_right = 696.0
+offset_bottom = 340.0
 grow_horizontal = 2
-grow_vertical = 0
-focus_neighbor_right = NodePath("../Visual Novel")
-focus_next = NodePath("../Visual Novel")
+grow_vertical = 2
+size_flags_vertical = 8
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Space" type="Button" parent="HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(180, 100)
+layout_mode = 2
 theme = ExtResource("2")
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
 text = "Space"
 
-[node name="features" type="RichTextLabel" parent="Space"]
-layout_mode = 0
-offset_left = -9.0
-offset_top = 140.0
-offset_right = 226.0
-offset_bottom = 345.0
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Basic dialogue demo
@@ -60,42 +79,67 @@ Talking to NPCs
 "
 scroll_active = false
 
-[node name="Visual Novel" type="Button" parent="."]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -374.0
-offset_top = -420.0
-offset_right = -174.0
-offset_bottom = -310.0
-grow_horizontal = 2
-grow_vertical = 0
-focus_neighbor_left = NodePath("../Space")
-focus_previous = NodePath("../Space")
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Visual Novel" type="Button" parent="HBoxContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(180, 100)
+layout_mode = 2
 theme = ExtResource("2")
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
 text = "Visual Novel"
 
-[node name="features" type="RichTextLabel" parent="Visual Novel"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 142.0
-offset_right = 292.0
-offset_bottom = 370.0
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Localization
 Effect/ Animation Commands
 "
+scroll_active = false
 
-[node name="Logo" type="TextureRect" parent="."]
-offset_left = 88.0
-offset_top = 82.0
-offset_right = 326.0
-offset_bottom = 296.0
-texture = ExtResource("3_bcudv")
-expand_mode = 1
+[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarkupPalette" type="Button" parent="HBoxContainer/VBoxContainer3"]
+custom_minimum_size = Vector2(180, 100)
+layout_mode = 2
+theme = ExtResource("2")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 27
+text = "Markup Palette"
+
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer3"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "Use a Markup Palette to add color to dialogue"
+scroll_active = false
+
+[node name="VBoxContainer4" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PausingTypewriter" type="Button" parent="HBoxContainer/VBoxContainer4"]
+custom_minimum_size = Vector2(180, 100)
+layout_mode = 2
+theme = ExtResource("2")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 27
+text = "Pausing Typewriter"
+
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer4"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "Pausing at specific points while revealing your dialogue text"
+scroll_active = false

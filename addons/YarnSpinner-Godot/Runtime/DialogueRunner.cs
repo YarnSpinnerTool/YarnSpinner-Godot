@@ -476,8 +476,8 @@ namespace YarnSpinnerGodot
         /// </code>
         ///
         /// <para>If <paramref name="handler"/> is a method that returns a <see
-        /// cref="Coroutine"/>, when the command is run, the <see
-        /// cref="DialogueRunner"/> will wait for the returned coroutine to stop
+        /// cref="Task"/>, when the command is run, the <see
+        /// cref="DialogueRunner"/> will wait for the returned task to stop
         /// before delivering any more content.</para>
         /// </remarks>
         /// <param name="commandName">The name of the command.</param>
@@ -1045,7 +1045,15 @@ namespace YarnSpinnerGodot
             {
                 while (!lineProvider.LinesAvailable)
                 {
+                    if (!IsInstanceValid(lineProvider))
+                    {
+                        return;
+                    }
                     await DefaultActions.Wait(0.01);
+                    if (!IsInstanceValid(lineProvider))
+                    {
+                        return;
+                    }
                 }
                 HandleLineInternal();
             }
@@ -1269,7 +1277,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// A coroutine that invokes @<paramref name="theDelegate"/> that
+        /// An async method that invokes @<paramref name="theDelegate"/> that
         /// returns a <see cref="YieldInstruction"/>, yields on that
         /// result, and then invokes <paramref
         /// name="onSuccessfulDispatch"/>.
@@ -1281,8 +1289,6 @@ namespace YarnSpinnerGodot
         /// <param name="onSuccessfulDispatch">The method to call after the
         /// <see cref="YieldInstruction"/> returned by <paramref
         /// name="theDelegate"/> has finished.</param>
-        /// <returns>An <see cref="IEnumerator"/> to use with <see
-        /// cref="StartCoroutine"/>.</returns>
         private static async void WaitForAsyncTask(Delegate @theDelegate, object[] finalParametersToUse,
             Action onSuccessfulDispatch)
         {
@@ -1334,8 +1340,7 @@ namespace YarnSpinnerGodot
             {
                 throw new ArgumentNullException(nameof(onSuccessfulDispatch));
             }
-
-
+            
             CommandDispatchResult commandExecutionResult =
                 ActionManager.TryExecuteCommand(SplitCommandText(command).ToArray(), out object returnValue);
             if (commandExecutionResult != CommandDispatchResult.Success)
@@ -1352,7 +1357,7 @@ namespace YarnSpinnerGodot
             }
             else
             {
-                // no coroutine, so we're done!
+                // no async Task, so we're done!
                 onSuccessfulDispatch();
             }
 
@@ -1360,7 +1365,7 @@ namespace YarnSpinnerGodot
 
             async Task DoYarnCommand(Task source, Action onDispatch)
             {
-                // Wait for this command coroutine to complete
+                // Wait for this command Task to complete
                 await source;
 
                 // And then signal that we're done

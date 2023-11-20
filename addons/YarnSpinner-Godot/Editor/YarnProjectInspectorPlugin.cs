@@ -74,7 +74,11 @@ namespace YarnSpinnerGodot.Editor
                 {
                     _compileErrorsPropertyEditor = new YarnCompileErrorsPropertyEditor();
                     AddPropertyEditor(path, _compileErrorsPropertyEditor);
-                    _parseErrorControl = new ScrollContainer();
+                    _parseErrorControl = new ScrollContainer
+                    {
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                        SizeFlagsVertical = Control.SizeFlags.ExpandFill,
+                    };
                     int errorAreaHeight = 40;
                     if (_project.ProjectErrors != null && _project.ProjectErrors.Length > 0)
                     {
@@ -82,12 +86,12 @@ namespace YarnSpinnerGodot.Editor
                     }
 
                     _parseErrorControl.CustomMinimumSize = new Vector2(0, errorAreaHeight);
-                    _parseErrorControl.SizeFlagsVertical = Control.SizeFlags.Expand;
-                    _parseErrorControl.SizeFlagsHorizontal = Control.SizeFlags.Expand;
 
-                    _errorContainer = new VBoxContainer();
-                    _errorContainer.SizeFlagsVertical = Control.SizeFlags.Expand;
-                    _errorContainer.SizeFlagsHorizontal = Control.SizeFlags.Expand;
+                    _errorContainer = new VBoxContainer
+                    {
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                        SizeFlagsVertical = Control.SizeFlags.ExpandFill,
+                    };
                     _parseErrorControl.AddChild(_errorContainer);
                     //parseErrorControl.BbcodeEnabled = true;
                     _compileErrorsPropertyEditor.OnErrorsUpdated += RenderCompilationErrors;
@@ -144,29 +148,10 @@ namespace YarnSpinnerGodot.Editor
         private string _newLocale = null;
         private bool _addLocaleConnected;
 
-        private void AddLocale()
-        {
-            _addLocaleConnected = false;
-            var dialog = new AcceptDialog();
-            dialog.Title = "Add New Locale Code";
-            SaveNewLocaleCode("", dialog.GetOkButton());
-            var textEntry = new LineEdit
-            {
-                PlaceholderText = "locale code"
-            };
-            dialog.AddChild(textEntry);
-            dialog.GetOkButton().Pressed += LocaleAdded;
-            textEntry.Connect("text_changed",
-                Callable.From((string text) => SaveNewLocaleCode(text, dialog.GetOkButton())));
-            editorInterface.GetBaseControl().AddChild(dialog);
-            dialog.PopupCentered();
-            textEntry.GrabFocus();
-        }
-
-        private void SaveNewLocaleCode(string localeCode, Button okButton)
+        private void SaveNewLocaleCode(string localeCode, Button addButton)
         {
             _newLocale = localeCode;
-            okButton.Disabled = string.IsNullOrEmpty(_newLocale);
+            addButton.Disabled = string.IsNullOrEmpty(_newLocale);
         }
 
         public void LocaleAdded()
@@ -323,16 +308,22 @@ namespace YarnSpinnerGodot.Editor
                 RenderSourceScriptsList(_project);
                 AddCustomControl(_sourceScriptsListLabel);
 
-
-                var localeGrid = new GridContainer();
+                var localeGrid = new GridContainer{SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
                 localeGrid.Columns = 3;
 
                 var label = new Label {Text = "Localization CSVs"};
                 localeGrid.AddChild(label);
-                localeGrid.AddChild(new Label());
 
+                var textEntry = new LineEdit
+                {
+                    PlaceholderText = "locale code"
+                };
                 var addButton = new Button {Text = "Add"};
-                addButton.Pressed += AddLocale;
+                SaveNewLocaleCode("", addButton);
+                textEntry.TextChanged += (string text) => SaveNewLocaleCode(text, addButton);
+                localeGrid.AddChild(textEntry);
+
+                addButton.Pressed += LocaleAdded;
                 localeGrid.AddChild(addButton);
                 localeGrid.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
                 localeGrid.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
@@ -345,7 +336,12 @@ namespace YarnSpinnerGodot.Editor
                     var picker = new HBoxContainer();
                     picker.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
                     picker.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
-                    var pathLabel = new Label {Text = locale.Value.Strings};
+                    var pathLabel = new Label
+                    {
+                        Text = locale.Value.Strings, 
+                        SizeFlagsVertical = Control.SizeFlags.ExpandFill,
+                        AutowrapMode = TextServer.AutowrapMode.Arbitrary
+                    };
                     if (pathLabel.Text == "")
                     {
                         pathLabel.Text = "(none)";

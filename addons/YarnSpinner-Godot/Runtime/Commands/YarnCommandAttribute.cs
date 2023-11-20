@@ -99,14 +99,14 @@ namespace YarnSpinnerGodot
     /// <item>Otherwise, it will not be called, and a warning will be
     /// issued.</item>
     /// </list>
-    /// <para>This attribute may be attached to a coroutine. </para>
+    /// <para>This attribute may be attached to a Task. </para>
     /// <para style="note">
-    /// The <see cref="DialogueRunner"/> determines if the method is a coroutine
+    /// The <see cref="DialogueRunner"/> determines if the method is a Task
     /// if the method returns <see cref="IEnumerator"/>. 
     /// </para>
     /// <para>
-    /// If the method is a coroutine, the DialogueRunner will pause execution
-    /// until the coroutine ends.
+    /// If the method is a Task, the DialogueRunner will pause execution
+    /// until the task ends.
     /// </para>
     /// </remarks>
     public class YarnCommandAttribute : YarnActionAttribute
