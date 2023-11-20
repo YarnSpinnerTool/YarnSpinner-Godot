@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text.Json;
 using Godot;
 using Godot.Collections;
 using Yarn;
@@ -258,6 +259,7 @@ namespace YarnSpinnerGodot
         /// </summary>
         public void SetProject(YarnProject newProject)
         {
+            yarnProject = newProject;
             ActionManager.ClearAllActions();
             // Load all of the commands and functions from the assemblies that
             // this project wants to load from.
@@ -267,11 +269,11 @@ namespace YarnSpinnerGodot
             ActionManager.RegisterFunctions(Dialogue.Library);
 
             Dialogue.SetProgram(newProject.Program);
-
             if (lineProvider != null)
             {
                 lineProvider.YarnProject = newProject;
             }
+            SetInitialVariables();
         }
 
         /// <summary>
@@ -676,7 +678,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// RemoveAt a registered function.
+        /// Remove a registered function.
         /// </summary>
         /// <remarks>
         /// After a function has been removed, it cannot be called from
@@ -1017,12 +1019,38 @@ namespace YarnSpinnerGodot
             ContinueDialogue();
         }
 
+
         /// <summary>
         /// Forward the line to the dialogue UI.
         /// </summary>
         /// <param name="line">The line to send to the dialogue views.</param>
         private void HandleLine(Line line)
-        {
+        { 
+            // it is possible at this point depending on the flow into handling the line that the line provider hasn't finished it's loads
+            // as such we will need to hold here until the line provider has gotten all it's lines loaded
+            // in testing this has been very hard to trigger without having bonkers huge nodes jumping to very asset rich nodes
+            // so if you think you are going to hit this you should preload all the lines ahead of time
+            // but don't worry about it most of the time
+            if (lineProvider.LinesAvailable)
+            {
+                // we just move on normally
+                HandleLineInternal();
+            }
+            else
+            {
+                WaitUntilLinesAvailable();
+            }
+
+            async void WaitUntilLinesAvailable()
+            {
+                while (!lineProvider.LinesAvailable)
+                {
+                    await DefaultActions.Wait(0.01);
+                }
+                HandleLineInternal();
+            }
+            void HandleLineInternal()
+            {
             // Get the localized line from our line provider
             CurrentLine = lineProvider.GetLocalizedLine(line);
 
@@ -1092,8 +1120,9 @@ namespace YarnSpinnerGodot
                     () => DialogueViewCompletedDelivery((DialogueViewBase) dialogueView));
             }
         }
+    }
 
-        // called by the runner when a view has signalled that it needs to interrupt the current line
+    // called by the runner when a view has signalled that it needs to interrupt the current line
         void InterruptLine()
         {
             ActiveDialogueViews.Clear();
@@ -1578,6 +1607,151 @@ namespace YarnSpinnerGodot
             return results;
         }
 
+        /// <summary>
+        /// Loads all variables from the requested file in persistent storage
+        /// into the Dialogue Runner's variable storage.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method loads the file <paramref name="saveFilePath"/> from the
+        /// persistent data storage and attempts to read it as JSON. This is
+        /// then deserialised and loaded into the <see cref="VariableStorage"/>.
+        /// </para>
+        /// <para>
+        /// The loaded information can be stored via the <see
+        /// cref="SaveStateToPersistentStorage"/> method.
+        /// </para>
+        /// </remarks>
+        /// <param name="saveFilePath">the path the save path should load from, including any file extensions.
+        /// Use a path starting with user:// to save to the persistent user data
+        /// path. See https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html </param>
+        /// <returns><see langword="true"/> if the variables were successfully
+        /// loaded from the player preferences; <see langword="false"/>
+        /// otherwise.</returns>
+        public bool LoadStateFromPersistentStorage(string saveFilePath)
+        {
+            try
+            {
+                using var file = FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Read);
+                var saveData = file.GetAsText();
+                var dictionaries = DeserializeAllVariablesFromJSON(saveData);
+                _variableStorage.SetAllVariables(dictionaries.Item1, dictionaries.Item2, dictionaries.Item3);
+            }
+            catch (Exception e)
+            {
+                GD.PushError($"Failed to load save state at {saveFilePath}: {e.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Saves all variables from variable storage into the persistent
+        /// storage.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method attempts to writes the contents of <see
+        /// cref="VariableStorage"/> as a JSON file and saves it to the path specified in
+        /// <paramref name="saveFilePath"/>. The saved information can be loaded via the
+        /// <see cref="LoadStateFromPersistentStorage"/> method.
+        /// </para>
+        /// <para>
+        /// If <paramref name="saveFilePath"/> already exists, it will be
+        /// overwritten, not appended.
+        /// </para>
+        /// </remarks>
+        /// <param name="saveFilePath">the path the save path should save to, including any file extensions.
+        /// Use a path starting with user:// to save to the persistent user data
+        /// path. See https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html </param>
+        /// <returns><see langword="true"/> if the variables were successfully
+        /// written into the player preferences; <see langword="false"/>
+        /// otherwise.</returns>
+        public bool SaveStateToPersistentStorage(string saveFilePath)
+        {
+            var data = SerializeAllVariablesToJSON();
+            try
+            {
+                using var file = FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Write);
+                file.StoreString(data);
+                return true;
+            }
+            catch (Exception e)
+            {
+                GD.PushError($"Failed to save state to {saveFilePath}: {e.Message}");
+                return false;
+            }
+        }
+        
+        // takes in a JSON string and converts it into a tuple of dictionaries
+        // intended to let you just dump these straight into the variable storage
+        // throws exceptions if unable to convert or if the conversion half works
+        private (System.Collections.Generic.Dictionary<string, float>, 
+            System.Collections.Generic.Dictionary<string, string>, 
+            System.Collections.Generic.Dictionary<string, bool>) 
+            DeserializeAllVariablesFromJSON(string jsonData)
+        {
+            SaveData data = JsonSerializer.Deserialize<SaveData>(jsonData, YarnProject.JSONOptions);
+
+            if (data.floatKeys == null && data.floatValues == null)
+            {
+                throw new ArgumentException("Provided JSON string was not able to extract numeric variables");
+            }
+            if (data.stringKeys == null && data.stringValues == null)
+            {
+                throw new ArgumentException("Provided JSON string was not able to extract string variables");
+            }
+            if (data.boolKeys == null && data.boolValues == null)
+            {
+                throw new ArgumentException("Provided JSON string was not able to extract boolean variables");
+            }
+
+            if (data.floatKeys.Length != data.floatValues.Length)
+            {
+                throw new ArgumentException("Number of keys and values of numeric variables does not match");
+            }
+            if (data.stringKeys.Length != data.stringValues.Length)
+            {
+                throw new ArgumentException("Number of keys and values of string variables does not match");
+            }
+            if (data.boolKeys.Length != data.boolValues.Length)
+            {
+                throw new ArgumentException("Number of keys and values of boolean variables does not match");
+            }
+
+            var floats = new System.Collections.Generic.Dictionary<string, float>();
+            for (int i = 0; i < data.floatValues.Length; i++)
+            {
+                floats.Add(data.floatKeys[i], data.floatValues[i]);
+            }
+            var strings = new System.Collections.Generic.Dictionary<string, string>();
+            for (int i = 0; i < data.stringValues.Length; i++)
+            {
+                strings.Add(data.stringKeys[i], data.stringValues[i]);
+            }
+            var bools = new System.Collections.Generic.Dictionary<string, bool>();
+            for (int i = 0; i < data.boolValues.Length; i++)
+            {
+                bools.Add(data.boolKeys[i], data.boolValues[i]);
+            }
+
+            return (floats, strings, bools);
+        }
+        private string SerializeAllVariablesToJSON()
+        {
+            (var floats, var strings, var bools) = _variableStorage.GetAllVariables();
+
+            SaveData data = new SaveData();
+            data.floatKeys = floats.Keys.ToArray();
+            data.floatValues = floats.Values.ToArray();
+            data.stringKeys = strings.Keys.ToArray();
+            data.stringValues = strings.Values.ToArray();
+            data.boolKeys = bools.Keys.ToArray();
+            data.boolValues = bools.Values.ToArray();
+
+            return JsonSerializer.Serialize(data, YarnProject.JSONOptions);
+        }
         [System.Serializable]
         private struct SaveData
         {

@@ -8,7 +8,7 @@ namespace YarnSpinnerGodot
     public partial class OptionsListView : Node, DialogueViewBase
     {
         [Export] PackedScene optionViewPrefab;
-
+        [Export] MarkupPalette palette;
         [Export] private NodePath lastLineTextPath;
         RichTextLabel lastLineText;
 
@@ -17,6 +17,7 @@ namespace YarnSpinnerGodot
         /// Used to modify the transparency/visibility of the UI.
         /// </summary>
         [Export] private NodePath viewControlPath;
+
         public Control viewControl;
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace YarnSpinnerGodot
         /// which will automatically lay out the options
         /// </summary>
         [Export] private NodePath boxContainerPath;
+
         public BoxContainer boxContainer;
 
         [Export] float fadeTime = 0.1f;
@@ -45,15 +47,18 @@ namespace YarnSpinnerGodot
             {
                 viewControl = GetNode<Control>(viewControlPath);
             }
+
             if (lastLineText == null && lastLineTextPath != null)
             {
                 lastLineText = GetNode<RichTextLabel>(lastLineTextPath);
                 lastLineText.Visible = false;
             }
+
             if (boxContainer == null)
             {
                 boxContainer = GetNode<VBoxContainer>(boxContainerPath);
             }
+
             viewControl.Visible = false;
         }
 
@@ -100,6 +105,7 @@ namespace YarnSpinnerGodot
 
                 optionView.Visible = true;
 
+                optionView.palette = this.palette;
                 optionView.Option = option;
 
                 // The first available option is selected by default
@@ -114,6 +120,16 @@ namespace YarnSpinnerGodot
             // Update the last line, if one is configured
             if (lastLineText != null)
             {
+                var line = lastSeenLine.Text;
+                if (palette != null)
+                {
+                    lastLineText.Text = LineView.PaletteMarkedUpText(line, palette);
+                }
+                else
+                {
+                    lastLineText.Text = line.Text;
+                }
+
                 if (lastSeenLine != null)
                 {
                     lastLineText.Visible = true;
@@ -174,16 +190,17 @@ namespace YarnSpinnerGodot
                     {
                         lastLineText.Visible = false;
                     }
+
                     OnOptionSelected(selectedOption.DialogueOptionID);
                 }
             }
 
             optionViews[0].GrabFocus();
         }
-        
+
         /// <inheritdoc />
         public void DialogueComplete()
-        {   
+        {
             // do we still have a line lying around?
             if (viewControl.Visible)
             {
@@ -193,10 +210,10 @@ namespace YarnSpinnerGodot
                 {
                     lastLineText.Visible = false;
                 }
+
                 viewControl.Visible = false;
                 Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime);
             }
         }
     }
-    
 }

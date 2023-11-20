@@ -29,12 +29,6 @@ namespace YarnSpinnerGodot.Editor
         /// </summary>
         public const string KEEP_IMPORT_TEXT = "[remap]\n\nimporter=\"keep\"";
 
-        private static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(plainTextBytes);
-        }
-
         /// <summary>
         /// Find an associated yarn project in the same or ancestor directory
         /// </summary>
@@ -167,24 +161,24 @@ namespace YarnSpinnerGodot.Editor
 
         public static void UpdateLocalizationCSVs(YarnProject project)
         {
-            if (project.LocaleCodeToCSVPath.Count > 0)
+            if (project.JSONProject.Localisation.Count > 0)
             {
                 var modifiedFiles = new List<string>();
 
-                foreach (var loc in project.LocaleCodeToCSVPath)
+                foreach (var loc in project.JSONProject.Localisation)
                 {
-                    if (string.IsNullOrEmpty(loc.Value))
+                    if (string.IsNullOrEmpty(loc.Value.Strings))
                     {
-                        GD.PrintErr($"Can't update localization for {loc.Key} because it doesn't have a strings file.");
+                        GD.PrintErr($"Can't update localization for {loc.Key} because it doesn't have a Strings file.");
                         continue;
                     }
 
                     var fileWasChanged = UpdateLocalizationFile(project.baseLocalization.GetStringTableEntries(),
-                        loc.Key, loc.Value);
+                        loc.Key, loc.Value.Strings);
 
                     if (fileWasChanged)
                     {
-                        modifiedFiles.Add(loc.Value);
+                        modifiedFiles.Add(loc.Value.Strings);
                     }
                 }
 
@@ -213,6 +207,11 @@ namespace YarnSpinnerGodot.Editor
         {
             var absoluteCSVPath = ProjectSettings.GlobalizePath(csvResourcePath);
 
+            // Tracks if the translated localisation needed modifications
+            // (either new lines added, old lines removed, or changed lines
+            // flagged)
+            var modificationsNeeded = false;
+
             IEnumerable<StringTableEntry> translatedStrings = new List<StringTableEntry>();
             if (File.Exists(absoluteCSVPath))
             {
@@ -223,6 +222,7 @@ namespace YarnSpinnerGodot.Editor
             {
                 GD.Print(
                     $"CSV file {csvResourcePath} did not exist for locale {language}. A new file will be created at that location.");
+                modificationsNeeded = true;
             }
 
             // Convert both enumerables to dictionaries, for easier lookup
@@ -245,12 +245,7 @@ namespace YarnSpinnerGodot.Editor
             // localisation
             var onlyInBaseIDs = baseIDs.Except(translatedIDs);
             var onlyInTranslatedIDs = translatedIDs.Except(baseIDs);
-
-            // Tracks if the translated localisation needed modifications
-            // (either new lines added, old lines removed, or changed lines
-            // flagged)
-            var modificationsNeeded = false;
-
+            
             // Remove every entry whose ID is only present in the
             // translated set. This entry has been removed from the base
             // localization.
@@ -265,6 +260,7 @@ namespace YarnSpinnerGodot.Editor
             foreach (var id in onlyInBaseIDs)
             {
                 StringTableEntry baseEntry = baseDictionary[id];
+                baseEntry.File = ProjectSettings.LocalizePath(baseEntry.File);
                 var newEntry = new StringTableEntry(baseEntry)
                 {
                     // Empty this text, so that it's apparent that a
@@ -383,7 +379,12 @@ namespace YarnSpinnerGodot.Editor
             project.LineMetadata = project.LineMetadata;
             project.ListOfFunctions = project.ListOfFunctions;
             project.SerializedDeclarations = project.SerializedDeclarations;
+            if (string.IsNullOrEmpty(project.JSONProjectPath))
+            {
+                project.JSONProjectPath = project.DefaultJSONProjectPath;
+            }
 
+            project.JSONProject.SaveToFile(ProjectSettings.GlobalizePath(project.JSONProjectPath));
             // Prevent plugin failing to load when code is rebuilt
             ClearJSONCache();
             var saveErr = ResourceSaver.Save(project, project.ResourcePath);
@@ -404,43 +405,22 @@ namespace YarnSpinnerGodot.Editor
             GD.Print($"Compiling all scripts in {assetPath}");
 
             project.ResourceName = Path.GetFileNameWithoutExtension(assetPath);
-            project.SearchForSourceScripts();
-
-            if (!project.SourceScripts.Any())
+            var sourceScripts = project.JSONProject.SourceFiles.ToList();
+            if (!sourceScripts.Any())
             {
-                GD.Print($"No .yarn files in directories below {project.ResourcePath}");
+                GD.Print(
+                    $"No .yarn files found matching the {nameof(project.JSONProject.SourceFilePatterns)} in {project.JSONProjectPath}");
                 return;
             }
 
             var library = new Library();
-            ActionManager.ClearAllActions();
-            ActionManager.AddActionsFromAssemblies();
-            ActionManager.RegisterFunctions(library);
-            var existingFunctions = project.ListOfFunctions ?? Array.Empty<FunctionInfo>();
-            var pretedermined = predeterminedFunctions().ToArray();
-            foreach (var func in pretedermined)
-            {
-                FunctionInfo existingFunc = null;
-                foreach (var existing in existingFunctions)
-                {
-                    if (existing.Name == func.Name)
-                    {
-                        existingFunc = existing;
-                        existingFunc.Parameters = func.Parameters;
-                        existingFunc.ReturnType = func.ReturnType;
-                        break;
-                    }
-                }
-
-                newFunctionList.Add(existingFunc ?? func);
-            }
 
             IEnumerable<Diagnostic> errors;
             project.ProjectErrors = Array.Empty<YarnProjectError>();
 
             // We now now compile!
-            var scriptAbsolutePaths = project.SourceScripts.ToList().Where(s => s != null)
-                .Select(scriptResource => ProjectSettings.GlobalizePath(scriptResource)).ToList();
+            var scriptAbsolutePaths = sourceScripts.ToList().Where(s => s != null)
+                .Select(ProjectSettings.GlobalizePath).ToList();
             // Store the compiled program
             byte[] compiledBytes = null;
             CompilationResult? compilationResult = new CompilationResult?();
@@ -626,9 +606,10 @@ namespace YarnSpinnerGodot.Editor
             // configured in languagesToSourceAssets is the default
             // language.
             var shouldAddDefaultLocalization = true;
-            if (project.LocaleCodeToCSVPath == null)
+            if (project.JSONProject.Localisation == null)
             {
-                project.LocaleCodeToCSVPath = new Godot.Collections.Dictionary<string, string>();
+                project.JSONProject.Localisation =
+                    new System.Collections.Generic.Dictionary<string, Project.LocalizationInfo>();
             }
 
             if (shouldAddDefaultLocalization)
@@ -691,9 +672,10 @@ namespace YarnSpinnerGodot.Editor
 
         private static CompilationResult? CompileStringsOnly(YarnProject project)
         {
-            var scriptPaths = project.SourceScripts.Where(s => s != null).Select(s => ProjectSettings.GlobalizePath(s));
+            var scriptPaths = project.JSONProject.SourceFiles.Where(s => s != null)
+                .Select(s => ProjectSettings.GlobalizePath(s)).ToList();
 
-            if (scriptPaths.Count() == 0)
+            if (!scriptPaths.Any())
             {
                 // We have no scripts to work with.
                 return null;
@@ -777,75 +759,72 @@ namespace YarnSpinnerGodot.Editor
         {
             return metadata.Where(x => !x.StartsWith("line:"));
         }
-        // TODO: search assemblies for annotated methods
-        // private List<string> AssemblySearchList()
-        // {
-        //     // Get the list of assembly names we want to search for actions in.
-        //     IEnumerable<AssemblyDefinitionAsset> assembliesToSearch = this.assembliesToSearch;
-        //
-        //     if (searchAllAssembliesForActions)
-        //     {
-        //         // We're searching all assemblies for actions. Find all assembly
-        //         // definitions in the project, including in packages, and load
-        //         // them.
-        //         assembliesToSearch = AssetDatabase
-        //             .FindAssets($"t:{nameof(AssemblyDefinitionAsset)}")
-        //             .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-        //             .Distinct()
-        //             .Select(path => AssetDatabase.LoadAssetAtPath<AssemblyDefinitionAsset>(path));
-        //     }
-        //
-        //     // We won't include any assemblies whose names begin with any of
-        //     // these prefixes
-        //     var excludedPrefixes = new[]
-        //     {
-        //         "Unity",
-        //     };
-        //
-        //     // Go through each assembly definition asset, figure out its
-        //     // assembly name, and add it to the project's list of assembly names
-        //     // to search.
-        //     var validAssemblies = new List<string>();
-        //     foreach (var reference in assembliesToSearch)
-        //     {
-        //         if (reference == null)
-        //         {
-        //             continue;
-        //         }
-        //         var data = new AssemblyDefinition();
-        //         EditorJsonUtility.FromJsonOverwrite(reference.text, data);
-        //
-        //         if (excludedPrefixes.Any(prefix => data.name.StartsWith(prefix)))
-        //         {
-        //             continue;
-        //         }
-        //
-        //         validAssemblies.Add(data.name);
-        //     }
-        //     return validAssemblies;
-        // }
 
-        private static List<FunctionInfo> predeterminedFunctions()
+        /// <summary>
+        /// Update the corresponding Godot <see cref="YarnProject"/> when
+        /// the associated .yarnproject file is imported.
+        /// Will create a YarnProject resource that corresponds to this
+        /// JSON project file if none exists.
+        /// </summary>
+        /// <param name="assetPath">res:// path to the .yarnproject file</param>
+        public static YarnProject UpdateCompilerProject(string assetPath)
         {
-            var functions = ActionManager.FunctionsInfo();
-
-            List<FunctionInfo> f = new List<FunctionInfo>();
-            foreach (var func in functions)
+            var godotProject = LocateGodotYarnProject(assetPath);
+            if (godotProject == null)
             {
-                f.Add(CreateFunctionInfoFromMethodGroup(func));
+                var automaticGodotPath = new Regex(@"\.yarnproject$")
+                    .Replace(assetPath, ".tres");
+                godotProject = new YarnProject
+                {
+                    ResourcePath = automaticGodotPath,
+                };
+                godotProject.JSONProjectPath = assetPath;
             }
 
-            return f;
+            UpdateYarnProject(godotProject);
+            return godotProject;
         }
 
-        // A data class used for deserialising the JSON AssemblyDefinitionAssets
-        // into.
-        private class AssemblyDefinition
+        /// <summary>
+        /// Work backwards from a .yarnproject file to find the godot
+        /// YarnProject resource that corresponds to it. 
+        /// </summary>
+        /// <param name="assetPath">res:// path to the .yarnproject file</param>
+        /// <returns>a YarnProject if one is found referring to this path,
+        /// otherwise null. </returns>
+        public static YarnProject LocateGodotYarnProject(string assetPath)
         {
-            public string name;
+            var projectDir = Directory.GetParent(ProjectSettings.GlobalizePath(assetPath));
+            if (projectDir == null)
+            {
+                GD.PrintErr(
+                    $"Unable to determine the directory that {assetPath} is in to find its associated {nameof(YarnProject)}");
+            }
+
+            foreach (var file in
+                     Directory.EnumerateFiles(projectDir.FullName, "*.tres",
+                         SearchOption.TopDirectoryOnly))
+            {
+                // search any .tres files in the same directory as the .yarnproject file,
+                // and if that resource is a Godot YarnProject, then check its JSONProjectPath.
+                // if they match, this .yarnproject file corresponds to that Godot YarnProject
+                var resource = ResourceLoader.Load(ProjectSettings.LocalizePath(file));
+                if (resource is YarnProject yarnProject && yarnProject.JSONProjectPath.Equals(assetPath))
+                {
+                    return yarnProject;
+                }
+            }
+
+            return null;
         }
 
-        public static void AddLineTagsToFilesInYarnProject(YarnProject project)
+        /// <summary>
+        /// Update any .yarn scripts in the project to add #line: tags with
+        /// unique IDs.
+        /// </summary>
+        /// <param name="project">The YarnProject to update the scripts for</param>
+        /// <param name="editorInterface">reference to the EditorInterface</param>
+        public static void AddLineTagsToFilesInYarnProject(YarnProject project, EditorInterface editorInterface)
         {
             // First, gather all existing line tags across ALL yarn
             // projects, so that we don't accidentally overwrite an
@@ -853,12 +832,12 @@ namespace YarnSpinnerGodot.Editor
             // yarn projects, and get the string tags inside them.
 
             var allYarnFiles =
+                // Get the path for each script
+                // remove any nulls, in case any are found
                 // get all yarn projects across the entire project
                 LoadAllYarnProjects()
                     // Get all of their source scripts, as a single sequence
-                    .SelectMany(i => i.SourceScripts)
-                    // Get the path for each asset
-                    // remove any nulls, in case any are found
+                    .SelectMany(proj => proj.JSONProject.SourceFiles).ToList()
                     .Where(path => path != null);
 
 #if YARNSPINNER_DEBUG
@@ -866,8 +845,6 @@ namespace YarnSpinnerGodot.Editor
 #endif
 
             var library = new Library();
-            ActionManager.ClearAllActions();
-            ActionManager.RegisterFunctions(library);
 
             // Compile all of these, and get whatever existing string tags
             // they had. Do each in isolation so that we can continue even
@@ -904,7 +881,7 @@ namespace YarnSpinnerGodot.Editor
 
             try
             {
-                foreach (var script in project.SourceScripts)
+                foreach (var script in project.JSONProject.SourceFiles)
                 {
                     var assetPath = ProjectSettings.GlobalizePath(script);
                     var contents = File.ReadAllText(assetPath);
@@ -940,6 +917,8 @@ namespace YarnSpinnerGodot.Editor
             if (modifiedFiles.Count > 0)
             {
                 GD.Print($"Updated the following files: {string.Join(", ", modifiedFiles)}");
+                // trigger reimport
+                editorInterface.GetResourceFilesystem().ScanSources();
             }
             else
             {
