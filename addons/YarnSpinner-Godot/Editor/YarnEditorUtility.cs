@@ -1,6 +1,7 @@
 #if TOOLS
 using System.Collections.Generic;
 using Godot;
+using Yarn.Compiler;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
@@ -17,7 +18,7 @@ namespace YarnSpinnerGodot.Editor
         const string TemplateFilePath = "res://addons/YarnSpinner-Godot/Editor/YarnScriptTemplate.txt";
 
         /// <summary>
-        /// Menu Item "Yarn Spinner/Create Yarn Scr ipt"
+        /// Menu Item "Tools > YarnSpinner > Create Yarn Script"
         ///
         /// </summary>    
         public static void CreateYarnScript(string scriptPath)
@@ -27,13 +28,14 @@ namespace YarnSpinnerGodot.Editor
         }
 
         /// <summary>
-        /// Menu Item "Yarn Spinner/Create Yarn Script"
-        /// 
+        /// Menu Item "Tools > YarnSpinner > Create Yarn Script"
         /// </summary>
-        /// <param name="projectPath"></param>
+        /// <param name="projectPath">res:// path of the YarnProject resource to create</param>
         public static void CreateYarnProject(string projectPath)
         {
             var newYarnProject = new YarnProject();
+            var jsonProject = new Yarn.Compiler.Project();
+            
             var absPath = ProjectSettings.GlobalizePath(projectPath);
             newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
             newYarnProject.ResourcePath = projectPath;
@@ -46,6 +48,23 @@ namespace YarnSpinnerGodot.Editor
             {
                 GD.Print($"Saved new yarn project to {projectPath}");
                 YarnProjectEditorUtility.AddProjectToList(newYarnProject);
+            }
+        }
+        /// <summary>
+        /// Menu Item "Tools > YarnSpinner > Create Markup Palette"
+        /// </summary>
+        /// <param name="palettePath">res:// path to the markup palette to create</param>
+        public static void CreateMarkupPalette(string palettePath)
+        {
+            var newPalette = new MarkupPalette();
+
+            var absPath = ProjectSettings.GlobalizePath(palettePath);
+            newPalette.ResourceName = Path.GetFileNameWithoutExtension(absPath);
+            newPalette.ResourcePath = palettePath;
+            var saveErr = ResourceSaver.Save(newPalette, palettePath);
+            if (saveErr != Error.Ok)
+            {
+                GD.Print($"Failed to save markup palette to {palettePath}");
             }
         }
         

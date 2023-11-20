@@ -31,7 +31,7 @@ namespace YarnSpinnerGodot.Editor
         public override string _GetSaveExtension() => "tres";
         public override string _GetResourceType()
         {
-            return "Resource";
+            return "Script";
         }
         public override int _GetPresetCount()
         {
@@ -59,9 +59,6 @@ namespace YarnSpinnerGodot.Editor
             Array<string> platformVariants,
             Array<string> genFiles)
         {
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-
             var extension = System.IO.Path.GetExtension(assetPath);
 
             if (extension == ".yarn")

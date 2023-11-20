@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dnyy064638ly1"]
+[gd_scene load_steps=4 format=3 uid="uid://dnyy064638ly1"]
 
 [ext_resource type="Script" path="res://Samples/SampleEntryPoint.cs" id="1"]
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
+[ext_resource type="Texture2D" uid="uid://pbrr5yyepbx8" path="res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png" id="3_bcudv"]
 
 [node name="SampleEntryPoint" type="CanvasLayer"]
 script = ExtResource("1")
@@ -12,14 +13,14 @@ _visualNovelButtonPath = NodePath("Visual Novel")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.101961, 0.184314, 0.215686, 1)
+color = Color(0.0431373, 0.0901961, 0.0470588, 1)
 
 [node name="Title" type="RichTextLabel" parent="."]
 clip_contents = false
-offset_left = 541.0
-offset_top = 83.0
-offset_right = 1132.0
-offset_bottom = 190.0
+offset_left = 310.0
+offset_top = 186.0
+offset_right = 901.0
+offset_bottom = 293.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 48
@@ -32,15 +33,18 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -570.0
-offset_top = -503.0
-offset_right = -370.0
-offset_bottom = -393.0
+offset_left = -651.0
+offset_top = -417.0
+offset_right = -451.0
+offset_bottom = -307.0
 grow_horizontal = 2
 grow_vertical = 0
 focus_neighbor_right = NodePath("../Visual Novel")
 focus_next = NodePath("../Visual Novel")
 theme = ExtResource("2")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 27
 text = "Space"
 
 [node name="features" type="RichTextLabel" parent="Space"]
@@ -49,6 +53,7 @@ offset_left = -9.0
 offset_top = 140.0
 offset_right = 226.0
 offset_bottom = 345.0
+theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Basic dialogue demo
 Talking to NPCs
@@ -61,24 +66,36 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 335.0
-offset_top = -517.0
-offset_right = 535.0
-offset_bottom = -407.0
+offset_left = -374.0
+offset_top = -420.0
+offset_right = -174.0
+offset_bottom = -310.0
 grow_horizontal = 2
 grow_vertical = 0
 focus_neighbor_left = NodePath("../Space")
 focus_previous = NodePath("../Space")
 theme = ExtResource("2")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 27
 text = "Visual Novel"
 
 [node name="features" type="RichTextLabel" parent="Visual Novel"]
 layout_mode = 0
-offset_left = -20.0
-offset_top = 152.0
-offset_right = 262.0
-offset_bottom = 380.0
+offset_left = 10.0
+offset_top = 142.0
+offset_right = 292.0
+offset_bottom = 370.0
+theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Localization
 Effect/ Animation Commands
 "
+
+[node name="Logo" type="TextureRect" parent="."]
+offset_left = 88.0
+offset_top = 82.0
+offset_right = 326.0
+offset_bottom = 296.0
+texture = ExtResource("3_bcudv")
+expand_mode = 1
