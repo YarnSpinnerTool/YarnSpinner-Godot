@@ -61,6 +61,11 @@ namespace YarnSpinnerGodot
             set
             {
                 _stringTable = value;
+                // make sure file paths are local
+                foreach (var entry in _stringTable)
+                {
+                    entry.Value.File = ProjectSettings.LocalizePath(entry.Value.File);
+                }
                 _stringTableJSON= JsonSerializer.Serialize(_stringTable, YarnProject.JSONOptions);
                 #if TOOLS
                                 YarnProjectEditorUtility.ClearJSONCache();

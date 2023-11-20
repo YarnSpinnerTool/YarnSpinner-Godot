@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4lixjwce14o3"]
+[gd_scene load_steps=7 format=3 uid="uid://b4lixjwce14o3"]
 
 [ext_resource type="Resource" uid="uid://c245gwv8qwsod" path="res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres" id="2"]
 [ext_resource type="Script" path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" id="4"]
 [ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="4_rci1f"]
 [ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="6"]
+[ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="6_jon5a"]
 [ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="9"]
 
 [node name="VisualNovelSample" type="Control"]
@@ -97,12 +98,18 @@ startNode = "Start"
 theme_override_font_sizes/normal_font_size = 34
 
 [node name="ColorOverlay" type="ColorRect" parent="YarnSpinnerCanvasLayer"]
+z_index = -1
+z_as_relative = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(1, 1, 1, 0)
+color = Color(0, 0, 0, 0)
+
+[node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
+script = ExtResource("6_jon5a")
+dialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
 
 [editable path="YarnSpinnerCanvasLayer"]

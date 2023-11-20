@@ -23,6 +23,11 @@ namespace YarnSpinnerGodot
             else
             {
                 text = Tr($"{line.ID}");
+                // fall back to base locale
+                if (text.Equals(line.ID))
+                {
+                    text = YarnProject.baseLocalization.GetLocalizedString(line.ID);
+                }
             }
 
             return new LocalizedLine()
@@ -39,7 +44,7 @@ namespace YarnSpinnerGodot
             // No-op; text lines are always available
         }
 
-        public override bool LinesAvailable => true;
+        public override bool LinesAvailable => YarnProject?.baseLocalization?.stringTable != null;
 
         public override string LocaleCode => textLanguageCode;
     }

@@ -116,6 +116,12 @@ namespace YarnSpinnerGodot
         {
             _jsonProject.SaveToFile(ProjectSettings.GlobalizePath(JSONProjectPath));
         }
+        
+        /// <summary>
+        /// Base language that the .yarn scripts are written in.
+        /// Stored in the .yarnproject file
+        /// </summary>
+        public string defaultLanguage => JSONProject.BaseLanguage;
 #endif
         
         private LineMetadata _lineMetadata;
@@ -245,12 +251,6 @@ namespace YarnSpinnerGodot
         }
 
         [Export] private string _serializedDeclarationsJSON;
-
-        /// <summary>
-        /// Base language that the .yarn scripts are written in.
-        /// Stored in the .yarnproject file
-        /// </summary>
-        public string defaultLanguage => JSONProject.BaseLanguage;
 
         [Export] public YarnProjectError[] ProjectErrors = Array.Empty<YarnProjectError>();
 

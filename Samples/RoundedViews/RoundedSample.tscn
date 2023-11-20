@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://d1q6uujk0isnq"]
+
+[ext_resource type="PackedScene" uid="uid://dqe5yshlcmnpg" path="res://addons/YarnSpinner-Godot/Scenes/RoundedDialogueSystem.tscn" id="1_e1fcx"]
+[ext_resource type="Resource" uid="uid://m1rob6arkjty" path="res://Samples/RoundedViews/RoundedProj.tres" id="2_s6ssf"]
+
+[node name="RoundedSample" type="Node2D"]
+
+[node name="RoundedYarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_e1fcx")]
+
+[node name="DialogueRunner" parent="RoundedYarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("2_s6ssf")
+startNode = "Start"
+startAutomatically = true
+
+[node name="CharacterNameText" parent="RoundedYarnSpinnerCanvasLayer/LineView/ViewControl/CharacterNameBubble" index="0"]
+offset_left = -175.5
+offset_top = -32.0
+offset_right = 267.5
+offset_bottom = 128.0
+
+[editable path="RoundedYarnSpinnerCanvasLayer"]

@@ -268,7 +268,13 @@ namespace YarnSpinnerGodot
             var injectorCache = new Dictionary<string, Injector>();
 
             // Find the assemblies we're looking for
-            IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a=> a.FullName !=null && !a.FullName.StartsWith("System.") 
+                                             && !a.FullName.StartsWith("GodotSharpEditor,")
+                                             && !a.FullName.StartsWith("Google.Protobuf,")
+                                             && !a.FullName.StartsWith("netstandard,")
+                                             && !a.FullName.StartsWith("YarnSpinner,")
+                           ).ToList();
 
             // Record that we've searched these assemblies before, so we don't
             // try and do it again

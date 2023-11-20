@@ -6,7 +6,7 @@ namespace YarnSpinnerGodot
     public partial class OptionView : Button
     {
         [Export] bool showCharacterName = false;
-
+        [Export] private RichTextLabel label;
         public Action<DialogueOption> OnOptionSelected;
         public MarkupPalette palette;
 
@@ -33,15 +33,17 @@ namespace YarnSpinnerGodot
                 }
                 else
                 {
-                    line = value.Line.TextWithoutCharacterName;
+                  line = value.Line.TextWithoutCharacterName;
                 }
+                label.BbcodeEnabled = true;
                 if (palette != null)
                 {
-                    Text = LineView.PaletteMarkedUpText(line, palette); 
+             
+                    label.Text = $"[center]{LineView.PaletteMarkedUpText(line, palette)}[/center]"; 
                 }
                 else
                 {
-                    Text = line.Text;
+                    label.Text = $"[center]{line.Text}[/center]"; ;
                 }
 
                 Disabled = !value.IsAvailable;

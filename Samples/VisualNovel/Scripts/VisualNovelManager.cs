@@ -242,7 +242,40 @@ public partial class VisualNovelManager : Node
     // shake a sprite
     public async Task ShakeSprite(string actorOrSpriteName, float moveTime)
     {
-        GD.Print("TODO: shake the sprite");
+        var actor = _actors[actorOrSpriteName];
+        var initialPos = actor.Rect.Position;
+        var moveTimeMilliseconds = moveTime * 1000;
+        var delay = 16;
+        var elapsed = 0f;
+        var iterationsSinceDestinationChange = 0;
+
+        Vector2 GetRandomDestination()
+        {
+            return initialPos +
+                   new Vector2(DefaultActions.RandomRange(-40, 40),
+                       DefaultActions.RandomRange(-40, 40));
+        }
+
+        var destination = GetRandomDestination();
+        while (elapsed < moveTimeMilliseconds)
+        {
+            if (iterationsSinceDestinationChange >= 4)
+            {
+                iterationsSinceDestinationChange = 0;
+                destination = GetRandomDestination();
+            }
+            else
+            {
+                iterationsSinceDestinationChange++;
+            }
+
+            var distance = (destination - actor.Rect.Position) * (1f / delay)*16;
+            actor.Rect.Position += distance;
+            await Task.Delay(delay);
+            elapsed += delay;
+        }
+
+        actor.Rect.Position = initialPos;
     }
 
     public void SetActor(string actorName, string spriteName, string positionX = "", string positionY = "",
@@ -314,26 +347,21 @@ public partial class VisualNovelManager : Node
     /// <summary>typical screen fade effect, good for transitions?
     /// usage: Fade( #hexcolor, startAlpha, endAlpha, fadeTime
     /// )</summary>
-    public void Fade(string fadeColorHex, float startAlpha = 0, float endAlpha = 1, float fadeTime = 1)
-    {
-        FadeTask(fadeColorHex, startAlpha, endAlpha, fadeTime);
-    }
-
-    private async void FadeTask(string fadeColorHex, float startAlpha = 0, float endAlpha = 1, float fadeTime = 1)
+    public async Task Fade(string fadeColorHex, float startAlpha = 0, float endAlpha = 1, float fadeTime = 1)
     {
         var elapsed = 0d;
         var newColor = new Color(fadeColorHex);
         newColor.A = startAlpha;
         _colorOverlay.Color = newColor;
         var colorDifference = endAlpha - startAlpha;
+        var delay = 16;
         while (elapsed < fadeTime && Mathf.Abs(endAlpha - newColor.A) > 0.001)
         {
-            var delta = GetProcessDeltaTime();
             var timeRatio = elapsed / fadeTime;
             newColor.A = (float) (startAlpha + timeRatio * colorDifference);
             _colorOverlay.Color = newColor;
-            elapsed += delta;
-            await DefaultActions.Wait(delta);
+            elapsed += delay / 1000d;
+            await Task.Delay(delay);
         }
 
         GD.Print($"Finished fading to {fadeColorHex}");
