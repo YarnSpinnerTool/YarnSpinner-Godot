@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnproject"
+type="Resource"
+uid="uid://bh6gxtkim13bm"
+path="res://.godot/imported/VisualNovel.yarnproject-0d2c19c2a873e985a9e0da2b75f44a20.tres"
+
+[deps]
+
+source_file="res://Samples/VisualNovel/Dialogue/VisualNovel.yarnproject"
+dest_files=["res://.godot/imported/VisualNovel.yarnproject-0d2c19c2a873e985a9e0da2b75f44a20.tres"]
+
+[params]
+

@@ -1,6 +1,7 @@
 #if TOOLS
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using Yarn.Compiler;
 using YarnSpinnerGodot.Editor;
@@ -61,12 +62,7 @@ namespace YarnSpinnerGodot
         public override void _EnterTree()
         {
             _editorInterface = GetEditorInterface();
-            if (!ProjectSettings.HasSetting(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY))
-            {
-                ProjectSettings.SetSetting(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY, new Array());
-            }
 
-            ProjectSettings.SetInitialValue(YarnProjectEditorUtility.YARN_PROJECT_PATHS_SETTING_KEY, new Array());
             // load script resources
             var yarnProjectScript =
                 ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinner-Godot/Runtime/YarnProject.cs");
@@ -81,6 +77,7 @@ namespace YarnSpinnerGodot
                     "res://addons/YarnSpinner-Godot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
 
             var scriptImportPlugin = new YarnImporter();
+            scriptImportPlugin.editorInterface = GetEditorInterface();
             _importPlugins.Add(scriptImportPlugin);
             var projectImportPlugin = new YarnProjectImporter();
             _importPlugins.Add(projectImportPlugin);
@@ -115,14 +112,14 @@ namespace YarnSpinnerGodot
 
         public override void _ExitTree()
         {
-            foreach (var plugin in _importPlugins)
+            foreach (var plugin in _importPlugins.Where(IsInstanceValid))
             {
                 RemoveImportPlugin(plugin);
             }
 
             RemoveCustomType(nameof(DialogueRunner));
             RemoveCustomType(nameof(YarnProject));
-            foreach (var plugin in _inspectorPlugins)
+            foreach (var plugin in _inspectorPlugins.Where(IsInstanceValid))
             {
                 RemoveInspectorPlugin(plugin);
             }

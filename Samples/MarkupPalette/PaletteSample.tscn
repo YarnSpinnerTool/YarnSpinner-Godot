@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://uxc1jm6ayoar"]
 
 [ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="1_luv5t"]
-[ext_resource type="Resource" uid="uid://65vclh8qnnlk" path="res://Samples/MarkupPalette/PaletteProj.tres" id="2_yfv6n"]
+[ext_resource type="Resource" uid="uid://7y2xm4f22ep5" path="res://Samples/MarkupPalette/Palette.yarnproject" id="2_yfv6n"]
 [ext_resource type="Resource" uid="uid://c631us202ijmk" path="res://Samples/MarkupPalette/example_markup_palette.tres" id="3_1wwmk"]
 [ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="4_q6j15"]
 

@@ -1,18 +1,19 @@
 #if TOOLS
+using System;
+using System.IO;
 using Godot;
 using Godot.Collections;
 
 namespace YarnSpinnerGodot.Editor
 {
-
     /// <summary>
     /// A <see cref="EditorImportPlugin"/> for YarnSpinner JSON project files (.yarnproject files)
     /// </summary>
     public partial class YarnProjectImporter : EditorImportPlugin
     {
-        
         public override string[] _GetRecognizedExtensions() =>
-           new[]{
+            new[]
+            {
                 "yarnproject"
             };
 
@@ -27,10 +28,12 @@ namespace YarnSpinnerGodot.Editor
         }
 
         public override string _GetSaveExtension() => "tres";
+
         public override string _GetResourceType()
         {
             return "Resource";
         }
+
         public override int _GetPresetCount()
         {
             return 0;
@@ -40,6 +43,7 @@ namespace YarnSpinnerGodot.Editor
         {
             return 1.0f;
         }
+
         public override int _GetImportOrder()
         {
             return 0;
@@ -59,19 +63,38 @@ namespace YarnSpinnerGodot.Editor
         {
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
-            GD.Print($"Updating the Godot {nameof(YarnProject)} resource that is linked to {assetPath}");
-            var importedMarkerResource = new Resource();
-            importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
-            var godotProject = YarnProjectEditorUtility.UpdateCompilerProject(assetPath);
-            YarnProjectEditorUtility.UpdateLocalizationCSVs(godotProject);
-            var saveErr = ResourceSaver.Save( importedMarkerResource, $"{savePath}.{_GetSaveExtension()}");
+            YarnProject godotProject = null;
+            var fullSavePath = $"{savePath}.{_GetSaveExtension()}";
+            try
+            {
+                godotProject = ResourceLoader.Load<YarnProject>(assetPath);
+            }
+            catch (Exception e)
+            {
+                GD.PushError(
+                    $"Error loading existing {nameof(YarnProject)}: {e.Message}\n{e.StackTrace}. Creating new resource.");
+            }
+
+            godotProject ??= new YarnProject();
+            godotProject.JSONProjectPath = assetPath;
+            godotProject.ImportPath = fullSavePath;
+            godotProject.ResourceName = Path.GetFileName(assetPath);
+            var saveErr = ResourceSaver.Save(godotProject, godotProject.ImportPath);
             if (saveErr != Error.Ok)
             {
                 GD.PrintErr($"Error saving .yarnproject file import: {saveErr.ToString()}");
             }
-            return (int)Error.Ok;
-        }
 
+            YarnProjectEditorUtility.UpdateYarnProject(godotProject);
+            YarnProjectEditorUtility.UpdateLocalizationCSVs(godotProject);
+            saveErr = ResourceSaver.Save(godotProject, godotProject.ImportPath);
+            if (saveErr != Error.Ok)
+            {
+                GD.PrintErr($"Error saving .yarnproject file import: {saveErr.ToString()}");
+            }
+
+            return (int) Error.Ok;
+        }
     }
 }
 #endif

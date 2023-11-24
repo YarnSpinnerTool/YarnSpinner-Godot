@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://b4lixjwce14o3"]
 
-[ext_resource type="Resource" uid="uid://c245gwv8qwsod" path="res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres" id="2"]
+[ext_resource type="Resource" uid="uid://bltl1e14qjywn" path="res://Samples/VisualNovel/Dialogue/VN_YarnProject.yarnproject" id="2"]
 [ext_resource type="Script" path="res://Samples/VisualNovel/Scripts/VisualNovelManager.cs" id="4"]
 [ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="4_rci1f"]
 [ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="6"]

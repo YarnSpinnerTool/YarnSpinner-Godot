@@ -171,7 +171,6 @@ namespace YarnSpinnerGodot.Editor
             try
             {
                 _project = (YarnProject) @object;
-                YarnProjectEditorUtility.AddProjectToList(_project);
 
                 if (IsInstanceValid(_recompileButton))
                 {
