@@ -56,7 +56,7 @@ Eve: I can finally write my epic romance about - #line:0c39b43
 <<wait 1.5>>
 <<Flip Eve left>>
 Eve: Wait... where's my laptop? It's not here. #line:04432b5 
-<<Shake Eve 1.0
+<<Shake Eve 1.0>>
 Eve: Adam! Have you seen my laptop??? #line:0a21105 
 
 <<PlayAudio music_funny 1.0 loop>>

@@ -76,7 +76,7 @@ namespace YarnSpinnerGodot
         /// </summary>
         /// <remarks>This value is only used when <see cref="useFadeEffect"/> is
         /// <see langword="true"/>.</remarks>
-        /// <seealso cref="useFadeEffect"/>
+        /// <seealso cref="useF`adeEffect"/>
         [Export] public float fadeOutTime = 0.05f;
 
         public const float FrameWaitTime = 0.16f;

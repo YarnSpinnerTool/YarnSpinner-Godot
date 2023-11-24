@@ -33,22 +33,9 @@ namespace YarnSpinnerGodot.Editor
         /// <param name="projectPath">res:// path of the YarnProject resource to create</param>
         public static void CreateYarnProject(string projectPath)
         {
-            var newYarnProject = new YarnProject();
             var jsonProject = new Yarn.Compiler.Project();
-            
             var absPath = ProjectSettings.GlobalizePath(projectPath);
-            newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
-            newYarnProject.ResourcePath = projectPath;
-            var saveErr = ResourceSaver.Save( newYarnProject, projectPath);
-            if (saveErr != Error.Ok)
-            {
-                GD.Print($"Failed to save yarn project to {projectPath}");
-            }
-            else
-            {
-                GD.Print($"Saved new yarn project to {projectPath}");
-                YarnProjectEditorUtility.AddProjectToList(newYarnProject);
-            }
+            jsonProject.SaveToFile(absPath);
         }
         /// <summary>
         /// Menu Item "Tools > YarnSpinner > Create Markup Palette"

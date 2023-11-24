@@ -35,9 +35,15 @@ namespace YarnSpinnerGodot
     /// "Keep file (no import)" setting under "Import As". 
     /// </summary>
     [Tool]
+    [GlobalClass]
     public partial class YarnProject : Resource
     {
         public static JsonSerializerOptions JSONOptions = new JsonSerializerOptions {IncludeFields = true};
+
+        /// <summary>
+        /// File extension of JSON yarn project files.
+        /// </summary>
+        public const string YARN_PROJECT_EXTENSION = ".yarnproject";
 
         /// <summary>
         /// Indicates whether the last time this file was imported, the
@@ -64,6 +70,12 @@ namespace YarnSpinnerGodot
         /// </remarks> 
         [Export] public bool IsSuccessfullyParsed;
 
+        /// <summary>
+        /// Path in the .godot folder used to store generated data
+        /// for this project
+        /// </summary>
+        [Export] public string ImportPath;
+
         public byte[] CompiledYarnProgram => Convert.FromBase64String(CompiledYarnProgramBase64);
 
         [Export] public string CompiledYarnProgramBase64;
@@ -79,7 +91,7 @@ namespace YarnSpinnerGodot
 #if TOOLS
         public string DefaultJSONProjectPath => new Regex(@"\.tres$").Replace(ResourcePath, ".yarnproject");
         private Yarn.Compiler.Project _jsonProject;
-        
+
         /// <summary>
         /// Information available in the editor via the .yarnproject file,
         /// parsed from JSON into a <see cref="Yarn.Compiler.Project"/>
@@ -93,8 +105,8 @@ namespace YarnSpinnerGodot
                     if (string.IsNullOrEmpty(JSONProjectPath))
                     {
                         JSONProjectPath = DefaultJSONProjectPath;
-
                     }
+
                     if (!File.Exists(ProjectSettings.GlobalizePath(JSONProjectPath)))
                     {
                         _jsonProject = new Yarn.Compiler.Project();
@@ -116,14 +128,14 @@ namespace YarnSpinnerGodot
         {
             _jsonProject.SaveToFile(ProjectSettings.GlobalizePath(JSONProjectPath));
         }
-        
+
         /// <summary>
         /// Base language that the .yarn scripts are written in.
         /// Stored in the .yarnproject file
         /// </summary>
         public string defaultLanguage => JSONProject.BaseLanguage;
 #endif
-        
+
         private LineMetadata _lineMetadata;
 
         public LineMetadata LineMetadata

@@ -1,5 +1,6 @@
 #if TOOLS
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
 using Google.Protobuf;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Yarn;
 using Yarn.Compiler;
 using File = System.IO.File;
@@ -22,8 +24,6 @@ namespace YarnSpinnerGodot.Editor
     [Tool]
     public static class YarnProjectEditorUtility
     {
-        public const string YARN_PROJECT_PATHS_SETTING_KEY = "YarnSpinnerGodot/YarnProjectPaths";
-
         /// <summary>
         /// The contents of a .csv.import file to avoid importing it as a Godot localization csv file
         /// </summary>
@@ -34,38 +34,43 @@ namespace YarnSpinnerGodot.Editor
         /// </summary>
         /// <param name="scriptPath"></param>
         /// <returns></returns>
-        public static YarnProject GetDestinationProject(string scriptPath)
+        public static string GetDestinationProjectPath(string scriptPath)
         {
-            var projectRoot = ProjectSettings.GlobalizePath("res://");
-            var scriptDir = ProjectSettings.GlobalizePath(scriptPath);
-            scriptDir = Path.Combine(scriptDir, "..");
-            scriptDir = Path.GetFullPath(scriptDir).Replace("\\", "/");
             string destinationProjectPath = null;
-
-            var allProjects = (Godot.Collections.Array) ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
+            var globalScriptPath = Path.GetFullPath(ProjectSettings.GlobalizePath(scriptPath));
+            var allProjects = FindAllYarnProjects();
             foreach (var project in allProjects)
             {
                 var projectPath = ProjectSettings.GlobalizePath(project.ToString())
                     .Replace("\\", "/");
-                projectPath = projectPath.Substring(0, projectPath.LastIndexOf("/", StringComparison.Ordinal));
-                if (scriptDir.Contains(projectPath) &&
-                    (destinationProjectPath == null ||
-                     destinationProjectPath.Length < projectPath.Length))
+                try
                 {
-                    // use the deepest matching directory
-                    destinationProjectPath = project.ToString();
+                    var loadedProject = Yarn.Compiler.Project.LoadFromFile(projectPath);
+                    if (!loadedProject.SourceFiles.Contains(globalScriptPath))
+                    {
+                        continue;
+                    }
+
+                    destinationProjectPath = ProjectSettings.LocalizePath(projectPath);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    GD.PushError(
+                        $"Error while searching for the project associated with {scriptPath}: {e.Message}\n{e.StackTrace}");
                 }
             }
 
-            if (destinationProjectPath == null)
-            {
-                return null;
-            }
-
-            destinationProjectPath = ProjectSettings.LocalizePath(destinationProjectPath);
-            return ResourceLoader.Load<YarnProject>(destinationProjectPath);
+            return destinationProjectPath;
         }
 
+        private static IEnumerable FindAllYarnProjects()
+        {
+            var projectMatcher = new Matcher();
+            projectMatcher.AddInclude($"**/*{YarnProject.YARN_PROJECT_EXTENSION}");
+            return projectMatcher.GetResultsInFullPath(ProjectSettings.GlobalizePath("res://"))
+                .Select(ProjectSettings.LocalizePath);
+        }
 
         private const int PROJECT_UPDATE_TIMEOUT = 200; // ms 
 
@@ -245,7 +250,7 @@ namespace YarnSpinnerGodot.Editor
             // localisation
             var onlyInBaseIDs = baseIDs.Except(translatedIDs);
             var onlyInTranslatedIDs = translatedIDs.Except(baseIDs);
-            
+
             // Remove every entry whose ID is only present in the
             // translated set. This entry has been removed from the base
             // localization.
@@ -384,10 +389,9 @@ namespace YarnSpinnerGodot.Editor
                 project.JSONProjectPath = project.DefaultJSONProjectPath;
             }
 
-            project.JSONProject.SaveToFile(ProjectSettings.GlobalizePath(project.JSONProjectPath));
             // Prevent plugin failing to load when code is rebuilt
             ClearJSONCache();
-            var saveErr = ResourceSaver.Save(project, project.ResourcePath);
+            var saveErr = ResourceSaver.Save(project, project.ImportPath);
             if (saveErr != Error.Ok)
             {
                 GD.PushError($"Error updating YarnProject {project.ResourceName} to {project.ResourcePath}: {saveErr}");
@@ -515,7 +519,12 @@ namespace YarnSpinnerGodot.Editor
 
             project.ListOfFunctions = newFunctionList.ToArray();
             project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
-            ResourceSaver.Save(project, project.ResourcePath, ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
+            var saveErr = ResourceSaver.Save(project, project.ImportPath,
+                ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
+            if (saveErr != Error.Ok)
+            {
+                GD.PushError($"Failed to save updated {nameof(YarnProject)}: {saveErr}");
+            }
         }
 
         private static void LogDiagnostic(Diagnostic diagnostic)
@@ -761,64 +770,6 @@ namespace YarnSpinnerGodot.Editor
         }
 
         /// <summary>
-        /// Update the corresponding Godot <see cref="YarnProject"/> when
-        /// the associated .yarnproject file is imported.
-        /// Will create a YarnProject resource that corresponds to this
-        /// JSON project file if none exists.
-        /// </summary>
-        /// <param name="assetPath">res:// path to the .yarnproject file</param>
-        public static YarnProject UpdateCompilerProject(string assetPath)
-        {
-            var godotProject = LocateGodotYarnProject(assetPath);
-            if (godotProject == null)
-            {
-                var automaticGodotPath = new Regex(@"\.yarnproject$")
-                    .Replace(assetPath, ".tres");
-                godotProject = new YarnProject
-                {
-                    ResourcePath = automaticGodotPath,
-                };
-                godotProject.JSONProjectPath = assetPath;
-            }
-
-            UpdateYarnProject(godotProject);
-            return godotProject;
-        }
-
-        /// <summary>
-        /// Work backwards from a .yarnproject file to find the godot
-        /// YarnProject resource that corresponds to it. 
-        /// </summary>
-        /// <param name="assetPath">res:// path to the .yarnproject file</param>
-        /// <returns>a YarnProject if one is found referring to this path,
-        /// otherwise null. </returns>
-        public static YarnProject LocateGodotYarnProject(string assetPath)
-        {
-            var projectDir = Directory.GetParent(ProjectSettings.GlobalizePath(assetPath));
-            if (projectDir == null)
-            {
-                GD.PrintErr(
-                    $"Unable to determine the directory that {assetPath} is in to find its associated {nameof(YarnProject)}");
-            }
-
-            foreach (var file in
-                     Directory.EnumerateFiles(projectDir.FullName, "*.tres",
-                         SearchOption.TopDirectoryOnly))
-            {
-                // search any .tres files in the same directory as the .yarnproject file,
-                // and if that resource is a Godot YarnProject, then check its JSONProjectPath.
-                // if they match, this .yarnproject file corresponds to that Godot YarnProject
-                var resource = ResourceLoader.Load(ProjectSettings.LocalizePath(file));
-                if (resource is YarnProject yarnProject && yarnProject.JSONProjectPath.Equals(assetPath))
-                {
-                    return yarnProject;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Update any .yarn scripts in the project to add #line: tags with
         /// unique IDs.
         /// </summary>
@@ -933,53 +884,13 @@ namespace YarnSpinnerGodot.Editor
         public static List<YarnProject> LoadAllYarnProjects()
         {
             var projects = new List<YarnProject>();
-            CleanUpMovedOrDeletedProjects();
-            var allProjects = (Godot.Collections.Array) ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
+            var allProjects = FindAllYarnProjects();
             foreach (var path in allProjects)
             {
                 projects.Add(ResourceLoader.Load<YarnProject>(path.ToString()));
             }
 
             return projects;
-        }
-
-        private static void CleanUpMovedOrDeletedProjects()
-        {
-            var projects = (Godot.Collections.Array) ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
-            var removeProjects = new List<string>();
-            foreach (var path in projects)
-            {
-                if (!File.Exists(ProjectSettings.GlobalizePath((string) path)))
-                {
-                    removeProjects.Add((string) path);
-                }
-            }
-
-            var newProjects = new Godot.Collections.Array();
-            foreach (var project in projects)
-            {
-                if (!removeProjects.Contains(project.AsString()))
-                {
-                    newProjects.Add(project);
-                }
-            }
-
-            ProjectSettings.SetSetting(YARN_PROJECT_PATHS_SETTING_KEY, newProjects);
-        }
-
-        /// <summary>
-        /// Add a yarn project to the list of known yarn projects, if it is not already in the list
-        /// </summary>
-        public static void AddProjectToList(YarnProject project)
-        {
-            CleanUpMovedOrDeletedProjects();
-            var projects = (Godot.Collections.Array) ProjectSettings.GetSetting(YARN_PROJECT_PATHS_SETTING_KEY);
-            if (project.ResourcePath != "" && !projects.Contains(project.ResourcePath))
-            {
-                projects.Add(project.ResourcePath);
-            }
-
-            ProjectSettings.SetSetting(YARN_PROJECT_PATHS_SETTING_KEY, projects);
         }
     }
 }
