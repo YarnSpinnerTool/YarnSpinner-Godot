@@ -15,9 +15,7 @@ namespace YarnSpinnerGodot.Editor
     public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
     {
         public EditorInterface editorInterface;
-        private Button _recompileButton;
-        private Button _addTagsButton;
-        private Button _updateLocalizationsButton;
+
         private YarnCompileErrorsPropertyEditor _compileErrorsPropertyEditor;
         private ScrollContainer _parseErrorControl;
         private YarnProject _project;
@@ -58,6 +56,8 @@ namespace YarnSpinnerGodot.Editor
                     nameof(YarnProject.IsSuccessfullyParsed),
                     nameof(YarnProject.CompiledYarnProgramBase64),
                     nameof(YarnProject.baseLocalization),
+                    nameof(YarnProject.ImportPath),
+                    nameof(YarnProject.JSONProjectPath),
                     // can't use nameof for private fields here
                     "_baseLocalizationJSON",
                     "_lineMetadataJSON",
@@ -171,40 +171,29 @@ namespace YarnSpinnerGodot.Editor
             try
             {
                 _project = (YarnProject) @object;
+                _project.JSONProject = Yarn.Compiler.Project.LoadFromFile(ProjectSettings.GlobalizePath(_project.JSONProjectPath));
 
-                if (IsInstanceValid(_recompileButton))
+
+                using (var recompileButton = new Button())
                 {
-                    _recompileButton.QueueFree();
+                    recompileButton.Text = "Re-compile Scripts in Project";
+                    recompileButton.Connect("pressed", Callable.From(() => OnRecompileClicked(_project)));
+                    AddCustomControl(recompileButton);
                 }
 
-                _recompileButton = new Button();
-                _recompileButton.Text = "Re-compile Scripts in Project";
-                _recompileButton.Connect("pressed", Callable.From(() => OnRecompileClicked(_project)));
-                AddCustomControl(_recompileButton);
+                var addTagsButton = new Button();
+                addTagsButton.Text = "Add Line Tags to Scripts";
+                addTagsButton.Connect("pressed", Callable.From(() => OnAddTagsClicked(_project)));
+                AddCustomControl(addTagsButton);
+          
 
-                if (IsInstanceValid(_addTagsButton))
-                {
-                    _addTagsButton.QueueFree();
-                }
-
-                _addTagsButton = new Button();
-
-                _addTagsButton.Text = "Add Line Tags to Scripts";
-                _addTagsButton.Connect("pressed", Callable.From(() => OnAddTagsClicked(_project)));
-                AddCustomControl(_addTagsButton);
-
-                if (IsInstanceValid(_updateLocalizationsButton))
-                {
-                    _updateLocalizationsButton.QueueFree();
-                }
-
-                _updateLocalizationsButton = new Button();
+                var updateLocalizationsButton = new Button();
 
                 var sourceScripts = _project.JSONProject.SourceFiles.ToList();
-                _updateLocalizationsButton.Text = "Update Localizations";
-                _updateLocalizationsButton.TooltipText = "Update Localization CSV and Godot .translation Files";
-                _updateLocalizationsButton.Connect("pressed", new Callable(this, nameof(OnUpdateLocalizationsClicked)));
-                AddCustomControl(_updateLocalizationsButton);
+                updateLocalizationsButton.Text = "Update Localizations";
+                updateLocalizationsButton.TooltipText = "Update Localization CSV and Godot .translation Files";
+                updateLocalizationsButton.Connect("pressed", new Callable(this, nameof(OnUpdateLocalizationsClicked)));
+                AddCustomControl(updateLocalizationsButton);
 
                 var scriptPatternsGrid = new GridContainer
                 {
@@ -301,13 +290,13 @@ namespace YarnSpinnerGodot.Editor
                 _sourceScriptsListLabel = new RichTextLabel
                 {
                     SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                    SizeFlagsVertical = Control.SizeFlags.ExpandFill
+                    SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                 };
                 _sourceScriptsListLabel.CustomMinimumSize = new Vector2(0, scriptAreaHeight);
                 RenderSourceScriptsList(_project);
                 AddCustomControl(_sourceScriptsListLabel);
 
-                var localeGrid = new GridContainer{SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
+                var localeGrid = new GridContainer {SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
                 localeGrid.Columns = 3;
 
                 var label = new Label {Text = "Localization CSVs"};
@@ -315,7 +304,8 @@ namespace YarnSpinnerGodot.Editor
 
                 var textEntry = new LineEdit
                 {
-                    PlaceholderText = "locale code"
+                    PlaceholderText = "locale code",
+                    SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
                 };
                 var addButton = new Button {Text = "Add"};
                 SaveNewLocaleCode("", addButton);
@@ -337,7 +327,7 @@ namespace YarnSpinnerGodot.Editor
                     picker.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
                     var pathLabel = new Label
                     {
-                        Text = locale.Value.Strings, 
+                        Text = locale.Value.Strings,
                         SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                         AutowrapMode = TextServer.AutowrapMode.Arbitrary
                     };
@@ -360,6 +350,37 @@ namespace YarnSpinnerGodot.Editor
                 }
 
                 AddCustomControl(localeGrid);
+
+                var baseLocaleRow = new HBoxContainer
+                {
+                    SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                };
+                baseLocaleRow.AddChild(new Label {Text = "Base language"});
+
+                var baseLocaleInput = new LineEdit
+                {
+                    Text = _project.JSONProject.BaseLanguage,
+                    SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                };
+                baseLocaleRow.AddChild(baseLocaleInput);
+                var changeBaseLocaleButton = new Button {Text = "Change"};
+                baseLocaleInput.TextChanged += (newText) =>
+                {
+                    changeBaseLocaleButton.Disabled = string.IsNullOrWhiteSpace(newText);
+                };
+                changeBaseLocaleButton.Pressed += () =>
+                {
+                    if (!IsInstanceValid(_project))
+                    {
+                        return;
+                    }
+
+                    _project.JSONProject.BaseLanguage = baseLocaleInput.Text.Trim();
+                    _project.JSONProject.SaveToFile(_project.JSONProject.Path);
+                    editorInterface.GetResourceFilesystem().ScanSources();
+                };
+                baseLocaleRow.AddChild(changeBaseLocaleButton);
+                AddCustomControl(baseLocaleRow);
             }
             catch (Exception e)
             {

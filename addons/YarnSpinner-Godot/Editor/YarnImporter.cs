@@ -29,10 +29,13 @@ namespace YarnSpinnerGodot.Editor
             return "Yarn Script";
         }
 
+
         public override string _GetSaveExtension() => "tres";
 
         public override string _GetResourceType()
         {
+            var a = new Array();
+            
             return "Resource";
         }
 
@@ -144,8 +147,8 @@ namespace YarnSpinnerGodot.Editor
             else
             {
                 // trigger update of the yarn project
-                // var godotProject = ResourceLoader.Load<YarnProject>(projectPath);
-                // YarnProjectEditorUtility.UpdateYarnProject(godotProject);
+                var godotProject = ResourceLoader.Load<YarnProject>(projectPath);
+                YarnProjectEditorUtility.UpdateYarnProject(godotProject);
             }
         }
     }

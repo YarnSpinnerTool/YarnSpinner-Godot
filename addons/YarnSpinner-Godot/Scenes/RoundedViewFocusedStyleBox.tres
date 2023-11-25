@@ -1,0 +1,13 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://cqadffkf802cr"]
+
+[ext_resource type="Texture2D" uid="uid://brywpv4sc046d" path="res://addons/YarnSpinner-Godot/Textures/CharacterBubble.png" id="1_0yfxo"]
+
+[resource]
+texture = ExtResource("1_0yfxo")
+texture_margin_left = 80.0
+texture_margin_top = 80.0
+texture_margin_right = 80.0
+texture_margin_bottom = 80.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+modulate_color = Color(1, 1, 0.905882, 1)

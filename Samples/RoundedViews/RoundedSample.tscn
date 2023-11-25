@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://d1q6uujk0isnq"]
 
 [ext_resource type="PackedScene" uid="uid://dqe5yshlcmnpg" path="res://addons/YarnSpinner-Godot/Scenes/RoundedDialogueSystem.tscn" id="1_e1fcx"]
-[ext_resource type="Resource" uid="uid://l42klvikwhmy" path="res://Samples/RoundedViews/Rounded.yarnproject" id="2_s6ssf"]
+[ext_resource type="Resource" uid="uid://crbfo1tue0g06" path="res://Samples/RoundedViews/Rounded.yarnproject" id="2_s6ssf"]
 
 [node name="RoundedSample" type="Node2D"]
 
@@ -9,7 +9,9 @@
 
 [node name="DialogueRunner" parent="RoundedYarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("2_s6ssf")
-startNode = "Start"
 startAutomatically = true
+
+[node name="LineView" parent="RoundedYarnSpinnerCanvasLayer" index="2" node_paths=PackedStringArray("continueButton")]
+continueButton = NodePath("ViewControl/LineText/LineBubble/ContinueButton")
 
 [editable path="RoundedYarnSpinnerCanvasLayer"]

@@ -75,9 +75,7 @@ namespace YarnSpinnerGodot
         /// <summary>
         /// The variable storage object.
         /// </summary>
-        [Export] public NodePath variableStoragePath;
-
-        public VariableStorageBehaviour _variableStorage;
+        [Export] public VariableStorageBehaviour _variableStorage;
 
         /// <inheritdoc cref="_variableStorage"/>
         public VariableStorageBehaviour VariableStorage
@@ -94,16 +92,11 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// List of node paths from the inspector to <see cref="dialogueViews"/>
-        /// </summary>
-        [Export] public Array<NodePath> dialogueViewPaths = new Array<NodePath>();
-
-        /// <summary>
         /// The View classes that will present the dialogue to the user.
         /// An error will be logged if any of these objects do not implement
         /// the interface <see cref="DialogueViewBase"/>
         /// </summary>
-        public List<Node> dialogueViews;
+        [Export] public Array<Node> dialogueViews;
 
         /// <summary>The name of the node to start from.</summary>
         /// <remarks>
@@ -130,9 +123,7 @@ namespace YarnSpinnerGodot
         /// <summary>
         /// NodePath locating the lineProvider for this dialogue runner
         /// </summary>
-        [Export] public NodePath lineProviderPath;
-
-        public LineProviderBehaviour lineProvider;
+        [Export] public LineProviderBehaviour lineProvider;
 
         /// <summary>
         /// If true, will print GD.Print messages every time it enters a
@@ -273,6 +264,7 @@ namespace YarnSpinnerGodot
             {
                 lineProvider.YarnProject = newProject;
             }
+
             SetInitialVariables();
         }
 
@@ -697,8 +689,9 @@ namespace YarnSpinnerGodot
         /// Each view in the list must implement the interface <see cref="DialogueViewBase"/>
         /// </summary>
         /// <param name="views">The array of views to be assigned.</param>
-        public void SetDialogueViews(List<Node> views)
+        public void SetDialogueViews(IEnumerable<Node> views)
         {
+            var newViews = new Array<Node>();
             foreach (var view in views)
             {
                 if (view == null)
@@ -708,6 +701,7 @@ namespace YarnSpinnerGodot
 
                 if (view is DialogueViewBase baseView)
                 {
+                    newViews.Add(view);
                     baseView.requestInterrupt = OnViewRequestedInterrupt;
                 }
                 else
@@ -717,7 +711,7 @@ namespace YarnSpinnerGodot
                 }
             }
 
-            dialogueViews = views;
+            dialogueViews = newViews;
         }
 
         #region Private Properties/Variables/Procedures
@@ -760,15 +754,10 @@ namespace YarnSpinnerGodot
 
         public override void _Ready()
         {
-            _variableStorage = GetNode<VariableStorageBehaviour>(variableStoragePath);
-            if (dialogueViews == null)
-            {
-                dialogueViews = new List<Node>();
-            }
+            dialogueViews ??= new Array<Node>();
 
-            foreach (var path in dialogueViewPaths)
+            foreach (var potentialView in dialogueViews)
             {
-                var potentialView = GetNode(path);
                 if (potentialView is DialogueViewBase baseView)
                 {
                     if (!dialogueViews.Contains(potentialView))
@@ -789,13 +778,8 @@ namespace YarnSpinnerGodot
                     "Dialogue Runner doesn't have any dialogue views set up. No lines or options will be visible.");
             }
 
-            foreach (var view in dialogueViews)
+            foreach (var view in dialogueViews.Where(IsInstanceValid))
             {
-                if (view == null)
-                {
-                    continue;
-                }
-
                 (view as DialogueViewBase).requestInterrupt = OnViewRequestedInterrupt;
             }
 
@@ -810,12 +794,7 @@ namespace YarnSpinnerGodot
                 // Load this new Yarn Project.
                 SetProject(yarnProject);
             }
-
-            if (lineProviderPath != null && !lineProviderPath.IsEmpty && lineProvider == null)
-            {
-                lineProvider = GetNode<LineProviderBehaviour>(lineProviderPath);
-            }
-
+            
             if (lineProvider == null)
             {
                 // If we don't have a line provider, create a
@@ -1025,7 +1004,7 @@ namespace YarnSpinnerGodot
         /// </summary>
         /// <param name="line">The line to send to the dialogue views.</param>
         private void HandleLine(Line line)
-        { 
+        {
             // it is possible at this point depending on the flow into handling the line that the line provider hasn't finished it's loads
             // as such we will need to hold here until the line provider has gotten all it's lines loaded
             // in testing this has been very hard to trigger without having bonkers huge nodes jumping to very asset rich nodes
@@ -1049,88 +1028,91 @@ namespace YarnSpinnerGodot
                     {
                         return;
                     }
+
                     await DefaultActions.Wait(0.01);
                     if (!IsInstanceValid(lineProvider))
                     {
                         return;
                     }
                 }
+
                 HandleLineInternal();
             }
+
             void HandleLineInternal()
             {
-            // Get the localized line from our line provider
-            CurrentLine = lineProvider.GetLocalizedLine(line);
+                // Get the localized line from our line provider
+                CurrentLine = lineProvider.GetLocalizedLine(line);
 
-            // Expand substitutions
-            var text = Dialogue.ExpandSubstitutions(CurrentLine.RawText, CurrentLine.Substitutions);
+                // Expand substitutions
+                var text = Dialogue.ExpandSubstitutions(CurrentLine.RawText, CurrentLine.Substitutions);
 
-            if (text == null)
-            {
-                GD.PrintErr(
-                    $"Dialogue Runner couldn't expand substitutions in Yarn Project [{yarnProject.ResourceName}] node [{CurrentNodeName}] with line ID [{CurrentLine.TextID}]. "
-                    + "This usually happens because it couldn't find text in the Localization. The line may not be tagged properly. "
-                    + "Try re-importing this Yarn Program. "
-                    + "For now, Dialogue Runner will swap in CurrentLine.RawText.");
-                text = CurrentLine.RawText;
-            }
-
-            // Render the markup
-            Dialogue.LanguageCode = lineProvider.LocaleCode;
-
-            try
-            {
-                CurrentLine.Text = Dialogue.ParseMarkup(text);
-            }
-            catch (Yarn.Markup.MarkupParseException e)
-            {
-                // Parsing the markup failed. We'll log a warning, and
-                // produce a markup result that just contains the raw text.
-                GD.PrintErr($"Failed to parse markup in \"{text}\": {e.Message}");
-                CurrentLine.Text = new Yarn.Markup.MarkupParseResult
+                if (text == null)
                 {
-                    Text = text,
-                    Attributes = new List<Yarn.Markup.MarkupAttribute>()
-                };
-            }
-
-            // Clear the set of active dialogue views, just in case
-            ActiveDialogueViews.Clear();
-
-            // the following is broken up into two stages because otherwise if the 
-            // first view happens to finish first once it calls dialogue complete
-            // it will empty the set of active views resulting in the line being considered
-            // finished by the runner despite there being a bunch of views still waiting
-            // so we do it over two loops.
-            // the first finds every active view and flags it as such
-            // the second then goes through them all and gives them the line
-
-            // Mark this dialogue view as active
-            foreach (var dialogueView in dialogueViews)
-            {
-                if (dialogueView == null || dialogueView.IsInsideTree() == false)
-                {
-                    continue;
+                    GD.PrintErr(
+                        $"Dialogue Runner couldn't expand substitutions in Yarn Project [{yarnProject.ResourceName}] node [{CurrentNodeName}] with line ID [{CurrentLine.TextID}]. "
+                        + "This usually happens because it couldn't find text in the Localization. The line may not be tagged properly. "
+                        + "Try re-importing this Yarn Program. "
+                        + "For now, Dialogue Runner will swap in CurrentLine.RawText.");
+                    text = CurrentLine.RawText;
                 }
 
-                ActiveDialogueViews.Add(dialogueView);
-            }
+                // Render the markup
+                Dialogue.LanguageCode = lineProvider.LocaleCode;
 
-            // Send line to all active dialogue views
-            foreach (var dialogueView in dialogueViews)
-            {
-                if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                try
                 {
-                    continue;
+                    CurrentLine.Text = Dialogue.ParseMarkup(text);
+                }
+                catch (Yarn.Markup.MarkupParseException e)
+                {
+                    // Parsing the markup failed. We'll log a warning, and
+                    // produce a markup result that just contains the raw text.
+                    GD.PrintErr($"Failed to parse markup in \"{text}\": {e.Message}");
+                    CurrentLine.Text = new Yarn.Markup.MarkupParseResult
+                    {
+                        Text = text,
+                        Attributes = new List<Yarn.Markup.MarkupAttribute>()
+                    };
                 }
 
-                ((DialogueViewBase) dialogueView).RunLine(CurrentLine,
-                    () => DialogueViewCompletedDelivery((DialogueViewBase) dialogueView));
+                // Clear the set of active dialogue views, just in case
+                ActiveDialogueViews.Clear();
+
+                // the following is broken up into two stages because otherwise if the 
+                // first view happens to finish first once it calls dialogue complete
+                // it will empty the set of active views resulting in the line being considered
+                // finished by the runner despite there being a bunch of views still waiting
+                // so we do it over two loops.
+                // the first finds every active view and flags it as such
+                // the second then goes through them all and gives them the line
+
+                // Mark this dialogue view as active
+                foreach (var dialogueView in dialogueViews)
+                {
+                    if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                    {
+                        continue;
+                    }
+
+                    ActiveDialogueViews.Add(dialogueView);
+                }
+
+                // Send line to all active dialogue views
+                foreach (var dialogueView in dialogueViews)
+                {
+                    if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                    {
+                        continue;
+                    }
+
+                    ((DialogueViewBase) dialogueView).RunLine(CurrentLine,
+                        () => DialogueViewCompletedDelivery((DialogueViewBase) dialogueView));
+                }
             }
         }
-    }
 
-    // called by the runner when a view has signalled that it needs to interrupt the current line
+        // called by the runner when a view has signalled that it needs to interrupt the current line
         void InterruptLine()
         {
             ActiveDialogueViews.Clear();
@@ -1340,7 +1322,7 @@ namespace YarnSpinnerGodot
             {
                 throw new ArgumentNullException(nameof(onSuccessfulDispatch));
             }
-            
+
             CommandDispatchResult commandExecutionResult =
                 ActionManager.TryExecuteCommand(SplitCommandText(command).ToArray(), out object returnValue);
             if (commandExecutionResult != CommandDispatchResult.Success)
@@ -1688,13 +1670,13 @@ namespace YarnSpinnerGodot
                 return false;
             }
         }
-        
+
         // takes in a JSON string and converts it into a tuple of dictionaries
         // intended to let you just dump these straight into the variable storage
         // throws exceptions if unable to convert or if the conversion half works
-        private (System.Collections.Generic.Dictionary<string, float>, 
-            System.Collections.Generic.Dictionary<string, string>, 
-            System.Collections.Generic.Dictionary<string, bool>) 
+        private (System.Collections.Generic.Dictionary<string, float>,
+            System.Collections.Generic.Dictionary<string, string>,
+            System.Collections.Generic.Dictionary<string, bool>)
             DeserializeAllVariablesFromJSON(string jsonData)
         {
             SaveData data = JsonSerializer.Deserialize<SaveData>(jsonData, YarnProject.JSONOptions);
@@ -1703,10 +1685,12 @@ namespace YarnSpinnerGodot
             {
                 throw new ArgumentException("Provided JSON string was not able to extract numeric variables");
             }
+
             if (data.stringKeys == null && data.stringValues == null)
             {
                 throw new ArgumentException("Provided JSON string was not able to extract string variables");
             }
+
             if (data.boolKeys == null && data.boolValues == null)
             {
                 throw new ArgumentException("Provided JSON string was not able to extract boolean variables");
@@ -1716,10 +1700,12 @@ namespace YarnSpinnerGodot
             {
                 throw new ArgumentException("Number of keys and values of numeric variables does not match");
             }
+
             if (data.stringKeys.Length != data.stringValues.Length)
             {
                 throw new ArgumentException("Number of keys and values of string variables does not match");
             }
+
             if (data.boolKeys.Length != data.boolValues.Length)
             {
                 throw new ArgumentException("Number of keys and values of boolean variables does not match");
@@ -1730,11 +1716,13 @@ namespace YarnSpinnerGodot
             {
                 floats.Add(data.floatKeys[i], data.floatValues[i]);
             }
+
             var strings = new System.Collections.Generic.Dictionary<string, string>();
             for (int i = 0; i < data.stringValues.Length; i++)
             {
                 strings.Add(data.stringKeys[i], data.stringValues[i]);
             }
+
             var bools = new System.Collections.Generic.Dictionary<string, bool>();
             for (int i = 0; i < data.boolValues.Length; i++)
             {
@@ -1743,6 +1731,7 @@ namespace YarnSpinnerGodot
 
             return (floats, strings, bools);
         }
+
         private string SerializeAllVariablesToJSON()
         {
             (var floats, var strings, var bools) = _variableStorage.GetAllVariables();
@@ -1757,6 +1746,7 @@ namespace YarnSpinnerGodot
 
             return JsonSerializer.Serialize(data, YarnProject.JSONOptions);
         }
+
         [System.Serializable]
         private struct SaveData
         {

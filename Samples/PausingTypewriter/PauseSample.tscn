@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://ckp616grs7xrs"]
 
 [ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="1_m0dlq"]
-[ext_resource type="Resource" uid="uid://cgk3obf527mhm" path="res://Samples/PausingTypewriter/PauseProj.yarnproject" id="2_j3415"]
+[ext_resource type="Resource" uid="uid://btil08na83k0p" path="res://Samples/PausingTypewriter/PauseProj.yarnproject" id="2_j3415"]
 [ext_resource type="Texture2D" uid="uid://crtrls05kcbu5" path="res://Samples/PausingTypewriter/sprites/talking.png" id="2_njmvd"]
 [ext_resource type="Script" path="res://Samples/PausingTypewriter/PauseResponder.cs" id="3_uqanb"]
 [ext_resource type="Texture2D" uid="uid://dk84dy4vqquds" path="res://Samples/PausingTypewriter/sprites/thinking.png" id="4_1i87u"]
