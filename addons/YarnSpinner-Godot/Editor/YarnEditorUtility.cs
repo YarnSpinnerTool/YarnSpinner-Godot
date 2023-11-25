@@ -44,7 +44,6 @@ namespace YarnSpinnerGodot.Editor
         public static void CreateMarkupPalette(string palettePath)
         {
             var newPalette = new MarkupPalette();
-
             var absPath = ProjectSettings.GlobalizePath(palettePath);
             newPalette.ResourceName = Path.GetFileNameWithoutExtension(absPath);
             newPalette.ResourcePath = palettePath;

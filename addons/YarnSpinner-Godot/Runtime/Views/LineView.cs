@@ -115,9 +115,7 @@ namespace YarnSpinnerGodot
         /// If the <see cref="LineView"/> receives a line that does not contain
         /// a character name, this object will be left blank.
         /// </remarks>
-        [Export] public NodePath characterNameTextPath;
-
-        public RichTextLabel characterNameText = null;
+        [Export] public RichTextLabel characterNameText = null;
 
         /// <summary>
         /// Controls whether the text of <see cref="lineText"/> should be
@@ -257,10 +255,6 @@ namespace YarnSpinnerGodot
             }
 
             continueButton?.Connect("pressed", new Callable(this, nameof(OnContinueClicked)));
-            if (characterNameText == null && !string.IsNullOrEmpty(characterNameTextPath))
-            {
-                characterNameText = GetNode<RichTextLabel>(characterNameTextPath);
-            }
 
             SetViewAlpha(0);
             SetCanvasInteractable(false);
@@ -330,52 +324,23 @@ namespace YarnSpinnerGodot
             // later we will make it fade in
             lineText.Visible = true;
             viewControl.Visible = true;
-
-            if (characterNameText == null)
+            if (!IsInstanceValid(characterNameText))
             {
                 if (showCharacterNameInLineView)
                 {
-                    if (lineText.BbcodeEnabled)
-                    {
-                        lineText.Text = dialogueLine.Text.Text;
-                    }
-                    else
-                    {
-                        lineText.Text = dialogueLine.Text.Text;
-                    }
+                    lineText.Text = dialogueLine.Text.Text;
                 }
                 else
                 {
-                    if (lineText.BbcodeEnabled)
-                    {
-                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                    }
-                    else
-                    {
-                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                    }
+                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                 }
             }
             else
             {
-                if (characterNameText.BbcodeEnabled)
-                {
-                    characterNameText.Text = dialogueLine.CharacterName;
-                }
-                else
-                {
-                    characterNameText.Text = dialogueLine.CharacterName;
-                }
-
-                if (lineText.BbcodeEnabled)
-                {
-                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                }
-                else
-                {
-                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                }
+                characterNameText.Text = dialogueLine.CharacterName;
+                lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
             }
+
 
             // Show the entire line's text immediately.
             lineText.VisibleRatio = 1;
@@ -423,12 +388,20 @@ namespace YarnSpinnerGodot
                 }
 
                 MarkupParseResult text = dialogueLine.TextWithoutCharacterName;
-                if (characterNameText != null)
+                if (IsInstanceValid(characterNameText))
                 {
-                    // If we have a character name text view, show the character
-                    // name in it, and show the rest of the text in our main
-                    // text view.
-                    characterNameText.Text = dialogueLine.CharacterName;
+                    // we are set up to show a character name, but there isn't one
+                    // so just hide the container
+                    if (string.IsNullOrWhiteSpace(dialogueLine.CharacterName))
+                    {
+                        characterNameText.Visible = false;
+                    }
+                    else
+                    {
+                        // we have a character name text view, show the character name
+                        characterNameText.Text = dialogueLine.CharacterName;
+                        characterNameText.Visible = true;
+                    }
                 }
                 else
                 {
@@ -439,12 +412,8 @@ namespace YarnSpinnerGodot
                         // Yep! Show the entire text.
                         text = dialogueLine.Text;
                     }
-                    else
-                    {
-                        // Nope! Show just the text without the character name.
-                        text = dialogueLine.TextWithoutCharacterName;
-                    }
                 }
+
 
                 // if we have a palette file need to add those colours into the text
                 if (IsInstanceValid(palette))
@@ -463,7 +432,7 @@ namespace YarnSpinnerGodot
                     {
                         characterNameText.Text = Regex.Replace(characterNameText.Text, htmlTagPattern, "[$1]");
                     }
-
+            
                     lineText.Text = Regex.Replace(lineText.Text, htmlTagPattern, "[$1]");
                 }
 

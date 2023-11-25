@@ -4,12 +4,13 @@
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
 [ext_resource type="Texture2D" uid="uid://pbrr5yyepbx8" path="res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png" id="3_bcudv"]
 
-[node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton")]
+[node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton", "_roundedViewsButton")]
 script = ExtResource("1")
 _spaceButton = NodePath("HBoxContainer/VBoxContainer/Space")
 _visualNovelButton = NodePath("HBoxContainer/VBoxContainer2/Visual Novel")
 _markupPaletteButton = NodePath("HBoxContainer/VBoxContainer3/MarkupPalette")
 _pausingTypewriterButton = NodePath("HBoxContainer/VBoxContainer4/PausingTypewriter")
+_roundedViewsButton = NodePath("HBoxContainer/VBoxContainer5/RoundedViews")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -142,4 +143,25 @@ size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Pausing at specific points while revealing your dialogue text"
+scroll_active = false
+
+[node name="VBoxContainer5" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RoundedViews" type="Button" parent="HBoxContainer/VBoxContainer5"]
+custom_minimum_size = Vector2(180, 100)
+layout_mode = 2
+theme = ExtResource("2")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 27
+text = "Rounded Views"
+
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer5"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "Alternate dialogue UI style"
 scroll_active = false

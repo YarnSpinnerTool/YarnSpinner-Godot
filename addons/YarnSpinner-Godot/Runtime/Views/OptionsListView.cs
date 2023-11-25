@@ -9,24 +9,20 @@ namespace YarnSpinnerGodot
     {
         [Export] PackedScene optionViewPrefab;
         [Export] MarkupPalette palette;
-        [Export] private NodePath lastLineTextPath;
-        RichTextLabel lastLineText;
+        [Export] public RichTextLabel lastLineCharacterNameText;
+        [Export] public RichTextLabel lastLineText;
 
         /// <summary>
-        /// The Control that is the parent of all UI elements in this line view.
+        /// The Control that is the parent of all UI elements in this options list view.
         /// Used to modify the transparency/visibility of the UI.
         /// </summary>
-        [Export] private NodePath viewControlPath;
-
-        public Control viewControl;
+        [Export] public Control viewControl;
 
         /// <summary>
-        /// NodePath to a BoxContainer (HBoxContainer or VBoxContainer),
+        /// BoxContainer (HBoxContainer or VBoxContainer),
         /// which will automatically lay out the options
         /// </summary>
-        [Export] private NodePath boxContainerPath;
-
-        public BoxContainer boxContainer;
+        [Export] public BoxContainer boxContainer;
 
         [Export] float fadeTime = 0.1f;
 
@@ -43,20 +39,14 @@ namespace YarnSpinnerGodot
 
         public override void _Ready()
         {
-            if (viewControl == null)
+            if (IsInstanceValid(lastLineCharacterNameText))
             {
-                viewControl = GetNode<Control>(viewControlPath);
+                lastLineCharacterNameText.Visible = false;
             }
 
-            if (lastLineText == null && lastLineTextPath != null)
+            if (IsInstanceValid(lastLineText))
             {
-                lastLineText = GetNode<RichTextLabel>(lastLineTextPath);
                 lastLineText.Visible = false;
-            }
-
-            if (boxContainer == null)
-            {
-                boxContainer = GetNode<VBoxContainer>(boxContainerPath);
             }
 
             viewControl.Visible = false;
@@ -118,9 +108,24 @@ namespace YarnSpinnerGodot
             }
 
             // Update the last line, if one is configured
-            if (lastLineText != null)
+            if (IsInstanceValid(lastLineText))
             {
                 var line = lastSeenLine.Text;
+                lastLineText.Visible = true;
+                if (IsInstanceValid(lastLineCharacterNameText))
+                {
+                    if (string.IsNullOrWhiteSpace(lastSeenLine.CharacterName))
+                    {
+                        lastLineCharacterNameText.Visible = false;
+                    }
+                    else
+                    {
+                        line = lastSeenLine.TextWithoutCharacterName;
+                        lastLineCharacterNameText.Visible = true;
+                        lastLineCharacterNameText.Text = lastSeenLine.CharacterName;
+                    }
+                }
+
                 if (palette != null)
                 {
                     lastLineText.Text = LineView.PaletteMarkedUpText(line, palette);
@@ -128,16 +133,6 @@ namespace YarnSpinnerGodot
                 else
                 {
                     lastLineText.Text = line.Text;
-                }
-
-                if (lastSeenLine != null)
-                {
-                    lastLineText.Visible = true;
-                    lastLineText.Text = lastSeenLine.Text.Text;
-                }
-                else
-                {
-                    lastLineText.Visible = false;
                 }
             }
 
@@ -150,7 +145,8 @@ namespace YarnSpinnerGodot
                 {
                     if (t.IsFaulted)
                     {
-                        GD.PrintErr($"Error running {nameof(Effects.FadeAlpha)} on {nameof(OptionsListView)}: {t.Exception}");
+                        GD.PrintErr(
+                            $"Error running {nameof(Effects.FadeAlpha)} on {nameof(OptionsListView)}: {t.Exception}");
                     }
                 });
 
@@ -178,7 +174,8 @@ namespace YarnSpinnerGodot
                 {
                     if (t.IsFaulted)
                     {
-                        GD.PrintErr($"Error running {nameof(OptionViewWasSelected)} on {nameof(OptionsListView)}: {t.Exception}");
+                        GD.PrintErr(
+                            $"Error running {nameof(OptionViewWasSelected)} on {nameof(OptionsListView)}: {t.Exception}");
                     }
                 });
 

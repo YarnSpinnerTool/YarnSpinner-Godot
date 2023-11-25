@@ -166,7 +166,7 @@ namespace YarnSpinnerGodot
         private static void CreateYarnProject()
         {
             GD.Print("Opening 'create yarn project' menu");
-            ShowCreateFilePopup("*.tres; Yarn Project", "Create a new Yarn Project",
+            ShowCreateFilePopup("*.yarnproject; Yarn Project", "Create a new Yarn Project",
                 CreateYarnProjectDestinationSelected);
         }
 
@@ -183,7 +183,7 @@ namespace YarnSpinnerGodot
             dialog.AddFilter(filter);
             dialog.FileMode = EditorFileDialog.FileModeEnum.SaveFile;
             dialog.Title = windowTitle;
-            dialog.FileSelected += (fileName) => { fileSelectedHandler(fileName); };
+            dialog.FileSelected += fileName => { fileSelectedHandler(fileName); };
             _editorInterface.GetBaseControl().AddChild(dialog);
             dialog.PopupCentered(new Vector2I(700, 500));
         }
@@ -192,6 +192,7 @@ namespace YarnSpinnerGodot
         {
             GD.Print("Creating a yarn project at " + destination);
             YarnEditorUtility.CreateYarnProject(destination);
+            _editorInterface.GetResourceFilesystem().ScanSources();
         }
     }
 }

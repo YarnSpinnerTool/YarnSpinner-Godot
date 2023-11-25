@@ -8,10 +8,6 @@
 
 config_version=5
 
-[YarnSpinnerGodot]
-
-YarnProjectPaths=["res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres", "res://Samples/RoundedViews/Rounded.tres", "res://Samples/MarkupPalette/PaletteProj.tres"]
-
 [application]
 
 config/name="YarnSpinner-Godot"
