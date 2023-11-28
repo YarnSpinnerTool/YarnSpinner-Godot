@@ -164,11 +164,25 @@ namespace YarnSpinnerGodot.Editor
             }
         }
 
-        public static void UpdateLocalizationCSVs(YarnProject project)
+        public static async void UpdateLocalizationCSVs(YarnProject project)
         {
             if (project.JSONProject.Localisation.Count > 0)
             {
                 var modifiedFiles = new List<string>();
+                if (project.baseLocalization == null)
+                {
+                    // build the base language string table if we went straight into the localization
+                    // update without compiling.
+                    if (!_projectPathToUpdateTask.ContainsKey(project.ResourcePath))
+                    {
+                        UpdateYarnProject(project);
+                    }
+
+                    if (_projectPathToUpdateTask.TryGetValue(project.ResourcePath, out var updateTask))
+                    {
+                        await updateTask;
+                    }
+                }
 
                 foreach (var loc in project.JSONProject.Localisation)
                 {
@@ -605,7 +619,6 @@ namespace YarnSpinnerGodot.Editor
         /// <seealso cref="assembliesToSearch"/>
         public static bool searchAllAssembliesForActions = true;
 
-        private static Localization developmentLocalization;
 
         private static void CreateYarnInternalLocalizationAssets(YarnProject project,
             CompilationResult compilationResult)
@@ -627,7 +640,7 @@ namespace YarnSpinnerGodot.Editor
                 // Create one for it now.
                 var stringTableEntries = GetStringTableEntries(project, compilationResult);
 
-                developmentLocalization = project.baseLocalization ?? new Localization();
+                var developmentLocalization = project.baseLocalization ?? new Localization();
                 developmentLocalization.Clear();
                 developmentLocalization.ResourceName = $"Default ({project.defaultLanguage})";
                 developmentLocalization.LocaleCode = project.defaultLanguage;
@@ -842,7 +855,7 @@ namespace YarnSpinnerGodot.Editor
                     var tagged = Yarn.Compiler.Utility.TagLines(contents, allExistingTags);
 
                     var taggedVersion = tagged.Item1;
-                    
+
                     // if the file has an error it returns null
                     // we want to bail out then otherwise we'd wipe the yarn file
                     if (taggedVersion == null)
