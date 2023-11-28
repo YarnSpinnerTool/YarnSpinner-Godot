@@ -15,7 +15,12 @@ namespace YarnSpinnerGodot
     [Tool]
     public partial class YarnSpinnerPlugin : EditorPlugin
     {
-        private static EditorInterface _editorInterface;
+#if GODOT4_2_0_OR_GREATER
+        public static EditorInterface editorInterface => EditorInterface.Singleton;
+#else
+        public static EditorInterface editorInterface;
+#endif
+
         private const string TOOLS_MENU_NAME = "YarnSpinner";
         private List<EditorInspectorPlugin> _inspectorPlugins = new List<EditorInspectorPlugin>();
         private List<EditorImportPlugin> _importPlugins = new List<EditorImportPlugin>();
@@ -61,8 +66,9 @@ namespace YarnSpinnerGodot
 
         public override void _EnterTree()
         {
-            _editorInterface = GetEditorInterface();
-
+            #if !GODOT4_2_0_OR_GREATER
+            editorInterface = GetEditorInterface();
+            #endif
             // load script resources
             var yarnProjectScript =
                 ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinner-Godot/Runtime/YarnProject.cs");
@@ -77,12 +83,10 @@ namespace YarnSpinnerGodot
                     "res://addons/YarnSpinner-Godot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
 
             var scriptImportPlugin = new YarnImporter();
-            scriptImportPlugin.editorInterface = GetEditorInterface();
             _importPlugins.Add(scriptImportPlugin);
             var projectImportPlugin = new YarnProjectImporter();
             _importPlugins.Add(projectImportPlugin);
             var projectInspectorPlugin = new YarnProjectInspectorPlugin();
-            projectInspectorPlugin.editorInterface = GetEditorInterface();
             _inspectorPlugins.Add(projectInspectorPlugin);
             var paletteInspectorPlugin = new YarnMarkupPaletteInspectorPlugin();
             _inspectorPlugins.Add(paletteInspectorPlugin);
@@ -172,7 +176,7 @@ namespace YarnSpinnerGodot
 
         private static void ShowCreateFilePopup(string filter, string windowTitle, Action<string> fileSelectedHandler)
         {
-            if (!IsInstanceValid(_editorInterface))
+            if (!IsInstanceValid(editorInterface))
             {
                 GD.PushError(
                     $"Lost the reference to the Godot {nameof(EditorInterface)}. You might need to restart the editor or disable and enable this plugin.");
@@ -184,7 +188,7 @@ namespace YarnSpinnerGodot
             dialog.FileMode = EditorFileDialog.FileModeEnum.SaveFile;
             dialog.Title = windowTitle;
             dialog.FileSelected += fileName => { fileSelectedHandler(fileName); };
-            _editorInterface.GetBaseControl().AddChild(dialog);
+            editorInterface.GetBaseControl().AddChild(dialog);
             dialog.PopupCentered(new Vector2I(700, 500));
         }
 
@@ -192,7 +196,7 @@ namespace YarnSpinnerGodot
         {
             GD.Print("Creating a yarn project at " + destination);
             YarnEditorUtility.CreateYarnProject(destination);
-            _editorInterface.GetResourceFilesystem().ScanSources();
+            editorInterface.GetResourceFilesystem().ScanSources();
         }
     }
 }

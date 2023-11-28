@@ -11,7 +11,6 @@ namespace YarnSpinnerGodot.Editor
     /// </summary>
     public partial class YarnImporter : EditorImportPlugin
     {
-        public EditorInterface editorInterface;
 
         public override string[] _GetRecognizedExtensions() =>
             new[]
