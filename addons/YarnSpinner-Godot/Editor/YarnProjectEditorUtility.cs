@@ -775,7 +775,7 @@ namespace YarnSpinnerGodot.Editor
         /// </summary>
         /// <param name="project">The YarnProject to update the scripts for</param>
         /// <param name="editorInterface">reference to the EditorInterface</param>
-        public static void AddLineTagsToFilesInYarnProject(YarnProject project, EditorInterface editorInterface)
+        public static void AddLineTagsToFilesInYarnProject(YarnProject project)
         {
             // First, gather all existing line tags across ALL yarn
             // projects, so that we don't accidentally overwrite an
@@ -839,8 +839,10 @@ namespace YarnSpinnerGodot.Editor
 
                     // Produce a version of this file that contains line
                     // tags added where they're needed.
-                    var taggedVersion = Yarn.Compiler.Utility.AddTagsToLines(contents, allExistingTags);
+                    var tagged = Yarn.Compiler.Utility.TagLines(contents, allExistingTags);
 
+                    var taggedVersion = tagged.Item1;
+                    
                     // if the file has an error it returns null
                     // we want to bail out then otherwise we'd wipe the yarn file
                     if (taggedVersion == null)
@@ -853,7 +855,6 @@ namespace YarnSpinnerGodot.Editor
                     if (contents != taggedVersion)
                     {
                         modifiedFiles.Add(Path.GetFileNameWithoutExtension(assetPath));
-
                         File.WriteAllText(assetPath, taggedVersion, Encoding.UTF8);
                     }
                 }
@@ -869,7 +870,7 @@ namespace YarnSpinnerGodot.Editor
             {
                 GD.Print($"Updated the following files: {string.Join(", ", modifiedFiles)}");
                 // trigger reimport
-                editorInterface.GetResourceFilesystem().ScanSources();
+                YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
             }
             else
             {

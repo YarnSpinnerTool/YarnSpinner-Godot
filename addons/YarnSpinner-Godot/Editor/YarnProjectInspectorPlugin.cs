@@ -14,7 +14,6 @@ namespace YarnSpinnerGodot.Editor
     [Tool]
     public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
     {
-        public EditorInterface editorInterface;
 
         private YarnCompileErrorsPropertyEditor _compileErrorsPropertyEditor;
         private ScrollContainer _parseErrorControl;
@@ -127,7 +126,7 @@ namespace YarnSpinnerGodot.Editor
             };
             dialog.AddFilter("*.csv; CSV File");
             dialog.FileSelected += (savePath) => CSVFileSelected(savePath, localeCode);
-            editorInterface.GetBaseControl().AddChild(dialog);
+            YarnSpinnerPlugin.editorInterface.GetBaseControl().AddChild(dialog);
             dialog.PopupCentered(new Vector2I(700, 500));
         }
 
@@ -162,7 +161,7 @@ namespace YarnSpinnerGodot.Editor
                 Strings = "",
             };
             _project.SaveJSONProject();
-            editorInterface.GetResourceFilesystem().ScanSources();
+            YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
             _project.NotifyPropertyListChanged();
         }
 
@@ -223,7 +222,7 @@ namespace YarnSpinnerGodot.Editor
                             _project.JSONProject.SourceFilePatterns.Where(existingPattern =>
                                 !existingPattern.Equals(pattern));
                         _project.SaveJSONProject();
-                        editorInterface.GetResourceFilesystem().ScanSources();
+                        YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
                         _project.NotifyPropertyListChanged();
                     };
                     scriptPatternsGrid.AddChild(patternDeleteButton);
@@ -255,7 +254,7 @@ namespace YarnSpinnerGodot.Editor
                         _project.JSONProject.SourceFilePatterns =
                             _project.JSONProject.SourceFilePatterns.Append(scriptPatternInput.Text);
                         _project.SaveJSONProject();
-                        editorInterface.GetResourceFilesystem().ScanSources();
+                        YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
                         _project.NotifyPropertyListChanged();
                     }
                 };
@@ -377,7 +376,7 @@ namespace YarnSpinnerGodot.Editor
 
                     _project.JSONProject.BaseLanguage = baseLocaleInput.Text.Trim();
                     _project.JSONProject.SaveToFile(_project.JSONProject.Path);
-                    editorInterface.GetResourceFilesystem().ScanSources();
+                    YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
                 };
                 baseLocaleRow.AddChild(changeBaseLocaleButton);
                 AddCustomControl(baseLocaleRow);
@@ -462,7 +461,7 @@ namespace YarnSpinnerGodot.Editor
 
         private void OnAddTagsClicked(YarnProject project)
         {
-            YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(project, editorInterface);
+            YarnProjectEditorUtility.AddLineTagsToFilesInYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
             project.NotifyPropertyListChanged();
         }
