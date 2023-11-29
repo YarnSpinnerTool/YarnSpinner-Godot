@@ -1,4 +1,4 @@
-# Pausing the Typewrier
+# Pausing the Typewriter
 
 This sample demonstrates how to use the pausing markup (`[pause /]`) to pause in the middle of line.
 This sample also shows using the `onPauseStarted` and `onPauseEnded` events to respond to the dialogue pause by changing a sprite.

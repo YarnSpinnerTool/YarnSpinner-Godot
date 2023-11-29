@@ -38,12 +38,12 @@ public partial class VisualNovelManager : Node
         _spanishButton = GetNode<Button>(_spanishButtonPath);
         _japaneseButton = GetNode<Button>(_japaneseButtonPath);
         _dialogueStartUi = GetNode<Control>(_dialogueStartUiPath);
-        _englishButton.Connect("pressed", Callable.From(() =>
-            StartDialogue("en-US")));
-        _spanishButton.Connect("pressed", Callable.From(() =>
-            StartDialogue("es")));
-        _japaneseButton.Connect("pressed", Callable.From(() =>
-            StartDialogue("ja")));
+        _englishButton.Pressed += () =>
+            StartDialogue("en-US");
+        _spanishButton.Pressed += () =>
+            StartDialogue("es");
+        _japaneseButton.Pressed += () =>
+            StartDialogue("ja");
         _colorOverlay = GetNode<ColorRect>(_colorOverlayPath);
         _dialogueRunner = GetNode<DialogueRunner>(_dialogueRunnerPath);
         _dialogueRunner.AddCommandHandler<string, float, string>("PlayAudio", PlayAudio);

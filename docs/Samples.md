@@ -14,6 +14,58 @@ This is an example of a dialogue-focused game such as a visual novel, which anim
 
 https://github.com/dogboydog/YarnDonut/assets/9920963/3eecbe38-65e5-4130-a838-8154405df013
 
+# Pausing the Typewriter
+
+This sample demonstrates how to use the pausing markup (`[pause /]`) to pause in the middle of line.
+This sample also shows using the `onPauseStarted` and `onPauseEnded` events to respond to the dialogue pause by changing a sprite.
+
+This sample highlights:
+
+- using markup in lines
+- using attributes inside of markup
+- self-closing markup properties
+- pausing the built in effects
+- responding to events
+
+To start the sample play the scene and the dialogue will begin by itself.
+Click the continue button to advance lines.
+
+https://github.com/YarnSpinnerTool/YarnSpinner-Godot/assets/9920963/07eb143e-26de-4a2d-9aee-f9560abeeec6
+
+# Rounded Views
+
+This sample demonstrates the alternative rounded style for the built in views.
+Sliced views use Panels  to create resizeable dialogue views with custom texture backgrounds.
+These views are made using the default line view and options list view and have no custom code inside of them and are provided as alternative prefabs for dialogue UI.
+
+This sample highlights:
+
+- using the alternative prefabs to create customisable UI
+- using multiple sprites and highlight states to customise UI 
+
+To get started play the scene and the dialogue will start itself.
+Click on the small arrow to advance lines and click on option bubbles to select a choice.
+
+https://github.com/YarnSpinnerTool/YarnSpinner-Godot/assets/9920963/8f68a761-f3a5-4bb0-a161-cee57863b9ce
+
+# Markup Palettes
+
+This sample demonstrates how to use the built in Markup Palettes to theme text.
+Markup Palettes provide a means of lightly theming your lines without requiring any code.
+The code for Markup Palettes inside of Line view present a good starting point for more advanced customisation for your game.
+
+This sample highlights:
+
+- Using markup palettes to colour text
+- Using markup in dialogue
+
+To get started play the scene and the dialogue will start itself.
+Click on the continue button to advance the lines.
+
+You can create your own MarkupPalette with Project -> Tools -> YarnSpinner -> Create Markup Palette.
+
+https://github.com/YarnSpinnerTool/YarnSpinner-Godot/assets/9920963/cb7573ff-8cf2-4de9-b85c-99647a6c5cf0
+
 ## ASSET CREDITS
 
 The assets included in this example project are:

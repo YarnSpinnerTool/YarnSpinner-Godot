@@ -14,7 +14,6 @@ namespace YarnSpinnerGodot.Editor
     [Tool]
     public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
     {
-
         private YarnCompileErrorsPropertyEditor _compileErrorsPropertyEditor;
         private ScrollContainer _parseErrorControl;
         private YarnProject _project;
@@ -170,28 +169,28 @@ namespace YarnSpinnerGodot.Editor
             try
             {
                 _project = (YarnProject) @object;
-                _project.JSONProject = Yarn.Compiler.Project.LoadFromFile(ProjectSettings.GlobalizePath(_project.JSONProjectPath));
+                _project.JSONProject =
+                    Yarn.Compiler.Project.LoadFromFile(ProjectSettings.GlobalizePath(_project.JSONProjectPath));
 
 
-                using (var recompileButton = new Button())
-                {
-                    recompileButton.Text = "Re-compile Scripts in Project";
-                    recompileButton.Connect("pressed", Callable.From(() => OnRecompileClicked(_project)));
-                    AddCustomControl(recompileButton);
-                }
+                var recompileButton = new Button();
+                recompileButton.Text = "Re-compile Scripts in Project";
+                recompileButton.Pressed += () => OnRecompileClicked(_project);
+                AddCustomControl(recompileButton);
+
 
                 var addTagsButton = new Button();
                 addTagsButton.Text = "Add Line Tags to Scripts";
-                addTagsButton.Connect("pressed", Callable.From(() => OnAddTagsClicked(_project)));
+                addTagsButton.Pressed += () => OnAddTagsClicked(_project);
                 AddCustomControl(addTagsButton);
-          
+
 
                 var updateLocalizationsButton = new Button();
 
                 var sourceScripts = _project.JSONProject.SourceFiles.ToList();
                 updateLocalizationsButton.Text = "Update Localizations";
                 updateLocalizationsButton.TooltipText = "Update Localization CSV and Godot .translation Files";
-                updateLocalizationsButton.Connect("pressed", new Callable(this, nameof(OnUpdateLocalizationsClicked)));
+                updateLocalizationsButton.Pressed += OnUpdateLocalizationsClicked;
                 AddCustomControl(updateLocalizationsButton);
 
                 var scriptPatternsGrid = new GridContainer
@@ -380,11 +379,37 @@ namespace YarnSpinnerGodot.Editor
                 };
                 baseLocaleRow.AddChild(changeBaseLocaleButton);
                 AddCustomControl(baseLocaleRow);
+                var writeBaseCSVButton = new Button();
+                writeBaseCSVButton.Text = "Export Strings and Metadata as CSV";
+                writeBaseCSVButton.TooltipText = "Write all of the lines in your Yarn Project to a CSV," +
+                                                 " including the metadata, line IDs, and the names of the nodes" +
+                                                 " in which each line appears.";
+                writeBaseCSVButton.Pressed += OnBaseLanguageCSVClicked;
+                AddCustomControl(writeBaseCSVButton);
             }
             catch (Exception e)
             {
                 GD.PushError($"Error in {nameof(YarnProjectInspectorPlugin)}: {e.Message}\n{e.StackTrace}");
             }
+        }
+
+        private void OnBaseLanguageCSVClicked()
+        {
+            var dialog = new FileDialog
+            {
+                FileMode = FileDialog.FileModeEnum.SaveFile,
+                Access = FileDialog.AccessEnum.Filesystem,
+                Title = $"Select CSV Path for the base locale {_project.JSONProject.BaseLanguage}",
+            };
+            dialog.AddFilter("*.csv; CSV File");
+            dialog.FileSelected += OnBaseLanguageCSVFileSelected;
+            YarnSpinnerPlugin.editorInterface.GetBaseControl().AddChild(dialog);
+            dialog.PopupCentered(new Vector2I(700, 500));
+        }
+
+        private void OnBaseLanguageCSVFileSelected(string savePath)
+        {
+            YarnProjectEditorUtility.WriteBaseLanguageStringsCSV(_project, savePath);
         }
 
         private void OnUpdateLocalizationsClicked()

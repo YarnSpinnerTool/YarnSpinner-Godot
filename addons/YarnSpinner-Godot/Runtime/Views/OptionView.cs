@@ -33,17 +33,18 @@ namespace YarnSpinnerGodot
                 }
                 else
                 {
-                  line = value.Line.TextWithoutCharacterName;
+                    line = value.Line.TextWithoutCharacterName;
                 }
+
                 label.BbcodeEnabled = true;
                 if (palette != null)
                 {
-             
-                    label.Text = $"[center]{LineView.PaletteMarkedUpText(line, palette)}[/center]"; 
+                    label.Text = $"[center]{LineView.PaletteMarkedUpText(line, palette)}[/center]";
                 }
                 else
                 {
-                    label.Text = $"[center]{line.Text}[/center]"; ;
+                    label.Text = $"[center]{line.Text}[/center]";
+                    ;
                 }
 
                 Disabled = !value.IsAvailable;
@@ -52,12 +53,7 @@ namespace YarnSpinnerGodot
 
         public override void _Ready()
         {
-            Connect("pressed", new Callable(this, nameof(InvokeOptionSelected)));
-        }
-
-        public override void _ExitTree()
-        {
-            Disconnect("pressed", new Callable(this, nameof(InvokeOptionSelected)));
+            Pressed += InvokeOptionSelected;
         }
 
         public void InvokeOptionSelected()
