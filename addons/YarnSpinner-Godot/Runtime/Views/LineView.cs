@@ -359,7 +359,17 @@ namespace YarnSpinnerGodot
         public void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
             // Begin running the line asynchronously
-            RunLineInternal(dialogueLine, onDialogueLineFinished);
+            RunLineInternal(dialogueLine, onDialogueLineFinished)
+                .ContinueWith(failedTask =>
+                    {
+                        var errorMessage = "";
+                        if (failedTask.Exception != null)
+                        {
+                            errorMessage =$"{failedTask.Exception.Message}\n{failedTask.Exception.StackTrace}";
+                        }
+                        GD.PushError($"Error while running {nameof(RunLineInternal)}: {errorMessage}");
+                    }, 
+                TaskContinuationOptions.OnlyOnFaulted);
         }
 
         private async Task RunLineInternal(LocalizedLine dialogueLine, Action onDialogueLineFinished)
