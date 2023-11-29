@@ -369,7 +369,7 @@ namespace YarnSpinnerGodot.Editor
             var updateHandlerType = assembly.GetType("System.Text.Json.JsonSerializerOptionsUpdateHandler");
             var clearCacheMethod =
                 updateHandlerType?.GetMethod("ClearCache", BindingFlags.Static | BindingFlags.Public);
-            clearCacheMethod?.Invoke(null, new object?[] {null});
+            clearCacheMethod?.Invoke(null, new object[] {null});
         }
 
         public static void SaveYarnProject(YarnProject project)

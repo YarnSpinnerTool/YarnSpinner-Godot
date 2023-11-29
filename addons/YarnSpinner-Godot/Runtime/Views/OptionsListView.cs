@@ -209,7 +209,17 @@ namespace YarnSpinnerGodot
                 }
 
                 viewControl.Visible = false;
-                Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime);
+                Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime)        
+                    .ContinueWith(failedTask =>
+                    {
+                        var errorMessage = "";
+                        if (failedTask.Exception != null)
+                        {
+                            errorMessage =$"{failedTask.Exception.Message}\n{failedTask.Exception.StackTrace}";
+                        }
+                        GD.PushError($"Error while running {nameof(Effects.FadeAlpha)}: {errorMessage}");
+                    }, 
+                    TaskContinuationOptions.OnlyOnFaulted);;
             }
         }
     }
