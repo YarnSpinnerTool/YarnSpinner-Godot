@@ -17,6 +17,7 @@ using Microsoft.Extensions.FileSystemGlobbing;
 using Yarn;
 using Yarn.Compiler;
 using File = System.IO.File;
+using FileAccess = System.IO.FileAccess;
 using Path = System.IO.Path;
 
 namespace YarnSpinnerGodot.Editor
@@ -72,7 +73,7 @@ namespace YarnSpinnerGodot.Editor
                 .Select(ProjectSettings.LocalizePath);
         }
 
-        private const int PROJECT_UPDATE_TIMEOUT = 200; // ms 
+        private const int PROJECT_UPDATE_TIMEOUT = 80; // ms 
 
         private static ConcurrentDictionary<string, DateTime> _projectPathToLastUpdateTime =
             new ConcurrentDictionary<string, DateTime>();
@@ -120,7 +121,6 @@ namespace YarnSpinnerGodot.Editor
             try
             {
                 CompileAllScripts(project);
-                UpdateMetadataCSV(project);
                 SaveYarnProject(project);
                 lock (_lastUpdateLock)
                 {
@@ -139,31 +139,12 @@ namespace YarnSpinnerGodot.Editor
             }
         }
 
-        public static void UpdateMetadataCSV(YarnProject project)
+
+        public static void WriteBaseLanguageStringsCSV(YarnProject project, string path)
         {
-            if (project.LineMetadata != null && project.LineMetadata.stringsFile != null &&
-                project.LineMetadata.stringsFile.Trim() != "")
-            {
-                var csvPath = project.LineMetadata.stringsFile;
-
-                var csvText = LineMetadataTableEntry.CreateCSV(project.LineMetadata.GetAllMetadata());
-                GD.Print($"Updating metadata csv file to: {csvPath}");
-                csvPath = ProjectSettings.GlobalizePath(csvPath);
-                var parent = Path.GetDirectoryName(csvPath);
-                if (!Directory.Exists(parent))
-                {
-                    Directory.CreateDirectory(parent);
-                }
-
-                File.WriteAllText(csvPath, csvText);
-                var csvImport = $"{csvPath}.import";
-                if (!File.Exists(csvImport))
-                {
-                    File.WriteAllText(csvImport, KEEP_IMPORT_TEXT);
-                }
-            }
+            UpdateLocalizationFile(project.baseLocalization.GetStringTableEntries(),
+                project.JSONProject.BaseLanguage, path);
         }
-
         public static async void UpdateLocalizationCSVs(YarnProject project)
         {
             if (project.JSONProject.Localisation.Count > 0)

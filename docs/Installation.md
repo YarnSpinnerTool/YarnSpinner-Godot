@@ -1,6 +1,9 @@
 ## Installation
 
-Copy the `addons/` directory to your project. This plugin requires some .dll dependencies which are delivered in the `addons/YarnSpinner-Godot/Runtime/DLLs` directory. In order to compile your project with YarnSpinner-Godot, add the following line to your Godot Mono project's `.csproj` file somewhere inside the `<Project>` tag (but not inside an ItemGroup or PropertyGroup) 
+Copy the `addons/` directory to your project. This plugin requires some .dll dependencies which are delivered in the `addons/YarnSpinner-Godot/Runtime/DLLs` directory and via NuGet. In order to compile your project with YarnSpinner-Godot, first make sure you have a solution (.sln) and csproj file. If you don't, you can choose the Project menu -> Tools -> C# -> Create C# solution. 
+
+add the following line to your Godot project's `.csproj` file somewhere inside the `<Project>` tag (but not inside an ItemGroup or PropertyGroup) 
+
 
 `   <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />`
 
