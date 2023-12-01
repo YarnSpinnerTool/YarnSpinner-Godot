@@ -1,9 +1,6 @@
 name: Continuous Build and Test
 
 on:
-  pull_request:
-    types:
-      [ opened, reopened, edited, ready_for_review, synchronize ]
   push:
     branches-ignore:
       - 'dev'
@@ -12,7 +9,7 @@ on:
       - '**/*.md'
       - 'docs/**'
 env:
-  GODOT_CLI: ./Godot_v4.1.3-stable_mono_linux_x86_64/Godot_v4.1.3-stable_mono_linux.x86_64
+  GODOT_CLI: ./godot/godot.x86_64
 defaults:
   run:
     shell: bash
@@ -20,8 +17,13 @@ defaults:
 jobs:
 
   build:
-    name: Build the Project
-    runs-on: [ ubuntu-latest ]
+    strategy:
+      fail-fast: false
+      matrix:
+        godotDownload: ["https://downloads.tuxfamily.org/godotengine/4.1.3/mono/Godot_v4.1.3-stable_mono_linux_x86_64.zip", "https://downloads.tuxfamily.org/godotengine/4.2/mono/Godot_v4.2-stable_mono_linux_x86_64.zip"]
+        targetFramework: ["net6.0", "net7.0"]
+    name: Build
+    runs-on: ubuntu-latest
 
     steps:
       # Checkout
@@ -31,21 +33,23 @@ jobs:
           clean: false # we clean what we want to clean ourselves above, and try to keep some cache
           submodules: recursive
 
+      - name: Set Target Framework ${{ matrix.targetFramework }}
+        run: |
+          sed -i 's|<TargetFramework>.*<|<TargetFramework>'${{ matrix.targetFramework }}'<|g' YarnSpinner-Godot.csproj
+      
       - name: Download Godot
         id: downloadGodot
         run: |
-          wget -O godot.zip https://downloads.tuxfamily.org/godotengine/4.1.3/mono/Godot_v4.1.3-stable_mono_linux_x86_64.zip
+          wget -O godot.zip ${{ matrix.godotDownload }}
           unzip godot.zip
-
+          mv ./Godot_v4* ./godot
+          touch ./godot/.gdignore
+          mv ./godot/*.x86_64 $GODOT_CLI
+          
       - name: Build solution
         id: buildSolution
         run: |
-          # https://serverfault.com/questions/989742/tee-and-assigning-to-variable
-          { GODOT_OUTPUT=$($GODOT_CLI --headless --path . --verbose -q -e --build-solutions --quit 2>&1 | tee /dev/fd/3); } 3>&1
-          if [[ "$GODOT_OUTPUT" == *"the build callback failed"* ]]; then
-            echo "Godot failed to build the solution."
-            exit 1
-          else
-            echo "Godot built the solution successfully."
-          fi          
+          $GODOT_CLI --headless --path . --verbose -q -e --build-solutions --quit 
+          # sometimes --build-solutions still exits with code 0, so double check
+          dotnet build
         timeout-minutes: 2
