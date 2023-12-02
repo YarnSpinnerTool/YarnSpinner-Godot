@@ -82,23 +82,32 @@ namespace YarnSpinnerGodot.Editor
         private static object _lastUpdateLock = new object();
 
         /// <summary>
-        /// Re-compile scripts in a yarn project, add all associated data to the project,
-        /// and save it back to disk in the same .tres file.
+        /// Queue up a re-compile of scripts in a yarn project, add all associated data to the project,
+        /// and save it back to disk in the same .tres file. This will wait for <see cref="PROJECT_UPDATE_TIMEOUT"/>
+        /// before updating the project, resetting the timeout each time it is called for a given YarnProject.
+        /// Call this method when you want to avoid repeated updates of the same project.
         /// </summary>
-        /// <param name="project"></param>
+        /// <param name="project">The yarn project to re-compile scripts for</param>
         public static void UpdateYarnProject(YarnProject project)
         {
-            if (project == null) return;
-            if (string.IsNullOrEmpty(project.ResourcePath)) return;
+            if (project == null)
+            {
+                return;
+            }
+
+            ;
+            if (string.IsNullOrEmpty(project.ResourcePath))
+            {
+                return;
+            }
+
             lock (_lastUpdateLock)
             {
                 _projectPathToLastUpdateTime[project.ResourcePath] = DateTime.Now;
-                if (_projectPathToUpdateTask.ContainsKey(project.ResourcePath))
+                if (!_projectPathToUpdateTask.ContainsKey(project.ResourcePath))
                 {
-                    return;
+                    _projectPathToUpdateTask[project.ResourcePath] = UpdateYarnProjectTask(project);
                 }
-
-                _projectPathToUpdateTask[project.ResourcePath] = UpdateYarnProjectTask(project);
             }
         }
 
@@ -122,54 +131,43 @@ namespace YarnSpinnerGodot.Editor
             {
                 CompileAllScripts(project);
                 SaveYarnProject(project);
-                lock (_lastUpdateLock)
-                {
-                    _projectPathToUpdateTask.Remove(project.ResourcePath);
-                }
             }
             catch (Exception e)
+            {
+                GD.PushError(
+                    $"Error updating {nameof(YarnProject)} '{project.ResourcePath}': {e.Message}{e.StackTrace}");
+            }
+            finally
             {
                 lock (_lastUpdateLock)
                 {
                     _projectPathToUpdateTask.Remove(project.ResourcePath);
                 }
-
-                GD.PushError(
-                    $"Error updating {nameof(YarnProject)} '{project.ResourcePath}': {e.Message}{e.StackTrace}");
             }
         }
-
 
         public static void WriteBaseLanguageStringsCSV(YarnProject project, string path)
         {
             UpdateLocalizationFile(project.baseLocalization.GetStringTableEntries(),
                 project.JSONProject.BaseLanguage, path);
         }
-        public static async void UpdateLocalizationCSVs(YarnProject project)
+
+        public static void UpdateLocalizationCSVs(YarnProject project)
         {
             if (project.JSONProject.Localisation.Count > 0)
             {
                 var modifiedFiles = new List<string>();
                 if (project.baseLocalization == null)
                 {
-                    // build the base language string table if we went straight into the localization
-                    // update without compiling.
-                    if (!_projectPathToUpdateTask.ContainsKey(project.ResourcePath))
-                    {
-                        UpdateYarnProject(project);
-                    }
-
-                    if (_projectPathToUpdateTask.TryGetValue(project.ResourcePath, out var updateTask))
-                    {
-                        await updateTask;
-                    }
+                    CompileAllScripts(project);
                 }
 
                 foreach (var loc in project.JSONProject.Localisation)
                 {
                     if (string.IsNullOrEmpty(loc.Value.Strings))
                     {
-                        GD.PrintErr($"Can't update localization for {loc.Key} because it doesn't have a Strings file.");
+                        GD.PrintErr(
+                            $"Can't update localization for {loc.Key} because it doesn't have a Strings file.");
                         continue;
                     }
 
@@ -399,126 +397,129 @@ namespace YarnSpinnerGodot.Editor
 
         public static void CompileAllScripts(YarnProject project)
         {
-            List<FunctionInfo> newFunctionList = new List<FunctionInfo>();
-            var assetPath = project.ResourcePath;
-            GD.Print($"Compiling all scripts in {assetPath}");
-
-            project.ResourceName = Path.GetFileNameWithoutExtension(assetPath);
-            var sourceScripts = project.JSONProject.SourceFiles.ToList();
-            if (!sourceScripts.Any())
+            lock (project)
             {
-                GD.Print(
-                    $"No .yarn files found matching the {nameof(project.JSONProject.SourceFilePatterns)} in {project.JSONProjectPath}");
-                return;
-            }
+                List<FunctionInfo> newFunctionList = new List<FunctionInfo>();
+                var assetPath = project.ResourcePath;
+                GD.Print($"Compiling all scripts in {assetPath}");
 
-            var library = new Library();
-
-            IEnumerable<Diagnostic> errors;
-            project.ProjectErrors = Array.Empty<YarnProjectError>();
-
-            // We now now compile!
-            var scriptAbsolutePaths = sourceScripts.ToList().Where(s => s != null)
-                .Select(ProjectSettings.GlobalizePath).ToList();
-            // Store the compiled program
-            byte[] compiledBytes = null;
-            CompilationResult? compilationResult = new CompilationResult?();
-            if (scriptAbsolutePaths.Count > 0)
-            {
-                var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
-                // job.VariableDeclarations = localDeclarations;
-                job.CompilationType = CompilationJob.Type.FullCompilation;
-                job.Library = library;
-                compilationResult = Yarn.Compiler.Compiler.Compile(job);
-
-                errors = compilationResult.Value.Diagnostics.Where(d =>
-                    d.Severity == Diagnostic.DiagnosticSeverity.Error);
-
-                if (errors.Count() > 0)
+                project.ResourceName = Path.GetFileNameWithoutExtension(assetPath);
+                var sourceScripts = project.JSONProject.SourceFiles.ToList();
+                if (!sourceScripts.Any())
                 {
-                    var errorGroups = errors.GroupBy(e => e.FileName);
-                    foreach (var errorGroup in errorGroups)
-                    {
-                        var errorMessages = errorGroup.Select(e => e.ToString());
-
-                        foreach (var message in errorMessages)
-                        {
-                            GD.PushError($"Error compiling: {message}");
-                        }
-                    }
-
-                    var projectErrors = errors.ToList().ConvertAll(e =>
-                        new YarnProjectError
-                        {
-                            Context = e.Context,
-                            Message = e.Message,
-                            FileName = ProjectSettings.LocalizePath(e.FileName)
-                        });
-                    project.ProjectErrors = projectErrors.ToArray();
+                    GD.Print(
+                        $"No .yarn files found matching the {nameof(project.JSONProject.SourceFilePatterns)} in {project.JSONProjectPath}");
                     return;
                 }
 
-                if (compilationResult.Value.Program == null)
+                var library = new Library();
+
+                IEnumerable<Diagnostic> errors;
+                project.ProjectErrors = Array.Empty<YarnProjectError>();
+
+                // We now now compile!
+                var scriptAbsolutePaths = sourceScripts.ToList().Where(s => s != null)
+                    .Select(ProjectSettings.GlobalizePath).ToList();
+                // Store the compiled program
+                byte[] compiledBytes = null;
+                CompilationResult? compilationResult = new CompilationResult?();
+                if (scriptAbsolutePaths.Count > 0)
                 {
-                    GD.PushError(
-                        "public error: Failed to compile: resulting program was null, but compiler did not report errors.");
-                    return;
-                }
+                    var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
+                    // job.VariableDeclarations = localDeclarations;
+                    job.CompilationType = CompilationJob.Type.FullCompilation;
+                    job.Library = library;
+                    compilationResult = Yarn.Compiler.Compiler.Compile(job);
 
-                // Store _all_ declarations - both the ones in this
-                // .yarnproject file, and the ones inside the .yarn files.
+                    errors = compilationResult.Value.Diagnostics.Where(d =>
+                        d.Severity == Diagnostic.DiagnosticSeverity.Error);
 
-                // While we're here, filter out any declarations that begin with our
-                // Yarn public prefix. These are synthesized variables that are
-                // generated as a result of the compilation, and are not declared by
-                // the user.
-
-                var newDeclarations = new List<Declaration>() //localDeclarations
-                    .Concat(compilationResult.Value.Declarations)
-                    .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
-                    .Where(decl => !(decl.Type is FunctionType))
-                    .Select(decl =>
+                    if (errors.Count() > 0)
                     {
-                        SerializedDeclaration existingDeclaration = null;
-                        // try to re-use a declaration if one exists to avoid changing the .tres file so much
-                        foreach (var existing in project.SerializedDeclarations)
+                        var errorGroups = errors.GroupBy(e => e.FileName);
+                        foreach (var errorGroup in errorGroups)
                         {
-                            if (existing.name == decl.Name)
+                            var errorMessages = errorGroup.Select(e => e.ToString());
+
+                            foreach (var message in errorMessages)
                             {
-                                existingDeclaration = existing;
-                                break;
+                                GD.PushError($"Error compiling: {message}");
                             }
                         }
 
-                        var serialized = existingDeclaration ?? new SerializedDeclaration();
-                        serialized.SetDeclaration(decl);
-                        return serialized;
-                    }).ToArray();
-                project.SerializedDeclarations = newDeclarations;
-                // Clear error messages from all scripts - they've all passed
-                // compilation
-                project.ProjectErrors = Array.Empty<YarnProjectError>();
+                        var projectErrors = errors.ToList().ConvertAll(e =>
+                            new YarnProjectError
+                            {
+                                Context = e.Context,
+                                Message = e.Message,
+                                FileName = ProjectSettings.LocalizePath(e.FileName)
+                            });
+                        project.ProjectErrors = projectErrors.ToArray();
+                        return;
+                    }
 
-                CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
+                    if (compilationResult.Value.Program == null)
+                    {
+                        GD.PushError(
+                            "public error: Failed to compile: resulting program was null, but compiler did not report errors.");
+                        return;
+                    }
 
-                using (var memoryStream = new MemoryStream())
-                using (var outputStream = new CodedOutputStream(memoryStream))
-                {
-                    // Serialize the compiled program to memory
-                    compilationResult.Value.Program.WriteTo(outputStream);
-                    outputStream.Flush();
+                    // Store _all_ declarations - both the ones in this
+                    // .yarnproject file, and the ones inside the .yarn files.
 
-                    compiledBytes = memoryStream.ToArray();
+                    // While we're here, filter out any declarations that begin with our
+                    // Yarn public prefix. These are synthesized variables that are
+                    // generated as a result of the compilation, and are not declared by
+                    // the user.
+
+                    var newDeclarations = new List<Declaration>() //localDeclarations
+                        .Concat(compilationResult.Value.Declarations)
+                        .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
+                        .Where(decl => !(decl.Type is FunctionType))
+                        .Select(decl =>
+                        {
+                            SerializedDeclaration existingDeclaration = null;
+                            // try to re-use a declaration if one exists to avoid changing the .tres file so much
+                            foreach (var existing in project.SerializedDeclarations)
+                            {
+                                if (existing.name == decl.Name)
+                                {
+                                    existingDeclaration = existing;
+                                    break;
+                                }
+                            }
+
+                            var serialized = existingDeclaration ?? new SerializedDeclaration();
+                            serialized.SetDeclaration(decl);
+                            return serialized;
+                        }).ToArray();
+                    project.SerializedDeclarations = newDeclarations;
+                    // Clear error messages from all scripts - they've all passed
+                    // compilation
+                    project.ProjectErrors = Array.Empty<YarnProjectError>();
+
+                    CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
+
+                    using (var memoryStream = new MemoryStream())
+                    using (var outputStream = new CodedOutputStream(memoryStream))
+                    {
+                        // Serialize the compiled program to memory
+                        compilationResult.Value.Program.WriteTo(outputStream);
+                        outputStream.Flush();
+
+                        compiledBytes = memoryStream.ToArray();
+                    }
                 }
-            }
 
-            project.ListOfFunctions = newFunctionList.ToArray();
-            project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
-            var saveErr = ResourceSaver.Save(project, project.ImportPath,
-                ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
-            if (saveErr != Error.Ok)
-            {
-                GD.PushError($"Failed to save updated {nameof(YarnProject)}: {saveErr}");
+                project.ListOfFunctions = newFunctionList.ToArray();
+                project.CompiledYarnProgramBase64 = compiledBytes == null ? "" : Convert.ToBase64String(compiledBytes);
+                var saveErr = ResourceSaver.Save(project, project.ImportPath,
+                    ResourceSaver.SaverFlags.ReplaceSubresourcePaths);
+                if (saveErr != Error.Ok)
+                {
+                    GD.PushError($"Failed to save updated {nameof(YarnProject)}: {saveErr}");
+                }
             }
         }
 
