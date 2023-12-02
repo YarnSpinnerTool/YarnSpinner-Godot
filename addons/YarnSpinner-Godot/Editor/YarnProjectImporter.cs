@@ -86,13 +86,6 @@ namespace YarnSpinnerGodot.Editor
             }
 
             YarnProjectEditorUtility.UpdateYarnProject(godotProject);
-            YarnProjectEditorUtility.UpdateLocalizationCSVs(godotProject);
-            saveErr = ResourceSaver.Save(godotProject, godotProject.ImportPath);
-            if (saveErr != Error.Ok)
-            {
-                GD.PrintErr($"Error saving .yarnproject file import: {saveErr.ToString()}");
-            }
-
             return (int) Error.Ok;
         }
     }

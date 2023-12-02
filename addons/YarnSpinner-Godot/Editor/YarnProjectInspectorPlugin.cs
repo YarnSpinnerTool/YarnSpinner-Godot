@@ -419,7 +419,8 @@ namespace YarnSpinnerGodot.Editor
 
         private void OnRecompileClicked(YarnProject project)
         {
-            YarnProjectEditorUtility.UpdateYarnProject(project);
+            YarnProjectEditorUtility.CompileAllScripts(project);
+            YarnProjectEditorUtility.SaveYarnProject(project);
             _compileErrorsPropertyEditor.Refresh();
             project.NotifyPropertyListChanged();
         }
