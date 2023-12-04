@@ -18,5 +18,11 @@
         <Reference Include="YarnSpinner.Compiler" >
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\YarnSpinner.Compiler.dll</HintPath>
         </Reference>
+        <Reference Include="Yarn.System.Text.Json" >
+            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Text.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="Yarn.System.Text.Encodings.Web" >
+            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Text.Encodings.Web.dll</HintPath>
+        </Reference>
     </ItemGroup>
 </Project>
