@@ -19,9 +19,9 @@ namespace YarnSpinnerGodot
     /// <see cref="InterruptLine"/>, <see cref="DismissLine"/> and <see
     /// cref="RunOptions"/>. 
     /// </para>
-    /// <para>Once you have written your subclass, select it as a script on a <see cref="Node"/>,
-    /// and add this game object to the list of
-    /// Dialogue Views in your scene's <see cref="DialogueRunner"/> in the inspector.
+    /// <para>Once you have written your implementation of this interface,
+    /// select it as a script on a <see cref="Node"/>,
+    /// and add this Node to the list of Dialogue Views in your scene's <see cref="DialogueRunner"/> in the inspector.
     /// </para>
     /// <para>Dialogue Views do not need to handle every kind of content that
     /// the Dialogue Runner might produce. For example, you might have one

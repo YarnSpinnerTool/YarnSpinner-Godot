@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -29,10 +28,10 @@ namespace YarnSpinnerGodot
             if (!typeof(Node).IsAssignableFrom(behaviorType)) { return null; }
             return name =>
             {
-                Node node = ((SceneTree)Engine.GetMainLoop()).Root.FindChild(name, true, false);
+                Node node = FindChild(name);
                 if (node == null)
                 {
-                    GD.PrintErr($"Can't run command {commandName} on game object {name}'s {behaviorType.FullName} component: " +
+                    GD.PrintErr($"Can't run command {commandName} on Node {name}'s {behaviorType.FullName} component: " +
                         "an object with that name doesn't exist in the scene.");
                     return null;
                 }
@@ -101,8 +100,7 @@ namespace YarnSpinnerGodot
 
         private static Godot.Node FindChild(string name)
         {
-            GD.PrintErr("TODO: No equivalent implemented for GameObject.Find. ");
-            return null;
+            return ((SceneTree)Engine.GetMainLoop()).Root.FindChild(name, true, false);
         }
 
         private static Godot.Node FindTypedNodeInChildren(Godot.Node node, Type type)
@@ -129,32 +127,10 @@ namespace YarnSpinnerGodot
             // well, I mean...
             if (targetType == typeof(string)) { return null; }
 
-            // find the GameObject.
+            // our type is a subclass of node - find it in the scene tree .
             if (typeof(Node).IsAssignableFrom(targetType))
             {
                 return FindChild;
-            }
-
-            // find components of the GameObject with the component, if available
-            if (typeof(Component).IsAssignableFrom(targetType))
-            {
-                var paramMetadata = parameter.GetCustomAttribute<YarnParameterAttribute>();
-                if (paramMetadata != null)
-                {
-                    var methodType = method.DeclaringType;
-                    var injectorMeta = methodType.GetMethod(paramMetadata.Injector, AllStaticMembers);
-                    if (IsInjector(methodType, injectorMeta, targetType))
-                    {
-                        return (Injector)injectorMeta.CreateDelegate(typeof(Injector));
-                    }
-                }
-
-
-                return arg =>
-                {
-                    var node = FindChild(arg);
-                    return node == null ? null : FindTypedNodeInChildren(node, targetType);
-                };
             }
 
             // bools can take "true" or "false", or the parameter name.

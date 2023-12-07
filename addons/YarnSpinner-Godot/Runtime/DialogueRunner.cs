@@ -46,7 +46,7 @@ namespace YarnSpinnerGodot
         /// <summary>
         /// Represents the result of attempting to locate and call a command.
         /// </summary>
-        /// <seealso cref="DispatchCommandToGameObject(Command, Action)"/>
+        /// <seealso cref="DialogueRunner.DispatchCommandToNode"/>
         /// <seealso cref="DispatchCommandToRegisteredHandlers(Command, Action)"/>
         public enum CommandDispatchResult
         {
@@ -942,9 +942,9 @@ namespace YarnSpinnerGodot
                 return;
             }
 
-            // We didn't find it in the comand handlers. Try looking in the
-            // game objects. If it is, continue dialogue.
-            dispatchResult = await DispatchCommandToGameObject(command, ContinueDialogue);
+            // We didn't find it in the command handlers. Try looking in the
+            // scene tree for a suitable node. If one is found, continue dialogue.
+            dispatchResult = await DispatchCommandToNode(command, ContinueDialogue);
 
             if (dispatchResult != CommandDispatchResult.NotFound)
             {
@@ -1164,10 +1164,10 @@ namespace YarnSpinnerGodot
         /// </summary>
         /// <param name="command">The <see cref="Command"/> to run.</param>
         /// <param name="onSuccessfulDispatch">A method to run if a command
-        /// was successfully dispatched to a game object. This method is
+        /// was successfully dispatched to a node. This method is
         /// not called if a registered command handler is not
         /// found.</param>
-        /// <returns>True if the command was dispatched to a game object;
+        /// <returns>True if the command was dispatched to a Godot Node;
         /// false otherwise.</returns>
         CommandDispatchResult DispatchCommandToRegisteredHandlers(Command command, Action onSuccessfulDispatch)
         {
@@ -1264,18 +1264,18 @@ namespace YarnSpinnerGodot
 
         /// <summary>
         /// Parses the command string inside <paramref name="command"/>,
-        /// attempts to locate a suitable method on a suitable game object,
-        /// and the invokes the method.
+        /// attempts to locate a suitable method on a suitable node in
+        /// the scene tree, and the invokes the method.
         /// </summary>
         /// <param name="command">The <see cref="Command"/> to run.</param>
         /// <param name="onSuccessfulDispatch">A method to run if a command
-        /// was successfully dispatched to a game object. This method is
+        /// was successfully dispatched to a node. This method is
         /// not called if a registered command handler is not
         /// found.</param>
         /// <returns><see langword="true"/> if the command was successfully
-        /// dispatched to a game object; <see langword="false"/> if no game
+        /// dispatched to a Godot Node; <see langword="false"/> if no game
         /// object was registered as a handler for the command.</returns>
-        public async Task<CommandDispatchResult> DispatchCommandToGameObject(Command command,
+        public async Task<CommandDispatchResult> DispatchCommandToNode(Command command,
             Action onSuccessfulDispatch)
         {
             // Call out to the string version of this method, because
@@ -1283,13 +1283,13 @@ namespace YarnSpinnerGodot
             // Yarn Spinner, but we want to be able to unit test. So, we
             // extract it, and call the underlying implementation, which is
             // testable.
-            return await DispatchCommandToGameObject(command.Text, onSuccessfulDispatch);
+            return await DispatchCommandToNode(command.Text, onSuccessfulDispatch);
         }
 
-        /// <inheritdoc cref="DispatchCommandToGameObject(Command, Action)"/>
+        /// <inheritdoc cref="DispatchCommandToNode"/>
         /// <param name="command">The text of the command to
         /// dispatch.</param>
-        public async Task<CommandDispatchResult> DispatchCommandToGameObject(string command,
+        public async Task<CommandDispatchResult> DispatchCommandToNode(string command,
             System.Action onSuccessfulDispatch)
         {
             if (string.IsNullOrEmpty(command))

@@ -41,7 +41,7 @@ namespace YarnSpinnerGodot
     /// and find a <see cref="PhysicsBody2D"/>.)
     /// </para>
     /// <para>
-    /// By default, Yarn will use <see cref="Node.FindNode"/>
+    /// By default, Yarn will use <see cref="Godot.Node.FindChild"/>
     /// if there is no injector defined. This is fairly inefficient (an
     /// <c>O(n)</c> lookup), so it is recommended that you restrict your
     /// lookup conditions so that you can find it quicker (eg, a cache).
