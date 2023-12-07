@@ -26,7 +26,7 @@ modulate_color = Color(0.658824, 0.941176, 0.917647, 1)
 
 [node name="RoundedYarnSpinnerCanvasLayer" type="CanvasLayer"]
 
-[node name="DialogueRunner" type="Control" parent="." node_paths=PackedStringArray("_variableStorage", "dialogueViews", "lineProvider")]
+[node name="DialogueRunner" type="Control" parent="." node_paths=PackedStringArray("variableStorage", "dialogueViews", "lineProvider")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,7 +35,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_vq0dw")
-_variableStorage = NodePath("../InMemoryVariableStorage")
+variableStorage = NodePath("../InMemoryVariableStorage")
 dialogueViews = [NodePath("../LineView"), NodePath("../OptionsListView")]
 startNode = "Start"
 startAutomatically = false

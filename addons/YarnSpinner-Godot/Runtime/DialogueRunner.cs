@@ -24,7 +24,6 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
-using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
@@ -41,6 +40,7 @@ namespace YarnSpinnerGodot
     /// The DialogueRunner component acts as the interface between your game and
     /// Yarn Spinner.
     /// </summary>
+    [GlobalClass]
     public partial class DialogueRunner : Godot.Node
     {
         /// <summary>
@@ -75,15 +75,15 @@ namespace YarnSpinnerGodot
         /// <summary>
         /// The variable storage object.
         /// </summary>
-        [Export] public VariableStorageBehaviour _variableStorage;
+        [Export] public VariableStorageBehaviour variableStorage;
 
-        /// <inheritdoc cref="_variableStorage"/>
+        /// <inheritdoc cref="variableStorage"/>
         public VariableStorageBehaviour VariableStorage
         {
-            get => _variableStorage;
+            get => variableStorage;
             set
             {
-                _variableStorage = value;
+                variableStorage = value;
                 if (_dialogue != null)
                 {
                     _dialogue.VariableStorage = value;
@@ -1601,7 +1601,7 @@ namespace YarnSpinnerGodot
                 using var file = FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Read);
                 var saveData = file.GetAsText();
                 var dictionaries = DeserializeAllVariablesFromJSON(saveData);
-                _variableStorage.SetAllVariables(dictionaries.Item1, dictionaries.Item2, dictionaries.Item3);
+                variableStorage.SetAllVariables(dictionaries.Item1, dictionaries.Item2, dictionaries.Item3);
             }
             catch (Exception e)
             {
@@ -1713,7 +1713,7 @@ namespace YarnSpinnerGodot
 
         private string SerializeAllVariablesToJSON()
         {
-            (var floats, var strings, var bools) = _variableStorage.GetAllVariables();
+            (var floats, var strings, var bools) = variableStorage.GetAllVariables();
 
             SaveData data = new SaveData();
             data.floatKeys = floats.Keys.ToArray();
