@@ -17,7 +17,7 @@ YarnProjectPaths=["res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://S
 config/name="YarnSpinner-Godot"
 config/description="Samples for YarnSpinner-Godot dialogue system plugin"
 run/main_scene="res://Samples/SampleEntryPoint.tscn"
-config/features=PackedStringArray("4.1", "C#")
+config/features=PackedStringArray("4.2", "C#")
 boot_splash/bg_color=Color(0.0313726, 0.0705882, 0.0313726, 1)
 
 [display]
