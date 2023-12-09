@@ -76,4 +76,4 @@ Temporary Items
 .godot
 .import
 build
-*.csproj.old
+*.csproj.old*

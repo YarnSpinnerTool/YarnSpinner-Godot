@@ -228,7 +228,6 @@ anchor_bottom = 1.0
 
 [node name="InMemoryVariableStorage" type="Node" parent="."]
 script = ExtResource("4")
-debugTextViewPath = NodePath("../VariableDebugText")
 
 [node name="TextLineProvider" type="Node2D" parent="."]
 script = ExtResource("1")
