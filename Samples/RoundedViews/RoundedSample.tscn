@@ -12,9 +12,6 @@
 yarnProject = ExtResource("2_s6ssf")
 startAutomatically = true
 
-[node name="LineView" parent="RoundedYarnSpinnerCanvasLayer" index="2" node_paths=PackedStringArray("continueButton")]
-continueButton = NodePath("ViewControl/LineText/LineBubble/ContinueButton")
-
 [node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
 script = ExtResource("3_cw7ad")
 dialogueRunner = NodePath("../RoundedYarnSpinnerCanvasLayer/DialogueRunner")

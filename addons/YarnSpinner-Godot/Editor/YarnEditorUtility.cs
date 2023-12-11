@@ -107,24 +107,7 @@ namespace YarnSpinnerGodot.Editor
             File.WriteAllText(fullPath, templateContent, System.Text.Encoding.UTF8);
             GD.Print($"Wrote new file {pathName}");
         }
-
-        /// <summary>
-        /// Get all assets of a given type.
-        /// </summary>
-        /// <typeparam name="T">AssetImporter type to search for. Should be convertible from AssetImporter.</typeparam>
-        /// <param name="filterQuery">Asset query (see <see cref="AssetDatabase.FindAssets(string)"/> documentation for formatting).</param>
-        /// <returns>Enumerable of all assets of a given type.</returns>
-        public static IEnumerable<T> GetAllAssetsOf<T>(string filterQuery) where T : class
-        {
-            // TODO: store list of yarn files in plugin settings?
-            // not seeing an easy way to find all resources in the project 
-            // of a certain type in Godot.
-            GD.PrintErr("TODO: Need a way to store/find list of yarn projects");
-            return new T[]
-            {
-                null
-            };
-        }
+        
     }
 }
 #endif

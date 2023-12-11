@@ -686,7 +686,7 @@ namespace YarnSpinnerGodot
                 else
                 {
                     GD.PushError(
-                        $"{view.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
+                        $"{view.Name} does not implement the interface {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
                 }
             }
 
@@ -747,7 +747,7 @@ namespace YarnSpinnerGodot
                 else
                 {
                     GD.PushError(
-                        $"{potentialView.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
+                        $"{potentialView.Name} does not implement the interface {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
                 }
             }
 

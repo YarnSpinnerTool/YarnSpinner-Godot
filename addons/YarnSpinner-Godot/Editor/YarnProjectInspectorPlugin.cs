@@ -227,7 +227,9 @@ namespace YarnSpinnerGodot.Editor
                     scriptPatternsGrid.AddChild(patternDeleteButton);
                 }
 
-                scriptPatternsGrid.AddChild(new Label {Text = "New Pattern", TooltipText = "TODO"});
+                scriptPatternsGrid.AddChild(new Label {Text = "New Pattern", 
+                    TooltipText = "Add a pattern that will match .yarn scripts you want to include.\n" +
+                                  $"These patterns are relative to the directory in which this {YarnProject.YARN_PROJECT_EXTENSION} file is saved."});
                 var scriptPatternInput = new LineEdit
                     {PlaceholderText = "**/*.yarn", SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
                 scriptPatternsGrid.AddChild(scriptPatternInput);

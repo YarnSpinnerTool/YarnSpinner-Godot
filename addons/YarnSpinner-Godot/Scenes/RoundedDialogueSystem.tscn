@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/Views/OptionsListView.cs" id="3_8icmh"]
 [ext_resource type="StyleBox" uid="uid://c3mta1ok76ssl" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewRichTextLabelStyleBox.tres" id="3_46gk8"]
 [ext_resource type="Texture2D" uid="uid://d3p8dh5owmvs8" path="res://addons/YarnSpinner-Godot/Textures/NextLineIndicator.png" id="4_e01r3"]
-[ext_resource type="StyleBox" uid="uid://itxqi5xpilu6" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewStyleBox.tres" id="4_utoye"]
+[ext_resource type="StyleBox" uid="uid://itxqi5xpilu6" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewStylebox.tres" id="4_utoye"]
 [ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="5_88l4y"]
 [ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="6_5v3f4"]
 [ext_resource type="PackedScene" uid="uid://dhnl6qatalt6x" path="res://addons/YarnSpinner-Godot/Scenes/RoundedOptionView.tscn" id="7_0mwuv"]
@@ -43,7 +43,7 @@ lineProvider = NodePath("../TextLineProvider")
 
 [node name="VariableDebugText" type="RichTextLabel" parent="."]
 
-[node name="LineView" type="Control" parent="." node_paths=PackedStringArray("characterNameText")]
+[node name="LineView" type="Control" parent="." node_paths=PackedStringArray("characterNameText", "continueButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -56,6 +56,7 @@ useFadeEffect = false
 lineTextPath = NodePath("ViewControl/LineText")
 characterNameText = NodePath("ViewControl/LineText/CharacterNameText")
 typewriterEffectSpeed = 80.0
+continueButton = NodePath("ViewControl/LineText/LineBubble/ContinueButton")
 
 [node name="ViewControl" type="Panel" parent="LineView"]
 layout_mode = 2
@@ -294,7 +295,6 @@ theme_override_styles/panel = ExtResource("4_utoye")
 
 [node name="InMemoryVariableStorage" type="Node" parent="."]
 script = ExtResource("5_88l4y")
-debugTextViewPath = NodePath("../VariableDebugText")
 
 [node name="TextLineProvider" type="Node2D" parent="."]
 script = ExtResource("6_5v3f4")

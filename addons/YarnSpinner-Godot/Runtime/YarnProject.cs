@@ -267,37 +267,6 @@ namespace YarnSpinnerGodot
         [Export] public YarnProjectError[] ProjectErrors = Array.Empty<YarnProjectError>();
 
         /// <summary>
-        /// Gets a value indicating whether the source script has line
-        /// tags.
-        /// </summary>
-        /// <param name="script">The source script to add. This script must
-        /// have been imported by a <see cref="YarnImporter"/>.</param>
-        /// <returns>
-        /// <see langword="true"/> if the the script is fully tagged, <see
-        /// langword="false"/> otherwise.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// Thrown when <paramref name="script"/> is <see
-        /// langword="null"/>.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// Thrown when <paramref name="script"/> is not imported by a <see
-        /// cref="YarnImporter"/>.
-        /// </exception>
-        private bool GetScriptHasLineTags(Resource script)
-        {
-            if (script == null)
-            {
-                // This might be a 'None' or 'Missing' asset, so return
-                // false here.
-                return false;
-            }
-
-            GD.Print("TODO: accurate check on which  scripts have line tags");
-            return false;
-        }
-
-        /// <summary>
         /// The cached result of deserializing <see
         /// cref="CompiledYarnProgram"/>.
         /// </summary>
