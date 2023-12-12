@@ -4,7 +4,6 @@
         <When Condition="$(DefineConstants.Contains('TOOLS'))">
             <ItemGroup>
                 <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="7.0.0"  />
-                <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0-3.final"/>
             </ItemGroup>
         </When>
     </Choose>
