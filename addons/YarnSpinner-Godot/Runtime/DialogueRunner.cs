@@ -1377,7 +1377,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// Called by a <see cref="DialogueViewBase"/> derived class from
+        /// Called by a <see cref="DialogueViewBase"/> implementing class from
         /// <see cref="dialogueViews"/> to inform the <see
         /// cref="DialogueRunner"/> that the user intents to proceed to the
         /// next line.

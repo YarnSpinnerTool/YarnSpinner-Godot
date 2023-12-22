@@ -19,13 +19,16 @@ namespace YarnSpinnerGodot.Editor
         private YarnProject _project;
 
         private readonly PackedScene _fileNameLabelScene =
-            ResourceLoader.Load<PackedScene>("res://addons/YarnSpinner-Godot/Editor/UI/FilenameLabel.tscn");
+            ResourceLoader.Load<PackedScene>(
+                "res://addons/YarnSpinner-Godot/Editor/UI/FilenameLabel.tscn");
 
         private readonly PackedScene _errorTextLabelScene =
-            ResourceLoader.Load<PackedScene>("res://addons/YarnSpinner-Godot/Editor/UI/ErrorTextLabel.tscn");
+            ResourceLoader.Load<PackedScene>(
+                "res://addons/YarnSpinner-Godot/Editor/UI/ErrorTextLabel.tscn");
 
         private readonly PackedScene _contextLabelScene =
-            ResourceLoader.Load<PackedScene>("res://addons/YarnSpinner-Godot/Editor/UI/ContextLabel.tscn");
+            ResourceLoader.Load<PackedScene>(
+                "res://addons/YarnSpinner-Godot/Editor/UI/ContextLabel.tscn");
 
         private VBoxContainer _errorContainer;
         private RichTextLabel _sourceScriptsListLabel;
@@ -35,12 +38,18 @@ namespace YarnSpinnerGodot.Editor
             return obj is YarnProject;
         }
 
-        public override bool _ParseProperty(GodotObject @object, Variant.Type type, string path,
+        public override bool _ParseProperty(GodotObject @object, Variant.Type type,
+            string path,
             PropertyHint hint, string hintText, PropertyUsageFlags usage, bool wide)
         {
             if (@object is not YarnProject project)
             {
                 return false;
+            }
+
+            if (IsTresYarnProject(project))
+            {
+                return true;
             }
 
             try
@@ -70,7 +79,8 @@ namespace YarnSpinnerGodot.Editor
 
                 if (path == nameof(YarnProject.ProjectErrors))
                 {
-                    _compileErrorsPropertyEditor = new YarnCompileErrorsPropertyEditor();
+                    _compileErrorsPropertyEditor =
+                        new YarnCompileErrorsPropertyEditor();
                     AddPropertyEditor(path, _compileErrorsPropertyEditor);
                     _parseErrorControl = new ScrollContainer
                     {
@@ -78,12 +88,14 @@ namespace YarnSpinnerGodot.Editor
                         SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                     };
                     int errorAreaHeight = 40;
-                    if (_project.ProjectErrors != null && _project.ProjectErrors.Length > 0)
+                    if (_project.ProjectErrors != null &&
+                        _project.ProjectErrors.Length > 0)
                     {
                         errorAreaHeight = 200;
                     }
 
-                    _parseErrorControl.CustomMinimumSize = new Vector2(0, errorAreaHeight);
+                    _parseErrorControl.CustomMinimumSize =
+                        new Vector2(0, errorAreaHeight);
 
                     _errorContainer = new VBoxContainer
                     {
@@ -92,7 +104,8 @@ namespace YarnSpinnerGodot.Editor
                     };
                     _parseErrorControl.AddChild(_errorContainer);
                     //parseErrorControl.BbcodeEnabled = true;
-                    _compileErrorsPropertyEditor.OnErrorsUpdated += RenderCompilationErrors;
+                    _compileErrorsPropertyEditor.OnErrorsUpdated +=
+                        RenderCompilationErrors;
                     RenderCompilationErrors(_project);
                     AddCustomControl(_parseErrorControl);
                     return true;
@@ -102,7 +115,8 @@ namespace YarnSpinnerGodot.Editor
             }
             catch (Exception e)
             {
-                GD.PushError($"Error in {nameof(YarnProjectInspectorPlugin)}: {e.Message}\n{e.StackTrace}");
+                GD.PushError(
+                    $"Error in {nameof(YarnProjectInspectorPlugin)}: {e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
@@ -135,7 +149,8 @@ namespace YarnSpinnerGodot.Editor
             GD.Print($"CSV file selected for locale {localeCode}: {savePath}");
             if (!_project.JSONProject.Localisation.ContainsKey(localeCode))
             {
-                _project.JSONProject.Localisation.Add(localeCode, new Project.LocalizationInfo());
+                _project.JSONProject.Localisation.Add(localeCode,
+                    new Project.LocalizationInfo());
             }
 
             _project.JSONProject.Localisation[localeCode].Strings = savePath;
@@ -164,13 +179,40 @@ namespace YarnSpinnerGodot.Editor
             _project.NotifyPropertyListChanged();
         }
 
+        /// <summary>
+        /// Returns true if the given project was created with Create Resource >
+        /// YarnProject rather than the tools menu.
+        /// As of 0.2.0, .yarnproject files should be created instead of creating
+        /// .tres files directly.
+        /// </summary>
+        private static bool IsTresYarnProject(YarnProject project) =>
+            string.IsNullOrWhiteSpace(project.JSONProjectPath)
+            || project.ResourcePath.ToLowerInvariant().EndsWith(".tres");
+
         public override void _ParseBegin(GodotObject @object)
         {
             try
             {
                 _project = (YarnProject) @object;
+                if (IsTresYarnProject(_project))
+                {
+                    AddCustomControl(new Label
+                    {
+                        Text =
+                            "⚠ This YarnProject may have been created via Create Resource > YarnProject.\n" +
+                            "Instead, create projects via Tools > YarnSpinner > Create Yarn Project.\n" +
+                            "This will create a .yarnproject file that you can work with, rather than a .tres " +
+                            "file.\n" +
+                            "You should delete this .tres file.",
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                        AutowrapMode = TextServer.AutowrapMode.WordSmart,
+                    });
+                    return;
+                }
+
                 _project.JSONProject =
-                    Yarn.Compiler.Project.LoadFromFile(ProjectSettings.GlobalizePath(_project.JSONProjectPath));
+                    Yarn.Compiler.Project.LoadFromFile(
+                        ProjectSettings.GlobalizePath(_project.JSONProjectPath));
 
 
                 var recompileButton = new Button();
@@ -189,7 +231,8 @@ namespace YarnSpinnerGodot.Editor
 
                 var sourceScripts = _project.JSONProject.SourceFiles.ToList();
                 updateLocalizationsButton.Text = "Update Localizations";
-                updateLocalizationsButton.TooltipText = "Update Localization CSV and Godot .translation Files";
+                updateLocalizationsButton.TooltipText =
+                    "Update Localization CSV and Godot .translation Files";
                 updateLocalizationsButton.Pressed += OnUpdateLocalizationsClicked;
                 AddCustomControl(updateLocalizationsButton);
 
@@ -218,25 +261,35 @@ namespace YarnSpinnerGodot.Editor
                         }
 
                         _project.JSONProject.SourceFilePatterns =
-                            _project.JSONProject.SourceFilePatterns.Where(existingPattern =>
-                                !existingPattern.Equals(pattern));
+                            _project.JSONProject.SourceFilePatterns.Where(
+                                existingPattern =>
+                                    !existingPattern.Equals(pattern));
                         _project.SaveJSONProject();
-                        YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
+                        YarnSpinnerPlugin.editorInterface.GetResourceFilesystem()
+                            .ScanSources();
                         _project.NotifyPropertyListChanged();
                     };
                     scriptPatternsGrid.AddChild(patternDeleteButton);
                 }
 
-                scriptPatternsGrid.AddChild(new Label {Text = "New Pattern", 
-                    TooltipText = "Add a pattern that will match .yarn scripts you want to include.\n" +
-                                  $"These patterns are relative to the directory in which this {YarnProject.YARN_PROJECT_EXTENSION} file is saved."});
+                scriptPatternsGrid.AddChild(new Label
+                {
+                    Text = "New Pattern",
+                    TooltipText =
+                        "Add a pattern that will match .yarn scripts you want to include.\n" +
+                        $"These patterns are relative to the directory in which this {YarnProject.YARN_PROJECT_EXTENSION} file is saved."
+                });
                 var scriptPatternInput = new LineEdit
-                    {PlaceholderText = "**/*.yarn", SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
+                {
+                    PlaceholderText = "**/*.yarn",
+                    SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                };
                 scriptPatternsGrid.AddChild(scriptPatternInput);
                 var addPatternButton = new Button {Text = "Add"};
                 addPatternButton.Pressed += () =>
                 {
-                    if (!IsInstanceValid(_project) || !IsInstanceValid(scriptPatternInput))
+                    if (!IsInstanceValid(_project) ||
+                        !IsInstanceValid(scriptPatternInput))
                     {
                         return;
                     }
@@ -246,16 +299,20 @@ namespace YarnSpinnerGodot.Editor
                         return;
                     }
 
-                    if (_project.JSONProject.SourceFilePatterns.Contains(scriptPatternInput.Text))
+                    if (_project.JSONProject.SourceFilePatterns.Contains(
+                            scriptPatternInput.Text))
                     {
-                        GD.Print($"Not adding duplicate pattern '{scriptPatternInput.Text}");
+                        GD.Print(
+                            $"Not adding duplicate pattern '{scriptPatternInput.Text}");
                     }
                     else
                     {
                         _project.JSONProject.SourceFilePatterns =
-                            _project.JSONProject.SourceFilePatterns.Append(scriptPatternInput.Text);
+                            _project.JSONProject.SourceFilePatterns.Append(
+                                scriptPatternInput.Text);
                         _project.SaveJSONProject();
-                        YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
+                        YarnSpinnerPlugin.editorInterface.GetResourceFilesystem()
+                            .ScanSources();
                         _project.NotifyPropertyListChanged();
                     }
                 };
@@ -266,7 +323,8 @@ namespace YarnSpinnerGodot.Editor
                 var numScriptsText = "None";
                 if (sourceScripts.Any())
                 {
-                    numScriptsText = $"{sourceScripts.Count} .yarn script{(sourceScripts.Count > 1 ? "s" : "")}";
+                    numScriptsText =
+                        $"{sourceScripts.Count} .yarn script{(sourceScripts.Count > 1 ? "s" : "")}";
                 }
 
                 var matchingScriptsHeader = new HBoxContainer
@@ -277,7 +335,8 @@ namespace YarnSpinnerGodot.Editor
                 matchingScriptsHeader.AddChild(new Label {Text = "Matching Scripts"});
                 matchingScriptsHeader.AddChild(new Label
                 {
-                    Text = numScriptsText, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                    Text = numScriptsText,
+                    SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
                     HorizontalAlignment = HorizontalAlignment.Right
                 });
                 AddCustomControl(matchingScriptsHeader);
@@ -292,11 +351,13 @@ namespace YarnSpinnerGodot.Editor
                     SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
                     SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                 };
-                _sourceScriptsListLabel.CustomMinimumSize = new Vector2(0, scriptAreaHeight);
+                _sourceScriptsListLabel.CustomMinimumSize =
+                    new Vector2(0, scriptAreaHeight);
                 RenderSourceScriptsList(_project);
                 AddCustomControl(_sourceScriptsListLabel);
 
-                var localeGrid = new GridContainer {SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
+                var localeGrid = new GridContainer
+                    {SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
                 localeGrid.Columns = 3;
 
                 var label = new Label {Text = "Localization CSVs"};
@@ -309,7 +370,8 @@ namespace YarnSpinnerGodot.Editor
                 };
                 var addButton = new Button {Text = "Add"};
                 SaveNewLocaleCode("", addButton);
-                textEntry.TextChanged += (string text) => SaveNewLocaleCode(text, addButton);
+                textEntry.TextChanged +=
+                    (string text) => SaveNewLocaleCode(text, addButton);
                 localeGrid.AddChild(textEntry);
 
                 addButton.Pressed += LocaleAdded;
@@ -366,7 +428,8 @@ namespace YarnSpinnerGodot.Editor
                 var changeBaseLocaleButton = new Button {Text = "Change"};
                 baseLocaleInput.TextChanged += (newText) =>
                 {
-                    changeBaseLocaleButton.Disabled = string.IsNullOrWhiteSpace(newText);
+                    changeBaseLocaleButton.Disabled =
+                        string.IsNullOrWhiteSpace(newText);
                 };
                 changeBaseLocaleButton.Pressed += () =>
                 {
@@ -377,21 +440,24 @@ namespace YarnSpinnerGodot.Editor
 
                     _project.JSONProject.BaseLanguage = baseLocaleInput.Text.Trim();
                     _project.JSONProject.SaveToFile(_project.JSONProject.Path);
-                    YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
+                    YarnSpinnerPlugin.editorInterface.GetResourceFilesystem()
+                        .ScanSources();
                 };
                 baseLocaleRow.AddChild(changeBaseLocaleButton);
                 AddCustomControl(baseLocaleRow);
                 var writeBaseCSVButton = new Button();
                 writeBaseCSVButton.Text = "Export Strings and Metadata as CSV";
-                writeBaseCSVButton.TooltipText = "Write all of the lines in your Yarn Project to a CSV," +
-                                                 " including the metadata, line IDs, and the names of the nodes" +
-                                                 " in which each line appears.";
+                writeBaseCSVButton.TooltipText =
+                    "Write all of the lines in your Yarn Project to a CSV," +
+                    " including the metadata, line IDs, and the names of the nodes" +
+                    " in which each line appears.";
                 writeBaseCSVButton.Pressed += OnBaseLanguageCSVClicked;
                 AddCustomControl(writeBaseCSVButton);
             }
             catch (Exception e)
             {
-                GD.PushError($"Error in {nameof(YarnProjectInspectorPlugin)}: {e.Message}\n{e.StackTrace}");
+                GD.PushError(
+                    $"Error in {nameof(YarnProjectInspectorPlugin)}: {e.Message}\n{e.StackTrace}");
             }
         }
 
@@ -401,7 +467,8 @@ namespace YarnSpinnerGodot.Editor
             {
                 FileMode = FileDialog.FileModeEnum.SaveFile,
                 Access = FileDialog.AccessEnum.Filesystem,
-                Title = $"Select CSV Path for the base locale {_project.JSONProject.BaseLanguage}",
+                Title =
+                    $"Select CSV Path for the base locale {_project.JSONProject.BaseLanguage}",
             };
             dialog.AddFilter("*.csv; CSV File");
             dialog.FileSelected += OnBaseLanguageCSVFileSelected;
@@ -457,7 +524,8 @@ namespace YarnSpinnerGodot.Editor
             {
                 var errorsInGroup = errorGroup.ToList();
                 var fileNameLabel = _fileNameLabelScene.Instantiate<Label>();
-                var resFileName = ProjectSettings.LocalizePath(errorsInGroup[0].FileName);
+                var resFileName =
+                    ProjectSettings.LocalizePath(errorsInGroup[0].FileName);
                 fileNameLabel.Text = $"{resFileName}:";
                 _errorContainer.AddChild(fileNameLabel);
                 var separator = new HSeparator();
@@ -482,7 +550,8 @@ namespace YarnSpinnerGodot.Editor
             _sourceScriptsListLabel.Text = "";
             foreach (var script in sourceScripts)
             {
-                var resFileName = ProjectSettings.LocalizePath(script.Replace("\\", "/"));
+                var resFileName =
+                    ProjectSettings.LocalizePath(script.Replace("\\", "/"));
                 _sourceScriptsListLabel.Text += resFileName + "\n";
             }
         }
