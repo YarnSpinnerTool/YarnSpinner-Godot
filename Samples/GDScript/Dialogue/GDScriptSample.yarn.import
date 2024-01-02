@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+uid="uid://cnaucorpt6ovd"
+path="res://.godot/imported/GDScriptSample.yarn-c8ad3d42301b744a689c236d0f86373d.tres"
+
+[deps]
+
+source_file="res://Samples/GDScript/Dialogue/GDScriptSample.yarn"
+dest_files=["res://.godot/imported/GDScriptSample.yarn-c8ad3d42301b744a689c236d0f86373d.tres"]
+
+[params]
+

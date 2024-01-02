@@ -106,6 +106,7 @@ namespace YarnSpinnerGodot.Editor
             var fullPath = Path.GetFullPath(ProjectSettings.GlobalizePath(pathName));
             File.WriteAllText(fullPath, templateContent, System.Text.Encoding.UTF8);
             GD.Print($"Wrote new file {pathName}");
+            YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
         }
         
     }

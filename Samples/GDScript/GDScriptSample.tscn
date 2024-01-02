@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://nqih6pjwoyjg"]
+
+[ext_resource type="PackedScene" uid="uid://dqe5yshlcmnpg" path="res://addons/YarnSpinner-Godot/Scenes/RoundedDialogueSystem.tscn" id="1_sj6tf"]
+[ext_resource type="Script" path="res://Samples/GDScript/yarnspinner_gdscript_sample.gd" id="2_w4ajc"]
+[ext_resource type="Resource" uid="uid://cvdxl10svka6k" path="res://Samples/GDScript/Dialogue/GDScriptSample.yarnproject" id="2_yjuvp"]
+[ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="4_turgc"]
+
+[node name="GDScriptSample" type="Node2D"]
+
+[node name="RoundedYarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_sj6tf")]
+
+[node name="DialogueRunner" parent="RoundedYarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("2_yjuvp")
+
+[node name="dialogue_runner_adapter" type="Node" parent="." node_paths=PackedStringArray("DialogueRunner")]
+script = ExtResource("2_w4ajc")
+DialogueRunner = NodePath("../RoundedYarnSpinnerCanvasLayer/DialogueRunner")
+
+[node name="ReturnOnComplete" type="Node" parent="." node_paths=PackedStringArray("dialogueRunner")]
+script = ExtResource("4_turgc")
+dialogueRunner = NodePath("../RoundedYarnSpinnerCanvasLayer/DialogueRunner")
+
+[editable path="RoundedYarnSpinnerCanvasLayer"]

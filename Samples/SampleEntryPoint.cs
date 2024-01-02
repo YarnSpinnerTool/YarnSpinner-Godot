@@ -12,7 +12,8 @@ public partial class SampleEntryPoint : CanvasLayer
     [Export] private Button _markupPaletteButton;
     [Export] private Button _pausingTypewriterButton;
     [Export] private Button _roundedViewsButton;
-    
+    [Export] private Button _gdScriptButton;
+
     /// <summary>
     /// Resource path to the packed scene of entry point scene
     /// </summary>
@@ -32,11 +33,12 @@ public partial class SampleEntryPoint : CanvasLayer
         );
         _pausingTypewriterButton.Pressed += () => LoadSample(
             "res://Samples/PausingTypewriter/PauseSample.tscn"
-        );      
+        );
         _roundedViewsButton.Pressed += () => LoadSample(
             "res://Samples/RoundedViews/RoundedSample.tscn"
         );
-
+        _gdScriptButton.Pressed += () =>
+            LoadSample("res://Samples/GDScript/GDScriptSample.tscn");
         _spaceButton.GrabFocus();
     }
 

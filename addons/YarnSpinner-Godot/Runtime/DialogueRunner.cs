@@ -31,7 +31,9 @@ using System.Linq;
 using System.Text.Json;
 using Godot;
 using Godot.Collections;
+using Microsoft.VisualBasic;
 using Yarn;
+using Array = Godot.Collections.Array;
 using Node = Godot.Node;
 
 namespace YarnSpinnerGodot
@@ -311,7 +313,8 @@ namespace YarnSpinnerGodot
                     }
                     default:
                     {
-                        GD.PrintErr($"{pair.Key} is of an invalid type: {value.ValueCase}");
+                        GD.PrintErr(
+                            $"{pair.Key} is of an invalid type: {value.ValueCase}");
                         break;
                     }
                 }
@@ -364,7 +367,8 @@ namespace YarnSpinnerGodot
             }
             catch (Exception e)
             {
-                GD.PushError($"Failed to start dialogue on node '{startNode}': {e.Message}\n{e.StackTrace}");
+                GD.PushError(
+                    $"Failed to start dialogue on node '{startNode}': {e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -400,7 +404,8 @@ namespace YarnSpinnerGodot
         {
             if (IsDialogueRunning)
             {
-                throw new ApplicationException("You cannot clear the dialogue system while a dialogue is running.");
+                throw new ApplicationException(
+                    "You cannot clear the dialogue system while a dialogue is running.");
             }
 
             Dialogue.UnloadAll();
@@ -430,7 +435,8 @@ namespace YarnSpinnerGodot
         /// <param name="nodeName">The name of the node.</param>
         /// <returns>The collection of tags associated with the node, or
         /// `null` if no node with that name exists.</returns>
-        public IEnumerable<string> GetTagsForNode(String nodeName) => Dialogue.GetTagsForNode(nodeName);
+        public IEnumerable<string> GetTagsForNode(String nodeName) =>
+            Dialogue.GetTagsForNode(nodeName);
 
         #region CommandsAndFunctions
 
@@ -458,11 +464,333 @@ namespace YarnSpinnerGodot
         {
             if (commandHandlers.ContainsKey(commandName))
             {
-                GD.PrintErr($"Cannot add a command handler for {commandName}: one already exists");
+                GD.PrintErr(
+                    $"Cannot add a command handler for {commandName}: one already exists");
                 return;
             }
 
             commandHandlers.Add(commandName, handler);
+        }
+
+        /// <summary>
+        /// Add a command handler using a Callable rather than a C# delegate.
+        /// Mostly useful for integrating with GDScript.
+        /// If the last argument to your handler is a Callable, your command will be
+        /// considered an async blocking command. When the work for your command is done,
+        /// call the Callable that the DialogueRunner will pass to your handler. Then
+        /// the dialogue will continue.
+        ///
+        /// Callables are only supported as the last argument to your handler for the
+        /// purpose of making your command blocking.
+        /// </summary>
+        /// <param name="commandName">The name of the command.</param>
+        /// <param name="handler">The Callable for the <see cref="CommandHandler"/> that
+        /// will be invoked when the command is called.</param>
+        public void AddCommandHandlerCallable(string commandName, Callable handler)
+        {
+            if (!IsInstanceValid(handler.Target))
+            {
+                GD.PushError(
+                    $"Callable provided to {nameof(AddCommandHandlerCallable)} is invalid. " +
+                    "Could the Node associated with the callable have been freed?");
+                return;
+            }
+
+            var methodInfo = handler.Target.GetMethodList().Where(dict =>
+                dict["name"].AsString().Equals(handler.Method.ToString())).ToList();
+
+            if (methodInfo.Count == 0)
+            {
+                GD.PushError();
+                return;
+            }
+
+            var argsCount = methodInfo[0]["args"].AsGodotArray().Count;
+            var argTypes = methodInfo[0]["args"].AsGodotArray().ToList()
+                .ConvertAll((argDictionary) =>
+                    (Variant.Type) argDictionary.AsGodotDictionary()["type"].AsInt32());
+            var invalidTargetMsg =
+                $"Handler node for {commandName} is invalid. Was it freed?";
+
+            var isAsync = argTypes.Count > 0 &&
+                          argTypes.Last().Equals(Variant.Type.Callable);
+            // cast a list of arguments from a .yarn script to the type that the handler
+            // expects based on type hinting. Used to cross back over from C# to GDScript
+            Variant[] CastToExpectedTypes(params Variant[] args)
+            {
+                Variant[] castArgs = new Variant[args.Length];
+                var argIndex = 0;
+                foreach (var arg in args)
+                {
+                    var argType = argTypes[argIndex];
+                    castArgs[argIndex] = argType switch
+                    {
+                        Variant.Type.Bool => arg.AsBool(),
+                        Variant.Type.Int => arg.AsInt32(),
+                        Variant.Type.Float => arg.AsSingle(),
+                        Variant.Type.String => arg.AsString(),
+                        Variant.Type.Callable => arg.AsCallable(),
+                        // if no type hint is given, assume string type
+                        Variant.Type.Nil => arg.AsString(),
+                        _ => throw new Exception(
+                            $"Unsupported variant type {arg.VariantType} was specified in a handler for the command {commandName}")
+                    };
+                    argIndex++;
+                }
+
+                return castArgs;
+            }
+
+            // how many milliseconds to wait between checks for async commands
+            const int completePollMs = 40;
+            switch (argsCount)
+            {
+                case 0:
+                {
+                    if (isAsync)
+                    {
+                        GD.PushError(
+                            $"You specified {nameof(isAsync)}=true when calling {nameof(AddCommandHandlerCallable)}, " +
+                            $"but your callable doesn't have any arguments. When using {nameof(isAsync)}, " +
+                            $"the last argument to your Callable must be an onComplete handler that " +
+                            $"you call to indicate that your blocking command is completed.");
+                    }
+
+                    AddCommandHandler(commandName, () =>
+                    {
+                        if (!IsInstanceValid(handler.Target))
+                        {
+                            GD.PushError(invalidTargetMsg);
+                            return;
+                        }
+
+                        handler.Call();
+                    });
+                    break;
+                }
+                case 1 when isAsync:
+                    AddCommandHandler(commandName, async Task () =>
+                    {
+                        if (!IsInstanceValid(handler.Target))
+                        {
+                            GD.PushError(invalidTargetMsg);
+                            return;
+                        }
+
+                        var complete = false;
+                        handler.Call(Callable.From(() => complete = true));
+                        while (!complete)
+                        {
+                            await Task.Delay(completePollMs);
+                        }
+                    });
+                    break;
+                case 1:
+                    AddCommandHandler(commandName, (Variant arg0) =>
+                    {
+                        if (!IsInstanceValid(handler.Target))
+                        {
+                            GD.PushError(invalidTargetMsg);
+                            return;
+                        }
+
+                        handler.Call(CastToExpectedTypes(arg0));
+                    });
+                    break;
+                case 2 when isAsync:
+                    AddCommandHandler(commandName, async Task (Variant arg0) =>
+                    {
+                        if (!IsInstanceValid(handler.Target))
+                        {
+                            GD.PushError(invalidTargetMsg);
+                            return;
+                        }
+
+                        var complete = false;
+                        handler.Call(CastToExpectedTypes(arg0,
+                            Callable.From(() => complete = true)));
+                        while (!complete)
+                        {
+                            await Task.Delay(completePollMs);
+                        }
+                    });
+                    break;
+                case 2:
+                    AddCommandHandler(commandName, (Variant arg0, Variant arg1) =>
+                    {
+                        if (!IsInstanceValid(handler.Target))
+                        {
+                            GD.PushError(invalidTargetMsg);
+                            return;
+                        }
+
+                        handler.Call(CastToExpectedTypes(arg0, arg1));
+                    });
+                    break;
+                case 3 when isAsync:
+                    AddCommandHandler(commandName,
+                        async Task (Variant arg0, Variant arg1) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            var complete = false;
+                            handler.Call(CastToExpectedTypes(arg0, arg1,
+                                Callable.From(() => complete = true)));
+                            while (!complete)
+                            {
+                                await Task.Delay(completePollMs);
+                            }
+                        });
+                    break;
+                case 3:
+                    AddCommandHandler(commandName,
+                        (Variant arg0, Variant arg1, Variant arg2) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2));
+                        });
+                    break;
+                case 4 when isAsync:
+                    AddCommandHandler(commandName,
+                        async Task (Variant arg0, Variant arg1, Variant arg2) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            var complete = false;
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2,
+                                Callable.From(() => complete = true)));
+                            while (!complete)
+                            {
+                                await Task.Delay(completePollMs);
+                            }
+                        });
+                    break;
+                case 4:
+                    AddCommandHandler(commandName,
+                        (Variant arg0, Variant arg1, Variant arg2, Variant arg3) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3));
+                        });
+                    break;
+                case 5 when isAsync:
+                    AddCommandHandler(commandName,
+                        async Task (Variant arg0, Variant arg1, Variant arg2,
+                            Variant arg3) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            var complete = false;
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
+                                Callable.From(() => complete = true)));
+                            while (!complete)
+                            {
+                                await Task.Delay(completePollMs);
+                            }
+                        });
+                    break;
+                case 5:
+                    AddCommandHandler(commandName,
+                        (Variant arg0, Variant arg1, Variant arg2, Variant arg3,
+                            Variant arg4) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
+                                arg4));
+                        });
+                    break;
+                case 6 when isAsync:
+                    AddCommandHandler(commandName,
+                        async Task (Variant arg0, Variant arg1, Variant arg2,
+                            Variant arg3, Variant arg4) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            var complete = false;
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
+                                arg4, Callable.From(() => complete = true)));
+                            while (!complete)
+                            {
+                                await Task.Delay(completePollMs);
+                            }
+                        });
+                    break;
+                case 6:
+                    AddCommandHandler(commandName,
+                        (Variant arg0, Variant arg1, Variant arg2, Variant arg3,
+                            Variant arg4, Variant arg5) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
+                                arg4, arg5));
+                        });
+                    break;
+                case 7 when isAsync:
+                    // 6 arguments from the yarn script, but 1 more for the on_complete
+                    // handler. 
+                    AddCommandHandler(commandName,
+                        async Task (Variant arg0, Variant arg1, Variant arg2,
+                            Variant arg3, Variant arg4, Variant arg5) =>
+                        {
+                            if (!IsInstanceValid(handler.Target))
+                            {
+                                GD.PushError(invalidTargetMsg);
+                                return;
+                            }
+
+                            var complete = false;
+
+                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2,
+                                arg3, arg4, arg5,
+                                Callable.From(() => complete = true)));
+                            while (!complete)
+                            {
+                                await Task.Delay(completePollMs);
+                            }
+                        });
+                    break;
+                default:
+                    GD.PushError($"You have specified a command handler with too " +
+                                 $"many arguments at {argsCount}. The maximum supported " +
+                                 $"number of arguments to a command handler is 6.");
+                    break;
+            }
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
@@ -472,25 +800,29 @@ namespace YarnSpinnerGodot
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1>(string commandName, System.Func<T1, Task> handler)
+        public void AddCommandHandler<T1>(string commandName,
+            System.Func<T1, Task> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2>(string commandName, System.Func<T1, T2, Task> handler)
+        public void AddCommandHandler<T1, T2>(string commandName,
+            System.Func<T1, T2, Task> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3>(string commandName, System.Func<T1, T2, T3, Task> handler)
+        public void AddCommandHandler<T1, T2, T3>(string commandName,
+            System.Func<T1, T2, T3, Task> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3, T4>(string commandName, System.Func<T1, T2, T3, T4, Task> handler)
+        public void AddCommandHandler<T1, T2, T3, T4>(string commandName,
+            System.Func<T1, T2, T3, T4, Task> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
@@ -522,25 +854,29 @@ namespace YarnSpinnerGodot
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2>(string commandName, System.Action<T1, T2> handler)
+        public void AddCommandHandler<T1, T2>(string commandName,
+            System.Action<T1, T2> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3>(string commandName, System.Action<T1, T2, T3> handler)
+        public void AddCommandHandler<T1, T2, T3>(string commandName,
+            System.Action<T1, T2, T3> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3, T4>(string commandName, System.Action<T1, T2, T3, T4> handler)
+        public void AddCommandHandler<T1, T2, T3, T4>(string commandName,
+            System.Action<T1, T2, T3, T4> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
 
         /// <inheritdoc cref="AddCommandHandler(string, Delegate)"/>
-        public void AddCommandHandler<T1, T2, T3, T4, T5>(string commandName, System.Action<T1, T2, T3, T4, T5> handler)
+        public void AddCommandHandler<T1, T2, T3, T4, T5>(string commandName,
+            System.Action<T1, T2, T3, T4, T5> handler)
         {
             AddCommandHandler(commandName, (Delegate) handler);
         }
@@ -598,28 +934,32 @@ namespace YarnSpinnerGodot
 
         /// <inheritdoc cref="AddFunction(string, Delegate)" />
         /// <typeparam name="TResult">The type of the value that the function should return.</typeparam>
-        public void AddFunction<TResult>(string name, System.Func<TResult> implementation)
+        public void AddFunction<TResult>(string name,
+            System.Func<TResult> implementation)
         {
             AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult}(string, Func{TResult})" />
         /// <typeparam name="T1">The type of the first parameter to the function.</typeparam>
-        public void AddFunction<TResult, T1>(string name, System.Func<TResult, T1> implementation)
+        public void AddFunction<TResult, T1>(string name,
+            System.Func<TResult, T1> implementation)
         {
             AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult,T1}(string, Func{TResult,T1})" />
         /// <typeparam name="T2">The type of the second parameter to the function.</typeparam>
-        public void AddFunction<TResult, T1, T2>(string name, System.Func<TResult, T1, T2> implementation)
+        public void AddFunction<TResult, T1, T2>(string name,
+            System.Func<TResult, T1, T2> implementation)
         {
             AddFunction(name, (Delegate) implementation);
         }
 
         /// <inheritdoc cref="AddFunction{TResult,T1,T2}(string, Func{TResult,T1,T2})" />
         /// <typeparam name="T3">The type of the third parameter to the function.</typeparam>
-        public void AddFunction<TResult, T1, T2, T3>(string name, System.Func<TResult, T1, T2, T3> implementation)
+        public void AddFunction<TResult, T1, T2, T3>(string name,
+            System.Func<TResult, T1, T2, T3> implementation)
         {
             AddFunction(name, (Delegate) implementation);
         }
@@ -657,7 +997,8 @@ namespace YarnSpinnerGodot
         /// </remarks>
         /// <param name="name">The name of the function to remove.</param>
         /// <seealso cref="AddFunction{TResult}(string, Func{TResult})"/>
-        public void RemoveFunction(string name) => Dialogue.Library.DeregisterFunction(name);
+        public void RemoveFunction(string name) =>
+            Dialogue.Library.DeregisterFunction(name);
 
         #endregion
 
@@ -773,7 +1114,7 @@ namespace YarnSpinnerGodot
                 // Load this new Yarn Project.
                 SetProject(yarnProject);
             }
-            
+
             if (lineProvider == null)
             {
                 // If we don't have a line provider, create a
@@ -789,7 +1130,9 @@ namespace YarnSpinnerGodot
                 // Let the user know what we're doing.
                 if (verboseLogging)
                 {
-                    GD.Print($"Dialogue Runner has no LineProvider; creating a {nameof(TextLineProvider)}.", this);
+                    GD.Print(
+                        $"Dialogue Runner has no LineProvider; creating a {nameof(TextLineProvider)}.",
+                        this);
                 }
             }
             else if (lineProvider.YarnProject == null)
@@ -828,7 +1171,8 @@ namespace YarnSpinnerGodot
                 // Let the user know what we're doing.
                 if (verboseLogging)
                 {
-                    GD.Print($"Dialogue Runner has no Variable Storage; creating a {nameof(InMemoryVariableStorage)}",
+                    GD.Print(
+                        $"Dialogue Runner has no Variable Storage; creating a {nameof(InMemoryVariableStorage)}",
                         this);
                 }
             }
@@ -850,8 +1194,14 @@ namespace YarnSpinnerGodot
                 LineHandler = HandleLine,
                 CommandHandler = HandleCommand,
                 OptionsHandler = HandleOptions,
-                NodeStartHandler = (node) => { EmitSignal(SignalName.onNodeStart, node); },
-                NodeCompleteHandler = (node) => { EmitSignal(SignalName.onNodeComplete, node); },
+                NodeStartHandler = (node) =>
+                {
+                    EmitSignal(SignalName.onNodeStart, node);
+                },
+                NodeCompleteHandler = (node) =>
+                {
+                    EmitSignal(SignalName.onNodeComplete, node);
+                },
                 DialogueCompleteHandler = HandleDialogueComplete,
                 PrepareForLinesHandler = PrepareForLines
             };
@@ -868,8 +1218,10 @@ namespace YarnSpinnerGodot
             for (int i = 0; i < options.Options.Length; i++)
             {
                 // Localize the line associated with the option
-                var localisedLine = lineProvider.GetLocalizedLine(options.Options[i].Line);
-                var text = Dialogue.ExpandSubstitutions(localisedLine.RawText, options.Options[i].Line.Substitutions);
+                var localisedLine =
+                    lineProvider.GetLocalizedLine(options.Options[i].Line);
+                var text = Dialogue.ExpandSubstitutions(localisedLine.RawText,
+                    options.Options[i].Line.Substitutions);
 
                 Dialogue.LanguageCode = lineProvider.LocaleCode;
 
@@ -904,7 +1256,8 @@ namespace YarnSpinnerGodot
 
             foreach (var dialogueView in dialogueViews)
             {
-                if (dialogueView == null || dialogueView.IsInsideTree() == false) continue;
+                if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                    continue;
 
                 ((DialogueViewBase) dialogueView).RunOptions(optionSet, selectAction);
             }
@@ -917,7 +1270,8 @@ namespace YarnSpinnerGodot
             IsDialogueRunning = false;
             foreach (var dialogueView in dialogueViews)
             {
-                if (dialogueView == null || dialogueView.IsInsideTree() == false) continue;
+                if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                    continue;
 
                 ((DialogueViewBase) dialogueView).DialogueComplete();
             }
@@ -930,7 +1284,8 @@ namespace YarnSpinnerGodot
             CommandDispatchResult dispatchResult;
 
             // Try looking in the command handlers first
-            dispatchResult = DispatchCommandToRegisteredHandlers(command, ContinueDialogue);
+            dispatchResult =
+                DispatchCommandToRegisteredHandlers(command, ContinueDialogue);
 
             if (dispatchResult != CommandDispatchResult.NotFound)
             {
@@ -1024,7 +1379,8 @@ namespace YarnSpinnerGodot
                 CurrentLine = lineProvider.GetLocalizedLine(line);
 
                 // Expand substitutions
-                var text = Dialogue.ExpandSubstitutions(CurrentLine.RawText, CurrentLine.Substitutions);
+                var text = Dialogue.ExpandSubstitutions(CurrentLine.RawText,
+                    CurrentLine.Substitutions);
 
                 if (text == null)
                 {
@@ -1086,7 +1442,8 @@ namespace YarnSpinnerGodot
                     }
 
                     ((DialogueViewBase) dialogueView).RunLine(CurrentLine,
-                        () => DialogueViewCompletedDelivery((DialogueViewBase) dialogueView));
+                        () => DialogueViewCompletedDelivery(
+                            (DialogueViewBase) dialogueView));
                 }
             }
         }
@@ -1109,7 +1466,8 @@ namespace YarnSpinnerGodot
             foreach (var dialogueView in dialogueViews)
             {
                 ((DialogueViewBase) dialogueView).InterruptLine(CurrentLine,
-                    () => DialogueViewCompletedInterrupt((DialogueViewBase) dialogueView));
+                    () => DialogueViewCompletedInterrupt(
+                        (DialogueViewBase) dialogueView));
             }
         }
 
@@ -1169,16 +1527,19 @@ namespace YarnSpinnerGodot
         /// found.</param>
         /// <returns>True if the command was dispatched to a Godot Node;
         /// false otherwise.</returns>
-        CommandDispatchResult DispatchCommandToRegisteredHandlers(Command command, Action onSuccessfulDispatch)
+        CommandDispatchResult DispatchCommandToRegisteredHandlers(Command command,
+            Action onSuccessfulDispatch)
         {
-            return DispatchCommandToRegisteredHandlers(command.Text, onSuccessfulDispatch);
+            return DispatchCommandToRegisteredHandlers(command.Text,
+                onSuccessfulDispatch);
         }
 
         /// <inheritdoc cref="DispatchCommandToRegisteredHandlers(Command,
         /// Action)"/>
         /// <param name="command">The text of the command to
         /// dispatch.</param>
-        public CommandDispatchResult DispatchCommandToRegisteredHandlers(string command, Action onSuccessfulDispatch)
+        public CommandDispatchResult DispatchCommandToRegisteredHandlers(string command,
+            Action onSuccessfulDispatch)
         {
             var commandTokens = SplitCommandText(command).ToArray();
 
@@ -1250,7 +1611,8 @@ namespace YarnSpinnerGodot
         /// <param name="onSuccessfulDispatch">The method to call after the
         /// <see cref="YieldInstruction"/> returned by <paramref
         /// name="theDelegate"/> has finished.</param>
-        private static async void WaitForAsyncTask(Delegate @theDelegate, object[] finalParametersToUse,
+        private static async void WaitForAsyncTask(Delegate @theDelegate,
+            object[] finalParametersToUse,
             Action onSuccessfulDispatch)
         {
             // Invoke the delegate.
@@ -1294,7 +1656,8 @@ namespace YarnSpinnerGodot
         {
             if (string.IsNullOrEmpty(command))
             {
-                throw new ArgumentException($"'{nameof(command)}' cannot be null or empty.", nameof(command));
+                throw new ArgumentException(
+                    $"'{nameof(command)}' cannot be null or empty.", nameof(command));
             }
 
             if (onSuccessfulDispatch is null)
@@ -1303,7 +1666,8 @@ namespace YarnSpinnerGodot
             }
 
             CommandDispatchResult commandExecutionResult =
-                ActionManager.TryExecuteCommand(SplitCommandText(command).ToArray(), out object returnValue);
+                ActionManager.TryExecuteCommand(SplitCommandText(command).ToArray(),
+                    out object returnValue);
             if (commandExecutionResult != CommandDispatchResult.Success)
             {
                 return commandExecutionResult;
@@ -1386,7 +1750,8 @@ namespace YarnSpinnerGodot
         {
             if (CurrentLine == null)
             {
-                GD.PrintErr("Dialogue runner was asked to advance but there is no current line");
+                GD.PrintErr(
+                    "Dialogue runner was asked to advance but there is no current line");
                 return;
             }
 
@@ -1395,7 +1760,8 @@ namespace YarnSpinnerGodot
             // so we can ignore this action
             if (ActiveDialogueViews.Count == 0)
             {
-                GD.Print("user requested advance, all views finished, ignoring interrupt");
+                GD.Print(
+                    "user requested advance, all views finished, ignoring interrupt");
                 return;
             }
 
@@ -1598,14 +1964,17 @@ namespace YarnSpinnerGodot
         {
             try
             {
-                using var file = FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Read);
+                using var file =
+                    FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Read);
                 var saveData = file.GetAsText();
                 var dictionaries = DeserializeAllVariablesFromJSON(saveData);
-                variableStorage.SetAllVariables(dictionaries.Item1, dictionaries.Item2, dictionaries.Item3);
+                variableStorage.SetAllVariables(dictionaries.Item1, dictionaries.Item2,
+                    dictionaries.Item3);
             }
             catch (Exception e)
             {
-                GD.PushError($"Failed to load save state at {saveFilePath}: {e.Message}");
+                GD.PushError(
+                    $"Failed to load save state at {saveFilePath}: {e.Message}");
                 return false;
             }
 
@@ -1639,7 +2008,8 @@ namespace YarnSpinnerGodot
             var data = SerializeAllVariablesToJSON();
             try
             {
-                using var file = FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Write);
+                using var file =
+                    FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Write);
                 file.StoreString(data);
                 return true;
             }
@@ -1658,36 +2028,43 @@ namespace YarnSpinnerGodot
             System.Collections.Generic.Dictionary<string, bool>)
             DeserializeAllVariablesFromJSON(string jsonData)
         {
-            SaveData data = JsonSerializer.Deserialize<SaveData>(jsonData, YarnProject.JSONOptions);
+            SaveData data =
+                JsonSerializer.Deserialize<SaveData>(jsonData, YarnProject.JSONOptions);
 
             if (data.floatKeys == null && data.floatValues == null)
             {
-                throw new ArgumentException("Provided JSON string was not able to extract numeric variables");
+                throw new ArgumentException(
+                    "Provided JSON string was not able to extract numeric variables");
             }
 
             if (data.stringKeys == null && data.stringValues == null)
             {
-                throw new ArgumentException("Provided JSON string was not able to extract string variables");
+                throw new ArgumentException(
+                    "Provided JSON string was not able to extract string variables");
             }
 
             if (data.boolKeys == null && data.boolValues == null)
             {
-                throw new ArgumentException("Provided JSON string was not able to extract boolean variables");
+                throw new ArgumentException(
+                    "Provided JSON string was not able to extract boolean variables");
             }
 
             if (data.floatKeys.Length != data.floatValues.Length)
             {
-                throw new ArgumentException("Number of keys and values of numeric variables does not match");
+                throw new ArgumentException(
+                    "Number of keys and values of numeric variables does not match");
             }
 
             if (data.stringKeys.Length != data.stringValues.Length)
             {
-                throw new ArgumentException("Number of keys and values of string variables does not match");
+                throw new ArgumentException(
+                    "Number of keys and values of string variables does not match");
             }
 
             if (data.boolKeys.Length != data.boolValues.Length)
             {
-                throw new ArgumentException("Number of keys and values of boolean variables does not match");
+                throw new ArgumentException(
+                    "Number of keys and values of boolean variables does not match");
             }
 
             var floats = new System.Collections.Generic.Dictionary<string, float>();
