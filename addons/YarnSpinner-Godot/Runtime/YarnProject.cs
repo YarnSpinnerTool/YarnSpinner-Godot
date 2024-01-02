@@ -295,16 +295,7 @@ namespace YarnSpinnerGodot
 
             return ids;
         }
-
-        /// <summary>
-        /// Gets the Yarn Program stored in this project.
-        /// </summary>
-        [Obsolete("Use the Program property instead, which caches its return value.")]
-        public Program GetProgram()
-        {
-            return Program.Parser.ParseFrom(CompiledYarnProgram);
-        }
-
+        
         /// <summary>
         /// Gets the Yarn Program stored in this project.
         /// </summary>

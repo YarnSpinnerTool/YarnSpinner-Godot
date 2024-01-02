@@ -4,13 +4,14 @@
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
 [ext_resource type="Texture2D" uid="uid://pbrr5yyepbx8" path="res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png" id="3_bcudv"]
 
-[node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton", "_roundedViewsButton")]
+[node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton", "_roundedViewsButton", "_gdScriptButton")]
 script = ExtResource("1")
 _spaceButton = NodePath("HBoxContainer/VBoxContainer/Space")
 _visualNovelButton = NodePath("HBoxContainer/VBoxContainer2/Visual Novel")
 _markupPaletteButton = NodePath("HBoxContainer/VBoxContainer3/MarkupPalette")
 _pausingTypewriterButton = NodePath("HBoxContainer/VBoxContainer4/PausingTypewriter")
 _roundedViewsButton = NodePath("HBoxContainer/VBoxContainer5/RoundedViews")
+_gdScriptButton = NodePath("HBoxContainer/VBoxContainer6/GDScript")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -164,4 +165,25 @@ size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Alternate dialogue UI style"
+scroll_active = false
+
+[node name="VBoxContainer6" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GDScript" type="Button" parent="HBoxContainer/VBoxContainer6"]
+custom_minimum_size = Vector2(180, 100)
+layout_mode = 2
+theme = ExtResource("2")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 27
+text = "GDScript"
+
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer6"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "Integrating with a GDScript-based game"
 scroll_active = false
