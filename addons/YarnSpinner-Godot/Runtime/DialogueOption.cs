@@ -24,9 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
+using Godot;
+
 namespace YarnSpinnerGodot
 {
-    public class DialogueOption
+    public partial class DialogueOption : RefCounted
     {
         /// <summary>
         /// The ID of this dialogue option

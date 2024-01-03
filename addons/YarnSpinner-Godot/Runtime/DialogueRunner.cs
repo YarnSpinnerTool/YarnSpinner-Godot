@@ -28,12 +28,14 @@ using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.Json;
 using Godot;
 using Godot.Collections;
 using Microsoft.VisualBasic;
 using Yarn;
 using Array = Godot.Collections.Array;
+using Expression = System.Linq.Expressions.Expression;
 using Node = Godot.Node;
 
 namespace YarnSpinnerGodot
@@ -473,6 +475,51 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
+        /// Cast a list of arguments from a .yarn script to the type that the handler
+        /// expects based on type hinting. Used to cross back over from C# to GDScript
+        /// </summary>
+        /// <param name="argTypes">List of Variant.Types in order of the arguments
+        /// from the caller's command or function handler</param>
+        /// <param name="commandOrFunctionName">The name of the function or command
+        /// being registered, for error logging purposes</param>
+        /// <param name="args">params array of arguments to cast to their expected types</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private static Array CastToExpectedTypes(List<Variant.Type> argTypes,
+            string commandOrFunctionName,
+            params Variant[] args)
+        {
+            var castArgs = new Array();
+            var argIndex = 0;
+            foreach (var arg in args)
+            {
+                var argType = argTypes[argIndex];
+                var castArg = argType switch
+                {
+                    Variant.Type.Bool => arg.AsBool(),
+                    Variant.Type.Int => arg.AsInt32(),
+                    Variant.Type.Float => arg.AsSingle(),
+                    Variant.Type.String => arg.AsString(),
+                    Variant.Type.Callable => arg.AsCallable(),
+                    // if no type hint is given, assume string type
+                    Variant.Type.Nil => arg.AsString(),
+                    _ => Variant.From<GodotObject>(null),
+                };
+                castArgs.Add(castArg);
+                if (castArg.Obj == null)
+                {
+                    GD.PushError(
+                        $"Argument for the handler for '{commandOrFunctionName}'" +
+                        $" at index {argIndex} has unexpected type {argType}");
+                }
+
+                argIndex++;
+            }
+
+            return castArgs;
+        }
+
+        /// <summary>
         /// Add a command handler using a Callable rather than a C# delegate.
         /// Mostly useful for integrating with GDScript.
         /// If the last argument to your handler is a Callable, your command will be
@@ -514,276 +561,84 @@ namespace YarnSpinnerGodot
 
             var isAsync = argTypes.Count > 0 &&
                           argTypes.Last().Equals(Variant.Type.Callable);
-            // cast a list of arguments from a .yarn script to the type that the handler
-            // expects based on type hinting. Used to cross back over from C# to GDScript
-            Variant[] CastToExpectedTypes(params Variant[] args)
+
+
+            async Task GenerateCommandHandler(params Variant[] handlerArgs)
             {
-                Variant[] castArgs = new Variant[args.Length];
-                var argIndex = 0;
-                foreach (var arg in args)
+                if (!IsInstanceValid(handler.Target))
                 {
-                    var argType = argTypes[argIndex];
-                    castArgs[argIndex] = argType switch
-                    {
-                        Variant.Type.Bool => arg.AsBool(),
-                        Variant.Type.Int => arg.AsInt32(),
-                        Variant.Type.Float => arg.AsSingle(),
-                        Variant.Type.String => arg.AsString(),
-                        Variant.Type.Callable => arg.AsCallable(),
-                        // if no type hint is given, assume string type
-                        Variant.Type.Nil => arg.AsString(),
-                        _ => throw new Exception(
-                            $"Unsupported variant type {arg.VariantType} was specified in a handler for the command {commandName}")
-                    };
-                    argIndex++;
+                    GD.PushError(invalidTargetMsg);
+                    return;
                 }
 
-                return castArgs;
+                // how many milliseconds to wait between completion checks for async commands
+                const int completePollMs = 40;
+                var castArgs = CastToExpectedTypes(argTypes, commandName, handlerArgs);
+
+                var complete = false;
+                if (isAsync)
+                {
+                    castArgs.Add(Callable.From(() => complete = true));
+                }
+
+                handler.Call(castArgs.ToArray());
+                if (isAsync)
+                {
+                    while (!complete)
+                    {
+                        await Task.Delay(completePollMs);
+                    }
+                }
             }
 
-            // how many milliseconds to wait between checks for async commands
-            const int completePollMs = 40;
             switch (argsCount)
             {
                 case 0:
-                {
-                    if (isAsync)
-                    {
-                        GD.PushError(
-                            $"You specified {nameof(isAsync)}=true when calling {nameof(AddCommandHandlerCallable)}, " +
-                            $"but your callable doesn't have any arguments. When using {nameof(isAsync)}, " +
-                            $"the last argument to your Callable must be an onComplete handler that " +
-                            $"you call to indicate that your blocking command is completed.");
-                    }
-
-                    AddCommandHandler(commandName, () =>
-                    {
-                        if (!IsInstanceValid(handler.Target))
-                        {
-                            GD.PushError(invalidTargetMsg);
-                            return;
-                        }
-
-                        handler.Call();
-                    });
-                    break;
-                }
                 case 1 when isAsync:
-                    AddCommandHandler(commandName, async Task () =>
-                    {
-                        if (!IsInstanceValid(handler.Target))
-                        {
-                            GD.PushError(invalidTargetMsg);
-                            return;
-                        }
-
-                        var complete = false;
-                        handler.Call(Callable.From(() => complete = true));
-                        while (!complete)
-                        {
-                            await Task.Delay(completePollMs);
-                        }
-                    });
+                    AddCommandHandler(commandName,
+                        async Task () => await GenerateCommandHandler());
                     break;
                 case 1:
-                    AddCommandHandler(commandName, (Variant arg0) =>
-                    {
-                        if (!IsInstanceValid(handler.Target))
-                        {
-                            GD.PushError(invalidTargetMsg);
-                            return;
-                        }
-
-                        handler.Call(CastToExpectedTypes(arg0));
-                    });
-                    break;
                 case 2 when isAsync:
-                    AddCommandHandler(commandName, async Task (Variant arg0) =>
-                    {
-                        if (!IsInstanceValid(handler.Target))
-                        {
-                            GD.PushError(invalidTargetMsg);
-                            return;
-                        }
-
-                        var complete = false;
-                        handler.Call(CastToExpectedTypes(arg0,
-                            Callable.From(() => complete = true)));
-                        while (!complete)
-                        {
-                            await Task.Delay(completePollMs);
-                        }
-                    });
+                    AddCommandHandler(commandName,
+                        async Task (Variant arg0) =>
+                            await GenerateCommandHandler(arg0));
                     break;
                 case 2:
-                    AddCommandHandler(commandName, (Variant arg0, Variant arg1) =>
-                    {
-                        if (!IsInstanceValid(handler.Target))
-                        {
-                            GD.PushError(invalidTargetMsg);
-                            return;
-                        }
-
-                        handler.Call(CastToExpectedTypes(arg0, arg1));
-                    });
-                    break;
                 case 3 when isAsync:
                     AddCommandHandler(commandName,
                         async Task (Variant arg0, Variant arg1) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            var complete = false;
-                            handler.Call(CastToExpectedTypes(arg0, arg1,
-                                Callable.From(() => complete = true)));
-                            while (!complete)
-                            {
-                                await Task.Delay(completePollMs);
-                            }
-                        });
+                            await GenerateCommandHandler(arg0, arg1));
                     break;
                 case 3:
-                    AddCommandHandler(commandName,
-                        (Variant arg0, Variant arg1, Variant arg2) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2));
-                        });
-                    break;
                 case 4 when isAsync:
                     AddCommandHandler(commandName,
                         async Task (Variant arg0, Variant arg1, Variant arg2) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            var complete = false;
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2,
-                                Callable.From(() => complete = true)));
-                            while (!complete)
-                            {
-                                await Task.Delay(completePollMs);
-                            }
-                        });
+                            await GenerateCommandHandler(arg0, arg1, arg2));
                     break;
                 case 4:
-                    AddCommandHandler(commandName,
-                        (Variant arg0, Variant arg1, Variant arg2, Variant arg3) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3));
-                        });
-                    break;
                 case 5 when isAsync:
                     AddCommandHandler(commandName,
                         async Task (Variant arg0, Variant arg1, Variant arg2,
-                            Variant arg3) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            var complete = false;
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
-                                Callable.From(() => complete = true)));
-                            while (!complete)
-                            {
-                                await Task.Delay(completePollMs);
-                            }
-                        });
+                                Variant arg3) =>
+                            await GenerateCommandHandler(arg0, arg1, arg2, arg3));
                     break;
                 case 5:
-                    AddCommandHandler(commandName,
-                        (Variant arg0, Variant arg1, Variant arg2, Variant arg3,
-                            Variant arg4) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
-                                arg4));
-                        });
-                    break;
                 case 6 when isAsync:
                     AddCommandHandler(commandName,
                         async Task (Variant arg0, Variant arg1, Variant arg2,
-                            Variant arg3, Variant arg4) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            var complete = false;
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
-                                arg4, Callable.From(() => complete = true)));
-                            while (!complete)
-                            {
-                                await Task.Delay(completePollMs);
-                            }
-                        });
+                                Variant arg3, Variant arg4) =>
+                            await GenerateCommandHandler(arg0, arg1, arg2, arg3, arg4));
                     break;
                 case 6:
-                    AddCommandHandler(commandName,
-                        (Variant arg0, Variant arg1, Variant arg2, Variant arg3,
-                            Variant arg4, Variant arg5) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2, arg3,
-                                arg4, arg5));
-                        });
-                    break;
                 case 7 when isAsync:
                     // 6 arguments from the yarn script, but 1 more for the on_complete
                     // handler. 
                     AddCommandHandler(commandName,
                         async Task (Variant arg0, Variant arg1, Variant arg2,
-                            Variant arg3, Variant arg4, Variant arg5) =>
-                        {
-                            if (!IsInstanceValid(handler.Target))
-                            {
-                                GD.PushError(invalidTargetMsg);
-                                return;
-                            }
-
-                            var complete = false;
-
-                            handler.Call(CastToExpectedTypes(arg0, arg1, arg2,
-                                arg3, arg4, arg5,
-                                Callable.From(() => complete = true)));
-                            while (!complete)
-                            {
-                                await Task.Delay(completePollMs);
-                            }
-                        });
+                                Variant arg3, Variant arg4, Variant arg5) =>
+                            await GenerateCommandHandler(arg0, arg1, arg2,
+                                arg3, arg4, arg5));
                     break;
                 default:
                     GD.PushError($"You have specified a command handler with too " +
