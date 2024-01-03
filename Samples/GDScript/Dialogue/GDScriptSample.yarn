@@ -7,7 +7,7 @@ Bob: You can. Let's run some commands.
 <<int_arg_command 13>> 
 <<async>>
 <<string_arg "hello world">>
-<<async_six_args "Peter" 5 "Peppers" "Garden" false "Pickling">>
+<<async_six_args "Peter" 5.3 "Peppers" "Garden" false "Pickling">>
 <<no_args>>
 
 Alice: Those were some great commands we ran.

@@ -6,7 +6,8 @@ namespace YarnSpinnerGodot;
 /// Represents a line, ready to be presented to the user in the
 /// localisation they have specified.
 /// </summary>
-public class LocalizedLine
+[GlobalClass]
+public partial class LocalizedLine : RefCounted
 {
     /// <summary>
     /// DialogueLine's ID
