@@ -1,6 +1,7 @@
 #if TOOLS
 using Godot;
 using Array = Godot.Collections.Array;
+
 namespace YarnSpinnerGodot.Editor
 {
     [Tool]
@@ -8,11 +9,12 @@ namespace YarnSpinnerGodot.Editor
     {
         // The main control for editing the property.
         private Label _propertyControl = new Label();
+
         // An internal value of the property.
         private Array _currentValue;
 
-        public delegate void ErrorsUpdatedHandler(GodotObject yarnProject);
-        public event ErrorsUpdatedHandler OnErrorsUpdated;
+        [Signal]
+        public delegate void OnErrorsUpdateEventHandler(GodotObject yarnProject);
 
         public YarnCompileErrorsPropertyEditor()
         {
@@ -29,14 +31,15 @@ namespace YarnSpinnerGodot.Editor
         {
             // Read the current value from the property.
             var newVariantValue = GetEditedObject().Get(GetEditedProperty());
-            var newValue = (Array)newVariantValue;
+            var newValue = (Array) newVariantValue;
             if (newValue == _currentValue)
             {
                 return;
             }
+
             _currentValue = newValue;
             RefreshControlText();
-            OnErrorsUpdated?.Invoke(GetEditedObject());
+            EmitSignal(SignalName.OnErrorsUpdate);
         }
 
         private void RefreshControlText()
@@ -51,13 +54,15 @@ namespace YarnSpinnerGodot.Editor
             }
             else
             {
-                _propertyControl.Text = $"{_currentValue.Count} error{(_currentValue.Count > 1 ? "s" : "")}";
+                _propertyControl.Text =
+                    $"{_currentValue.Count} error{(_currentValue.Count > 1 ? "s" : "")}";
             }
         }
 
         public void Refresh()
         {
-            EmitChanged(GetEditedProperty(), GetEditedObject().Get(GetEditedProperty()));
+            EmitChanged(GetEditedProperty(),
+                GetEditedObject().Get(GetEditedProperty()));
         }
     }
 }

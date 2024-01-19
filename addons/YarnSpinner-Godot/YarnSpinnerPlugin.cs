@@ -2,6 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
+using System.Runtime.Serialization.Json;
+using System.Text.Json;
 using Godot;
 using Yarn.Compiler;
 using YarnSpinnerGodot.Editor;
@@ -22,8 +26,12 @@ namespace YarnSpinnerGodot
 #endif
 
         private const string TOOLS_MENU_NAME = "YarnSpinner";
-        private List<EditorInspectorPlugin> _inspectorPlugins = new List<EditorInspectorPlugin>();
-        private List<EditorImportPlugin> _importPlugins = new List<EditorImportPlugin>();
+
+        private List<EditorInspectorPlugin> _inspectorPlugins =
+            new List<EditorInspectorPlugin>();
+
+        private List<EditorImportPlugin>
+            _importPlugins = new List<EditorImportPlugin>();
 
         private struct ToolsMenuItem
         {
@@ -31,53 +39,81 @@ namespace YarnSpinnerGodot
             public string MenuName;
         };
 
-        private readonly System.Collections.Generic.Dictionary<int, ToolsMenuItem> _idToToolsMenuItem = new()
-        {
-            [0] =
-                new ToolsMenuItem()
-                {
-                    MenuName = "Create Yarn Script",
-                    Handler = CreateYarnScript,
-                },
-            [1] =
-                new ToolsMenuItem()
-                {
-                    MenuName = "Create Yarn Project",
-                    Handler = CreateYarnProject,
-                },
-            [2] =
-                new ToolsMenuItem()
-                {
-                    MenuName = "Create Markup Palette",
-                    Handler = CreateMarkupPalette,
-                }
-            // TODO: actions source generation 
-            //     [8] =
-            //     new ToolsMenuItem()
-            //     {
-            //         MenuName = "Update Yarn Commands",
-            //         Handler = ActionSourceCodeGenerator.GenerateYarnActionSourceCode,
-            //     }
-            // 
-        };
+        private Dictionary<int, ToolsMenuItem>
+            _idToToolsMenuItem;
 
         private PopupMenu _popup;
         public const string YARN_PROJECT_EXTENSION = ".yarnproject";
 
         public override void _EnterTree()
         {
-            #if !GODOT4_2_0_OR_GREATER
+            _idToToolsMenuItem = new()
+            {
+                [0] =
+                    new ToolsMenuItem()
+                    {
+                        MenuName = "Create Yarn Script",
+                        Handler = CreateYarnScript,
+                    },
+                [1] =
+                    new ToolsMenuItem()
+                    {
+                        MenuName = "Create Yarn Project",
+                        Handler = CreateYarnProject,
+                    },
+                [2] =
+                    new ToolsMenuItem()
+                    {
+                        MenuName = "Create Markup Palette",
+                        Handler = CreateMarkupPalette,
+                    }
+                // TODO: actions source generation 
+                //     [8] =
+                //     new ToolsMenuItem()
+                //     {
+                //         MenuName = "Update Yarn Commands",
+                //         Handler = ActionSourceCodeGenerator.GenerateYarnActionSourceCode,
+                //     }
+                // 
+            };
+
+            var assemblyLoadContext =
+                AssemblyLoadContext.GetLoadContext(Assembly.GetExecutingAssembly());
+            if (assemblyLoadContext != null)
+            {
+                assemblyLoadContext.Unloading += _ =>
+                {
+                    // trigger unload for what we can
+                    AssemblyLoadContext
+                        .GetLoadContext(typeof(Compiler).Assembly)
+                        ?.Unload();
+                    AssemblyLoadContext
+                        .GetLoadContext(typeof(Antlr4.Runtime.Parser).Assembly)
+                        ?.Unload();
+                    AssemblyLoadContext
+                        .GetLoadContext(typeof(CsvHelper.CsvParser).Assembly)
+                        ?.Unload();
+                    AssemblyLoadContext
+                        .GetLoadContext(typeof(Google.Protobuf.MessageParser).Assembly)
+                        ?.Unload();
+                };
+            }
+
+#if !GODOT4_2_0_OR_GREATER
             editorInterface = GetEditorInterface();
-            #endif
+#endif
             // load script resources
             var yarnProjectScript =
-                ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinner-Godot/Runtime/YarnProject.cs");
+                ResourceLoader.Load<CSharpScript>(
+                    "res://addons/YarnSpinner-Godot/Runtime/YarnProject.cs");
             var dialogueRunnerScript =
-                ResourceLoader.Load<CSharpScript>("res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs");
+                ResourceLoader.Load<CSharpScript>(
+                    "res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs");
 
             // load icons
             var miniYarnSpinnerIcon =
-                ResourceLoader.Load<Texture2D>("res://addons/YarnSpinner-Godot/Editor/Icons/mini_YarnSpinnerLogo.png");
+                ResourceLoader.Load<Texture2D>(
+                    "res://addons/YarnSpinner-Godot/Editor/Icons/mini_YarnSpinnerLogo.png");
             var miniYarnProjectIcon =
                 ResourceLoader.Load<Texture2D>(
                     "res://addons/YarnSpinner-Godot/Editor/Icons/Asset Icons/mini_YarnProject Icon.png");
@@ -110,8 +146,10 @@ namespace YarnSpinnerGodot
             _popup.IdPressed += OnPopupIDPressed;
             AddToolSubmenuItem(TOOLS_MENU_NAME, _popup);
 
-            AddCustomType(nameof(DialogueRunner), "Node", dialogueRunnerScript, miniYarnSpinnerIcon);
-            AddCustomType(nameof(YarnProject), "Resource", yarnProjectScript, miniYarnProjectIcon);
+            AddCustomType(nameof(DialogueRunner), "Node", dialogueRunnerScript,
+                miniYarnSpinnerIcon);
+            AddCustomType(nameof(YarnProject), "Resource", yarnProjectScript,
+                miniYarnProjectIcon);
         }
 
         public override void _ExitTree()
@@ -141,40 +179,44 @@ namespace YarnSpinnerGodot
             }
         }
 
-        private static void CreateYarnScript()
+        private void CreateYarnScript()
         {
             GD.Print("Opening 'create yarn script' menu");
             ShowCreateFilePopup("*.yarn ; Yarn Script",
-                "Create a new Yarn Script", CreateYarnScriptDestinationSelected);
+                "Create a new Yarn Script",
+                nameof(CreateYarnScriptDestinationSelected));
         }
 
-        private static void CreateYarnScriptDestinationSelected(string destination)
+        private void CreateYarnScriptDestinationSelected(string destination)
         {
             GD.Print("Creating a yarn script at " + destination);
             YarnEditorUtility.CreateYarnScript(destination);
         }
 
-        private static void CreateMarkupPalette()
+        private void CreateMarkupPalette()
         {
             GD.Print("Opening 'create markup palette' menu");
             ShowCreateFilePopup("*.tres; Markup Palette",
-                "Create a new Markup Palette", CreateMarkupPaletteDestinationSelected);
+                "Create a new Markup Palette",
+                nameof(CreateMarkupPaletteDestinationSelected));
         }
 
-        private static void CreateMarkupPaletteDestinationSelected(string destination)
+        private void CreateMarkupPaletteDestinationSelected(string destination)
         {
-            GD.Print("Creating a markup palette at " + destination);
+            GD.Print($"Creating a markup palette at {destination}");
             YarnEditorUtility.CreateMarkupPalette(destination);
         }
 
-        private static void CreateYarnProject()
+        private void CreateYarnProject()
         {
             GD.Print("Opening 'create yarn project' menu");
-            ShowCreateFilePopup("*.yarnproject; Yarn Project", "Create a new Yarn Project",
-                CreateYarnProjectDestinationSelected);
+            ShowCreateFilePopup("*.yarnproject; Yarn Project",
+                "Create a new Yarn Project",
+                nameof(CreateYarnProjectDestinationSelected));
         }
 
-        private static void ShowCreateFilePopup(string filter, string windowTitle, Action<string> fileSelectedHandler)
+        private void ShowCreateFilePopup(string filter, string windowTitle,
+            string fileSelectedHandlerName)
         {
             if (!IsInstanceValid(editorInterface))
             {
@@ -187,7 +229,8 @@ namespace YarnSpinnerGodot
             dialog.AddFilter(filter);
             dialog.FileMode = EditorFileDialog.FileModeEnum.SaveFile;
             dialog.Title = windowTitle;
-            dialog.FileSelected += fileName => { fileSelectedHandler(fileName); };
+            dialog.Connect(FileDialog.SignalName.FileSelected,
+                new Callable(this, fileSelectedHandlerName));
             editorInterface.GetBaseControl().AddChild(dialog);
             dialog.PopupCentered(new Vector2I(700, 500));
         }

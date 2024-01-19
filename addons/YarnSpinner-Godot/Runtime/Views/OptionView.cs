@@ -39,12 +39,12 @@ namespace YarnSpinnerGodot
                 label.BbcodeEnabled = true;
                 if (palette != null)
                 {
-                    label.Text = $"[center]{LineView.PaletteMarkedUpText(line, palette)}[/center]";
+                    label.Text =
+                        $"[center]{LineView.PaletteMarkedUpText(line, palette)}[/center]";
                 }
                 else
                 {
                     label.Text = $"[center]{line.Text}[/center]";
-                    ;
                 }
 
                 Disabled = !value.IsAvailable;
@@ -53,19 +53,26 @@ namespace YarnSpinnerGodot
 
         public override void _Ready()
         {
-            Pressed += InvokeOptionSelected;
+            Connect(BaseButton.SignalName.Pressed, Callable.From(InvokeOptionSelected));
         }
 
+        /// <summary>
+        /// Handler for when the option view is pressed. Will mark the option
+        /// associated with this view as the one that was selected, to proceed
+        /// with the dialogue.
+        /// </summary>
         public void InvokeOptionSelected()
         {
             // We only want to invoke this once, because it's an error to
             // submit an option when the Dialogue Runner isn't expecting it. To
             // prevent this, we'll only invoke this if the flag hasn't been cleared already.
-            if (hasSubmittedOptionSelection == false)
+            if (hasSubmittedOptionSelection)
             {
-                OnOptionSelected.Invoke(Option);
-                hasSubmittedOptionSelection = true;
+                return;
             }
+
+            OnOptionSelected.Invoke(Option);
+            hasSubmittedOptionSelection = true;
         }
     }
 }

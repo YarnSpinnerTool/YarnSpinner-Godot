@@ -149,7 +149,7 @@ namespace YarnSpinnerGodot.Editor
         public static void WriteBaseLanguageStringsCSV(YarnProject project, string path)
         {
             UpdateLocalizationFile(project.baseLocalization.GetStringTableEntries(),
-                project.JSONProject.BaseLanguage, path);
+                project.JSONProject.BaseLanguage, path, false);
         }
 
         public static void UpdateLocalizationCSVs(YarnProject project)
@@ -201,7 +201,7 @@ namespace YarnSpinnerGodot.Editor
         /// <param name="csvResourcePath">res:// path to the destination CSV to update</param>
         /// <returns>Whether the contents of <paramref name="csvResourcePath"/> was modified.</returns>
         private static bool UpdateLocalizationFile(IEnumerable<StringTableEntry> baseLocalizationStrings,
-            string language, string csvResourcePath)
+            string language, string csvResourcePath, bool generateTranslation = true)
         {
             var absoluteCSVPath = ProjectSettings.GlobalizePath(csvResourcePath);
 
@@ -309,7 +309,10 @@ namespace YarnSpinnerGodot.Editor
 
             if (modificationsNeeded == false)
             {
-                GenerateGodotTranslation(language, csvResourcePath);
+                if (generateTranslation)
+                { 
+                    GenerateGodotTranslation(language, csvResourcePath);
+                }
                 // No changes needed to be done to the translated string
                 // table entries. Stop here.
                 return false;
@@ -333,7 +336,11 @@ namespace YarnSpinnerGodot.Editor
                 File.WriteAllText(csvImport, KEEP_IMPORT_TEXT);
             }
 
-            GenerateGodotTranslation(language, csvResourcePath);
+            if (generateTranslation)
+            {
+                GenerateGodotTranslation(language, csvResourcePath);
+            }
+
             // Signal that the file was changed
             return true;
         }
