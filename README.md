@@ -13,7 +13,9 @@ https://github.com/dogboydog/YarnDonut/assets/9920963/3eecbe38-65e5-4130-a838-81
 
 ## Documentation
 
-See the [docs directory](./docs/Home.md) for documentation. 
+There is a [guide here](https://docs.yarnspinner.dev/beginners-guide/making-a-game/yarn-spinner-for-godot) on the basic installation and usage of the plugin. 
+
+See the [docs directory](./docs/Home.md) for more documentation. 
 
 ## Roadmap 
 
