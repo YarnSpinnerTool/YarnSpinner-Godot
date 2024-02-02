@@ -231,7 +231,7 @@ namespace YarnSpinnerGodot
             var deltaTime = mainTree.Root.GetProcessDeltaTime();
             var accumulator = deltaTime;
             
-            while (text.VisibleRatio < 1)
+            while (GodotObject.IsInstanceValid(text) && text.VisibleRatio < 1)
             {
                 if (!GodotObject.IsInstanceValid(text))
                 {
@@ -254,6 +254,10 @@ namespace YarnSpinnerGodot
                         var pause = pausePositions.Pop();
                         onPauseStarted?.Invoke();
                         await Effects.InterruptableWait(pause.Item2, stopToken);
+                        if (!GodotObject.IsInstanceValid(text))
+                        {
+                            return;
+                        }
                         onPauseEnded?.Invoke();
 
                         // need to reset the accumulator
@@ -280,6 +284,10 @@ namespace YarnSpinnerGodot
                 await DefaultActions.Wait(deltaTime);
             }
 
+            if (!GodotObject.IsInstanceValid(text))
+            {
+                return;
+            }
             // We either finished displaying everything, or were
             // interrupted. Either way, display everything now.
             text.VisibleRatio = 1;

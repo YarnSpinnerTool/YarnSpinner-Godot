@@ -8,5 +8,6 @@
     <!-- Add some extra files for ease of developing samples -->
     <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
   </ItemGroup>
+  
   <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
 </Project>
