@@ -8,10 +8,6 @@
 
 config_version=5
 
-[YarnSpinnerGodot]
-
-YarnProjectPaths=["res://Samples/Space/Dialogue/SpaceYarnProject.tres", "res://Samples/VisualNovel/Dialogue/VN_YarnProject.tres"]
-
 [application]
 
 config/name="YarnSpinner-Godot"
@@ -24,7 +20,8 @@ boot_splash/bg_color=Color(0.0313726, 0.0705882, 0.0313726, 1)
 
 window/size/viewport_width=1600
 window/size/viewport_height=900
-window/size/resizable=false
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [dotnet]
 

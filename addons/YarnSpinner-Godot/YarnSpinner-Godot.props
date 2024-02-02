@@ -1,25 +1,27 @@
 <Project>
+    <Choose>
+        <!-- Editor only --> 
+        <When Condition="$(DefineConstants.Contains('TOOLS'))">
+            <ItemGroup>
+                <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="7.0.0"  />
+            </ItemGroup>
+        </When>
+    </Choose>
     <ItemGroup>
-        <Reference Include="Yarn.Antlr4.Runtime.Standard">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.Antlr4.Runtime.Standard.dll</HintPath>
-        </Reference>
-        <Reference Include="Yarn.CsvHelper">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.CsvHelper.dll</HintPath>
-        </Reference>
-        <Reference Include="Yarn.Google.Protobuf">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.Google.Protobuf.dll</HintPath>
-        </Reference>
-        <Reference Include="Yarn.System.Memory">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Memory.dll</HintPath>
-        </Reference>
-        <Reference Include="Yarn.System.Runtime.CompilerServices.Unsafe">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-        </Reference>
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2"/>
+        <PackageReference Include="CsvHelper" Version="12.2.2" />
+        <PackageReference Include="Google.Protobuf" Version="3.15.0"/>
         <Reference Include="YarnSpinner">
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\YarnSpinner.dll</HintPath>
         </Reference>
-        <Reference Include="YarnSpinner.Compiler">
+        <Reference Include="YarnSpinner.Compiler" >
             <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\YarnSpinner.Compiler.dll</HintPath>
+        </Reference>
+        <Reference Include="Yarn.System.Text.Json" >
+            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Text.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="Yarn.System.Text.Encodings.Web" >
+            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\Yarn.System.Text.Encodings.Web.dll</HintPath>
         </Reference>
     </ItemGroup>
 </Project>

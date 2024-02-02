@@ -33,294 +33,300 @@ using Google.Protobuf.WellKnownTypes;
 
 namespace YarnSpinnerGodot
 {
-	/// <summary>
-	/// A simple implementation of VariableStorageBehaviour.
-	/// </summary>
-	/// <remarks>
-	/// <para>This class stores variables in memory, and is erased when the game
-	/// exits.</para>
-	///
-	/// <para>This class also has basic serialization and save/load example functions.</para>
-	///
-	/// <para>You can also enumerate over the variables by using a <c>foreach</c>
-	/// loop:</para>
-	///
-	/// <code lang="csharp">
-	/// // 'storage' is an InMemoryVariableStorage
-	/// foreach (var variable in storage) {
-	///     string name = variable.Key;
-	///     System.Object value = variable.Value;
-	/// }
-	/// </code>
-	///
-	/// <para>Note that as of v2.0, this class no longer uses Yarn.Value, to
-	/// enforce static typing of declared variables within the Yarn
-	/// Program.</para>
-	/// </remarks>
-	public partial class InMemoryVariableStorage : VariableStorageBehaviour, IEnumerable<KeyValuePair<string, object>>
-	{
-		/// <summary>
-		/// Where we're actually keeping our variables
-		/// </summary>
-		private Dictionary<string, object> variables = new Dictionary<string, object>();
-		private Dictionary<string, System.Type> variableTypes = new Dictionary<string, System.Type>(); // needed for serialization
+    /// <summary>
+    /// A simple implementation of VariableStorageBehaviour.
+    /// </summary>
+    /// <remarks>
+    /// <para>This class stores variables in memory, and is erased when the game
+    /// exits.</para>
+    ///
+    /// <para>This class also has basic serialization and save/load example functions.</para>
+    ///
+    /// <para>You can also enumerate over the variables by using a <c>foreach</c>
+    /// loop:</para>
+    ///
+    /// <code lang="csharp">
+    /// // 'storage' is an InMemoryVariableStorage
+    /// foreach (var variable in storage) {
+    ///     string name = variable.Key;
+    ///     System.Object value = variable.Value;
+    /// }
+    /// </code>
+    ///
+    /// <para>Note that as of v2.0, this class no longer uses Yarn.Value, to
+    /// enforce static typing of declared variables within the Yarn
+    /// Program.</para>
+    /// </remarks>
+    public partial class InMemoryVariableStorage
+        : VariableStorageBehaviour, IEnumerable<KeyValuePair<string, object>>
+    {
+        /// <summary>
+        /// Where we're actually keeping our variables
+        /// </summary>
+        private Dictionary<string, object> variables = new Dictionary<string, object>();
 
-		public bool showDebug;
+        private Dictionary<string, System.Type>
+            variableTypes = new Dictionary<string, System.Type>(); // needed for serialization
 
-		/// <summary>
-		/// A <see cref="MediaTypeNames.Text"/> that can show the current list
-		/// of all variables in-game. Optional.
-		/// </summary>
-		[Export]
-		public NodePath debugTextViewPath;
-		public RichTextLabel debugTextView = null;
-		
-		public override void _EnterTree()
-		{
-			if (!debugTextViewPath.IsEmpty && debugTextView == null)
-			{
-				debugTextView = GetNode<RichTextLabel>(debugTextViewPath);
-			}
-		}
-		public override void _Process(double deltaTime)
-		{
-			// If we have a debug view, show the list of all variables in it
-			if (debugTextView != null)
-			{
-				debugTextView.Text = GetDebugList();
-			}
-		}
+        public bool showDebug;
 
-		public string GetDebugList()
-		{
-			var stringBuilder = new System.Text.StringBuilder();
-			foreach (KeyValuePair<string, object> item in variables)
-			{
-				stringBuilder.AppendLine(string.Format("{0} = {1} ({2})",
-														item.Key,
-														item.Value.ToString(),
-														variableTypes[item.Key].ToString().Substring("System.".Length)));
-			}
-			return stringBuilder.ToString();
-		}
+        /// <summary>
+        /// A <see cref="MediaTypeNames.Text"/> that can show the current list
+        /// of all variables in-game. Optional.
+        /// </summary>
+        [Export] public RichTextLabel debugTextView;
+
+        public override void _Process(double deltaTime)
+        {
+            // If we have a debug view, show the list of all variables in it
+            if (debugTextView != null)
+            {
+                debugTextView.Text = GetDebugList();
+            }
+        }
+
+        public string GetDebugList()
+        {
+            var stringBuilder = new System.Text.StringBuilder();
+            foreach (KeyValuePair<string, object> item in variables)
+            {
+                stringBuilder.AppendLine(string.Format("{0} = {1} ({2})",
+                    item.Key,
+                    item.Value.ToString(),
+                    variableTypes[item.Key].ToString().Substring("System.".Length)));
+            }
+
+            return stringBuilder.ToString();
+        }
 
 
-		#region Setters
+        #region Setters
 
-		/// <summary>
-		/// Used internally by serialization functions to wrap around the
-		/// SetValue() methods.
-		/// </summary>
-		void SetVariable(string name, Yarn.IType type, string value)
-		{
-			if (type == Yarn.BuiltinTypes.Boolean)
-			{
-				bool newBool;
-				if (bool.TryParse(value, out newBool))
-				{
-					SetValue(name, newBool);
-				}
-				else
-				{
-					throw new System.InvalidCastException($"Couldn't initialize default variable {name} with value {value} as Bool");
-				}
-			}
-			else if (type == Yarn.BuiltinTypes.Number)
-			{
-				float newNumber;
-				if (float.TryParse(value, out newNumber))
-				{ // TODO: this won't work for different cultures (e.g. French write "0.53" as "0,53")
-					SetValue(name, newNumber);
-				}
-				else
-				{
-					throw new System.InvalidCastException($"Couldn't initialize default variable {name} with value {value} as Number (Float)");
-				}
-			}
-			else if (type == Yarn.BuiltinTypes.String)
-			{
-				SetValue(name, value); // no special type conversion required
-			}
-			else
-			{
-				throw new System.ArgumentOutOfRangeException($"Unsupported type {type.Name}");
-			}
-		}
+        /// <summary>
+        /// Used internally by serialization functions to wrap around the
+        /// SetValue() methods.
+        /// </summary>
+        void SetVariable(string name, Yarn.IType type, string value)
+        {
+            if (type == Yarn.BuiltinTypes.Boolean)
+            {
+                bool newBool;
+                if (bool.TryParse(value, out newBool))
+                {
+                    SetValue(name, newBool);
+                }
+                else
+                {
+                    throw new System.InvalidCastException(
+                        $"Couldn't initialize default variable {name} with value {value} as Bool");
+                }
+            }
+            else if (type == Yarn.BuiltinTypes.Number)
+            {
+                float newNumber;
+                if (float.TryParse(value, out newNumber))
+                {
+                    // TODO: this won't work for different cultures (e.g. French write "0.53" as "0,53")
+                    SetValue(name, newNumber);
+                }
+                else
+                {
+                    throw new System.InvalidCastException(
+                        $"Couldn't initialize default variable {name} with value {value} as Number (Float)");
+                }
+            }
+            else if (type == Yarn.BuiltinTypes.String)
+            {
+                SetValue(name, value); // no special type conversion required
+            }
+            else
+            {
+                throw new System.ArgumentOutOfRangeException($"Unsupported type {type.Name}");
+            }
+        }
 
-		/// <summary>
-		/// Throws a <see cref="System.ArgumentException"/> if <paramref
-		/// name="variableName"/> is not a valid Yarn Spinner variable
-		/// name.
-		/// </summary>
-		/// <param name="variableName">The variable name to test.</param>
-		/// <exception cref="System.ArgumentException">Thrown when
-		/// <paramref name="variableName"/> is not a valid variable
-		/// name.</exception> 
-		private void ValidateVariableName(string variableName) {
-			if (variableName.StartsWith("$") == false) {
-				throw new System.ArgumentException($"{variableName} is not a valid variable name: Variable names must start with a '$'. (Did you mean to use '${variableName}'?)");
-			}
-		}
+        /// <summary>
+        /// Throws a <see cref="System.ArgumentException"/> if <paramref
+        /// name="variableName"/> is not a valid Yarn Spinner variable
+        /// name.
+        /// </summary>
+        /// <param name="variableName">The variable name to test.</param>
+        /// <exception cref="System.ArgumentException">Thrown when
+        /// <paramref name="variableName"/> is not a valid variable
+        /// name.</exception> 
+        private void ValidateVariableName(string variableName)
+        {
+            if (variableName.StartsWith("$") == false)
+            {
+                throw new System.ArgumentException(
+                    $"{variableName} is not a valid variable name: Variable names must start with a '$'. (Did you mean to use '${variableName}'?)");
+            }
+        }
 
-		public override void SetValue(string variableName, string stringValue)
-		{
-			ValidateVariableName(variableName);
+        public override void SetValue(string variableName, string stringValue)
+        {
+            ValidateVariableName(variableName);
 
-			variables[variableName] = stringValue;
-			variableTypes[variableName] = typeof(string);
-		}
+            variables[variableName] = stringValue;
+            variableTypes[variableName] = typeof(string);
+        }
 
-		public override void SetValue(string variableName, float floatValue)
-		{
-			ValidateVariableName(variableName);
-			
-			variables[variableName] = floatValue;
-			variableTypes[variableName] = typeof(float);
-		}
+        public override void SetValue(string variableName, float floatValue)
+        {
+            ValidateVariableName(variableName);
 
-		public override void SetValue(string variableName, bool boolValue)
-		{
-			ValidateVariableName(variableName);
-			
-			variables[variableName] = boolValue;
-			variableTypes[variableName] = typeof(bool);
-		}
+            variables[variableName] = floatValue;
+            variableTypes[variableName] = typeof(float);
+        }
 
-		/// <summary>
-		/// Retrieves a <see cref="Value"/> by name.
-		/// </summary>
-		/// <param name="variableName">The name of the variable to retrieve
-		/// the value of. Don't forget to include the "$" at the
-		/// beginning!</param>
-		/// <returns>The <see cref="Value"/>. If a variable by the name of
-		/// <paramref name="variableName"/> is not present, returns a value
-		/// representing `null`.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when
-		/// variableName is not a valid variable name.</exception>
-		public override bool TryGetValue<T>(string variableName, out T result)
-		{
-			ValidateVariableName(variableName);
+        public override void SetValue(string variableName, bool boolValue)
+        {
+            ValidateVariableName(variableName);
 
-			// If we don't have a variable with this name, return the null
-			// value
-			if (variables.ContainsKey(variableName) == false)
-			{
-				result = default;
-				return false;
-			}
+            variables[variableName] = boolValue;
+            variableTypes[variableName] = typeof(bool);
+        }
 
-			var resultObject = variables[variableName];
+        /// <summary>
+        /// Retrieves a <see cref="Value"/> by name.
+        /// </summary>
+        /// <param name="variableName">The name of the variable to retrieve
+        /// the value of. Don't forget to include the "$" at the
+        /// beginning!</param>
+        /// <returns>The <see cref="Value"/>. If a variable by the name of
+        /// <paramref name="variableName"/> is not present, returns a value
+        /// representing `null`.</returns>
+        /// <exception cref="System.ArgumentException">Thrown when
+        /// variableName is not a valid variable name.</exception>
+        public override bool TryGetValue<T>(string variableName, out T result)
+        {
+            ValidateVariableName(variableName);
 
-			if (typeof(T).IsAssignableFrom(resultObject.GetType()))
-			{
-				result = (T)resultObject;
-				return true;
-			}
-			else
-			{
-				throw new System.InvalidCastException($"Variable {variableName} exists, but is the wrong type (expected {typeof(T)}, got {resultObject.GetType()}");
-			}
+            // If we don't have a variable with this name, return the null
+            // value
+            if (variables.ContainsKey(variableName) == false)
+            {
+                result = default;
+                return false;
+            }
 
+            var resultObject = variables[variableName];
 
-		}
+            if (typeof(T).IsAssignableFrom(resultObject.GetType()))
+            {
+                result = (T) resultObject;
+                return true;
+            }
+            else
+            {
+                throw new System.InvalidCastException(
+                    $"Variable {variableName} exists, but is the wrong type (expected {typeof(T)}, got {resultObject.GetType()}");
+            }
+        }
 
-		/// <summary>
-		/// Removes all variables from storage.
-		/// </summary>
-		public override void Clear()
-		{
-			variables.Clear();
-			variableTypes.Clear();
-		}
+        /// <summary>
+        /// Removes all variables from storage.
+        /// </summary>
+        public override void Clear()
+        {
+            variables.Clear();
+            variableTypes.Clear();
+        }
 
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// returns a boolean value representing if the particular variable is inside the variable storage
-		/// </summary>
-		public override bool Contains(string variableName)
-		{
-			return variables.ContainsKey(variableName);
-		}
+        /// <summary>
+        /// returns a boolean value representing if the particular variable is inside the variable storage
+        /// </summary>
+        public override bool Contains(string variableName)
+        {
+            return variables.ContainsKey(variableName);
+        }
 
-		/// <summary>
-		/// Returns an <see cref="IEnumerator{T}"/> that iterates over all
-		/// variables in this object.
-		/// </summary>
-		/// <returns>An iterator over the variables.</returns>
-		IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
-		{
-			return ((IEnumerable<KeyValuePair<string, object>>)variables).GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an <see cref="IEnumerator{T}"/> that iterates over all
+        /// variables in this object.
+        /// </summary>
+        /// <returns>An iterator over the variables.</returns>
+        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<string, object>>) variables).GetEnumerator();
+        }
 
-		/// <summary>
-		/// Returns an <see cref="IEnumerator"/> that iterates over all
-		/// variables in this object.
-		/// </summary>
-		/// <returns>An iterator over the variables.</returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return ((IEnumerable<KeyValuePair<string, object>>)variables).GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an <see cref="IEnumerator"/> that iterates over all
+        /// variables in this object.
+        /// </summary>
+        /// <returns>An iterator over the variables.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<KeyValuePair<string, object>>) variables).GetEnumerator();
+        }
 
-		#region Save/Load
-		public override (Dictionary<string,float>,Dictionary<string,string>,Dictionary<string,bool>) GetAllVariables()
-		{
-			Dictionary<string, float> floatDict = new Dictionary<string, float>();
-			Dictionary<string, string> stringDict = new Dictionary<string, string>();
-			Dictionary<string, bool> boolDict = new Dictionary<string, bool>();
-			
-			foreach (var variable in variables)
-			{
-				var type = variableTypes[variable.Key];
+        #region Save/Load
 
-				if (type == typeof(float))
-				{
-					float value = System.Convert.ToSingle(variable.Value);
-					floatDict.Add(variable.Key, value);
-				}
-				else if (type == typeof(string))
-				{
-					string value = System.Convert.ToString(variable.Value);
-					stringDict.Add(variable.Key, value);
-				}
-				else if (type == typeof(bool))
-				{
-					bool value = System.Convert.ToBoolean(variable.Value);
-					boolDict.Add(variable.Key, value);
-				}
-				else
-				{
-					GD.Print($"{variable.Key} is not a valid type");
-				}
-			}
+        public override (Dictionary<string, float>, Dictionary<string, string>, Dictionary<string, bool>)
+            GetAllVariables()
+        {
+            Dictionary<string, float> floatDict = new Dictionary<string, float>();
+            Dictionary<string, string> stringDict = new Dictionary<string, string>();
+            Dictionary<string, bool> boolDict = new Dictionary<string, bool>();
 
-			return (floatDict, stringDict, boolDict);
-		}
+            foreach (var variable in variables)
+            {
+                var type = variableTypes[variable.Key];
 
-		public override void SetAllVariables(Dictionary<string, float> floats, Dictionary<string, string> strings, Dictionary<string, bool> bools, bool clear = true)
-		{
-			if (clear)
-			{
-				variables.Clear();
-				variableTypes.Clear();
-			}
+                if (type == typeof(float))
+                {
+                    float value = System.Convert.ToSingle(variable.Value);
+                    floatDict.Add(variable.Key, value);
+                }
+                else if (type == typeof(string))
+                {
+                    string value = System.Convert.ToString(variable.Value);
+                    stringDict.Add(variable.Key, value);
+                }
+                else if (type == typeof(bool))
+                {
+                    bool value = System.Convert.ToBoolean(variable.Value);
+                    boolDict.Add(variable.Key, value);
+                }
+                else
+                {
+                    GD.Print($"{variable.Key} is not a valid type");
+                }
+            }
 
-			foreach (var value in floats)
-			{
-				SetValue(value.Key, value.Value);
-			}
-			foreach (var value in strings)
-			{
-				SetValue(value.Key, value.Value);
-			}
-			foreach (var value in bools)
-			{
-				SetValue(value.Key, value.Value);
-			}
+            return (floatDict, stringDict, boolDict);
+        }
 
-			GD.Print($"bulk loaded {floats.Count} floats, {strings.Count} strings, {bools.Count} bools");
-		}
-		#endregion
-	}
+        public override void SetAllVariables(Dictionary<string, float> floats, Dictionary<string, string> strings,
+            Dictionary<string, bool> bools, bool clear = true)
+        {
+            if (clear)
+            {
+                variables.Clear();
+                variableTypes.Clear();
+            }
+
+            foreach (var value in floats)
+            {
+                SetValue(value.Key, value.Value);
+            }
+
+            foreach (var value in strings)
+            {
+                SetValue(value.Key, value.Value);
+            }
+
+            foreach (var value in bools)
+            {
+                SetValue(value.Key, value.Value);
+            }
+
+            GD.Print($"bulk loaded {floats.Count} floats, {strings.Count} strings, {bools.Count} bools");
+        }
+
+        #endregion
+    }
 }

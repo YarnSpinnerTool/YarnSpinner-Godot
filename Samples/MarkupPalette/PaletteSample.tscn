@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://uxc1jm6ayoar"]
+
+[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="1_luv5t"]
+[ext_resource type="Resource" uid="uid://374uxyocig3s" path="res://Samples/MarkupPalette/Palette.yarnproject" id="2_yfv6n"]
+[ext_resource type="Resource" uid="uid://c631us202ijmk" path="res://Samples/MarkupPalette/example_markup_palette.tres" id="3_1wwmk"]
+[ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="4_q6j15"]
+
+[node name="PaletteSample" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 0
+
+[node name="BackgroundColor" type="ColorRect" parent="CanvasLayer"]
+z_index = -7
+z_as_relative = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0509804, 0.0235294, 0.0509804, 1)
+
+[node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_luv5t")]
+
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("2_yfv6n")
+startNode = "Start"
+startAutomatically = true
+
+[node name="LineView" parent="YarnSpinnerCanvasLayer" index="2"]
+palette = ExtResource("3_1wwmk")
+
+[node name="OptionsListView" parent="YarnSpinnerCanvasLayer" index="3"]
+palette = ExtResource("3_1wwmk")
+
+[node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
+script = ExtResource("4_q6j15")
+dialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+
+[editable path="YarnSpinnerCanvasLayer"]

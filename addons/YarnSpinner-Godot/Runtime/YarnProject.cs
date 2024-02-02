@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Godot;
 using Godot.Collections;
 using Yarn;
+using Yarn.Compiler;
 using Array = System.Array;
 #if TOOLS
 using YarnSpinnerGodot.Editor;
@@ -13,10 +15,35 @@ using YarnSpinnerGodot.Editor;
 
 namespace YarnSpinnerGodot
 {
+    /// <summary>
+    /// Godot resource which tracks the compiled Yarn Program and other metadata relating to your
+    /// .yarnproject.
+    /// <see cref="YarnProjectInspectorPlugin"/> will allow the user to view and
+    /// update the fields that are stored in this resource as well as those
+    /// in the associated .yarnproject file.
+    /// 
+    /// The Localisation field of the JSON .yarnproject file contains a mapping of non-base locale codes to a path where Yarn will read & write
+    /// its localization CSV files. This information is stored in the .yarnproject file rather
+    /// than the Godot YarnProject resource.
+    /// These will be automatically compiled into Godot .translation files in
+    /// the same directory as the csv.  YarnSpinner-Godot will automatically
+    /// mark the .csv files as 'Keep file (no import)' when creating them, but if that setting changes,
+    /// it will cause Godot import errors as the CSVs are not in Godot localization's expected format. 
+    /// If that happens, you may notice that Godot generates several translation files in error, such as 
+    /// [language].metadata.translation, [language].comment.translation, etc.
+    /// If the import setting is lost, go to the import tab on the CSV and select the 
+    /// "Keep file (no import)" setting under "Import As". 
+    /// </summary>
     [Tool]
+    [GlobalClass]
     public partial class YarnProject : Resource
     {
         public static JsonSerializerOptions JSONOptions = new JsonSerializerOptions {IncludeFields = true};
+
+        /// <summary>
+        /// File extension of JSON yarn project files.
+        /// </summary>
+        public const string YARN_PROJECT_EXTENSION = ".yarnproject";
 
         /// <summary>
         /// Indicates whether the last time this file was imported, the
@@ -43,28 +70,71 @@ namespace YarnSpinnerGodot
         /// </remarks> 
         [Export] public bool IsSuccessfullyParsed;
 
+        /// <summary>
+        /// Path in the .godot folder used to store generated data
+        /// for this project
+        /// </summary>
+        [Export] public string ImportPath;
+
         public byte[] CompiledYarnProgram => Convert.FromBase64String(CompiledYarnProgramBase64);
 
         [Export] public string CompiledYarnProgramBase64;
 
         public List<Resource> ScriptsWithParseErrors => new List<Resource>();
 
-        [Export] public Array<string> SourceScripts = new Array<string>();
         [Export] public Localization baseLocalization;
 
         /// <summary>
-        /// Mapping of non-base locale codes to a path where Yarn will read & write
-        /// its localization CSV files. These will be automatically compiled into Godot
-        /// .translation files in the same directory as the csv.  YarnSpinner-Godot will automatically
-        /// mark the .csv files as 'Keep file (no import)' when creating them, but if that setting changes,
-        /// it will cause Godot import errors as the CSVs are not in Godot localization's expected format. 
-        /// If that happens, you may notice that Godot generates several translation files in error, such as 
-        /// <language>.metadata.translation, <language>.comment.translation, etc.
-        /// If the import setting is lost, go to the import tab on the CSV and select the 
-        /// "Keep file (no import)" setting under "Import As". 
+        /// res:// path to the .yarnproject file
         /// </summary>
-        [Export] public Godot.Collections.Dictionary<string, string> LocaleCodeToCSVPath =
-            new Godot.Collections.Dictionary<string, string>();
+        [Export] public string JSONProjectPath;
+#if TOOLS
+        public string DefaultJSONProjectPath => new Regex(@"\.tres$").Replace(ResourcePath, ".yarnproject");
+        private Yarn.Compiler.Project _jsonProject;
+
+        /// <summary>
+        /// Information available in the editor via the .yarnproject file,
+        /// parsed from JSON into a <see cref="Yarn.Compiler.Project"/>
+        /// </summary>
+        public Yarn.Compiler.Project JSONProject
+        {
+            get
+            {
+                if (_jsonProject == null)
+                {
+                    if (string.IsNullOrEmpty(JSONProjectPath))
+                    {
+                        JSONProjectPath = DefaultJSONProjectPath;
+                    }
+
+                    if (!File.Exists(ProjectSettings.GlobalizePath(JSONProjectPath)))
+                    {
+                        _jsonProject = new Yarn.Compiler.Project();
+                        SaveJSONProject();
+                    }
+                    else
+                    {
+                        _jsonProject =
+                            Yarn.Compiler.Project.LoadFromFile(ProjectSettings.GlobalizePath(JSONProjectPath));
+                    }
+                }
+
+                return _jsonProject;
+            }
+            set => _jsonProject = value;
+        }
+
+        public void SaveJSONProject()
+        {
+            _jsonProject.SaveToFile(ProjectSettings.GlobalizePath(JSONProjectPath));
+        }
+
+        /// <summary>
+        /// Base language that the .yarn scripts are written in.
+        /// Stored in the .yarnproject file
+        /// </summary>
+        public string defaultLanguage => JSONProject.BaseLanguage;
+#endif
 
         private LineMetadata _lineMetadata;
 
@@ -76,6 +146,7 @@ namespace YarnSpinnerGodot
                 {
                     return _lineMetadata;
                 }
+
                 if (!string.IsNullOrEmpty(_lineMetadataJSON))
                 {
                     try
@@ -85,7 +156,8 @@ namespace YarnSpinnerGodot
                     catch (Exception e)
                     {
                         GD.PushError(
-                            $"Error parsing {nameof(LineMetadata)} from {ResourcePath}. The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
+                            $"Error parsing {nameof(LineMetadata)} from {ResourcePath}." +
+                            $" The JSON data may have been corrupted. Error: {e.Message}\n{e.StackTrace}");
                     }
                 }
                 else
@@ -117,6 +189,7 @@ namespace YarnSpinnerGodot
                 {
                     return _listOfFunctions;
                 }
+
                 if (!string.IsNullOrEmpty(_listOfFunctionsJSON))
                 {
                     try
@@ -158,6 +231,7 @@ namespace YarnSpinnerGodot
                 {
                     return _serializedDeclarations;
                 }
+
                 if (!string.IsNullOrEmpty(_serializedDeclarationsJSON))
                 {
                     try
@@ -175,12 +249,13 @@ namespace YarnSpinnerGodot
                 {
                     SerializedDeclarations = Array.Empty<SerializedDeclaration>();
                 }
+
                 return _serializedDeclarations;
             }
             set
             {
                 _serializedDeclarations = value;
-                _serializedDeclarationsJSON =  JsonSerializer.Serialize(_serializedDeclarations, JSONOptions);
+                _serializedDeclarationsJSON = JsonSerializer.Serialize(_serializedDeclarations, JSONOptions);
 #if TOOLS
                 YarnProjectEditorUtility.ClearJSONCache();
 #endif
@@ -189,126 +264,7 @@ namespace YarnSpinnerGodot
 
         [Export] private string _serializedDeclarationsJSON;
 
-        [Export] [Language] public string defaultLanguage = CultureInfo.CurrentCulture.Name;
-
-#if TOOLS
-        /// <summary>
-        /// Search all directories for .yarn files and save the list to the project
-        /// </summary>
-        /// <returns></returns>
-        public void SearchForSourceScripts()
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(ResourcePath))
-                {
-                    GD.Print(
-                        $"{nameof(YarnProject)}s must be saved to a file in your project to be used with this plugin.");
-                    return;
-                }
-
-                var projectDir = ProjectSettings.GlobalizePath(ResourcePath);
-                projectDir = Directory.GetParent(projectDir).FullName;
-                var allProjects =
-                    (Godot.Collections.Array) ProjectSettings.GetSetting(YarnProjectEditorUtility
-                        .YARN_PROJECT_PATHS_SETTING_KEY);
-                var nestedYarnProjects = new List<string>();
-                foreach (string project in allProjects)
-                {
-                    var absoluteOtherProjectDir = ProjectSettings.GlobalizePath(project);
-                    absoluteOtherProjectDir = Directory.GetParent(absoluteOtherProjectDir).FullName;
-                    if (!project.Equals(ResourcePath) && absoluteOtherProjectDir.Contains(projectDir))
-                    {
-                        nestedYarnProjects.Add(absoluteOtherProjectDir);
-                    }
-                }
-
-                SourceScripts = new Array<string>(FindSourceScriptsRecursive(nestedYarnProjects,
-                    projectDir, new List<string>()).ToArray());
-            }
-            catch (Exception e)
-            {
-                GD.PushError(
-                    $"Error searching for .yarn scripts in Yarn Project '{ResourcePath}': {e.Message}{e.StackTrace}");
-            }
-        }
-
-        /// <summary>
-        /// Find a list of all .yarn files that this YarnProject is responsible for compiling.
-        /// </summary>
-        /// <param name="nestedYarnProjectDirs">list of other yarn projects that are below this one. used to exclude .yarn files covered by deeper nested yarn projects from this project.</param>
-        /// <param name="dirPath">the directory to search for files and child directories</param>
-        /// <param name="scripts"></param>
-        /// <returns></returns>
-        private List<string> FindSourceScriptsRecursive(List<string> nestedYarnProjectDirs, string dirPath,
-            List<string> scripts)
-        {
-            var files = Directory.GetFiles(dirPath);
-            foreach (var file in files)
-            {
-                if (file.ToUpperInvariant().EndsWith(".YARN"))
-                {
-                    var scriptResPath = ProjectSettings.LocalizePath(file.Replace("\\", "/"));
-                    scripts.Add(scriptResPath);
-                }
-            }
-
-            var subdirectories = Directory.GetDirectories(dirPath);
-            foreach (var subdirectory in subdirectories)
-            {
-                var coveredByNestedProject = false;
-                foreach (var nested in nestedYarnProjectDirs)
-                {
-                    if (subdirectory.Contains(nested))
-                    {
-                        coveredByNestedProject = true;
-                        break;
-                    }
-                }
-
-                if (!coveredByNestedProject)
-                {
-                    // ignore directories that are covered by other, nested yarn projects
-                    scripts = FindSourceScriptsRecursive(nestedYarnProjectDirs, subdirectory, scripts);
-                }
-            }
-
-            return scripts;
-        }
-#endif
-
         [Export] public YarnProjectError[] ProjectErrors = Array.Empty<YarnProjectError>();
-
-        /// <summary>
-        /// Gets a value indicating whether the source script has line
-        /// tags.
-        /// </summary>
-        /// <param name="script">The source script to add. This script must
-        /// have been imported by a <see cref="YarnImporter"/>.</param>
-        /// <returns>
-        /// <see langword="true"/> if the the script is fully tagged, <see
-        /// langword="false"/> otherwise.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// Thrown when <paramref name="script"/> is <see
-        /// langword="null"/>.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// Thrown when <paramref name="script"/> is not imported by a <see
-        /// cref="YarnImporter"/>.
-        /// </exception>
-        private bool GetScriptHasLineTags(Resource script)
-        {
-            if (script == null)
-            {
-                // This might be a 'None' or 'Missing' asset, so return
-                // false here.
-                return false;
-            }
-
-            GD.Print("TODO: accurate check on which  scripts have line tags");
-            return false;
-        }
 
         /// <summary>
         /// The cached result of deserializing <see
@@ -317,11 +273,28 @@ namespace YarnSpinnerGodot
         private Program cachedProgram;
 
         /// <summary>
-        /// The names of assemblies that <see cref="ActionManager"/> should look
-        /// for commands and functions in when this project is loaded into a
-        /// <see cref="DialogueRunner"/>.
+        /// Returns a list of all line and option IDs within the requested nodes
         /// </summary>
-        public Array<string> searchAssembliesForActions = new Array<string>();
+        /// <remarks>
+        /// This is intended to be used either to precache multiple nodes worth of lines or for debugging
+        /// </remarks>
+        /// <param name="nodes">the names of all nodes whos line IDs you covet</param>
+        /// <returns>The ids of all lines and options in the requested <paramref name="nodes"/> </returns>
+        public IEnumerable<string> GetLineIDsForNodes(IEnumerable<string> nodes)
+        {
+            var ids = new List<string>();
+
+            foreach (var node in nodes)
+            {
+                var lines = Program.LineIDsForNode(node);
+                if (lines != null)
+                {
+                    ids.AddRange(lines);
+                }
+            }
+
+            return ids;
+        }
 
         /// <summary>
         /// Gets the Yarn Program stored in this project.

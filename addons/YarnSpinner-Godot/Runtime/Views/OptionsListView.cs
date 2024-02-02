@@ -8,23 +8,21 @@ namespace YarnSpinnerGodot
     public partial class OptionsListView : Node, DialogueViewBase
     {
         [Export] PackedScene optionViewPrefab;
-
-        [Export] private NodePath lastLineTextPath;
-        RichTextLabel lastLineText;
+        [Export] MarkupPalette palette;
+        [Export] public RichTextLabel lastLineCharacterNameText;
+        [Export] public RichTextLabel lastLineText;
 
         /// <summary>
-        /// The Control that is the parent of all UI elements in this line view.
+        /// The Control that is the parent of all UI elements in this options list view.
         /// Used to modify the transparency/visibility of the UI.
         /// </summary>
-        [Export] private NodePath viewControlPath;
-        public Control viewControl;
+        [Export] public Control viewControl;
 
         /// <summary>
-        /// NodePath to a BoxContainer (HBoxContainer or VBoxContainer),
+        /// BoxContainer (HBoxContainer or VBoxContainer),
         /// which will automatically lay out the options
         /// </summary>
-        [Export] private NodePath boxContainerPath;
-        public BoxContainer boxContainer;
+        [Export] public BoxContainer boxContainer;
 
         [Export] float fadeTime = 0.1f;
 
@@ -41,19 +39,16 @@ namespace YarnSpinnerGodot
 
         public override void _Ready()
         {
-            if (viewControl == null)
+            if (IsInstanceValid(lastLineCharacterNameText))
             {
-                viewControl = GetNode<Control>(viewControlPath);
+                lastLineCharacterNameText.Visible = false;
             }
-            if (lastLineText == null && lastLineTextPath != null)
+
+            if (IsInstanceValid(lastLineText))
             {
-                lastLineText = GetNode<RichTextLabel>(lastLineTextPath);
                 lastLineText.Visible = false;
             }
-            if (boxContainer == null)
-            {
-                boxContainer = GetNode<VBoxContainer>(boxContainerPath);
-            }
+
             viewControl.Visible = false;
         }
 
@@ -100,6 +95,7 @@ namespace YarnSpinnerGodot
 
                 optionView.Visible = true;
 
+                optionView.palette = this.palette;
                 optionView.Option = option;
 
                 // The first available option is selected by default
@@ -112,16 +108,31 @@ namespace YarnSpinnerGodot
             }
 
             // Update the last line, if one is configured
-            if (lastLineText != null)
+            if (IsInstanceValid(lastLineText))
             {
-                if (lastSeenLine != null)
+                var line = lastSeenLine.Text;
+                lastLineText.Visible = true;
+                if (IsInstanceValid(lastLineCharacterNameText))
                 {
-                    lastLineText.Visible = true;
-                    lastLineText.Text = lastSeenLine.Text.Text;
+                    if (string.IsNullOrWhiteSpace(lastSeenLine.CharacterName))
+                    {
+                        lastLineCharacterNameText.Visible = false;
+                    }
+                    else
+                    {
+                        line = lastSeenLine.TextWithoutCharacterName;
+                        lastLineCharacterNameText.Visible = true;
+                        lastLineCharacterNameText.Text = lastSeenLine.CharacterName;
+                    }
+                }
+
+                if (palette != null)
+                {
+                    lastLineText.Text = LineView.PaletteMarkedUpText(line, palette);
                 }
                 else
                 {
-                    lastLineText.Visible = false;
+                    lastLineText.Text = line.Text;
                 }
             }
 
@@ -134,7 +145,8 @@ namespace YarnSpinnerGodot
                 {
                     if (t.IsFaulted)
                     {
-                        GD.PrintErr($"Error running {nameof(Effects.FadeAlpha)} on {nameof(OptionsListView)}: {t.Exception}");
+                        GD.PrintErr(
+                            $"Error running {nameof(Effects.FadeAlpha)} on {nameof(OptionsListView)}: {t.Exception}");
                     }
                 });
 
@@ -162,7 +174,8 @@ namespace YarnSpinnerGodot
                 {
                     if (t.IsFaulted)
                     {
-                        GD.PrintErr($"Error running {nameof(OptionViewWasSelected)} on {nameof(OptionsListView)}: {t.Exception}");
+                        GD.PrintErr(
+                            $"Error running {nameof(OptionViewWasSelected)} on {nameof(OptionsListView)}: {t.Exception}");
                     }
                 });
 
@@ -174,16 +187,17 @@ namespace YarnSpinnerGodot
                     {
                         lastLineText.Visible = false;
                     }
+
                     OnOptionSelected(selectedOption.DialogueOptionID);
                 }
             }
 
             optionViews[0].GrabFocus();
         }
-        
+
         /// <inheritdoc />
         public void DialogueComplete()
-        {   
+        {
             // do we still have a line lying around?
             if (viewControl.Visible)
             {
@@ -193,10 +207,20 @@ namespace YarnSpinnerGodot
                 {
                     lastLineText.Visible = false;
                 }
+
                 viewControl.Visible = false;
-                Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime);
+                Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime)        
+                    .ContinueWith(failedTask =>
+                    {
+                        var errorMessage = "";
+                        if (failedTask.Exception != null)
+                        {
+                            errorMessage =$"{failedTask.Exception.Message}\n{failedTask.Exception.StackTrace}";
+                        }
+                        GD.PushError($"Error while running {nameof(Effects.FadeAlpha)}: {errorMessage}");
+                    }, 
+                    TaskContinuationOptions.OnlyOnFaulted);;
             }
         }
     }
-    
 }

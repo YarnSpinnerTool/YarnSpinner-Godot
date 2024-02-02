@@ -6,15 +6,15 @@ using Godot.Collections;
 
 namespace YarnSpinnerGodot.Editor
 {
-
     /// <summary>
     /// A <see cref="EditorImportPlugin"/> for Yarn scripts (.yarn files)
     /// </summary>
     public partial class YarnImporter : EditorImportPlugin
     {
-        
+
         public override string[] _GetRecognizedExtensions() =>
-           new[]{
+            new[]
+            {
                 "yarn"
             };
 
@@ -28,11 +28,16 @@ namespace YarnSpinnerGodot.Editor
             return "Yarn Script";
         }
 
+
         public override string _GetSaveExtension() => "tres";
+
         public override string _GetResourceType()
         {
+            var a = new Array();
+            
             return "Resource";
         }
+
         public override int _GetPresetCount()
         {
             return 0;
@@ -42,6 +47,7 @@ namespace YarnSpinnerGodot.Editor
         {
             return 1.0f;
         }
+
         public override int _GetImportOrder()
         {
             return 0;
@@ -59,24 +65,24 @@ namespace YarnSpinnerGodot.Editor
             Array<string> platformVariants,
             Array<string> genFiles)
         {
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-
             var extension = System.IO.Path.GetExtension(assetPath);
 
             if (extension == ".yarn")
             {
                 ImportYarn(assetPath);
             }
-            var importedMarkerResource = new Resource();
-            importedMarkerResource.ResourceName = System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
 
-            var saveErr = ResourceSaver.Save( importedMarkerResource, $"{savePath}.{_GetSaveExtension()}");
+            var importedMarkerResource = new Resource();
+            importedMarkerResource.ResourceName =
+                System.IO.Path.GetFileNameWithoutExtension(ProjectSettings.GlobalizePath(assetPath));
+
+            var saveErr = ResourceSaver.Save(importedMarkerResource, $"{savePath}.{_GetSaveExtension()}");
             if (saveErr != Error.Ok)
             {
                 GD.PrintErr($"Error saving yarn file import: {saveErr.ToString()}");
             }
-            return (int)Error.Ok;
+
+            return (int) Error.Ok;
         }
 
         /// <summary>
@@ -130,17 +136,18 @@ namespace YarnSpinnerGodot.Editor
         private void ImportYarn(string assetPath)
         {
             GD.Print($"Importing Yarn script {assetPath}");
-            var project = YarnProjectEditorUtility.GetDestinationProject(assetPath);
-            if (project == null)
+            var projectPath = YarnProjectEditorUtility.GetDestinationProjectPath(assetPath);
+            if (projectPath == null)
             {
                 GD.Print($"The yarn file {assetPath} is not currently associated with a Yarn Project." +
-                    " Create a Yarn Project by selecting YarnProject from the create new resource menu and make sure this" +
-                    " script is in the same directory as the YarnProject or" +
-                    " in a directory underneath that directory.");
+                         " Create a Yarn Project by selecting YarnProject from the create new resource menu and make sure this" +
+                         " script matches one of the patterns defined for yarn source files.");
             }
             else
             {
-                YarnProjectEditorUtility.UpdateYarnProject(project);
+                // trigger update of the yarn project
+                var godotProject = ResourceLoader.Load<YarnProject>(projectPath);
+                YarnProjectEditorUtility.UpdateYarnProject(godotProject);
             }
         }
     }

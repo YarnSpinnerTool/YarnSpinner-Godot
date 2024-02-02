@@ -2,7 +2,7 @@ using System;
 using Godot;
 using Yarn;
 
-public partial class Option : GodotObject
+public class Option 
 {
     public int ID { get; private set; }
     public string Text { get; private set; }

@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+uid="uid://hjgqmuramr6p"
+path="res://.godot/imported/PauseDialogue.yarn-926959666337d027238a2c8dd345367d.tres"
+
+[deps]
+
+source_file="res://Samples/PausingTypewriter/PauseDialogue.yarn"
+dest_files=["res://.godot/imported/PauseDialogue.yarn-926959666337d027238a2c8dd345367d.tres"]
+
+[params]
+

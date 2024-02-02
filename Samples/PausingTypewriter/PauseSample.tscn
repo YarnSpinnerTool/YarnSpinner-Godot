@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://ckp616grs7xrs"]
+
+[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="1_m0dlq"]
+[ext_resource type="Resource" uid="uid://btil08na83k0p" path="res://Samples/PausingTypewriter/PauseProj.yarnproject" id="2_j3415"]
+[ext_resource type="Texture2D" uid="uid://crtrls05kcbu5" path="res://Samples/PausingTypewriter/sprites/talking.png" id="2_njmvd"]
+[ext_resource type="Script" path="res://Samples/PausingTypewriter/PauseResponder.cs" id="3_uqanb"]
+[ext_resource type="Texture2D" uid="uid://dk84dy4vqquds" path="res://Samples/PausingTypewriter/sprites/thinking.png" id="4_1i87u"]
+[ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="6_otpsy"]
+
+[node name="PauseSample" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_m0dlq")]
+
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("2_j3415")
+startNode = "Start"
+startAutomatically = true
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0588235, 0.0313726, 0, 1)
+
+[node name="Face" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 611.0
+offset_top = 518.0
+offset_right = 1635.0
+offset_bottom = 1542.0
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_njmvd")
+
+[node name="PauseResponder" type="Control" parent="." node_paths=PackedStringArray("face", "lineView")]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_uqanb")
+face = NodePath("../Face")
+thinkingFace = ExtResource("4_1i87u")
+talkingFace = ExtResource("2_njmvd")
+lineView = NodePath("../YarnSpinnerCanvasLayer/LineView")
+
+[node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
+script = ExtResource("6_otpsy")
+dialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+
+[editable path="YarnSpinnerCanvasLayer"]

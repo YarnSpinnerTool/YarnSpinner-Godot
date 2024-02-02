@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnproject"
+type="Resource"
+uid="uid://rr8xlqj5fkjd"
+path="res://.godot/imported/Palette.yarnproject-2c1612daef56a2c0f2be9d1a92c0c8b9.tres"
+
+[deps]
+
+source_file="res://Samples/MarkupPalette/Palette.yarnproject"
+dest_files=["res://.godot/imported/Palette.yarnproject-2c1612daef56a2c0f2be9d1a92c0c8b9.tres"]
+
+[params]
+

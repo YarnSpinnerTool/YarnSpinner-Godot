@@ -67,13 +67,13 @@ namespace YarnSpinnerGodot
     /// </item>
     /// <item>
     /// If a parameter is a <see cref="Godot.Node"/>, we look up the object
-    /// using <see cref="Godot.Node.FindNode"/>. As per the API, the game
-    /// object must be active.
+    /// using <see cref="Godot.Node.FindChild"/>. As per the API, the game
+    /// object must be in the scene tree.
     /// </item>
     /// <item>
     /// If a parameter is assignable to <see cref="Component"/>, we will locate
     /// the component based on the name of the object. As per the API of <see
-    /// cref="Godot.Node.FindNode"/>, the game object must be in the scene tree. If
+    /// cref="Godot.Node.FindChild"/>, the Node must be in the scene tree. If
     /// you'd like to have a custom injector for a parameter, use the <see
     /// cref="YarnParameterAttribute"/>.
     /// </item>
@@ -99,14 +99,14 @@ namespace YarnSpinnerGodot
     /// <item>Otherwise, it will not be called, and a warning will be
     /// issued.</item>
     /// </list>
-    /// <para>This attribute may be attached to a coroutine. </para>
+    /// <para>This attribute may be attached to a Task. </para>
     /// <para style="note">
-    /// The <see cref="DialogueRunner"/> determines if the method is a coroutine
+    /// The <see cref="DialogueRunner"/> determines if the method is a Task
     /// if the method returns <see cref="IEnumerator"/>. 
     /// </para>
     /// <para>
-    /// If the method is a coroutine, the DialogueRunner will pause execution
-    /// until the coroutine ends.
+    /// If the method is a Task, the DialogueRunner will pause execution
+    /// until the task ends.
     /// </para>
     /// </remarks>
     public class YarnCommandAttribute : YarnActionAttribute

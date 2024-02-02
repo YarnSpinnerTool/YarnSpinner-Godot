@@ -69,10 +69,11 @@ Temporary Items
 # .NET symbols files, for debugging
 *.pdb
 *.pdb.meta 
-
 .idea
 *.DotSettings.User
 
 .mono
 .godot
 .import
+build
+*.csproj.old*

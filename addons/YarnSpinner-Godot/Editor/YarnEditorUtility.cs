@@ -1,6 +1,7 @@
 #if TOOLS
 using System.Collections.Generic;
 using Godot;
+using Yarn.Compiler;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
@@ -17,7 +18,7 @@ namespace YarnSpinnerGodot.Editor
         const string TemplateFilePath = "res://addons/YarnSpinner-Godot/Editor/YarnScriptTemplate.txt";
 
         /// <summary>
-        /// Menu Item "Yarn Spinner/Create Yarn Scr ipt"
+        /// Menu Item "Tools > YarnSpinner > Create Yarn Script"
         ///
         /// </summary>    
         public static void CreateYarnScript(string scriptPath)
@@ -27,25 +28,29 @@ namespace YarnSpinnerGodot.Editor
         }
 
         /// <summary>
-        /// Menu Item "Yarn Spinner/Create Yarn Script"
-        /// 
+        /// Menu Item "Tools > YarnSpinner > Create Yarn Script"
         /// </summary>
-        /// <param name="projectPath"></param>
+        /// <param name="projectPath">res:// path of the YarnProject resource to create</param>
         public static void CreateYarnProject(string projectPath)
         {
-            var newYarnProject = new YarnProject();
+            var jsonProject = new Yarn.Compiler.Project();
             var absPath = ProjectSettings.GlobalizePath(projectPath);
-            newYarnProject.ResourceName = Path.GetFileNameWithoutExtension(absPath);
-            newYarnProject.ResourcePath = projectPath;
-            var saveErr = ResourceSaver.Save( newYarnProject, projectPath);
+            jsonProject.SaveToFile(absPath);
+        }
+        /// <summary>
+        /// Menu Item "Tools > YarnSpinner > Create Markup Palette"
+        /// </summary>
+        /// <param name="palettePath">res:// path to the markup palette to create</param>
+        public static void CreateMarkupPalette(string palettePath)
+        {
+            var newPalette = new MarkupPalette();
+            var absPath = ProjectSettings.GlobalizePath(palettePath);
+            newPalette.ResourceName = Path.GetFileNameWithoutExtension(absPath);
+            newPalette.ResourcePath = palettePath;
+            var saveErr = ResourceSaver.Save(newPalette, palettePath);
             if (saveErr != Error.Ok)
             {
-                GD.Print($"Failed to save yarn project to {projectPath}");
-            }
-            else
-            {
-                GD.Print($"Saved new yarn project to {projectPath}");
-                YarnProjectEditorUtility.AddProjectToList(newYarnProject);
+                GD.Print($"Failed to save markup palette to {palettePath}");
             }
         }
         
@@ -101,25 +106,9 @@ namespace YarnSpinnerGodot.Editor
             var fullPath = Path.GetFullPath(ProjectSettings.GlobalizePath(pathName));
             File.WriteAllText(fullPath, templateContent, System.Text.Encoding.UTF8);
             GD.Print($"Wrote new file {pathName}");
+            YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
         }
-
-        /// <summary>
-        /// Get all assets of a given type.
-        /// </summary>
-        /// <typeparam name="T">AssetImporter type to search for. Should be convertible from AssetImporter.</typeparam>
-        /// <param name="filterQuery">Asset query (see <see cref="AssetDatabase.FindAssets(string)"/> documentation for formatting).</param>
-        /// <returns>Enumerable of all assets of a given type.</returns>
-        public static IEnumerable<T> GetAllAssetsOf<T>(string filterQuery) where T : class
-        {
-            // TODO: store list of yarn files in plugin settings?
-            // not seeing an easy way to find all resources in the project 
-            // of a certain type in Godot.
-            GD.PrintErr("TODO: Need a way to store/find list of yarn projects");
-            return new T[]
-            {
-                null
-            };
-        }
+        
     }
 }
 #endif

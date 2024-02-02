@@ -1,7 +1,7 @@
 [gd_resource type="Theme" load_steps=4 format=3 uid="uid://b2mp0b1wvnu8s"]
 
 [sub_resource type="StyleBoxFlat" id="3"]
-bg_color = Color(0.3477, 0.50508, 0.61, 1)
+bg_color = Color(0.121569, 0.72549, 0.403922, 1)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
@@ -14,7 +14,7 @@ corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
 [sub_resource type="StyleBoxFlat" id="1"]
-bg_color = Color(0.14902, 0.309804, 0.419608, 1)
+bg_color = Color(0.0705882, 0.305882, 0.0588235, 1)
 
 [sub_resource type="StyleBoxFlat" id="2"]
 bg_color = Color(0.1044, 0.21576, 0.29, 1)

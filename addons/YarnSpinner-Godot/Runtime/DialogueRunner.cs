@@ -24,11 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
-using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text.Json;
 using Godot;
 using Godot.Collections;
 using Yarn;
@@ -40,12 +40,13 @@ namespace YarnSpinnerGodot
     /// The DialogueRunner component acts as the interface between your game and
     /// Yarn Spinner.
     /// </summary>
+    [GlobalClass]
     public partial class DialogueRunner : Godot.Node
     {
         /// <summary>
         /// Represents the result of attempting to locate and call a command.
         /// </summary>
-        /// <seealso cref="DispatchCommandToGameObject(Command, Action)"/>
+        /// <seealso cref="DialogueRunner.DispatchCommandToNode"/>
         /// <seealso cref="DispatchCommandToRegisteredHandlers(Command, Action)"/>
         public enum CommandDispatchResult
         {
@@ -74,17 +75,15 @@ namespace YarnSpinnerGodot
         /// <summary>
         /// The variable storage object.
         /// </summary>
-        [Export] public NodePath variableStoragePath;
+        [Export] public VariableStorageBehaviour variableStorage;
 
-        public VariableStorageBehaviour _variableStorage;
-
-        /// <inheritdoc cref="_variableStorage"/>
+        /// <inheritdoc cref="variableStorage"/>
         public VariableStorageBehaviour VariableStorage
         {
-            get => _variableStorage;
+            get => variableStorage;
             set
             {
-                _variableStorage = value;
+                variableStorage = value;
                 if (_dialogue != null)
                 {
                     _dialogue.VariableStorage = value;
@@ -93,16 +92,11 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// List of node paths from the inspector to <see cref="dialogueViews"/>
-        /// </summary>
-        [Export] public Array<NodePath> dialogueViewPaths = new Array<NodePath>();
-
-        /// <summary>
         /// The View classes that will present the dialogue to the user.
         /// An error will be logged if any of these objects do not implement
         /// the interface <see cref="DialogueViewBase"/>
         /// </summary>
-        public List<Node> dialogueViews;
+        [Export] public Array<Node> dialogueViews;
 
         /// <summary>The name of the node to start from.</summary>
         /// <remarks>
@@ -129,9 +123,7 @@ namespace YarnSpinnerGodot
         /// <summary>
         /// NodePath locating the lineProvider for this dialogue runner
         /// </summary>
-        [Export] public NodePath lineProviderPath;
-
-        public LineProviderBehaviour lineProvider;
+        [Export] public LineProviderBehaviour lineProvider;
 
         /// <summary>
         /// If true, will print GD.Print messages every time it enters a
@@ -258,6 +250,7 @@ namespace YarnSpinnerGodot
         /// </summary>
         public void SetProject(YarnProject newProject)
         {
+            yarnProject = newProject;
             ActionManager.ClearAllActions();
             // Load all of the commands and functions from the assemblies that
             // this project wants to load from.
@@ -267,11 +260,12 @@ namespace YarnSpinnerGodot
             ActionManager.RegisterFunctions(Dialogue.Library);
 
             Dialogue.SetProgram(newProject.Program);
-
             if (lineProvider != null)
             {
                 lineProvider.YarnProject = newProject;
             }
+
+            SetInitialVariables();
         }
 
         /// <summary>
@@ -400,27 +394,6 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// Starts running the dialogue again.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="nodeName"/> is null, the node specified by
-        /// <see cref="startNode"/> is attempted, followed the currently
-        /// running node. If none of these options are available, an <see
-        /// cref="ArgumentNullException"/> is thrown.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">Thrown when a node to
-        /// restart the dialogue from cannot be found.</exception>
-        [Obsolete("Use " + nameof(StartDialogue) + "(nodeName) instead.")]
-        public void ResetDialogue(string nodeName = null)
-        {
-            nodeName = nodeName ?? startNode ?? CurrentNodeName ??
-                throw new ArgumentNullException(
-                    $"Cannot reset dialogue: couldn't figure out a node to restart the dialogue from.");
-
-            StartDialogue(nodeName);
-        }
-
-        /// <summary>
         /// Unloads all nodes from the <see cref="Dialogue"/>.
         /// </summary>
         public void Clear()
@@ -474,8 +447,8 @@ namespace YarnSpinnerGodot
         /// </code>
         ///
         /// <para>If <paramref name="handler"/> is a method that returns a <see
-        /// cref="Coroutine"/>, when the command is run, the <see
-        /// cref="DialogueRunner"/> will wait for the returned coroutine to stop
+        /// cref="Task"/>, when the command is run, the <see
+        /// cref="DialogueRunner"/> will wait for the returned task to stop
         /// before delivering any more content.</para>
         /// </remarks>
         /// <param name="commandName">The name of the command.</param>
@@ -676,7 +649,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// RemoveAt a registered function.
+        /// Remove a registered function.
         /// </summary>
         /// <remarks>
         /// After a function has been removed, it cannot be called from
@@ -695,8 +668,9 @@ namespace YarnSpinnerGodot
         /// Each view in the list must implement the interface <see cref="DialogueViewBase"/>
         /// </summary>
         /// <param name="views">The array of views to be assigned.</param>
-        public void SetDialogueViews(List<Node> views)
+        public void SetDialogueViews(IEnumerable<Node> views)
         {
+            var newViews = new Array<Node>();
             foreach (var view in views)
             {
                 if (view == null)
@@ -706,16 +680,17 @@ namespace YarnSpinnerGodot
 
                 if (view is DialogueViewBase baseView)
                 {
+                    newViews.Add(view);
                     baseView.requestInterrupt = OnViewRequestedInterrupt;
                 }
                 else
                 {
                     GD.PushError(
-                        $"{view.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
+                        $"{view.Name} does not implement the interface {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
                 }
             }
 
-            dialogueViews = views;
+            dialogueViews = newViews;
         }
 
         #region Private Properties/Variables/Procedures
@@ -758,15 +733,10 @@ namespace YarnSpinnerGodot
 
         public override void _Ready()
         {
-            _variableStorage = GetNode<VariableStorageBehaviour>(variableStoragePath);
-            if (dialogueViews == null)
-            {
-                dialogueViews = new List<Node>();
-            }
+            dialogueViews ??= new Array<Node>();
 
-            foreach (var path in dialogueViewPaths)
+            foreach (var potentialView in dialogueViews)
             {
-                var potentialView = GetNode(path);
                 if (potentialView is DialogueViewBase baseView)
                 {
                     if (!dialogueViews.Contains(potentialView))
@@ -777,7 +747,7 @@ namespace YarnSpinnerGodot
                 else
                 {
                     GD.PushError(
-                        $"{potentialView.Name} is not derived from {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
+                        $"{potentialView.Name} does not implement the interface {nameof(DialogueViewBase)}. This will not function as a dialogue view.");
                 }
             }
 
@@ -787,13 +757,8 @@ namespace YarnSpinnerGodot
                     "Dialogue Runner doesn't have any dialogue views set up. No lines or options will be visible.");
             }
 
-            foreach (var view in dialogueViews)
+            foreach (var view in dialogueViews.Where(IsInstanceValid))
             {
-                if (view == null)
-                {
-                    continue;
-                }
-
                 (view as DialogueViewBase).requestInterrupt = OnViewRequestedInterrupt;
             }
 
@@ -808,12 +773,7 @@ namespace YarnSpinnerGodot
                 // Load this new Yarn Project.
                 SetProject(yarnProject);
             }
-
-            if (lineProviderPath != null && !lineProviderPath.IsEmpty && lineProvider == null)
-            {
-                lineProvider = GetNode<LineProviderBehaviour>(lineProviderPath);
-            }
-
+            
             if (lineProvider == null)
             {
                 // If we don't have a line provider, create a
@@ -982,9 +942,9 @@ namespace YarnSpinnerGodot
                 return;
             }
 
-            // We didn't find it in the comand handlers. Try looking in the
-            // game objects. If it is, continue dialogue.
-            dispatchResult = await DispatchCommandToGameObject(command, ContinueDialogue);
+            // We didn't find it in the command handlers. Try looking in the
+            // scene tree for a suitable node. If one is found, continue dialogue.
+            dispatchResult = await DispatchCommandToNode(command, ContinueDialogue);
 
             if (dispatchResult != CommandDispatchResult.NotFound)
             {
@@ -1017,79 +977,117 @@ namespace YarnSpinnerGodot
             ContinueDialogue();
         }
 
+
         /// <summary>
         /// Forward the line to the dialogue UI.
         /// </summary>
         /// <param name="line">The line to send to the dialogue views.</param>
         private void HandleLine(Line line)
         {
-            // Get the localized line from our line provider
-            CurrentLine = lineProvider.GetLocalizedLine(line);
-
-            // Expand substitutions
-            var text = Dialogue.ExpandSubstitutions(CurrentLine.RawText, CurrentLine.Substitutions);
-
-            if (text == null)
+            // it is possible at this point depending on the flow into handling the line that the line provider hasn't finished it's loads
+            // as such we will need to hold here until the line provider has gotten all it's lines loaded
+            // in testing this has been very hard to trigger without having bonkers huge nodes jumping to very asset rich nodes
+            // so if you think you are going to hit this you should preload all the lines ahead of time
+            // but don't worry about it most of the time
+            if (lineProvider.LinesAvailable)
             {
-                GD.PrintErr(
-                    $"Dialogue Runner couldn't expand substitutions in Yarn Project [{yarnProject.ResourceName}] node [{CurrentNodeName}] with line ID [{CurrentLine.TextID}]. "
-                    + "This usually happens because it couldn't find text in the Localization. The line may not be tagged properly. "
-                    + "Try re-importing this Yarn Program. "
-                    + "For now, Dialogue Runner will swap in CurrentLine.RawText.");
-                text = CurrentLine.RawText;
+                // we just move on normally
+                HandleLineInternal();
+            }
+            else
+            {
+                WaitUntilLinesAvailable();
             }
 
-            // Render the markup
-            Dialogue.LanguageCode = lineProvider.LocaleCode;
-
-            try
+            async void WaitUntilLinesAvailable()
             {
-                CurrentLine.Text = Dialogue.ParseMarkup(text);
-            }
-            catch (Yarn.Markup.MarkupParseException e)
-            {
-                // Parsing the markup failed. We'll log a warning, and
-                // produce a markup result that just contains the raw text.
-                GD.PrintErr($"Failed to parse markup in \"{text}\": {e.Message}");
-                CurrentLine.Text = new Yarn.Markup.MarkupParseResult
+                while (!lineProvider.LinesAvailable)
                 {
-                    Text = text,
-                    Attributes = new List<Yarn.Markup.MarkupAttribute>()
-                };
-            }
+                    if (!IsInstanceValid(lineProvider))
+                    {
+                        return;
+                    }
 
-            // Clear the set of active dialogue views, just in case
-            ActiveDialogueViews.Clear();
-
-            // the following is broken up into two stages because otherwise if the 
-            // first view happens to finish first once it calls dialogue complete
-            // it will empty the set of active views resulting in the line being considered
-            // finished by the runner despite there being a bunch of views still waiting
-            // so we do it over two loops.
-            // the first finds every active view and flags it as such
-            // the second then goes through them all and gives them the line
-
-            // Mark this dialogue view as active
-            foreach (var dialogueView in dialogueViews)
-            {
-                if (dialogueView == null || dialogueView.IsInsideTree() == false)
-                {
-                    continue;
+                    await DefaultActions.Wait(0.01);
+                    if (!IsInstanceValid(lineProvider))
+                    {
+                        return;
+                    }
                 }
 
-                ActiveDialogueViews.Add(dialogueView);
+                HandleLineInternal();
             }
 
-            // Send line to all active dialogue views
-            foreach (var dialogueView in dialogueViews)
+            void HandleLineInternal()
             {
-                if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                // Get the localized line from our line provider
+                CurrentLine = lineProvider.GetLocalizedLine(line);
+
+                // Expand substitutions
+                var text = Dialogue.ExpandSubstitutions(CurrentLine.RawText, CurrentLine.Substitutions);
+
+                if (text == null)
                 {
-                    continue;
+                    GD.PrintErr(
+                        $"Dialogue Runner couldn't expand substitutions in Yarn Project [{yarnProject.ResourceName}] node [{CurrentNodeName}] with line ID [{CurrentLine.TextID}]. "
+                        + "This usually happens because it couldn't find text in the Localization. The line may not be tagged properly. "
+                        + "Try re-importing this Yarn Program. "
+                        + "For now, Dialogue Runner will swap in CurrentLine.RawText.");
+                    text = CurrentLine.RawText;
                 }
 
-                ((DialogueViewBase) dialogueView).RunLine(CurrentLine,
-                    () => DialogueViewCompletedDelivery((DialogueViewBase) dialogueView));
+                // Render the markup
+                Dialogue.LanguageCode = lineProvider.LocaleCode;
+
+                try
+                {
+                    CurrentLine.Text = Dialogue.ParseMarkup(text);
+                }
+                catch (Yarn.Markup.MarkupParseException e)
+                {
+                    // Parsing the markup failed. We'll log a warning, and
+                    // produce a markup result that just contains the raw text.
+                    GD.PrintErr($"Failed to parse markup in \"{text}\": {e.Message}");
+                    CurrentLine.Text = new Yarn.Markup.MarkupParseResult
+                    {
+                        Text = text,
+                        Attributes = new List<Yarn.Markup.MarkupAttribute>()
+                    };
+                }
+
+                // Clear the set of active dialogue views, just in case
+                ActiveDialogueViews.Clear();
+
+                // the following is broken up into two stages because otherwise if the 
+                // first view happens to finish first once it calls dialogue complete
+                // it will empty the set of active views resulting in the line being considered
+                // finished by the runner despite there being a bunch of views still waiting
+                // so we do it over two loops.
+                // the first finds every active view and flags it as such
+                // the second then goes through them all and gives them the line
+
+                // Mark this dialogue view as active
+                foreach (var dialogueView in dialogueViews)
+                {
+                    if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                    {
+                        continue;
+                    }
+
+                    ActiveDialogueViews.Add(dialogueView);
+                }
+
+                // Send line to all active dialogue views
+                foreach (var dialogueView in dialogueViews)
+                {
+                    if (dialogueView == null || dialogueView.IsInsideTree() == false)
+                    {
+                        continue;
+                    }
+
+                    ((DialogueViewBase) dialogueView).RunLine(CurrentLine,
+                        () => DialogueViewCompletedDelivery((DialogueViewBase) dialogueView));
+                }
             }
         }
 
@@ -1166,10 +1164,10 @@ namespace YarnSpinnerGodot
         /// </summary>
         /// <param name="command">The <see cref="Command"/> to run.</param>
         /// <param name="onSuccessfulDispatch">A method to run if a command
-        /// was successfully dispatched to a game object. This method is
+        /// was successfully dispatched to a node. This method is
         /// not called if a registered command handler is not
         /// found.</param>
-        /// <returns>True if the command was dispatched to a game object;
+        /// <returns>True if the command was dispatched to a Godot Node;
         /// false otherwise.</returns>
         CommandDispatchResult DispatchCommandToRegisteredHandlers(Command command, Action onSuccessfulDispatch)
         {
@@ -1240,7 +1238,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// A coroutine that invokes @<paramref name="theDelegate"/> that
+        /// An async method that invokes @<paramref name="theDelegate"/> that
         /// returns a <see cref="YieldInstruction"/>, yields on that
         /// result, and then invokes <paramref
         /// name="onSuccessfulDispatch"/>.
@@ -1252,8 +1250,6 @@ namespace YarnSpinnerGodot
         /// <param name="onSuccessfulDispatch">The method to call after the
         /// <see cref="YieldInstruction"/> returned by <paramref
         /// name="theDelegate"/> has finished.</param>
-        /// <returns>An <see cref="IEnumerator"/> to use with <see
-        /// cref="StartCoroutine"/>.</returns>
         private static async void WaitForAsyncTask(Delegate @theDelegate, object[] finalParametersToUse,
             Action onSuccessfulDispatch)
         {
@@ -1268,18 +1264,18 @@ namespace YarnSpinnerGodot
 
         /// <summary>
         /// Parses the command string inside <paramref name="command"/>,
-        /// attempts to locate a suitable method on a suitable game object,
-        /// and the invokes the method.
+        /// attempts to locate a suitable method on a suitable node in
+        /// the scene tree, and the invokes the method.
         /// </summary>
         /// <param name="command">The <see cref="Command"/> to run.</param>
         /// <param name="onSuccessfulDispatch">A method to run if a command
-        /// was successfully dispatched to a game object. This method is
+        /// was successfully dispatched to a node. This method is
         /// not called if a registered command handler is not
         /// found.</param>
         /// <returns><see langword="true"/> if the command was successfully
-        /// dispatched to a game object; <see langword="false"/> if no game
+        /// dispatched to a Godot Node; <see langword="false"/> if no game
         /// object was registered as a handler for the command.</returns>
-        public async Task<CommandDispatchResult> DispatchCommandToGameObject(Command command,
+        public async Task<CommandDispatchResult> DispatchCommandToNode(Command command,
             Action onSuccessfulDispatch)
         {
             // Call out to the string version of this method, because
@@ -1287,13 +1283,13 @@ namespace YarnSpinnerGodot
             // Yarn Spinner, but we want to be able to unit test. So, we
             // extract it, and call the underlying implementation, which is
             // testable.
-            return await DispatchCommandToGameObject(command.Text, onSuccessfulDispatch);
+            return await DispatchCommandToNode(command.Text, onSuccessfulDispatch);
         }
 
-        /// <inheritdoc cref="DispatchCommandToGameObject(Command, Action)"/>
+        /// <inheritdoc cref="DispatchCommandToNode"/>
         /// <param name="command">The text of the command to
         /// dispatch.</param>
-        public async Task<CommandDispatchResult> DispatchCommandToGameObject(string command,
+        public async Task<CommandDispatchResult> DispatchCommandToNode(string command,
             System.Action onSuccessfulDispatch)
         {
             if (string.IsNullOrEmpty(command))
@@ -1305,7 +1301,6 @@ namespace YarnSpinnerGodot
             {
                 throw new ArgumentNullException(nameof(onSuccessfulDispatch));
             }
-
 
             CommandDispatchResult commandExecutionResult =
                 ActionManager.TryExecuteCommand(SplitCommandText(command).ToArray(), out object returnValue);
@@ -1323,7 +1318,7 @@ namespace YarnSpinnerGodot
             }
             else
             {
-                // no coroutine, so we're done!
+                // no async Task, so we're done!
                 onSuccessfulDispatch();
             }
 
@@ -1331,7 +1326,7 @@ namespace YarnSpinnerGodot
 
             async Task DoYarnCommand(Task source, Action onDispatch)
             {
-                // Wait for this command coroutine to complete
+                // Wait for this command Task to complete
                 await source;
 
                 // And then signal that we're done
@@ -1382,7 +1377,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// Called by a <see cref="DialogueViewBase"/> derived class from
+        /// Called by a <see cref="DialogueViewBase"/> implementing class from
         /// <see cref="dialogueViews"/> to inform the <see
         /// cref="DialogueRunner"/> that the user intents to proceed to the
         /// next line.
@@ -1576,6 +1571,159 @@ namespace YarnSpinnerGodot
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// Loads all variables from the requested file in persistent storage
+        /// into the Dialogue Runner's variable storage.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method loads the file <paramref name="saveFilePath"/> from the
+        /// persistent data storage and attempts to read it as JSON. This is
+        /// then deserialised and loaded into the <see cref="VariableStorage"/>.
+        /// </para>
+        /// <para>
+        /// The loaded information can be stored via the <see
+        /// cref="SaveStateToPersistentStorage"/> method.
+        /// </para>
+        /// </remarks>
+        /// <param name="saveFilePath">the path the save path should load from, including any file extensions.
+        /// Use a path starting with user:// to save to the persistent user data
+        /// path. See https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html </param>
+        /// <returns><see langword="true"/> if the variables were successfully
+        /// loaded from the player preferences; <see langword="false"/>
+        /// otherwise.</returns>
+        public bool LoadStateFromPersistentStorage(string saveFilePath)
+        {
+            try
+            {
+                using var file = FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Read);
+                var saveData = file.GetAsText();
+                var dictionaries = DeserializeAllVariablesFromJSON(saveData);
+                variableStorage.SetAllVariables(dictionaries.Item1, dictionaries.Item2, dictionaries.Item3);
+            }
+            catch (Exception e)
+            {
+                GD.PushError($"Failed to load save state at {saveFilePath}: {e.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Saves all variables from variable storage into the persistent
+        /// storage.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method attempts to writes the contents of <see
+        /// cref="VariableStorage"/> as a JSON file and saves it to the path specified in
+        /// <paramref name="saveFilePath"/>. The saved information can be loaded via the
+        /// <see cref="LoadStateFromPersistentStorage"/> method.
+        /// </para>
+        /// <para>
+        /// If <paramref name="saveFilePath"/> already exists, it will be
+        /// overwritten, not appended.
+        /// </para>
+        /// </remarks>
+        /// <param name="saveFilePath">the path the save path should save to, including any file extensions.
+        /// Use a path starting with user:// to save to the persistent user data
+        /// path. See https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html </param>
+        /// <returns><see langword="true"/> if the variables were successfully
+        /// written into the player preferences; <see langword="false"/>
+        /// otherwise.</returns>
+        public bool SaveStateToPersistentStorage(string saveFilePath)
+        {
+            var data = SerializeAllVariablesToJSON();
+            try
+            {
+                using var file = FileAccess.Open(saveFilePath, FileAccess.ModeFlags.Write);
+                file.StoreString(data);
+                return true;
+            }
+            catch (Exception e)
+            {
+                GD.PushError($"Failed to save state to {saveFilePath}: {e.Message}");
+                return false;
+            }
+        }
+
+        // takes in a JSON string and converts it into a tuple of dictionaries
+        // intended to let you just dump these straight into the variable storage
+        // throws exceptions if unable to convert or if the conversion half works
+        private (System.Collections.Generic.Dictionary<string, float>,
+            System.Collections.Generic.Dictionary<string, string>,
+            System.Collections.Generic.Dictionary<string, bool>)
+            DeserializeAllVariablesFromJSON(string jsonData)
+        {
+            SaveData data = JsonSerializer.Deserialize<SaveData>(jsonData, YarnProject.JSONOptions);
+
+            if (data.floatKeys == null && data.floatValues == null)
+            {
+                throw new ArgumentException("Provided JSON string was not able to extract numeric variables");
+            }
+
+            if (data.stringKeys == null && data.stringValues == null)
+            {
+                throw new ArgumentException("Provided JSON string was not able to extract string variables");
+            }
+
+            if (data.boolKeys == null && data.boolValues == null)
+            {
+                throw new ArgumentException("Provided JSON string was not able to extract boolean variables");
+            }
+
+            if (data.floatKeys.Length != data.floatValues.Length)
+            {
+                throw new ArgumentException("Number of keys and values of numeric variables does not match");
+            }
+
+            if (data.stringKeys.Length != data.stringValues.Length)
+            {
+                throw new ArgumentException("Number of keys and values of string variables does not match");
+            }
+
+            if (data.boolKeys.Length != data.boolValues.Length)
+            {
+                throw new ArgumentException("Number of keys and values of boolean variables does not match");
+            }
+
+            var floats = new System.Collections.Generic.Dictionary<string, float>();
+            for (int i = 0; i < data.floatValues.Length; i++)
+            {
+                floats.Add(data.floatKeys[i], data.floatValues[i]);
+            }
+
+            var strings = new System.Collections.Generic.Dictionary<string, string>();
+            for (int i = 0; i < data.stringValues.Length; i++)
+            {
+                strings.Add(data.stringKeys[i], data.stringValues[i]);
+            }
+
+            var bools = new System.Collections.Generic.Dictionary<string, bool>();
+            for (int i = 0; i < data.boolValues.Length; i++)
+            {
+                bools.Add(data.boolKeys[i], data.boolValues[i]);
+            }
+
+            return (floats, strings, bools);
+        }
+
+        private string SerializeAllVariablesToJSON()
+        {
+            (var floats, var strings, var bools) = variableStorage.GetAllVariables();
+
+            SaveData data = new SaveData();
+            data.floatKeys = floats.Keys.ToArray();
+            data.floatValues = floats.Values.ToArray();
+            data.stringKeys = strings.Keys.ToArray();
+            data.stringValues = strings.Values.ToArray();
+            data.boolKeys = bools.Keys.ToArray();
+            data.boolValues = bools.Values.ToArray();
+
+            return JsonSerializer.Serialize(data, YarnProject.JSONOptions);
         }
 
         [System.Serializable]

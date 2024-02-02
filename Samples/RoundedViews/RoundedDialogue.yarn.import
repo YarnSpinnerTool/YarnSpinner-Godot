@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+uid="uid://4k86j6pstse4"
+path="res://.godot/imported/RoundedDialogue.yarn-782e62627649fc50f7a31dbc32e16966.tres"
+
+[deps]
+
+source_file="res://Samples/RoundedViews/RoundedDialogue.yarn"
+dest_files=["res://.godot/imported/RoundedDialogue.yarn-782e62627649fc50f7a31dbc32e16966.tres"]
+
+[params]
+

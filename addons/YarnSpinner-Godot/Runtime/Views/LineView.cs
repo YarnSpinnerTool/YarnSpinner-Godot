@@ -1,235 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
+using Yarn.Markup;
 
 namespace YarnSpinnerGodot
 {
-    /// <summary>
-    /// Contains coroutine methods that apply visual effects. This class is used
-    /// by <see cref="LineView"/> to handle animating the presentation of lines.
-    /// </summary>
-    public static class Effects
-    {
-        /// <summary>
-        /// An object that can be used to signal to a coroutine that it should
-        /// terminate early.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Instances of this class may be passed as a parameter to a coroutine
-        /// that they can periodically poll to see if they should terminate
-        /// earlier than planned.
-        /// </para>
-        /// <para>
-        /// To use this class, create an instance of it, and pass it as a
-        /// parameter to your coroutine. In the coroutine, call <see
-        /// cref="Start"/> to mark that the coroutine is running. During the
-        /// coroutine's execution, periodically check the <see
-        /// cref="WasInterrupted"/> property to determine if the coroutine
-        /// should exit. If it is <see langword="true"/>, the coroutine should
-        /// exit (via the <c>yield break</c> statement.) At the normal exit of
-        /// your coroutine, call the <see cref="Complete"/> method to mark that the
-        /// coroutine is no longer running. To make a coroutine stop, call the
-        /// <see cref="Interrupt"/> method.
-        /// </para>
-        /// <para>
-        /// You can also use the <see cref="CanInterrupt"/> property to
-        /// determine if the token is in a state in which it can stop (that is,
-        /// a coroutine that's using it is currently running.)
-        /// </para>
-        /// </remarks>
-        public class TaskInterruptToken
-        {
-            /// <summary>
-            /// The state that the token is in.
-            /// </summary>
-            enum State
-            {
-                NotRunning,
-                Running,
-                Interrupted,
-            }
-
-            private State state = State.NotRunning;
-
-            public bool CanInterrupt => state == State.Running;
-            public bool WasInterrupted => state == State.Interrupted;
-            public void Start() => state = State.Running;
-
-            public void Interrupt()
-            {
-                if (CanInterrupt == false)
-                {
-                    throw new InvalidOperationException(
-                        $"Cannot stop {nameof(TaskInterruptToken)}; state is {state} (and not {nameof(State.Running)}");
-                }
-
-                state = State.Interrupted;
-            }
-
-            public void Complete() => state = State.NotRunning;
-        }
-
-        /// <summary>
-        /// A coroutine that fades a <see cref="CanvasGroup"/> object's opacity
-        /// from <paramref name="from"/> to <paramref name="to"/> over the
-        /// course of <see cref="fadeTime"/> seconds, and then returns.
-        /// </summary>
-        /// <param name="from">The opacity value to start fading from, ranging
-        /// from 0 to 1.</param>
-        /// <param name="to">The opacity value to end fading at, ranging from 0
-        /// to 1.</param>
-        /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
-        /// can be used to interrupt the coroutine.</param>
-        public static async Task FadeAlpha(Control control, float from, float to, float fadeTime,
-            TaskInterruptToken stopToken = null)
-        {
-            var mainTree = (SceneTree)Engine.GetMainLoop();
-
-            stopToken?.Start();
-
-            var color = control.Modulate;
-            color.A = from;
-            control.Modulate = color;
-
-            var timeElapsed = 0d;
-
-            while (timeElapsed < fadeTime)
-            {
-                if (stopToken?.WasInterrupted ?? false)
-                {
-                    return;
-                }
-
-                var fraction = timeElapsed / fadeTime;
-                timeElapsed += mainTree.Root.GetProcessDeltaTime();
-
-                float a = Mathf.Lerp(from, to, (float)fraction);
-                color.A = a;
-                control.Modulate = color;
-                await DefaultActions.Wait(mainTree.Root.GetProcessDeltaTime());
-            }
-
-            color.A = to;
-            if (color.A == 1f)
-            {
-                control.Visible = true;
-            }
-
-            control.Modulate = color;
-            stopToken?.Complete();
-        }
-
-        /// <summary>
-        /// A coroutine that gradually reveals the text in a <see
-        /// cref="RichTextLabel"/> object over time.
-        /// </summary>
-        /// <remarks>
-        /// <para>This method works by adjusting the value of the <paramref name="text"/> parameter's <see cref="RichTextLabel.VisibleRatio"/> property. This means that word wrapping will not change half-way through the presentation of a word.</para>
-        /// <para style="note">Depending on the value of <paramref name="lettersPerSecond"/>, <paramref name="onCharacterTyped"/> may be called multiple times per frame.</para>
-        /// <para>Due to an public implementation detail of RichTextLabel, this method will always take at least one frame to execute, regardless of the length of the <paramref name="text"/> parameter's text.</para>
-        /// </remarks>
-        /// <param name="text">A RichTextLabel object to reveal the text
-        /// of.</param>
-        /// <param name="lettersPerSecond">The number of letters that should be
-        /// revealed per second.</param>
-        /// <param name="onCharacterTyped">An <see cref="Action"/> that should be called for each character that was revealed.</param>
-        /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
-        /// can be used to interrupt the coroutine.</param>
-        public static async Task Typewriter(RichTextLabel text, float lettersPerSecond, Action onCharacterTyped,
-            TaskInterruptToken stopToken = null)
-        {
-            var mainTree = (SceneTree)Engine.GetMainLoop();
-            stopToken?.Start();
-
-            // Start with everything invisible
-            text.VisibleRatio = 0;
-
-            // Wait a single frame to let the text component process its
-            // content, otherwise text.textInfo.characterCount won't be
-            // accurate
-            await DefaultActions.Wait(LineView.FrameWaitTime);
-            if (!GodotObject.IsInstanceValid(text))
-            {
-                return;
-            }
-
-            if (stopToken?.WasInterrupted ?? false)
-            {
-                text.VisibleRatio = 1f;
-                return;
-            }
-
-            // How many visible characters are present in the text?
-            var characterCount = text.Text.Length;
-
-            // Early out if letter speed is zero, text length is zero
-            if (lettersPerSecond <= 0 || characterCount == 0)
-            {
-                // Show everything and return
-                text.VisibleRatio = 1;
-                stopToken?.Complete();
-                return;
-            }
-
-            // Convert 'letters per second' into its inverse
-            float secondsPerLetter = 1.0f / lettersPerSecond;
-
-            // If lettersPerSecond is larger than the average framerate, we
-            // need to show more than one letter per frame, so simply
-            // adding 1 letter every secondsPerLetter won't be good enough
-            // (we'd cap out at 1 letter per frame, which could be slower
-            // than the user requested.)
-            //
-            // Instead, we'll accumulate time every frame, and display as
-            // many letters in that frame as we need to in order to achieve
-            // the requested speed.
-            var deltaTime = mainTree.Root.GetProcessDeltaTime();
-            var accumulator = deltaTime;
-
-
-            var ratioPerLetter = 1f / text.Text.Length;
-            while (text.VisibleRatio < 1)
-            {
-                if (!GodotObject.IsInstanceValid(text))
-                {
-                    return;
-                }
-
-                if (stopToken?.WasInterrupted ?? false)
-                {
-                    text.VisibleRatio = 1f;
-                    return;
-                }
-
-                // We need to show as many letters as we have accumulated
-                // time for.
-                while (accumulator >= secondsPerLetter)
-                {
-                    if (!GodotObject.IsInstanceValid(text))
-                    {
-                        return;
-                    }
-
-                    text.VisibleRatio += ratioPerLetter;
-                    onCharacterTyped?.Invoke();
-                    accumulator -= secondsPerLetter;
-                }
-
-                accumulator += deltaTime;
-
-                await DefaultActions.Wait(deltaTime);
-            }
-
-            // We either finished displaying everything, or were
-            // interrupted. Either way, display everything now.
-            text.VisibleRatio = 1;
-
-            stopToken?.Complete();
-        }
-    }
-
     /// <summary>
     /// A Dialogue View that presents lines of dialogue, using Godot UI Controls
     /// elements.
@@ -252,6 +29,7 @@ namespace YarnSpinnerGodot
         /// </remarks>
         /// <seealso cref="useFadeEffect"/>
         [Export] public NodePath viewControlPath;
+
         /// <summary>
         /// If enabled, matched pairs of the characters '<' and `>`  will be replaced by
         /// [ and ] respectively, so that you can write, for example, 
@@ -298,7 +76,7 @@ namespace YarnSpinnerGodot
         /// </summary>
         /// <remarks>This value is only used when <see cref="useFadeEffect"/> is
         /// <see langword="true"/>.</remarks>
-        /// <seealso cref="useFadeEffect"/>
+        /// <seealso cref="useF`adeEffect"/>
         [Export] public float fadeOutTime = 0.05f;
 
         public const float FrameWaitTime = 0.16f;
@@ -337,9 +115,7 @@ namespace YarnSpinnerGodot
         /// If the <see cref="LineView"/> receives a line that does not contain
         /// a character name, this object will be left blank.
         /// </remarks>
-        [Export] public NodePath characterNameTextPath;
-
-        public RichTextLabel characterNameText = null;
+        [Export] public RichTextLabel characterNameText = null;
 
         /// <summary>
         /// Controls whether the text of <see cref="lineText"/> should be
@@ -361,12 +137,10 @@ namespace YarnSpinnerGodot
         /// <seealso cref="lineText"/>
         /// <seealso cref="onCharacterTyped"/>
         /// <seealso cref="typewriterEffectSpeed"/>
-        [Export] public bool useTypewriterEffect = false;
-
-        public delegate void OnCharacterTypedHandler();
+        [Export] public bool useTypewriterEffect = true;
 
         /// <summary>
-        /// An event that is called each time a character is revealed
+        /// A signal that is emitted each time a character is revealed
         /// during a typewriter effect.
         /// </summary>
         /// <remarks>
@@ -374,7 +148,28 @@ namespace YarnSpinnerGodot
         /// <see langword="true"/>.
         /// </remarks>
         /// <seealso cref="useTypewriterEffect"/>
-        public OnCharacterTypedHandler onCharacterTyped;
+        [Signal]
+        public delegate void onCharacterTypedEventHandler();
+
+        /// <summary>
+        /// A Unity Event that is called when a pause inside of the typewriter effect occurs.
+        /// </summary>
+        /// <remarks>
+        /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
+        /// </remarks>
+        /// <seealso cref="useTypewriterEffect"/>
+        [Signal]
+        public delegate void onPauseStartedEventHandler();
+
+        /// <summary>
+        /// A Unity Event that is called when a pause inside of the typewriter effect finishes and the typewriter has started once again.
+        /// </summary>
+        /// <remarks>
+        /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
+        /// </remarks>
+        /// <seealso cref="useTypewriterEffect"/>
+        [Signal]
+        public delegate void onPauseEndedEventHandler();
 
         /// <summary>
         /// The number of characters per second that should appear during a
@@ -384,31 +179,31 @@ namespace YarnSpinnerGodot
         [Export] public float typewriterEffectSpeed = 0f;
 
         /// <summary>
-        /// The game object that represents an on-screen button that the user
+        /// The Control that represents an on-screen button that the user
         /// can click to continue to the next piece of dialogue.
         /// </summary>
         /// <remarks>
-        /// <para>This game object will be made inactive when a line begins
-        /// appearing, and active when the line has finished appearing.</para>
+        /// <para>This Control will be disabled if it is a Button when a line begins
+        /// appearing, and enabled when the line has finished appearing.</para>
         /// <para>
         /// This field will generally refer to an object that has a <see
         /// cref="Button"/> component on it that, when clicked, calls <see
         /// cref="OnContinueClicked"/>. However, if your game requires specific
-        /// UI needs, you can provide any object you need.</para>
+        /// UI needs, you can provide any object you need, as long as it emits a signal
+        /// called  when you want the dialogue to continue.</para>
         /// </remarks>
         /// <seealso cref="autoAdvance"/>
-        [Export] public NodePath continueButtonPath;
-
-        /// <summary>
-        /// A node with a signal named "pressed" that advances the dialogue to the
-        /// next line.
-        /// </summary>
-        public Control continueButton = null;
+        [Export] public Control continueButton = null;
 
         /// <summary>
         /// The amount of time to wait after any line
         /// </summary>
         [Export] public float holdTime = 1f;
+
+        /// <summary>
+        /// Optional MarkupPalette resource
+        /// </summary>
+        [Export] public MarkupPalette palette;
 
         /// <summary>
         /// Controls whether this Line View will wait for user input before
@@ -451,6 +246,7 @@ namespace YarnSpinnerGodot
                 lineText = GetNode<RichTextLabel>(lineTextPath);
                 lineText.BbcodeEnabled = true;
             }
+
             lineText.VisibleCharactersBehavior = TextServer.VisibleCharactersBehavior.CharsAfterShaping;
 
             if (viewControl == null)
@@ -458,16 +254,7 @@ namespace YarnSpinnerGodot
                 viewControl = GetNode(viewControlPath) as Control;
             }
 
-            if (continueButton == null && !string.IsNullOrEmpty(continueButtonPath.ToString()))
-            {
-                continueButton = (Control)GetNode(continueButtonPath);
-            }
-
             continueButton?.Connect("pressed", new Callable(this, nameof(OnContinueClicked)));
-            if (characterNameText == null && !string.IsNullOrEmpty(characterNameTextPath))
-            {
-                characterNameText = GetNode<RichTextLabel>(characterNameTextPath);
-            }
 
             SetViewAlpha(0);
             SetCanvasInteractable(false);
@@ -477,6 +264,7 @@ namespace YarnSpinnerGodot
                 {
                     characterNameText.BbcodeEnabled = true;
                 }
+
                 if (lineText != null)
                 {
                     lineText.BbcodeEnabled = true;
@@ -527,7 +315,7 @@ namespace YarnSpinnerGodot
         {
             currentLine = dialogueLine;
 
-            if (currentStopToken is { CanInterrupt: true })
+            if (currentStopToken is {CanInterrupt: true})
             {
                 currentStopToken.Interrupt();
             }
@@ -536,52 +324,23 @@ namespace YarnSpinnerGodot
             // later we will make it fade in
             lineText.Visible = true;
             viewControl.Visible = true;
-
-            if (characterNameText == null)
+            if (!IsInstanceValid(characterNameText))
             {
                 if (showCharacterNameInLineView)
                 {
-                    if (lineText.BbcodeEnabled)
-                    {
-                        lineText.Text = dialogueLine.Text.Text;
-                    }
-                    else
-                    {
-                        lineText.Text = dialogueLine.Text.Text;
-                    }
+                    lineText.Text = dialogueLine.Text.Text;
                 }
                 else
                 {
-                    if (lineText.BbcodeEnabled)
-                    {
-                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                    }
-                    else
-                    {
-                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                    }
+                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
                 }
             }
             else
             {
-                if (characterNameText.BbcodeEnabled)
-                {
-                    characterNameText.Text = dialogueLine.CharacterName;
-                }
-                else
-                {
-                    characterNameText.Text = dialogueLine.CharacterName;
-                }
-
-                if (lineText.BbcodeEnabled)
-                {
-                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                }
-                else
-                {
-                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                }
+                characterNameText.Text = dialogueLine.CharacterName;
+                lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
             }
+
 
             // Show the entire line's text immediately.
             lineText.VisibleRatio = 1;
@@ -600,7 +359,17 @@ namespace YarnSpinnerGodot
         public void RunLine(LocalizedLine dialogueLine, Action onDialogueLineFinished)
         {
             // Begin running the line asynchronously
-            RunLineInternal(dialogueLine, onDialogueLineFinished);
+            RunLineInternal(dialogueLine, onDialogueLineFinished)
+                .ContinueWith(failedTask =>
+                    {
+                        var errorMessage = "";
+                        if (failedTask.Exception != null)
+                        {
+                            errorMessage =$"{failedTask.Exception.Message}\n{failedTask.Exception.StackTrace}";
+                        }
+                        GD.PushError($"Error while running {nameof(RunLineInternal)}: {errorMessage}");
+                    }, 
+                TaskContinuationOptions.OnlyOnFaulted);
         }
 
         private async Task RunLineInternal(LocalizedLine dialogueLine, Action onDialogueLineFinished)
@@ -628,13 +397,21 @@ namespace YarnSpinnerGodot
                     }
                 }
 
-                if (characterNameText != null)
+                MarkupParseResult text = dialogueLine.TextWithoutCharacterName;
+                if (IsInstanceValid(characterNameText))
                 {
-                    // If we have a character name text view, show the character
-                    // name in it, and show the rest of the text in our main
-                    // text view.
-                    characterNameText.Text = dialogueLine.CharacterName;
-                    lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
+                    // we are set up to show a character name, but there isn't one
+                    // so just hide the container
+                    if (string.IsNullOrWhiteSpace(dialogueLine.CharacterName))
+                    {
+                        characterNameText.Visible = false;
+                    }
+                    else
+                    {
+                        // we have a character name text view, show the character name
+                        characterNameText.Text = dialogueLine.CharacterName;
+                        characterNameText.Visible = true;
+                    }
                 }
                 else
                 {
@@ -643,24 +420,32 @@ namespace YarnSpinnerGodot
                     if (showCharacterNameInLineView)
                     {
                         // Yep! Show the entire text.
-                        lineText.Text = dialogueLine.Text.Text;
+                        text = dialogueLine.Text;
                     }
-                    else
-                    {
-                        // Nope! Show just the text without the character name.
-                        lineText.Text = dialogueLine.TextWithoutCharacterName.Text;
-                    }
+                }
+
+
+                // if we have a palette file need to add those colours into the text
+                if (IsInstanceValid(palette))
+                {
+                    lineText.Text = LineView.PaletteMarkedUpText(text, palette);
+                }
+                else
+                {
+                    lineText.Text = text.Text;
                 }
 
                 if (ConvertHTMLToBBCode)
                 {
-                    const string htmlTagPattern= @"<(.*?)>";
+                    const string htmlTagPattern = @"<(.*?)>";
                     if (characterNameText != null)
                     {
-                        characterNameText.Text =  Regex.Replace(characterNameText.Text , htmlTagPattern, "[$1]"); 
+                        characterNameText.Text = Regex.Replace(characterNameText.Text, htmlTagPattern, "[$1]");
                     }
-                    lineText.Text = Regex.Replace(lineText.Text, htmlTagPattern, "[$1]"); 
+            
+                    lineText.Text = Regex.Replace(lineText.Text, htmlTagPattern, "[$1]");
                 }
+
                 if (useTypewriterEffect)
                 {
                     // If we're using the typewriter effect, hide all of the
@@ -674,7 +459,7 @@ namespace YarnSpinnerGodot
                     lineText.VisibleRatio = 1;
                 }
 
-                
+
                 // If we're using the fade effect, start it, and wait for it to
                 // finish.
                 if (useFadeEffect)
@@ -683,7 +468,7 @@ namespace YarnSpinnerGodot
                     if (currentStopToken.WasInterrupted)
                     {
                         // The fade effect was interrupted. Stop this entire
-                        // coroutine.
+                        // task.
                         return;
                     }
                 }
@@ -692,15 +477,19 @@ namespace YarnSpinnerGodot
                 // it to finish.
                 if (useTypewriterEffect)
                 {
+                    var pauses = LineView.GetPauseDurationsInsideLine(text);
                     // setting the canvas all back to its defaults because if we didn't also fade we don't have anything visible
                     color = viewControl.Modulate;
                     color.A = 1f;
                     viewControl.Modulate = color;
                     SetCanvasInteractable(true);
-                    await Effects.Typewriter(
+                    await Effects.PausableTypewriter(
                         lineText,
                         typewriterEffectSpeed,
-                        () => onCharacterTyped?.Invoke(),
+                        () => EmitSignal(SignalName.onCharacterTyped),
+                        () => EmitSignal(SignalName.onPauseStarted),
+                        () => EmitSignal(SignalName.onPauseEnded),
+                        pauses,
                         currentStopToken
                     );
                 }
@@ -708,15 +497,20 @@ namespace YarnSpinnerGodot
 
             currentLine = dialogueLine;
 
-            // Run any presentations as a single coroutine. If this is stopped,
+            // Run any presentations as a single async Task. If this is stopped,
             // which UserRequestedViewAdvancement can do, then we will stop all
             // of the animations at once.
             await PresentLine();
 
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
+
             currentStopToken.Complete();
 
             // All of our text should now be visible.
-            lineText.VisibleRatio = 100;
+            lineText.VisibleRatio = 1;
 
             // Our view should at be at full opacity.
             SetViewAlpha(1f);
@@ -751,7 +545,7 @@ namespace YarnSpinnerGodot
                 // auto-advance to the next line. Stop here, and don't call the
                 // completion handler - we'll wait for a call to
                 // UserRequestedViewAdvancement, which will interrupt this
-                // coroutine.
+                // Task.
                 return;
             }
 
@@ -785,7 +579,7 @@ namespace YarnSpinnerGodot
             }
 
             // we may want to change this later so the interrupted
-            // animation coroutine is what actually interrupts
+            // animation Task is what actually interrupts
             // for now this is fine.
             // Is an animation running that we can stop?
             if (currentStopToken.CanInterrupt)
@@ -822,6 +616,103 @@ namespace YarnSpinnerGodot
                 currentLine = null;
                 DismissLineInternal(null);
             }
+        }
+
+        /// <summary>
+        /// Applies the <paramref name="palette"/> to the line based on it's markup.
+        /// </summary>
+        /// <remarks>
+        /// This is static so that other dialogue views can reuse this code.
+        /// While this is simplistic it is useful enough that multiple pieces might well want it.
+        /// </remarks>
+        /// <param name="line">The parsed marked up line with it's attributes.</param>
+        /// <param name="palette">The palette mapping attributes to colours.</param>
+        /// <returns>A TMP formatted string with the palette markup values injected within.</returns>
+        public static string PaletteMarkedUpText(Yarn.Markup.MarkupParseResult line, MarkupPalette palette)
+        {
+            string lineOfText = line.Text;
+            line.Attributes.Sort((a, b) => (b.Position.CompareTo(a.Position)));
+            foreach (var attribute in line.Attributes)
+            {
+                // we have a colour that matches the current marker
+                Color markerColour;
+                if (palette.ColorForMarker(attribute.Name, out markerColour))
+                {
+                    // we use the range on the marker to insert the TMP <color> tags
+                    // not the best approach but will work ok for this use case
+                    lineOfText = lineOfText.Insert(attribute.Position + attribute.Length, "[/color]");
+                    lineOfText = lineOfText.Insert(attribute.Position, $"[color=#{markerColour.ToHtml()}]");
+                }
+            }
+
+            return lineOfText;
+        }
+
+        /// <summary>
+        /// Creates a stack of typewriter pauses to use to temporarily halt the typewriter effect.
+        /// </summary>
+        /// <remarks>
+        /// This is intended to be used in conjunction with the <see cref="Effects.PausableTypewriter"/> effect.
+        /// The stack of tuples created are how the typewriter effect knows when, and for how long, to halt the effect.
+        /// <para>
+        /// The pause duration property is in milliseconds but all the effects code assumes seconds
+        /// So here we will be dividing it by 1000 to make sure they interconnect correctly.
+        /// </para>
+        /// </remarks>
+        /// <param name="line">The line from which we covet the pauses</param>
+        /// <returns>A stack of positions and duration pause tuples from within the line</returns>
+        public static Stack<(int position, float duration)> GetPauseDurationsInsideLine(
+            Yarn.Markup.MarkupParseResult line)
+        {
+            var pausePositions = new Stack<(int, float)>();
+            var label = "pause";
+
+            // sorting all the attributes in reverse positional order
+            // this is so we can build the stack up in the right positioning
+            var attributes = line.Attributes;
+            attributes.Sort((a, b) => (b.Position.CompareTo(a.Position)));
+            foreach (var attribute in line.Attributes)
+            {
+                // if we aren't a pause skip it
+                if (attribute.Name != label)
+                {
+                    continue;
+                }
+
+                // did they set a custom duration or not, as in did they do this:
+                //     Alice: this is my line with a [pause = 1000 /]pause in the middle
+                // or did they go:
+                //     Alice: this is my line with a [pause /]pause in the middle
+                if (attribute.Properties.TryGetValue(label, out Yarn.Markup.MarkupValue value))
+                {
+                    // depending on the property value we need to take a different path
+                    // this is because they have made it an integer or a float which are roughly the same
+                    // note to self: integer and float really ought to be convertible...
+                    // but they also might have done something weird and we need to handle that
+                    switch (value.Type)
+                    {
+                        case Yarn.Markup.MarkupValueType.Integer:
+                            float duration = value.IntegerValue;
+                            pausePositions.Push((attribute.Position, duration / 1000));
+                            break;
+                        case Yarn.Markup.MarkupValueType.Float:
+                            pausePositions.Push((attribute.Position, value.FloatValue / 1000));
+                            break;
+                        default:
+                            GD.PrintErr(
+                                $"Pause property is of type {value.Type}, which is not allowed. Defaulting to one second.");
+                            pausePositions.Push((attribute.Position, 1));
+                            break;
+                    }
+                }
+                else
+                {
+                    // they haven't set a duration, so we will instead use the default of one second
+                    pausePositions.Push((attribute.Position, 1));
+                }
+            }
+
+            return pausePositions;
         }
     }
 }

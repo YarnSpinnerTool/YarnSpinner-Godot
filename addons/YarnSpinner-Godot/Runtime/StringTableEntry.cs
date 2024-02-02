@@ -97,7 +97,7 @@ namespace YarnSpinnerGodot
         {
             ID = s.ID;
             Text = s.Text;
-            File = s.File;
+            File = ProjectSettings.LocalizePath(s.File);
             Node = s.Node;
             Original = s.Original;
             LineNumber = s.LineNumber;
