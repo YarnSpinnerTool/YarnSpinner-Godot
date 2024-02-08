@@ -19,7 +19,7 @@ namespace YarnSpinnerGodot
     [Tool]
     public partial class YarnSpinnerPlugin : EditorPlugin
     {
-#if GODOT4_2_0_OR_GREATER
+#if GODOT4_2_OR_GREATER
         public static EditorInterface editorInterface => EditorInterface.Singleton;
 #else
         public static EditorInterface editorInterface;
@@ -99,7 +99,7 @@ namespace YarnSpinnerGodot
                 };
             }
 
-#if !GODOT4_2_0_OR_GREATER
+#if !GODOT4_2_OR_GREATER
             editorInterface = GetEditorInterface();
 #endif
             // load script resources
