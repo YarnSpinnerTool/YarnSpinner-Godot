@@ -76,29 +76,7 @@ namespace YarnSpinnerGodot
                 //     }
                 // 
             };
-
-            var assemblyLoadContext =
-                AssemblyLoadContext.GetLoadContext(Assembly.GetExecutingAssembly());
-            if (assemblyLoadContext != null)
-            {
-                assemblyLoadContext.Unloading += _ =>
-                {
-                    // trigger unload for what we can
-                    AssemblyLoadContext
-                        .GetLoadContext(typeof(Compiler).Assembly)
-                        ?.Unload();
-                    AssemblyLoadContext
-                        .GetLoadContext(typeof(Antlr4.Runtime.Parser).Assembly)
-                        ?.Unload();
-                    AssemblyLoadContext
-                        .GetLoadContext(typeof(CsvHelper.CsvParser).Assembly)
-                        ?.Unload();
-                    AssemblyLoadContext
-                        .GetLoadContext(typeof(Google.Protobuf.MessageParser).Assembly)
-                        ?.Unload();
-                };
-            }
-
+            
 #if !GODOT4_2_OR_GREATER
             editorInterface = GetEditorInterface();
 #endif
