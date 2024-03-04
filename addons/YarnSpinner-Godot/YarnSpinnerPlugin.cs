@@ -42,41 +42,57 @@ namespace YarnSpinnerGodot
         private Dictionary<int, ToolsMenuItem>
             _idToToolsMenuItem;
 
+        /// <summary>
+        /// This dictionary becomes null when rebuilding the C# code of the samples/
+        /// your project. To work around this, if we detect the dictionary is null,
+        /// we will re-initialize it.
+        /// </summary>
+        private Dictionary<int, ToolsMenuItem> IDToToolsMenuItem
+        {
+            get
+            {
+                if (_idToToolsMenuItem == null)
+                {
+                    _idToToolsMenuItem = new()
+                    {
+                        [0] =
+                            new ToolsMenuItem()
+                            {
+                                MenuName = "Create Yarn Script",
+                                Handler = CreateYarnScript,
+                            },
+                        [1] =
+                            new ToolsMenuItem()
+                            {
+                                MenuName = "Create Yarn Project",
+                                Handler = CreateYarnProject,
+                            },
+                        [2] =
+                            new ToolsMenuItem()
+                            {
+                                MenuName = "Create Markup Palette",
+                                Handler = CreateMarkupPalette,
+                            }
+                        // TODO: actions source generation 
+                        //     [8] =
+                        //     new ToolsMenuItem()
+                        //     {
+                        //         MenuName = "Update Yarn Commands",
+                        //         Handler = ActionSourceCodeGenerator.GenerateYarnActionSourceCode,
+                        //     }
+                        // 
+                    };
+                }
+
+                return _idToToolsMenuItem;
+            }
+        }
+
         private PopupMenu _popup;
         public const string YARN_PROJECT_EXTENSION = ".yarnproject";
 
         public override void _EnterTree()
         {
-            _idToToolsMenuItem = new()
-            {
-                [0] =
-                    new ToolsMenuItem()
-                    {
-                        MenuName = "Create Yarn Script",
-                        Handler = CreateYarnScript,
-                    },
-                [1] =
-                    new ToolsMenuItem()
-                    {
-                        MenuName = "Create Yarn Project",
-                        Handler = CreateYarnProject,
-                    },
-                [2] =
-                    new ToolsMenuItem()
-                    {
-                        MenuName = "Create Markup Palette",
-                        Handler = CreateMarkupPalette,
-                    }
-                // TODO: actions source generation 
-                //     [8] =
-                //     new ToolsMenuItem()
-                //     {
-                //         MenuName = "Update Yarn Commands",
-                //         Handler = ActionSourceCodeGenerator.GenerateYarnActionSourceCode,
-                //     }
-                // 
-            };
-            
 #if !GODOT4_2_OR_GREATER
             editorInterface = GetEditorInterface();
 #endif
@@ -116,7 +132,7 @@ namespace YarnSpinnerGodot
             }
 
             _popup = new PopupMenu();
-            foreach (var entry in _idToToolsMenuItem)
+            foreach (var entry in IDToToolsMenuItem)
             {
                 _popup.AddItem(entry.Value.MenuName, entry.Key);
             }
@@ -151,7 +167,7 @@ namespace YarnSpinnerGodot
         /// <param name="id"></param>
         public void OnPopupIDPressed(long id)
         {
-            if (_idToToolsMenuItem.TryGetValue((int) id, out var menuItem))
+            if (IDToToolsMenuItem.TryGetValue((int) id, out var menuItem))
             {
                 menuItem.Handler();
             }

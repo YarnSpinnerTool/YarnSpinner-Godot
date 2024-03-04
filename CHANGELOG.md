@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.2] 2024-03-04
+* Fixed an error with Tools menu items for YarnSpinner not working after rebuilding C# code.
+
 ## [0.2.1] 2024-02-13
 * Fixed a crash that could result from an attempted workaround of the 'assembly reload failed' error 
 
