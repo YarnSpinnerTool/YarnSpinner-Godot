@@ -7,6 +7,8 @@
   <ItemGroup>
     <!-- Add some extra files for ease of developing samples -->
     <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
+    <None Include="addons\YarnSpinner-Godot\plugin.cfg"/>
+    <None Include="**\*.md"/>
   </ItemGroup>
   
   <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
