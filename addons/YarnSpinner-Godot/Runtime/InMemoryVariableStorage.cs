@@ -32,6 +32,7 @@ namespace YarnSpinnerGodot;
 /// }
 /// </code>
 /// </remarks>
+[GlobalClass]
 public partial class InMemoryVariableStorage : VariableStorageBehaviour, IEnumerable<KeyValuePair<string, object>>
 {
     /// <summary>

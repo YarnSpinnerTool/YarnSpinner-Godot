@@ -83,6 +83,7 @@ public struct LineCancellationToken
     public readonly bool IsHurryUpRequested => HurryUpToken.IsCancellationRequested;
 }
 
+[GlobalClass]
 public partial class DialogueRunner : Godot.Node
 {
     static DialogueRunner()
