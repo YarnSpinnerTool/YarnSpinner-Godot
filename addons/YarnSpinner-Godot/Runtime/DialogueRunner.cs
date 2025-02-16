@@ -507,7 +507,7 @@ public partial class DialogueRunner : Godot.Node
 
                 async YarnTask RunGDScriptCompletion()
                 {
-                    if (!HasMethod(gdScriptMethodName))
+                    if (!view.HasMethod(gdScriptMethodName))
                     {
                         return;
                     }
