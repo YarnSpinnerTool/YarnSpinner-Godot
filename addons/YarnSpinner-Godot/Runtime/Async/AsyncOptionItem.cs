@@ -12,7 +12,7 @@ namespace YarnSpinnerGodot;
 public partial class AsyncOptionItem : Control
 {
     [Export] RichTextLabel? text;
-    [Export] private BaseButton button;
+    [Export] private BaseButton? button;
     public YarnTaskCompletionSource<DialogueOption?>? OnOptionSelected;
     public System.Threading.CancellationToken completionToken;
 
@@ -20,7 +20,13 @@ public partial class AsyncOptionItem : Control
 
     public void FocusButton()
     {
-        button.GrabFocus();
+        if (!IsInstanceValid(button))
+        {
+            GD.PushError($"No {button} is set on this {nameof(AsyncOptionItem)}");
+            return;
+        }
+
+        button!.GrabFocus();
     }
 
 
@@ -62,7 +68,7 @@ public partial class AsyncOptionItem : Control
         }
         else
         {
-            button.Connect(BaseButton.SignalName.Pressed, Callable.From(InvokeOptionSelected));
+            button!.Connect(BaseButton.SignalName.Pressed, Callable.From(InvokeOptionSelected));
         }
     }
 

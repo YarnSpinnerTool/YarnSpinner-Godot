@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.0-beta 4] 2025-02-19
+
+* Add a way to set Saliency Strategy from godot without having to write C# with @misha-cilantro (#85)
+* Fix #82 - on_dialogue_complete_async problems with GDScript Integration
+* Fix #81 - Restore GlobalClass attribute to DialogueRunner and InMemoryVariableStorage  
+
 ## [0.3.0-beta 3] 2025-01-23
 
 * Fixed an issue where the AsyncLineView would show at the beginning of dialogue, even if the dialogue begins with an

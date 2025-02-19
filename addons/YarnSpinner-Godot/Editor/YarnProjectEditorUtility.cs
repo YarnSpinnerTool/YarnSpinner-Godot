@@ -21,7 +21,7 @@ using Path = System.IO.Path;
 #if YARNSPINNER_DEBUG
 using System.Diagnostics;
 #endif
-
+#nullable enable 
 namespace YarnSpinnerGodot;
 
 [Tool]

@@ -16,8 +16,6 @@ public partial class SpaceSample : Node
     {
         _instance = this;
         dialogueRunner.onDialogueComplete += OnDialogueComplete;
-        dialogueRunner.Dialogue.ContentSaliencyStrategy =
-            new Yarn.Saliency.RandomBestLeastRecentlyViewedSalienceStrategy(dialogueRunner.VariableStorage);
     }
 
     public static void Test(global::YarnSpinnerGodot.IActionRegistration target)

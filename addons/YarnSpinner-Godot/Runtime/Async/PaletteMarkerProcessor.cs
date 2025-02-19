@@ -1,6 +1,5 @@
-using System.Collections;
+#nullable enable
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 using Godot;
 using Yarn.Markup;
@@ -97,7 +96,7 @@ public partial class PaletteMarkerProcessor : AttributeMarkerProcessor
         // we don't need to modify the children attributes because TMP knows
         // that the <color> tags aren't visible so we can just say we are done
         // now
-        return AttributeMarkerProcessor.NoDiagnostics;
+        return NoDiagnostics;
     }
 
     /// <summary>

@@ -89,9 +89,9 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
     public YarnTask OnDialogueCompleteAsync()
     {
         lastSeenLine = null;
-        if (IsInstanceValid(lastLineContainer))
+        if (IsInstanceValid(lastLineText))
         {
-            lastLineText.Visible = false;
+            lastLineText!.Visible = false;
         }
         if (IsInstanceValid(lastLineCharacterNameContainer))
         {
@@ -260,12 +260,12 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
                 {
                     if (string.IsNullOrWhiteSpace(lastSeenLine.CharacterName))
                     {
-                        lastLineCharacterNameContainer.Visible = false;
+                        lastLineCharacterNameContainer!.Visible = false;
                     }
                     else
                     {
                         line = lastSeenLine.TextWithoutCharacterName;
-                        lastLineCharacterNameContainer.Visible = true;
+                        lastLineCharacterNameContainer!.Visible = true;
                         if (lastLineCharacterNameText != null)
                         {
                             lastLineCharacterNameText.Text = lastSeenLine.CharacterName;
@@ -282,11 +282,11 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
                     lastLineText.Text = line.Text;
                 }
 
-                lastLineContainer.Visible = true;
+                lastLineContainer!.Visible = true;
             }
             else
             {
-                lastLineContainer.Visible = false;
+                lastLineContainer!.Visible = false;
             }
         }
         // allow interactivity and wait for an option to be selected
