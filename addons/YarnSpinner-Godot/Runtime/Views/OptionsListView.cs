@@ -199,6 +199,7 @@ public partial class OptionsListView : Node, DialogueViewBase
                     OnOptionSelected(selectedOption.DialogueOptionID);
                 }
             }
+
             // If the user is hiding unavailable options, select the first visible one.
             optionViews.First(view => view.Visible).GrabFocus();
         }
@@ -220,13 +221,6 @@ public partial class OptionsListView : Node, DialogueViewBase
 
         if (viewControl.Visible)
         {
-            lastSeenLine = null;
-            OnOptionSelected = null;
-            if (lastLineText != null)
-            {
-                lastLineText.Visible = false;
-            }
-
             viewControl.Visible = false;
             Effects.FadeAlpha(viewControl, viewControl.Modulate.A, 0, fadeTime)
                 .ContinueWith(failedTask =>

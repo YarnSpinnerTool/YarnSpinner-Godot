@@ -8,13 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 * Add a way to set Saliency Strategy from godot without having to write C# with @misha-cilantro (#85)
 * Fix #82 - on_dialogue_complete_async problems with GDScript Integration
-* Fix #81 - Restore GlobalClass attribute to DialogueRunner and InMemoryVariableStorage  
+* Fix #81 - Restore GlobalClass attribute to DialogueRunner and InMemoryVariableStorage
 
 ## [0.3.0-beta 3] 2025-01-23
 
 * Fixed an issue where the AsyncLineView would show at the beginning of dialogue, even if the dialogue begins with an
   option.
-* Fixed an issue where the System.Threading.Tasks implementation of YarnTask.WaitUntil did not return early when the CancellationToken was cancelled 
+* Fixed an issue where the System.Threading.Tasks implementation of YarnTask.WaitUntil did not return early when the CancellationToken was cancelled
 * Make the fade effect optional via inspector fields `useFadeEffect`, `fadeUpDuration, and `fadeDownDuration` in AsyncOptionsView.cs
 
 ## [0.3.0-beta 2]   2025-01-06
@@ -62,6 +62,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * New functionality on YarnProject - optionally generate a C# variable storage class which has getters and setters for
   each variable declared in your yarn scripts. You can control the class that the generated file inherits from, the
   namespace it will be in, and the name of the class and file.
+
+## [0.2.16] 2025-1-24
+
+* Fix null reference in AddCommandHandlerCallable when callable does not return an object (#80) by  @meybax 
+* Fix uncaught exceptions in DialogueRunner when markup in a line was malformed. 
+
+## [0.2.15] 2025-1-23
+
+* Fixed an issue where an exception could be raised if OptionsListView has lastLineText set, and dialogue begins with an option. 
 
 ## [0.2.14] 2024-11-02
 
