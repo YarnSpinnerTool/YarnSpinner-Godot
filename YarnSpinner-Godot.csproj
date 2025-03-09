@@ -3,7 +3,7 @@
     <NoWarn>RS2008</NoWarn> <!-- We do not have the AnalyserReleases.*.md files written to satisfy this warning -->
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <WarningsAsErrors>true</WarningsAsErrors>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
     <!--Turn on Nullable so that we can fail the build if there are any incompatible scripts-->
     <Nullable>enable</Nullable>
     <!-- Include this when debugging source generation -->
