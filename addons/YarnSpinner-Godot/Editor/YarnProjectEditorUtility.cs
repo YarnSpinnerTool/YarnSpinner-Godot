@@ -21,7 +21,8 @@ using Path = System.IO.Path;
 #if YARNSPINNER_DEBUG
 using System.Diagnostics;
 #endif
-#nullable enable 
+
+#nullable enable
 namespace YarnSpinnerGodot;
 
 [Tool]
@@ -75,12 +76,11 @@ public static class YarnProjectEditorUtility
             .Select(ProjectSettings.LocalizePath);
     }
 
-    private const int PROJECT_UPDATE_TIMEOUT = 80; // ms 
+    private const int PROJECT_UPDATE_TIMEOUT = 500; // ms 
 
     private static ConcurrentDictionary<string, DateTime> _projectPathToLastUpdateTime =
         new();
 
-    private static Dictionary<string, Task> _projectPathToUpdateTask = new();
     private static object _lastUpdateLock = new();
 
     /// <summary>
@@ -92,7 +92,7 @@ public static class YarnProjectEditorUtility
     /// <param name="project">The yarn project to re-compile scripts for</param>
     public static void UpdateYarnProject(YarnProject project)
     {
-        if (project == null)
+        if (!GodotObject.IsInstanceValid(project))
         {
             return;
         }
@@ -102,30 +102,17 @@ public static class YarnProjectEditorUtility
             return;
         }
 
-        lock (_lastUpdateLock)
+        TimeSpan? lastCompile = null;
+        if (_projectPathToLastUpdateTime.ContainsKey(project.ResourcePath))
         {
-            _projectPathToLastUpdateTime[project.ResourcePath] = DateTime.Now;
-            if (!_projectPathToUpdateTask.ContainsKey(project.ResourcePath))
-            {
-                _projectPathToUpdateTask[project.ResourcePath] = UpdateYarnProjectTask(project);
-            }
-        }
-    }
-
-    private static async Task UpdateYarnProjectTask(YarnProject project)
-    {
-        TimeSpan getTimeDiff()
-        {
-            lock (_lastUpdateLock)
-            {
-                return DateTime.Now - _projectPathToLastUpdateTime[project.ResourcePath];
-            }
+            lastCompile = (DateTime.Now - _projectPathToLastUpdateTime[project.ResourcePath]);
         }
 
-        while (getTimeDiff() < TimeSpan.FromMilliseconds(PROJECT_UPDATE_TIMEOUT))
+        if (lastCompile is { TotalMilliseconds: < PROJECT_UPDATE_TIMEOUT })
         {
-            // wait to update the yarn project until we haven't received another request in PROJECT_UPDATE_TIMEOUT ms
-            await Task.Delay(PROJECT_UPDATE_TIMEOUT);
+            // skip repeated compilations in case many yarn files under the same yarn project
+            // trigger repeated compiles
+            return;
         }
 
         try
@@ -134,10 +121,8 @@ public static class YarnProjectEditorUtility
         }
         finally
         {
-            lock (_lastUpdateLock)
-            {
-                _projectPathToUpdateTask.Remove(project.ResourcePath);
-            }
+            // update the cooldown even if the import failed
+            _projectPathToLastUpdateTime[project.ResourcePath] = DateTime.Now;
         }
     }
 
@@ -152,7 +137,7 @@ public static class YarnProjectEditorUtility
         {
             var compilationResult = CompileAllScripts(project);
             SaveYarnProject(project);
-            if (project is {generateVariablesSourceFile: true, ResourcePath: not null}
+            if (project is { generateVariablesSourceFile: true, ResourcePath: not null }
                 && compilationResult != null)
             {
                 var fileName = project.variablesClassName + ".cs";
@@ -410,7 +395,7 @@ public static class YarnProjectEditorUtility
         var updateHandlerType = assembly.GetType("System.Text.Json.JsonSerializerOptionsUpdateHandler");
         var clearCacheMethod =
             updateHandlerType?.GetMethod("ClearCache", BindingFlags.Static | BindingFlags.Public);
-        clearCacheMethod?.Invoke(null, new object?[] {null});
+        clearCacheMethod?.Invoke(null, new object?[] { null });
     }
 
     public static void SaveYarnProject(YarnProject project)
@@ -1053,7 +1038,7 @@ public static class YarnProjectEditorUtility
                     WriteLine($"/// <remarks>");
                     WriteLine($"/// Backing value: \"{enumCase.Value.Value}\"");
                     WriteLine($"/// </remarks>");
-                    var stringValue = (string) enumCase.Value.Value;
+                    var stringValue = (string)enumCase.Value.Value;
                     WriteComment($"\"{stringValue}\"");
                     WriteLine($"{enumCase.Key} = {CRC32.GetChecksum(stringValue)},");
                 }
