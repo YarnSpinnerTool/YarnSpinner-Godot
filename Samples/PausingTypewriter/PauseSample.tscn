@@ -1,12 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://ckp616grs7xrs"]
+[gd_scene load_steps=7 format=3 uid="uid://ckp616grs7xrs"]
 
 [ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="1_m0dlq"]
 [ext_resource type="Resource" uid="uid://21gon4fidoq8" path="res://Samples/PausingTypewriter/PauseProj.yarnproject" id="2_j3415"]
 [ext_resource type="Texture2D" uid="uid://crtrls05kcbu5" path="res://Samples/PausingTypewriter/sprites/talking.png" id="2_njmvd"]
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncLineView.cs" id="3_22yb1"]
 [ext_resource type="Script" path="res://Samples/PausingTypewriter/PauseResponder.cs" id="3_uqanb"]
 [ext_resource type="Texture2D" uid="uid://dk84dy4vqquds" path="res://Samples/PausingTypewriter/sprites/thinking.png" id="4_1i87u"]
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncOptionsView.cs" id="4_5arf7"]
 [ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="6_otpsy"]
 
 [node name="PauseSample" type="Panel"]
@@ -23,24 +21,8 @@ yarnProject = ExtResource("2_j3415")
 autoStart = true
 startNode = "Start"
 
-[node name="LineView" parent="YarnSpinnerCanvasLayer" index="2" node_paths=PackedStringArray("dialogueRunner", "viewControl", "lineText", "characterNameContainer")]
-script = ExtResource("3_22yb1")
-dialogueRunner = NodePath("../DialogueRunner")
-viewControl = NodePath("ViewControl")
-lineText = NodePath("ViewControl/LineText")
-characterNameContainer = NodePath("ViewControl/CharacterNameText")
-fadeUpDuration = 0.25
-fadeDownDuration = 0.1
-autoAdvanceDelay = 1.0
-typewriterEffectSpeed = 60
-
-[node name="OptionsListView" parent="YarnSpinnerCanvasLayer" index="3" node_paths=PackedStringArray("lastLineText", "lastLineContainer", "lastLineCharacterNameText", "lastLineCharacterNameContainer")]
-script = ExtResource("4_5arf7")
-showsLastLine = false
-lastLineText = NodePath("../LineView/ViewControl/LineText")
-lastLineContainer = NodePath("../LineView/ViewControl")
-lastLineCharacterNameText = NodePath("../LineView/ViewControl/CharacterNameText")
-lastLineCharacterNameContainer = NodePath("../LineView/ViewControl/CharacterNameText")
+[node name="AsyncLineView" parent="YarnSpinnerCanvasLayer" index="2"]
+typewriterEffectSpeed = 600
 
 [node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
 YarnProject = ExtResource("2_j3415")
@@ -71,7 +53,7 @@ script = ExtResource("3_uqanb")
 face = NodePath("../Face")
 thinkingFace = ExtResource("4_1i87u")
 talkingFace = ExtResource("2_njmvd")
-lineView = NodePath("../YarnSpinnerCanvasLayer/LineView")
+lineView = NodePath("../YarnSpinnerCanvasLayer/AsyncLineView")
 
 [node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
 script = ExtResource("6_otpsy")

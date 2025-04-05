@@ -209,26 +209,6 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
     [Signal]
     public delegate void onCharacterTypedEventHandler();
 
-    /// <summary>
-    /// A signal that is called when a pause inside of the typewriter effect occurs.
-    /// </summary>
-    /// <remarks>
-    /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
-    /// </remarks>
-    /// <seealso cref="useTypewriterEffect"/>
-    [Signal]
-    public delegate void onPauseStartedEventHandler();
-
-    /// <summary>
-    /// A signal that is called when a pause inside of the typewriter effect finishes and the typewriter has started once again.
-    /// </summary>
-    /// <remarks>
-    /// This event is only invoked when <see cref="useTypewriterEffect"/> is <see langword="true"/>.
-    /// </remarks>
-    /// <seealso cref="useTypewriterEffect"/>
-    [Signal]
-    public delegate void onPauseEndedEventHandler();
-
     public const float FrameWaitTime = 0.16f;
     private TypewriterHandler? typewriter;
 
@@ -676,6 +656,7 @@ public sealed partial class TypewriterHandler : TemporalMarkupHandler
             {
                 pauses.Pop();
                 pauseDuration = pause.duration;
+                
             }
         }
 
