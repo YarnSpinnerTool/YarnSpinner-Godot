@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://dnyy064638ly1"]
 
-[ext_resource type="Script" path="res://Samples/SampleEntryPoint.cs" id="1"]
+[ext_resource type="Script" uid="uid://0y1x11g66ue4" path="res://Samples/SampleEntryPoint.cs" id="1"]
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
-[ext_resource type="Script" path="res://Samples/SampleVersionNumberLabel.cs" id="2_shsu2"]
+[ext_resource type="Script" uid="uid://c3xcfucrfxoia" path="res://Samples/SampleVersionNumberLabel.cs" id="2_shsu2"]
 [ext_resource type="Texture2D" uid="uid://pbrr5yyepbx8" path="res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png" id="3_bcudv"]
 
 [node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton", "_roundedViewsButton", "_sqliteButton", "_gdscriptButton")]
@@ -67,7 +67,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
-text = "0.3.0-b4"
+text = "0.3.0-b5"
 script = ExtResource("2_shsu2")
 
 [node name="Logo" type="TextureRect" parent="."]

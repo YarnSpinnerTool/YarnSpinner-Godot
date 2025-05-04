@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bwrwry811vrgh"]
 
-[ext_resource type="Script" path="res://Samples/GDScriptIntegration/SimpleGDScriptOptionView.gd" id="1_33ld1"]
+[ext_resource type="Script" uid="uid://dx3whfoxnp8lc" path="res://Samples/GDScriptIntegration/SimpleGDScriptOptionView.gd" id="1_33ld1"]
 
 [node name="SimpleGDScriptOptionView" type="Button" node_paths=PackedStringArray("label")]
 custom_minimum_size = Vector2(0, 26)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b56ngcrq31nc5"]
 
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncOptionItem.cs" id="1_nktd7"]
+[ext_resource type="Script" uid="uid://e8endtpbxsql" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncOptionItem.cs" id="1_nktd7"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pe0aq"]
 content_margin_left = 7.0

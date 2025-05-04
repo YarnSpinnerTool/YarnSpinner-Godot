@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased 
+## [0.3.0-beta 5] 2025-05-04
 
+* Upgrade the addon and samples to Godot 4.4.1. The addon now delivers .uid files as part of the 4.4 upgrade.
 * Remove onPauseStarted and onPauseEnded signals from AsyncLineView (they were not functioning anyway in prior 0.3 releases)
 
 ## [0.3.0-beta 4] 2025-02-19
