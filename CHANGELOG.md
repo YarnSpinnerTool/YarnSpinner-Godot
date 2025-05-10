@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - This release aligns the terminology used in the plugin with the v3 Beta of the original Unity plugin, renaming
   dialogue "views" to dialogue "presenters", to make it clear that presenters can do more than just display dialogue
   lines and options visually.
-- Renamed `AsyncDialogueViewBase` to be `DialoguePresenter`
+- Renamed `AsyncDialogueViewBase` to be `DialoguePresenterBase`
 - Renamed `AsyncLineView` to be `LinePresenter`
 - Renamed `AsyncOptionItem` to be `OptionItem`
 - Renamed `AsyncOptionsView` to be `OptionsPresenter`

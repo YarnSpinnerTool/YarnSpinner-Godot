@@ -14,7 +14,7 @@ namespace YarnSpinnerGodot;
 /// to choose from.
 /// </summary>
 [GlobalClass]
-public partial class OptionsPresenter : Node, DialoguePresenter
+public partial class OptionsPresenter : Node, DialoguePresenterBase
 {
     /// <summary>
     /// The Control that all the visible components of this presenter are nested under.
@@ -160,7 +160,7 @@ public partial class OptionsPresenter : Node, DialoguePresenter
     /// <remarks>This view does not display lines directly, but instead
     /// stores lines so that when options are run, the last line that ran
     /// before the options appeared can be shown.</remarks>
-    /// <inheritdoc cref="DialoguePresenter.RunLineAsync"
+    /// <inheritdoc cref="DialoguePresenterBase.RunLineAsync"
     /// path="/param"/>
     /// <returns>A completed task.</returns>
     public YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
@@ -177,9 +177,9 @@ public partial class OptionsPresenter : Node, DialoguePresenter
     /// Called by a <see cref="DialogueRunner"/> to display a collection of
     /// options to the user. 
     /// </summary>
-    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync"
+    /// <inheritdoc cref="DialoguePresenterBase.RunOptionsAsync"
     /// path="/param"/>
-    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync"
+    /// <inheritdoc cref="DialoguePresenterBase.RunOptionsAsync"
     /// path="/returns"/>
     public async YarnTask<DialogueOption?> RunOptionsAsync(DialogueOption[] dialogueOptions,
         CancellationToken cancellationToken)

@@ -7,7 +7,7 @@ using Godot;
 namespace YarnSpinnerGodot;
 
 /// <summary>
-/// Note: As of version 0.3.0, use <see cref="DialoguePresenter"/> instead.
+/// Note: As of version 0.3.0, use <see cref="DialoguePresenterBase"/> instead.
 /// This was formerly an interface, but is now a class so that it can inherit from
 /// AsyncDialogueViewBase. For your existing v2 views, if you do not want to update them
 /// to inherit directly from ASyncDialogueViewBase, change your inheritance from  `: DialogueViewBase, Node` to
@@ -47,8 +47,8 @@ namespace YarnSpinnerGodot;
 /// </remarks>
 /// <seealso cref="LineProviderBehaviour"/>
 /// <seealso cref="DialogueRunner.dialoguePresenters"/>
-[Obsolete("Use " + nameof(DialoguePresenter))]
-public interface DialogueViewBase : DialoguePresenter
+[Obsolete("Use " + nameof(DialoguePresenterBase))]
+public interface DialogueViewBase : DialoguePresenterBase
 {
     /// <summary>
     /// Represents the method that should be called when this view wants the

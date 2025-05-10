@@ -14,7 +14,7 @@ namespace YarnSpinnerGodot;
 /// elements.
 /// </summary>
 [GlobalClass]
-public partial class LinePresenter : Node, DialoguePresenter
+public partial class LinePresenter : Node, DialoguePresenterBase
 {
     [Export] public DialogueRunner? dialogueRunner;
 
@@ -284,8 +284,8 @@ public partial class LinePresenter : Node, DialoguePresenter
     }
 
     /// <summary>Presents a line using the configured text view.</summary>
-    /// <inheritdoc cref="DialoguePresenter.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/param"/>
-    /// <inheritdoc cref="DialoguePresenter.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/returns"/>
+    /// <inheritdoc cref="DialoguePresenterBase.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/param"/>
+    /// <inheritdoc cref="DialoguePresenterBase.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/returns"/>
     public async YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
     {
         if (lineText == null)
@@ -442,9 +442,9 @@ public partial class LinePresenter : Node, DialoguePresenter
         }
     }
 
-    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/summary"/> 
-    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/param"/> 
-    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/returns"/> 
+    /// <inheritdoc cref="DialoguePresenterBase.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/summary"/> 
+    /// <inheritdoc cref="DialoguePresenterBase.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/param"/> 
+    /// <inheritdoc cref="DialoguePresenterBase.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/returns"/> 
     /// <remarks>
     /// This Dialogue Presenter does not handle any options.
     /// </remarks>

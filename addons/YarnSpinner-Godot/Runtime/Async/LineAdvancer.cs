@@ -15,7 +15,7 @@ namespace YarnSpinnerGodot;
 /// the next line, or cancel the entire dialogue session.
 /// </summary>
 [GlobalClass]
-public partial class LineAdvancer : Node, DialoguePresenter
+public partial class LineAdvancer : Node, DialoguePresenterBase
 {
     [Export] DialogueRunner? runner;
 

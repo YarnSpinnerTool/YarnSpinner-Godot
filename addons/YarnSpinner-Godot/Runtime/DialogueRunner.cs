@@ -22,7 +22,7 @@ namespace YarnSpinnerGodot;
 /// </summary>
 /// <remarks>
 /// <para>Dialogue presenter receive Line Cancellation Tokens as a parameter to
-/// <see cref="DialoguePresenter.RunLineAsync"/>. Line Cancellation
+/// <see cref="DialoguePresenterBase.RunLineAsync"/>. Line Cancellation
 /// Tokens indicate whether the user has requested that the line's delivery
 /// should be hurried up, and whether the dialogue presenter should stop showing
 /// the current line.</para>
@@ -317,7 +317,7 @@ public partial class DialogueRunner : Godot.Node
     /// contains a <see langword="null"/> value.
     /// </summary>
     /// <remarks>dialogue presenters can return this value from their <see
-    /// cref="DialoguePresenter.RunOptionsAsync(DialogueOption[],
+    /// cref="DialoguePresenterBase.RunOptionsAsync(DialogueOption[],
     /// CancellationToken)" method to indicate that no option was selected.
     /// />
     public static YarnTask<DialogueOption?> NoOptionSelected
@@ -362,7 +362,7 @@ public partial class DialogueRunner : Godot.Node
     {
         foreach (var presenter in dialoguePresenters)
         {
-            if (presenter == null || presenter is not DialoguePresenter && presenter.GetScript().Obj is not GDScript)
+            if (presenter == null || presenter is not DialoguePresenterBase && presenter.GetScript().Obj is not GDScript)
             {
                 GD.PushError(
                     $"Node {presenter?.Name} ({presenter?.GetType()}) added to {nameof(dialoguePresenters)} does not appear to be a dialogue presenter. " +
@@ -482,14 +482,14 @@ public partial class DialogueRunner : Godot.Node
                 continue;
             }
 
-            if (presenter is DialoguePresenter asyncPresenter)
+            if (presenter is DialoguePresenterBase asyncPresenter)
             {
                 // Tell all of our presenters that the dialogue has finished
                 async YarnTask RunCompletion()
                 {
                     try
                     {
-                        await ((DialoguePresenter)presenter).OnDialogueCompleteAsync();
+                        await ((DialoguePresenterBase)presenter).OnDialogueCompleteAsync();
                     }
                     catch (System.Exception e)
                     {
@@ -695,7 +695,7 @@ public partial class DialogueRunner : Godot.Node
                 v2View.requestInterrupt = RequestNextLine;
             }
 #pragma warning restore CS0618 // 'construct' is obsolete
-            if (presenter is DialoguePresenter asyncPresenter)
+            if (presenter is DialoguePresenterBase asyncPresenter)
             {
                 // Tell all of our presenters to run this line, and give them a
                 // cancellation token they can use to interrupt the line if needed.
@@ -802,7 +802,7 @@ public partial class DialogueRunner : Godot.Node
 
         var dialogueSelectionTCS = new YarnTaskCompletionSource<DialogueOption?>();
 
-        async YarnTask WaitForOptionsPresenter(DialoguePresenter? presenter)
+        async YarnTask WaitForOptionsPresenter(DialoguePresenterBase? presenter)
         {
             if (presenter == null)
             {
@@ -871,7 +871,7 @@ public partial class DialogueRunner : Godot.Node
                 continue;
             }
 
-            if (presenter is DialoguePresenter asyncPresenter)
+            if (presenter is DialoguePresenterBase asyncPresenter)
             {
                 pendingTasks.Add(WaitForOptionsPresenter(asyncPresenter));
             }
@@ -1014,7 +1014,7 @@ public partial class DialogueRunner : Godot.Node
                     continue;
                 }
 
-                if (presenter is DialoguePresenter asyncPresenter)
+                if (presenter is DialoguePresenterBase asyncPresenter)
                 {
                     tasks.Add(asyncPresenter.OnDialogueStartedAsync());
                 }

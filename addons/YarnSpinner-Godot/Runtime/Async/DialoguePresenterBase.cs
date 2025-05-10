@@ -38,7 +38,7 @@ namespace YarnSpinnerGodot;
 /// </remarks>
 /// <seealso cref="LineProviderBehaviour"/>
 /// <seealso cref="DialogueRunner.dialoguePresenters"/>
-public interface DialoguePresenter
+public interface DialoguePresenterBase
 {
     /// <summary>
     /// Called by the <see cref="DialogueRunner"/> to signal that a line
