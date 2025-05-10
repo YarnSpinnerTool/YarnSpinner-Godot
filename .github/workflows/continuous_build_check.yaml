@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        godotVersion: ["4.4.1"]
+        godotVersion: ["4.4.0"]
         targetFramework: ["net8.0"]
         nullable: ["enable", "disable"]
     name: Build
