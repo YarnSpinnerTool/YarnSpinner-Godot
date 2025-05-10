@@ -43,7 +43,8 @@ public partial class Localization : Resource
                     try
                     {
                         _stringTable =
-                            JsonSerializer.Deserialize<Dictionary<string, StringTableEntry>>(_stringTableJSON, YarnProject.JSONOptions);
+                            JsonSerializer.Deserialize(_stringTableJSON,
+                                YarnJSONContext.Default.DictionaryStringStringTableEntry);
                     }
                     catch (Exception e)
                     {
@@ -67,13 +68,15 @@ public partial class Localization : Resource
             {
                 entry.Value.File = ProjectSettings.LocalizePath(entry.Value.File);
             }
-            _stringTableJSON= JsonSerializer.Serialize(_stringTable, YarnProject.JSONOptions);
-            #if TOOLS
-                            YarnProjectEditorUtility.ClearJSONCache();
-            #endif
+
+            _stringTableJSON =
+                JsonSerializer.Serialize(_stringTable, YarnJSONContext.Default.DictionaryStringStringTableEntry);
+#if TOOLS
+            YarnProjectEditorUtility.ClearJSONCache();
+#endif
         }
     }
-    
+
     private System.Collections.Generic.Dictionary<string, string> _runtimeStringTable =
         new();
 
@@ -98,7 +101,7 @@ public partial class Localization : Resource
 
         if (stringTable.ContainsKey(key))
         {
-            return ((StringTableEntry) stringTable[key]).Text;
+            return ((StringTableEntry)stringTable[key]).Text;
         }
 
         return null;
@@ -110,7 +113,7 @@ public partial class Localization : Resource
     /// <returns></returns>
     public List<StringTableEntry> GetStringTableEntries()
     {
-        return (from object key in stringTable.Keys select (StringTableEntry) stringTable[key.ToString()]).ToList();
+        return (from object key in stringTable.Keys select (StringTableEntry)stringTable[key.ToString()]).ToList();
     }
 
     /// <summary>
@@ -187,6 +190,7 @@ public partial class Localization : Resource
     }
 
     #endregion
+
     public virtual void Clear()
     {
         stringTable.Clear();

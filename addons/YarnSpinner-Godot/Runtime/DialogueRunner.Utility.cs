@@ -101,7 +101,7 @@ public partial class DialogueRunner
     private (Dictionary<string, float>, Dictionary<string, string>, Dictionary<string, bool>)
         DeserializeAllVariablesFromJSON(string jsonData)
     {
-        SaveData data = JsonSerializer.Deserialize<SaveData>(jsonData);
+        SaveData data = JsonSerializer.Deserialize(jsonData, YarnJSONContext.Default.SaveData);
 
         if (data.floatKeys == null || data.floatValues == null)
         {
@@ -171,11 +171,11 @@ public partial class DialogueRunner
         data.stringValues = strings.Values.ToArray();
         data.boolKeys = bools.Keys.ToArray();
         data.boolValues = bools.Values.ToArray();
-        return JsonSerializer.Serialize(data, YarnProject.JSONOptions);
+        return JsonSerializer.Serialize(data, YarnJSONContext.Default.SaveData);
     }
 
     [System.Serializable]
-    private struct SaveData
+    public struct SaveData
     {
         public string[] floatKeys;
         public float[] floatValues;
@@ -224,7 +224,7 @@ public partial class DialogueRunner
 
         while ((c = reader.Read()) != -1)
         {
-            if (char.IsWhiteSpace((char) c))
+            if (char.IsWhiteSpace((char)c))
             {
                 if (currentComponent.Length > 0)
                 {
@@ -265,13 +265,13 @@ public partial class DialogueRunner
                             // It is! Skip the \ and use the character after
                             // it.
                             reader.Read();
-                            currentComponent.Append((char) next);
+                            currentComponent.Append((char)next);
                         }
                         else
                         {
                             // Oops, an invalid escape. Add the \ and
                             // whatever is after it.
-                            currentComponent.Append((char) c);
+                            currentComponent.Append((char)c);
                         }
                     }
                     else if (c == '\"')
@@ -282,7 +282,7 @@ public partial class DialogueRunner
                     else
                     {
                         // Any other character. Add it to the buffer.
-                        currentComponent.Append((char) c);
+                        currentComponent.Append((char)c);
                     }
                 }
 
@@ -291,7 +291,7 @@ public partial class DialogueRunner
             }
             else
             {
-                currentComponent.Append((char) c);
+                currentComponent.Append((char)c);
             }
         }
 
