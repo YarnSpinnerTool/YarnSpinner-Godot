@@ -23,8 +23,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        godotVersion: ["4.2.2", "4.3.0"]
-        targetFramework: ["net6.0", "net8.0"]
+        godotVersion: ["4.4.1"]
+        targetFramework: ["net8.0"]
         nullable: ["enable", "disable"]
     name: Build
     runs-on: ubuntu-latest
