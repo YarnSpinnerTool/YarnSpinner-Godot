@@ -10,18 +10,22 @@ namespace YarnSpinnerGodot;
 
 /// <summary>
 /// Receives options from a <see cref="DialogueRunner"/>, and displays and
-/// manages a collection of <see cref="AsyncOptionItem"/> views for the user
+/// manages a collection of <see cref="OptionItem"/> views for the user
 /// to choose from.
 /// </summary>
 [GlobalClass]
-public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
+public partial class OptionsPresenter : Node, DialoguePresenter
 {
-    [Export] Control? viewControl;
+    /// <summary>
+    /// The Control that all the visible components of this presenter are nested under.
+    /// Used to show and hide the visual elements.
+    /// </summary>
+    [Export] Control? presenterControl;
 
-    [Export] PackedScene? optionViewPrefab;
+    [Export] PackedScene? optionItemPrefab;
 
-    // A cached pool of OptionView objects so that we can reuse them
-    List<AsyncOptionItem> optionViews = new List<AsyncOptionItem>();
+    // A cached pool of OptionItem objects so that we can reuse them
+    List<OptionItem> optionItems = [];
 
     [Export] bool showsLastLine;
 
@@ -53,14 +57,14 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
     /// fade out when options disappear.
     /// </summary>
     /// <remarks><para>If this value is <see langword="true"/>, the <see
-    /// cref="viewControl"/> object's alpha property will animate from 0 to
+    /// cref="presenterControl"/> object's alpha property will animate from 0 to
     /// 1 over the course of <see cref="fadeUpDuration"/> seconds when options
     /// appear, and animate from 1 to zero over the course of <see
     /// cref="fadeDownDuration"/> seconds when options disappear.</para>
     /// <para>If this value is <see langword="false"/>, the <see
-    /// cref="viewControl"/> object will appear instantaneously.</para>
+    /// cref="presenterControl"/> object will appear instantaneously.</para>
     /// </remarks>
-    /// <seealso cref="viewControl"/>
+    /// <seealso cref="presenterControl"/>
     /// <seealso cref="fadeUpDuration"/>
     /// <seealso cref="fadeDownDuration"/>
     [Export] public bool useFadeEffect = true;
@@ -93,6 +97,7 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
         {
             lastLineText!.Visible = false;
         }
+
         if (IsInstanceValid(lastLineCharacterNameContainer))
         {
             lastLineCharacterNameContainer!.Visible = false;
@@ -106,14 +111,14 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
     /// </summary>
     public override void _Ready()
     {
-        if (!IsInstanceValid(viewControl) || !IsInstanceValid(optionParent))
+        if (!IsInstanceValid(presenterControl) || !IsInstanceValid(optionParent))
         {
             GD.PushError(
-                $"Make sure to set both {nameof(viewControl)} and {optionParent} on this {nameof(AsyncOptionsView)}");
+                $"Make sure to set both {nameof(presenterControl)} and {optionParent} on this {nameof(OptionsPresenter)}");
         }
         else
         {
-            viewControl!.Visible = false;
+            presenterControl!.Visible = false;
         }
 
         if (optionParent is Node2D parent2D && IsInstanceValid(parent2D))
@@ -139,9 +144,9 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
     /// <returns>A completed task.</returns>
     public YarnTask OnDialogueStartedAsync()
     {
-        if (IsInstanceValid(viewControl))
+        if (IsInstanceValid(presenterControl))
         {
-            viewControl!.Visible = false;
+            presenterControl!.Visible = false;
         }
 
         return YarnTask.CompletedTask;
@@ -155,7 +160,7 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
     /// <remarks>This view does not display lines directly, but instead
     /// stores lines so that when options are run, the last line that ran
     /// before the options appeared can be shown.</remarks>
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunLineAsync"
+    /// <inheritdoc cref="DialoguePresenter.RunLineAsync"
     /// path="/param"/>
     /// <returns>A completed task.</returns>
     public YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
@@ -172,9 +177,9 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
     /// Called by a <see cref="DialogueRunner"/> to display a collection of
     /// options to the user. 
     /// </summary>
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunOptionsAsync"
+    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync"
     /// path="/param"/>
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunOptionsAsync"
+    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync"
     /// path="/returns"/>
     public async YarnTask<DialogueOption?> RunOptionsAsync(DialogueOption[] dialogueOptions,
         CancellationToken cancellationToken)
@@ -182,15 +187,15 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
         if (!IsInstanceValid(optionParent))
         {
             throw new System.InvalidOperationException(
-                $"Can't display options from {nameof(AsyncOptionsView)}. No {nameof(optionParent)} is set " +
+                $"Can't display options from {nameof(OptionsPresenter)}. No {nameof(optionParent)} is set " +
                 $"to parent the options to.");
         }
 
         // If we don't already have enough option views, create more
-        while (dialogueOptions.Length > optionViews.Count)
+        while (dialogueOptions.Length > optionItems.Count)
         {
             var optionView = CreateNewOptionView();
-            optionViews.Add(optionView);
+            optionItems.Add(optionView);
         }
 
         // A completion source that represents the selected option.
@@ -225,7 +230,7 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
         int optionViewsCreated = 0;
         for (int i = 0; i < dialogueOptions.Length; i++)
         {
-            var optionView = optionViews[i];
+            var optionView = optionItems[i];
             var option = dialogueOptions[i];
 
             if (option.IsAvailable == false && showUnavailableOptions == false)
@@ -245,7 +250,7 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
         }
         // The first available option is selected by default
 
-        optionViews.First(view => view.Visible).FocusButton();
+        optionItems.First(view => view.Visible).FocusButton();
 
         // Update the last line, if one is configured
         if (IsInstanceValid(lastLineContainer))
@@ -291,9 +296,9 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
         }
         // allow interactivity and wait for an option to be selected
 
-        if (IsInstanceValid(viewControl))
+        if (IsInstanceValid(presenterControl))
         {
-            viewControl!.Visible = true;
+            presenterControl!.Visible = true;
         }
 
         var parent2D = optionParent as Node2D;
@@ -305,9 +310,9 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
 
         if (useFadeEffect)
         {
-            viewControl!.Visible = true;
+            presenterControl!.Visible = true;
             // fade up the UI now
-            await Effects.FadeAlphaAsync(viewControl, 0, 1, fadeUpDuration,
+            await Effects.FadeAlphaAsync(presenterControl, 0, 1, fadeUpDuration,
                 cancellationToken);
             if (!IsInstanceValid(this))
             {
@@ -323,25 +328,25 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
         if (useFadeEffect)
         {
             // fade down
-            await Effects.FadeAlphaAsync(viewControl, 1, 0, fadeDownDuration,
+            await Effects.FadeAlphaAsync(presenterControl, 1, 0, fadeDownDuration,
                 cancellationToken);
             if (!IsInstanceValid(this))
             {
                 return null;
             }
 
-            viewControl!.Visible = false;
+            presenterControl!.Visible = false;
         }
 
         // disabling ALL the options views now
-        foreach (var optionView in optionViews)
+        foreach (var optionView in optionItems)
         {
             optionView.Visible = false;
         }
 
-        if (IsInstanceValid(viewControl))
+        if (IsInstanceValid(presenterControl))
         {
-            viewControl!.Visible = false;
+            presenterControl!.Visible = false;
         }
 
         if (IsInstanceValid(parent2D))
@@ -361,15 +366,15 @@ public partial class AsyncOptionsView : Node, AsyncDialogueViewBase
         return completedTask;
     }
 
-    private AsyncOptionItem CreateNewOptionView()
+    private OptionItem CreateNewOptionView()
     {
-        if (optionViewPrefab == null)
+        if (optionItemPrefab == null)
         {
             throw new System.InvalidOperationException(
-                $"Can't create new option view: {nameof(optionViewPrefab)} is null");
+                $"Can't create new option view: {nameof(optionItemPrefab)} is null");
         }
 
-        var optionView = optionViewPrefab.Instantiate<AsyncOptionItem>();
+        var optionView = optionItemPrefab.Instantiate<OptionItem>();
 
 
         if (optionView == null)

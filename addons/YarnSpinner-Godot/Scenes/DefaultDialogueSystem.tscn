@@ -1,15 +1,15 @@
 [gd_scene load_steps=7 format=3 uid="uid://bv42g323prh5f"]
 
 [ext_resource type="Script" uid="uid://c5gxawri864uf" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="1"]
-[ext_resource type="Script" uid="uid://b8nsxur6opm4k" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncLineView.cs" id="2_3323r"]
-[ext_resource type="Script" uid="uid://ba6k2ox6e4qg" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncOptionsView.cs" id="3_waeux"]
+[ext_resource type="Script" uid="uid://b8nsxur6opm4k" path="res://addons/YarnSpinner-Godot/Runtime/Async/LinePresenter.cs" id="2_3323r"]
+[ext_resource type="Script" uid="uid://ba6k2ox6e4qg" path="res://addons/YarnSpinner-Godot/Runtime/Async/OptionsPresenter.cs" id="3_waeux"]
 [ext_resource type="Script" uid="uid://b1o5xpu22evvx" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="4"]
+[ext_resource type="PackedScene" uid="uid://b56ngcrq31nc5" path="res://addons/YarnSpinner-Godot/Scenes/OptionItem.tscn" id="4_xnawv"]
 [ext_resource type="Script" uid="uid://budnld4qd513n" path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" id="5"]
-[ext_resource type="PackedScene" uid="uid://b56ngcrq31nc5" path="res://addons/YarnSpinner-Godot/Scenes/OptionView.tscn" id="6"]
 
 [node name="YarnSpinnerCanvasLayer" type="CanvasLayer"]
 
-[node name="DialogueRunner" type="Control" parent="." node_paths=PackedStringArray("variableStorage", "lineProvider", "dialogueViews")]
+[node name="DialogueRunner" type="Control" parent="." node_paths=PackedStringArray("variableStorage", "lineProvider", "dialoguePresenters")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,11 +20,11 @@ mouse_filter = 2
 script = ExtResource("5")
 variableStorage = NodePath("../InMemoryVariableStorage")
 lineProvider = NodePath("../TextLineProvider")
-dialogueViews = [NodePath("../AsyncLineView"), NodePath("../AsyncOptionsView")]
+dialoguePresenters = [NodePath("../LinePresenter"), NodePath("../OptionsPresenter")]
 
 [node name="VariableDebugText" type="RichTextLabel" parent="."]
 
-[node name="AsyncLineView" type="Control" parent="." node_paths=PackedStringArray("dialogueRunner", "viewControl", "lineText", "continueButton", "characterNameText", "characterNameContainer")]
+[node name="LinePresenter" type="Control" parent="." node_paths=PackedStringArray("dialogueRunner", "presenterControl", "lineText", "continueButton", "characterNameText", "characterNameContainer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -34,16 +34,16 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_3323r")
 dialogueRunner = NodePath("../DialogueRunner")
-viewControl = NodePath("ViewControl")
-lineText = NodePath("ViewControl/LineText")
-continueButton = NodePath("ViewControl/ContinueButton")
-characterNameText = NodePath("ViewControl/CharacterNameText")
-characterNameContainer = NodePath("ViewControl/CharacterNameText")
+presenterControl = NodePath("PresenterControl")
+lineText = NodePath("PresenterControl/LineText")
+continueButton = NodePath("PresenterControl/ContinueButton")
+characterNameText = NodePath("PresenterControl/CharacterNameText")
+characterNameContainer = NodePath("PresenterControl/CharacterNameText")
 useFadeEffect = false
 fadeUpDuration = 0.1
 ConvertHTMLToBBCode = true
 
-[node name="ViewControl" type="Control" parent="AsyncLineView"]
+[node name="PresenterControl" type="Control" parent="LinePresenter"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -51,7 +51,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LineText" type="RichTextLabel" parent="AsyncLineView/ViewControl"]
+[node name="LineText" type="RichTextLabel" parent="LinePresenter/PresenterControl"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -72,7 +72,7 @@ theme_override_font_sizes/bold_font_size = 36
 bbcode_enabled = true
 text = "The dialogue text should appear here!"
 
-[node name="ColorRect" type="ColorRect" parent="AsyncLineView/ViewControl/LineText"]
+[node name="ColorRect" type="ColorRect" parent="LinePresenter/PresenterControl/LineText"]
 modulate = Color(0.203922, 0.192157, 0.192157, 0.458824)
 show_behind_parent = true
 layout_mode = 1
@@ -85,7 +85,7 @@ offset_bottom = -158.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CharacterNameText" type="RichTextLabel" parent="AsyncLineView/ViewControl"]
+[node name="CharacterNameText" type="RichTextLabel" parent="LinePresenter/PresenterControl"]
 self_modulate = Color(0.321569, 0.87451, 0.254902, 1)
 layout_mode = 1
 anchors_preset = 8
@@ -107,14 +107,14 @@ theme_override_font_sizes/bold_font_size = 36
 bbcode_enabled = true
 text = "Character Name"
 
-[node name="ColorRect" type="ColorRect" parent="AsyncLineView/ViewControl/CharacterNameText"]
+[node name="ColorRect" type="ColorRect" parent="LinePresenter/PresenterControl/CharacterNameText"]
 modulate = Color(0.203922, 0.192157, 0.192157, 0.458824)
 show_behind_parent = true
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ContinueButton" type="Button" parent="AsyncLineView/ViewControl"]
+[node name="ContinueButton" type="Button" parent="LinePresenter/PresenterControl"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -131,7 +131,7 @@ mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 36
 text = "Continue"
 
-[node name="AsyncOptionsView" type="Control" parent="." node_paths=PackedStringArray("viewControl", "lastLineText", "lastLineContainer", "lastLineCharacterNameText", "lastLineCharacterNameContainer", "optionParent")]
+[node name="OptionsPresenter" type="Control" parent="." node_paths=PackedStringArray("presenterControl", "lastLineCharacterNameContainer", "optionParent")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -140,16 +140,13 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_waeux")
-viewControl = NodePath("ViewControl")
-optionViewPrefab = ExtResource("6")
-lastLineText = NodePath("ViewControl/LastLineText")
-lastLineContainer = NodePath("ViewControl/LastLineText")
-lastLineCharacterNameText = NodePath("ViewControl/LastLineCharacterNameText")
-lastLineCharacterNameContainer = NodePath("ViewControl/LastLineCharacterNameText")
-optionParent = NodePath("ViewControl/VBoxContainer")
+presenterControl = NodePath("PresenterControl")
+optionItemPrefab = ExtResource("4_xnawv")
+lastLineCharacterNameContainer = NodePath("PresenterControl/LastLineCharacterNameText")
+optionParent = NodePath("PresenterControl/VBoxContainer")
 useFadeEffect = false
 
-[node name="ViewControl" type="Control" parent="AsyncOptionsView"]
+[node name="PresenterControl" type="Control" parent="OptionsPresenter"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -157,7 +154,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="AsyncOptionsView/ViewControl"]
+[node name="VBoxContainer" type="VBoxContainer" parent="OptionsPresenter/PresenterControl"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 1
 anchors_preset = 8
@@ -172,7 +169,7 @@ offset_bottom = 428.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LastLineText" type="RichTextLabel" parent="AsyncOptionsView/ViewControl"]
+[node name="LastLineText" type="RichTextLabel" parent="OptionsPresenter/PresenterControl"]
 visible = false
 layout_mode = 1
 anchors_preset = 5
@@ -192,7 +189,7 @@ bbcode_enabled = true
 text = "The last line text goes here"
 scroll_active = false
 
-[node name="ColorRect" type="ColorRect" parent="AsyncOptionsView/ViewControl/LastLineText"]
+[node name="ColorRect" type="ColorRect" parent="OptionsPresenter/PresenterControl/LastLineText"]
 modulate = Color(0.203922, 0.192157, 0.192157, 0.458824)
 show_behind_parent = true
 layout_mode = 1
@@ -202,7 +199,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LastLineCharacterNameText" type="RichTextLabel" parent="AsyncOptionsView/ViewControl"]
+[node name="LastLineCharacterNameText" type="RichTextLabel" parent="OptionsPresenter/PresenterControl"]
 visible = false
 self_modulate = Color(0.321569, 0.87451, 0.254902, 1)
 layout_mode = 1
@@ -225,7 +222,7 @@ theme_override_font_sizes/bold_font_size = 36
 bbcode_enabled = true
 text = "Character Name"
 
-[node name="ColorRect" type="ColorRect" parent="AsyncOptionsView/ViewControl/LastLineCharacterNameText"]
+[node name="ColorRect" type="ColorRect" parent="OptionsPresenter/PresenterControl/LastLineCharacterNameText"]
 modulate = Color(0.203922, 0.192157, 0.192157, 0.458824)
 show_behind_parent = true
 layout_mode = 0

@@ -8,7 +8,7 @@ using Godot;
 namespace YarnSpinnerGodot;
 
 /// <summary>
-/// Obsolete: Use <see cref="AsyncOptionsView"/>
+/// Obsolete: Use <see cref="OptionsPresenter"/>
 /// </summary>
 [GlobalClass]
 

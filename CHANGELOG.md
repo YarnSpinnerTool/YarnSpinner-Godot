@@ -4,10 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.0-beta 6] 2025-05-10
+
+- This release aligns the terminology used in the plugin with the v3 Beta of the original Unity plugin, renaming
+  dialogue "views" to dialogue "presenters", to make it clear that presenters can do more than just display dialogue
+  lines and options visually.
+- Renamed `AsyncDialogueViewBase` to be `DialoguePresenter`
+- Renamed `AsyncLineView` to be `LinePresenter`
+- Renamed `AsyncOptionItem` to be `OptionItem`
+- Renamed `AsyncOptionsView` to be `OptionsPresenter`
+- Renamed `VoiceOverView` to be `VoiceOverPresenter`
+- Renamed `viewControl` property in all `*Presenter` classes to `presenterControl`
+
 ## [0.3.0-beta 5] 2025-05-04
 
 * Upgrade the addon and samples to Godot 4.4.1. The addon now delivers .uid files as part of the 4.4 upgrade.
-* Remove onPauseStarted and onPauseEnded signals from AsyncLineView (they were not functioning anyway in prior 0.3 releases)
+* Remove onPauseStarted and onPauseEnded signals from AsyncLineView (they were not functioning anyway in prior 0.3
+  releases)
 
 ## [0.3.0-beta 4] 2025-02-19
 
@@ -19,8 +32,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 * Fixed an issue where the AsyncLineView would show at the beginning of dialogue, even if the dialogue begins with an
   option.
-* Fixed an issue where the System.Threading.Tasks implementation of YarnTask.WaitUntil did not return early when the CancellationToken was cancelled
-* Make the fade effect optional via inspector fields `useFadeEffect`, `fadeUpDuration, and `fadeDownDuration` in AsyncOptionsView.cs
+* Fixed an issue where the System.Threading.Tasks implementation of YarnTask.WaitUntil did not return early when the
+  CancellationToken was cancelled
+* Make the fade effect optional via inspector fields `useFadeEffect`, `fadeUpDuration, and `fadeDownDuration` in
+  AsyncOptionsView.cs
 
 ## [0.3.0-beta 2]   2025-01-06
 
@@ -70,12 +85,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.2.16] 2025-1-24
 
-* Fix null reference in AddCommandHandlerCallable when callable does not return an object (#80) by  @meybax 
-* Fix uncaught exceptions in DialogueRunner when markup in a line was malformed. 
+* Fix null reference in AddCommandHandlerCallable when callable does not return an object (#80) by @meybax
+* Fix uncaught exceptions in DialogueRunner when markup in a line was malformed.
 
 ## [0.2.15] 2025-1-23
 
-* Fixed an issue where an exception could be raised if OptionsListView has lastLineText set, and dialogue begins with an option. 
+* Fixed an issue where an exception could be raised if OptionsListView has lastLineText set, and dialogue begins with an
+  option.
 
 ## [0.2.14] 2024-11-02
 

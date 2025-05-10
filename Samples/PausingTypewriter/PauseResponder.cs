@@ -15,7 +15,7 @@ public partial class PauseResponder : Control
     [Export] public TextureRect face;
     [Export] public Texture2D thinkingFace;
     [Export] public Texture2D talkingFace;
-    [Export] public AsyncLineView lineView;
+    [Export] public LinePresenter lineView;
 
     private DateTime  _lastTyped = DateTime.UnixEpoch; 
     public override void _Ready()

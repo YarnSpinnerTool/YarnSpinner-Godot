@@ -7,7 +7,7 @@ using Godot;
 namespace YarnSpinnerGodot;
 
 /// <summary>
-/// Note: As of version 0.3.0, use <see cref="AsyncDialogueViewBase"/> instead.
+/// Note: As of version 0.3.0, use <see cref="DialoguePresenter"/> instead.
 /// This was formerly an interface, but is now a class so that it can inherit from
 /// AsyncDialogueViewBase. For your existing v2 views, if you do not want to update them
 /// to inherit directly from ASyncDialogueViewBase, change your inheritance from  `: DialogueViewBase, Node` to
@@ -19,7 +19,7 @@ namespace YarnSpinnerGodot;
 /// <remarks>
 /// <para>When the Dialogue Runner encounters content that the user should
 /// see - that is, lines or options - it sends that content to all of the
-/// dialogue views stored in <see cref="DialogueRunner.dialogueViews"/>. The
+/// dialogue views stored in <see cref="DialogueRunner.dialoguePresenters"/>. The
 /// Dialogue Runner then waits until all Dialogue Views have reported that
 /// they have finished presenting the content.</para>
 /// <para>
@@ -46,9 +46,9 @@ namespace YarnSpinnerGodot;
 /// </para>
 /// </remarks>
 /// <seealso cref="LineProviderBehaviour"/>
-/// <seealso cref="DialogueRunner.dialogueViews"/>
-[Obsolete("Use " + nameof(AsyncDialogueViewBase))]
-public interface DialogueViewBase : AsyncDialogueViewBase
+/// <seealso cref="DialogueRunner.dialoguePresenters"/>
+[Obsolete("Use " + nameof(DialoguePresenter))]
+public interface DialogueViewBase : DialoguePresenter
 {
     /// <summary>
     /// Represents the method that should be called when this view wants the
@@ -61,7 +61,7 @@ public interface DialogueViewBase : AsyncDialogueViewBase
     /// </para>
     /// <para>
     /// When this method is called, the Dialogue Runner that has this
-    /// Dialogue View in its <see cref="DialogueRunner.dialogueViews"/> list
+    /// Dialogue View in its <see cref="DialogueRunner.dialoguePresenters"/> list
     /// will call <see cref="InterruptLine(LocalizedLine, Action)"/> on any
     /// view that has not yet finished presenting its line.
     /// </para>

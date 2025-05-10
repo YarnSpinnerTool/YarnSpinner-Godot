@@ -1,13 +1,14 @@
 extends Node
-# Example of writing an options list view in GDScript
-@export var option_view_prefab : PackedScene
+# Example of writing an options presenter in GDScript
+@export var option_item_prefab : PackedScene
 @export var options_container: Container
-@export var view_control: Control 
+@export var presenter_control: Control 
 
 var option_selected_handler: Callable 
 
+var option_selected : bool = false 
 func _ready() -> void: 
-	view_control.visible = false 
+	presenter_control.visible = false 
 	
 # Example options array: 
 #[
@@ -40,7 +41,7 @@ func _ready() -> void:
 #]
 func run_options_async(options: Array, on_option_selected: Callable) -> void:
 	print("Options: %s"  % JSON.stringify(options))
-	
+	option_selected = false
 	# You can do await statements here if you want.
 	await get_tree().process_frame
 	option_selected_handler = on_option_selected
@@ -50,14 +51,17 @@ func run_options_async(options: Array, on_option_selected: Callable) -> void:
 		if not option["is_available"]:
 			# don't render unvailable options
 			continue 
-		var option_view: SimpleGDScriptOptionView = option_view_prefab.instantiate() 
-		option_view.set_option(option, select_option)
-		options_container.add_child(option_view)
+		var option_item: SimpleGDScriptOptionItem = option_item_prefab.instantiate() 
+		option_item.set_option(option, select_option)
+		options_container.add_child(option_item)
 	
-	view_control.visible = true 
+	presenter_control.visible = true 
+	while not option_selected:
+		await get_tree().process_frame
 	
 func select_option(option_id: int) -> void:
 	option_selected_handler.call(option_id)
-	view_control.visible = false 
+	presenter_control.visible = false 
 	while options_container.get_child_count() > 0:
 		options_container.remove_child(options_container.get_child(0))
+	option_selected = true

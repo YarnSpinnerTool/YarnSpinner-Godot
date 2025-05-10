@@ -14,7 +14,7 @@ namespace YarnSpinnerGodot;
 /// A Dialogue View that presents lines of dialogue, using Godot UI Controls
 /// elements.
 /// Important: When implementing this interface, your class should extend from Godot.Node.
-/// Obsolete Use <see cref="AsyncLineView"/>
+/// Obsolete Use <see cref="LinePresenter"/>
 /// </summary>
 [GlobalClass]
 public partial class LineView : Node, DialogueViewBase

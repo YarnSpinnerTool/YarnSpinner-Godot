@@ -1,14 +1,14 @@
 [gd_scene load_steps=14 format=3 uid="uid://dqe5yshlcmnpg"]
 
 [ext_resource type="Script" uid="uid://budnld4qd513n" path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" id="1_vq0dw"]
-[ext_resource type="Script" uid="uid://b8nsxur6opm4k" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncLineView.cs" id="2_dribl"]
-[ext_resource type="StyleBox" uid="uid://c3mta1ok76ssl" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewRichTextLabelStyleBox.tres" id="3_46gk8"]
+[ext_resource type="Script" uid="uid://b8nsxur6opm4k" path="res://addons/YarnSpinner-Godot/Runtime/Async/LinePresenter.cs" id="2_dribl"]
+[ext_resource type="StyleBox" uid="uid://c3mta1ok76ssl" path="res://addons/YarnSpinner-Godot/Scenes/RoundedUIRichTextLabelStyleBox.tres" id="3_46gk8"]
 [ext_resource type="Texture2D" uid="uid://d3p8dh5owmvs8" path="res://addons/YarnSpinner-Godot/Textures/NextLineIndicator.png" id="4_e01r3"]
-[ext_resource type="StyleBox" uid="uid://itxqi5xpilu6" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewStylebox.tres" id="4_utoye"]
+[ext_resource type="StyleBox" uid="uid://itxqi5xpilu6" path="res://addons/YarnSpinner-Godot/Scenes/RoundedUIStylebox.tres" id="4_utoye"]
 [ext_resource type="Script" uid="uid://b1o5xpu22evvx" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="5_88l4y"]
 [ext_resource type="Script" uid="uid://c5gxawri864uf" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="6_5v3f4"]
-[ext_resource type="Script" uid="uid://ba6k2ox6e4qg" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncOptionsView.cs" id="6_dpa5y"]
-[ext_resource type="PackedScene" uid="uid://dhnl6qatalt6x" path="res://addons/YarnSpinner-Godot/Scenes/RoundedOptionView.tscn" id="7_0mwuv"]
+[ext_resource type="Script" uid="uid://ba6k2ox6e4qg" path="res://addons/YarnSpinner-Godot/Runtime/Async/OptionsPresenter.cs" id="6_dpa5y"]
+[ext_resource type="PackedScene" uid="uid://dhnl6qatalt6x" path="res://addons/YarnSpinner-Godot/Scenes/RoundedOptionPresenter.tscn" id="7_xsr4c"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ymf4v"]
 
@@ -26,7 +26,7 @@ modulate_color = Color(0.529412, 0.788235, 0.764706, 1)
 
 [node name="RoundedYarnSpinnerCanvasLayer" type="CanvasLayer"]
 
-[node name="DialogueRunner" type="Control" parent="." node_paths=PackedStringArray("variableStorage", "lineProvider", "dialogueViews")]
+[node name="DialogueRunner" type="Control" parent="." node_paths=PackedStringArray("variableStorage", "lineProvider", "dialoguePresenters")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -37,12 +37,12 @@ mouse_filter = 2
 script = ExtResource("1_vq0dw")
 variableStorage = NodePath("../InMemoryVariableStorage")
 lineProvider = NodePath("../TextLineProvider")
-dialogueViews = [NodePath("../AsyncLineView"), NodePath("../AsyncOptionsView")]
+dialoguePresenters = [NodePath("../OptionsPresenter"), NodePath("../LinePresenter")]
 startNode = "Start"
 
 [node name="VariableDebugText" type="RichTextLabel" parent="."]
 
-[node name="AsyncLineView" type="Control" parent="." node_paths=PackedStringArray("dialogueRunner", "viewControl", "lineText", "continueButton", "characterNameText", "characterNameContainer")]
+[node name="LinePresenter" type="Control" parent="." node_paths=PackedStringArray("dialogueRunner", "presenterControl", "lineText", "continueButton", "characterNameText", "characterNameContainer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -51,14 +51,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_dribl")
 dialogueRunner = NodePath("../DialogueRunner")
-viewControl = NodePath("ViewControl")
-lineText = NodePath("ViewControl/LineText")
-continueButton = NodePath("ViewControl/LineText/LineBubble/ContinueButton")
-characterNameText = NodePath("ViewControl/LineText/CharacterNameText")
-characterNameContainer = NodePath("ViewControl/LineText/CharacterNameText/CharacterNameBubble")
+presenterControl = NodePath("PresenterControl")
+lineText = NodePath("PresenterControl/LineText")
+continueButton = NodePath("PresenterControl/LineText/LineBubble/ContinueButton")
+characterNameText = NodePath("PresenterControl/LineText/CharacterNameText")
+characterNameContainer = NodePath("PresenterControl/LineText/CharacterNameText/CharacterNameBubble")
 useFadeEffect = false
 
-[node name="ViewControl" type="Panel" parent="AsyncLineView"]
+[node name="PresenterControl" type="Panel" parent="LinePresenter"]
 layout_mode = 2
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -66,7 +66,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_ymf4v")
 
-[node name="LineText" type="RichTextLabel" parent="AsyncLineView/ViewControl"]
+[node name="LineText" type="RichTextLabel" parent="LinePresenter/PresenterControl"]
 clip_contents = false
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 1
@@ -101,7 +101,7 @@ fit_content = true
 scroll_active = false
 metadata/_edit_use_anchors_ = true
 
-[node name="LineBubble" type="Panel" parent="AsyncLineView/ViewControl/LineText"]
+[node name="LineBubble" type="Panel" parent="LinePresenter/PresenterControl/LineText"]
 show_behind_parent = true
 layout_mode = 1
 anchors_preset = 15
@@ -111,7 +111,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("4_utoye")
 
-[node name="ContinueButton" type="Button" parent="AsyncLineView/ViewControl/LineText/LineBubble"]
+[node name="ContinueButton" type="Button" parent="LinePresenter/PresenterControl/LineText/LineBubble"]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -131,7 +131,7 @@ theme_override_styles/hover = SubResource("StyleBoxTexture_20y0r")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_h4m8k")
 theme_override_styles/normal = SubResource("StyleBoxTexture_20y0r")
 
-[node name="CharacterNameText" type="RichTextLabel" parent="AsyncLineView/ViewControl/LineText"]
+[node name="CharacterNameText" type="RichTextLabel" parent="LinePresenter/PresenterControl/LineText"]
 clip_contents = false
 custom_minimum_size = Vector2(360, 160)
 layout_mode = 1
@@ -158,7 +158,7 @@ text = "Character Name"
 fit_content = true
 scroll_active = false
 
-[node name="CharacterNameBubble" type="Panel" parent="AsyncLineView/ViewControl/LineText/CharacterNameText"]
+[node name="CharacterNameBubble" type="Panel" parent="LinePresenter/PresenterControl/LineText/CharacterNameText"]
 self_modulate = Color(0.529412, 0.788235, 0.764706, 1)
 show_behind_parent = true
 layout_mode = 1
@@ -170,7 +170,7 @@ grow_vertical = 2
 size_flags_vertical = 3
 theme_override_styles/panel = ExtResource("4_utoye")
 
-[node name="AsyncOptionsView" type="Control" parent="." node_paths=PackedStringArray("viewControl", "lastLineText", "lastLineContainer", "lastLineCharacterNameText", "lastLineCharacterNameContainer", "optionParent")]
+[node name="OptionsPresenter" type="Control" parent="." node_paths=PackedStringArray("presenterControl", "lastLineText", "lastLineContainer", "lastLineCharacterNameText", "lastLineCharacterNameContainer", "optionParent")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -179,16 +179,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("6_dpa5y")
-viewControl = NodePath("ViewControl")
-optionViewPrefab = ExtResource("7_0mwuv")
-lastLineText = NodePath("ViewControl/LastLineText")
-lastLineContainer = NodePath("ViewControl/LastLineText")
-lastLineCharacterNameText = NodePath("ViewControl/LastLineCharacterNameText")
-lastLineCharacterNameContainer = NodePath("ViewControl/LastLineCharacterNameText")
-optionParent = NodePath("ViewControl/VBoxContainer")
+presenterControl = NodePath("PresenterControl")
+optionItemPrefab = ExtResource("7_xsr4c")
+lastLineText = NodePath("PresenterControl/LastLineText")
+lastLineContainer = NodePath("PresenterControl/LastLineText")
+lastLineCharacterNameText = NodePath("PresenterControl/LastLineCharacterNameText")
+lastLineCharacterNameContainer = NodePath("PresenterControl/LastLineCharacterNameText")
+optionParent = NodePath("PresenterControl/VBoxContainer")
 useFadeEffect = false
 
-[node name="ViewControl" type="Control" parent="AsyncOptionsView"]
+[node name="PresenterControl" type="Control" parent="OptionsPresenter"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -196,7 +196,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="AsyncOptionsView/ViewControl"]
+[node name="VBoxContainer" type="VBoxContainer" parent="OptionsPresenter/PresenterControl"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 1
 anchors_preset = 8
@@ -211,7 +211,7 @@ offset_bottom = 380.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LastLineText" type="RichTextLabel" parent="AsyncOptionsView/ViewControl"]
+[node name="LastLineText" type="RichTextLabel" parent="OptionsPresenter/PresenterControl"]
 visible = false
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 1
@@ -241,7 +241,7 @@ theme_override_styles/normal = ExtResource("3_46gk8")
 text = "The last line text goes here"
 scroll_active = false
 
-[node name="ColorRect" type="Panel" parent="AsyncOptionsView/ViewControl/LastLineText"]
+[node name="ColorRect" type="Panel" parent="OptionsPresenter/PresenterControl/LastLineText"]
 show_behind_parent = true
 layout_mode = 1
 anchors_preset = 15
@@ -251,7 +251,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = ExtResource("4_utoye")
 
-[node name="LastLineCharacterNameText" type="RichTextLabel" parent="AsyncOptionsView/ViewControl"]
+[node name="LastLineCharacterNameText" type="RichTextLabel" parent="OptionsPresenter/PresenterControl"]
 visible = false
 clip_contents = false
 custom_minimum_size = Vector2(250, 0)
@@ -284,7 +284,7 @@ text = "Character Name"
 fit_content = true
 scroll_active = false
 
-[node name="CharacterNameBubble" type="Panel" parent="AsyncOptionsView/ViewControl/LastLineCharacterNameText"]
+[node name="CharacterNameBubble" type="Panel" parent="OptionsPresenter/PresenterControl/LastLineCharacterNameText"]
 self_modulate = Color(0.529412, 0.788235, 0.764706, 1)
 show_behind_parent = true
 layout_mode = 1

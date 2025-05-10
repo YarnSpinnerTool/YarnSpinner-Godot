@@ -4,11 +4,11 @@ tags:
 <<declare $myVariableSetFromGDScript to "" as string>>
 <<log "Starting GDScriptIntegration sample!">>
 Gary: So, can I use [fx type="wave"]GDScript[/fx] with YarnSpinner?  #my_metadata #line:02fa0cd 
-Derrick: Many features can be used with GDScript. For example, you can make a custom view like the one in this scene. #line:09c1c2c 
+Derrick: Many features can be used with GDScript. For example, you can make a custom presenter like the one in this scene. #line:09c1c2c 
 Derrick: You can also interact with DialogueRunner and variable storage nodes with cross-language scripting. #line:0b086af 
 Derrick: And you can also write commands in GDScript by using AddCommandHandlerCallable. Your GDScript commands can even use 'await'. Look! #line:0c22e97 
 <<show_logo "res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png">> 
-Derrick: Do you know about options, too? You can make an "OptionsListView" with GDScript, too.  #line:0cc7452 
+Derrick: Do you know about options, too? You can make an "OptionsPresenter" with GDScript, too.  #line:0cc7452 
 -> Yes #line:0cd81c1 
 	Derrick: Nice. #line:0b3ca20 
 	<<jump GDScriptIntegrationFinish>>

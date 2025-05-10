@@ -15,7 +15,7 @@ namespace YarnSpinnerGodot;
 /// the next line, or cancel the entire dialogue session.
 /// </summary>
 [GlobalClass]
-public partial class LineAdvancer : Node, AsyncDialogueViewBase
+public partial class LineAdvancer : Node, DialoguePresenter
 {
     [Export] DialogueRunner? runner;
 
@@ -87,7 +87,7 @@ public partial class LineAdvancer : Node, AsyncDialogueViewBase
     /// <summary>
     /// Called by a dialogue view to signal that a line is running.
     /// </summary>
-    /// <inheritdoc cref="AsyncLineView.RunLineAsync" path="/param"/>
+    /// <inheritdoc cref="LinePresenter.RunLineAsync" path="/param"/>
     /// <returns>A completed task.</returns>
     public YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
     {
@@ -101,7 +101,7 @@ public partial class LineAdvancer : Node, AsyncDialogueViewBase
     /// <summary>
     /// Called by a dialogue view to signal that options are running.
     /// </summary>
-    /// <inheritdoc cref="AsyncLineView.RunOptionsAsync" path="/param"/>
+    /// <inheritdoc cref="LinePresenter.RunOptionsAsync" path="/param"/>
     /// <returns>A completed task indicating that no option was selected by
     /// this view.</returns>
     public YarnTask<DialogueOption?> RunOptionsAsync(DialogueOption[] dialogueOptions,

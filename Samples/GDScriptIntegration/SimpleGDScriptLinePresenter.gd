@@ -6,12 +6,12 @@ extends Node
 @export var continue_button : Button
 @export var character_name_label : RichTextLabel
 @export var line_text_label : RichTextLabel
-@export var view_control: Node 
+@export var presenter_control: Node 
 
 var line_finished: bool 
 
 func _ready() -> void: 
-	view_control.visible = false 
+	presenter_control.visible = false 
 	
 func on_dialogue_start_async() -> void:
 	print("Dialogue started ")
@@ -31,7 +31,7 @@ func run_line_async(line: Dictionary) -> void:
 		#   "text_without_character_name":"So, can I use GDScript with YarnSpinner?"
 		#  }
 	#  }
-	view_control.visible = true
+	presenter_control.visible = true
 	line_finished = false
 	print('Line: ' + JSON.stringify(line))
 	continue_button.pressed.connect(continue_line)
@@ -65,4 +65,4 @@ func continue_line() -> void:
 
 func dialogue_complete_async() -> void:
 	print("Dialogue complete ")
-	view_control.visible = false
+	presenter_control.visible = false

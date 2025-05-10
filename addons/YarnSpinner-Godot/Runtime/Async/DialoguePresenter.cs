@@ -15,30 +15,30 @@ namespace YarnSpinnerGodot;
 /// <remarks>
 /// <para>When the Dialogue Runner encounters content that the user should
 /// see - that is, lines or options - it sends that content to all of the
-/// dialogue views stored in <see cref="DialogueRunner.dialogueViews"/>. The
-/// Dialogue Runner then waits until all Dialogue Views have reported that
+/// Dialogue Presenters stored in <see cref="DialogueRunner.dialoguePresenters"/>. The
+/// Dialogue Runner then waits until all Dialogue Presenters have reported that
 /// they have finished presenting the content.</para>
 /// <para>
 /// To use this class, subclass it, and implement its required methods. Once
 /// you have written your subclass, attach it as a component to a <see
 /// cref="GameObject"/>, and add this game object to the list of Dialogue
-/// Views in your scene's <see cref="DialogueRunner"/>.
+/// Presenters in your scene's <see cref="DialogueRunner"/>.
 /// </para>
-/// <para>Dialogue Views do not need to handle every kind of content that
+/// <para>Dialogue Presenter do not need to handle every kind of content that
 /// the Dialogue Runner might produce. For example, you might have one
-/// Dialogue View that handles Lines, and another that handles Options. The
-/// built-in <see cref="LineView"/> class is an example of this, in that it
+/// Dialogue Presenter that handles Lines, and another that handles Options. The
+/// built-in <see cref="LinePresenter"/> class is an example of this, in that it
 /// only handles Lines and does nothing when it receives Options.</para>
 /// <para>
-/// You may also have multiple Dialogue Views that handle the <i>same</i>
-/// kind of content. For example, you may have a Dialogue View that receives
-/// Lines and uses them to play voice-over audio, and a second Dialogue View
+/// You may also have multiple Dialogue Presenters that handle the <i>same</i>
+/// kind of content. For example, you may have a Dialogue Presenter that receives
+/// Lines and uses them to play voice-over audio, and a second Dialogue Presenter
 /// that also receives Lines and uses them to display on-screen subtitles.
 /// </para>
 /// </remarks>
 /// <seealso cref="LineProviderBehaviour"/>
-/// <seealso cref="DialogueRunner.dialogueViews"/>
-public interface AsyncDialogueViewBase
+/// <seealso cref="DialogueRunner.dialoguePresenters"/>
+public interface DialoguePresenter
 {
     /// <summary>
     /// Called by the <see cref="DialogueRunner"/> to signal that a line
@@ -46,21 +46,21 @@ public interface AsyncDialogueViewBase
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When this method is called, the Dialogue View should present the
+    /// When this method is called, the Dialogue Presenter should present the
     /// line to the user. The content to present is contained within the
     /// <paramref name="line"/> parameter, which contains information about
     /// the line in the user's current locale.
     /// </para>
     /// <para style="tip">
-    /// It's up to the Dialogue View to decide what "presenting" the line
+    /// It's up to the Dialogue Presenter to decide what "presenting" the line
     /// may mean; for example, showing on-screen text, playing voice-over
     /// audio, or updating on-screen portraits to show a picture of the
     /// speaking character.
     /// </para>
     /// <para>
     /// The <see cref="DialogueRunner"/> will wait until the tasks from all
-    /// of its dialogue views have completed before continuing to the next
-    /// piece of content. If your dialogue view does not need to handle the
+    /// of its Dialogue Presenters have completed before continuing to the next
+    /// piece of content. If your Dialogue Presenter does not need to handle the
     /// line, it should return immediately.
     /// </para>
     /// <para style="info">The value of the <paramref name="line"/>
@@ -74,9 +74,9 @@ public interface AsyncDialogueViewBase
     /// </remarks>
     /// <param name="line">The line to present.</param>
     /// <param name="token">A <see cref="LineCancellationToken"/> that
-    /// represents whether the dialogue view should hurry it its
+    /// represents whether the Dialogue Presenter should hurry it its
     /// presentation of the line, or stop showing the current line.</param>
-    /// <returns>A task that completes when the dialogue view has finished
+    /// <returns>A task that completes when the Dialogue Presenter has finished
     /// showing the line to the user.</returns>
     /// <seealso cref="RunOptionsAsync(DialogueOption[],
     /// CancellationToken)"/>
@@ -88,7 +88,7 @@ public interface AsyncDialogueViewBase
 #pragma warning restore CS0618 // Type or member is obsolete
         {
             // phaseComplete is a flag that represents whether the current
-            // 'phase' of a v2-style dialogue view (Run, Interrupt, Dismiss) is
+            // 'phase' of a v2-style Dialogue Presenter (Run, Interrupt, Dismiss) is
             // complete or not.
             bool phaseComplete = false;
             void PhaseComplete() => phaseComplete = true;
@@ -151,14 +151,14 @@ public interface AsyncDialogueViewBase
     /// collection of options that the user should choose from. Each option
     /// is represented by a <see cref="DialogueOption"/> object, which
     /// contains information about the option.</para>
-    /// <para>When this method is called, the Dialogue View should display
+    /// <para>When this method is called, the Dialogue Presenter should display
     /// appropriate user interface elements that let the user choose among
     /// the options.</para>
     /// <para>This method should await until an option is selected, and then
     /// return the selected option. If this view doesn't handle options, or
     /// is otherwise unable to select an option, it should return <see
-    /// cref="YarnAsync.NoOptionSelected"/>. The dialogue runner will wait
-    /// for all dialogue views to return, so if a dialogue view doesn't or
+    /// cref="DialogueRunner.NoOptionSelected"/>. The dialogue runner will wait
+    /// for all Dialogue Presenters to return, so if a Dialogue Presenter doesn't or
     /// can't handle options, it's good practice to return as soon as
     /// possible. 
     /// </para>
@@ -169,17 +169,17 @@ public interface AsyncDialogueViewBase
     /// </para>
     /// <para style="note">
     /// The default implementation of this method returns <see
-    /// cref="YarnAsync.NoOptionSelected"/>. 
+    /// cref="DialogueRunner.NoOptionSelected"/>. 
     /// </para>
     /// </remarks>
     /// <param name="dialogueOptions">The set of options that should be
     /// displayed to the user.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/>
     /// that becomes cancelled when the dialogue runner no longer needs this
-    /// dialogue view to return an option.</param>
-    /// <returns>A task that indicates which option was selected, or that this dialogue view did not select an option.</returns>
+    /// Dialogue Presenter to return an option.</param>
+    /// <returns>A task that indicates which option was selected, or that this Dialogue Presenter did not select an option.</returns>
     /// <seealso cref="RunLineAsync(LocalizedLine, LineCancellationToken)"/>
-    /// <seealso cref="YarnAsync.NoOptionSelected"/> 
+    /// <seealso cref="DialogueRunner.NoOptionSelected"/> 
     public async YarnTask<DialogueOption?> RunOptionsAsync(DialogueOption[] dialogueOptions,
         CancellationToken cancellationToken)
     {
@@ -237,7 +237,7 @@ public interface AsyncDialogueViewBase
     /// <para style="note">The default implementation of this method does
     /// nothing.</para>
     /// </remarks>
-    /// <returns>A task that represents any work done by this dialogue view in order to get ready for dialogue to run.</returns>
+    /// <returns>A task that represents any work done by this Dialogue Presenter in order to get ready for dialogue to run.</returns>
     public YarnTask OnDialogueStartedAsync()   {
         // backwards compatibility with 0.2.*
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -265,7 +265,7 @@ public interface AsyncDialogueViewBase
     /// <para style="note">The default implementation of this method does
     /// nothing.</para>
     /// </remarks>
-    /// <returns>A task that represents any work done by this dialogue view
+    /// <returns>A task that represents any work done by this Dialogue Presenter
     /// in order to clean up after running dialogue.</returns>
     public YarnTask OnDialogueCompleteAsync()
     {

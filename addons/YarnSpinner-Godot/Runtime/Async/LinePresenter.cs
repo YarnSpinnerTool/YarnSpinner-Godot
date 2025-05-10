@@ -10,17 +10,17 @@ using Godot;
 namespace YarnSpinnerGodot;
 
 /// <summary>
-/// A Dialogue View that presents lines of dialogue, using Godot UI
+/// A Dialogue Presenter that presents lines of dialogue, using Godot UI
 /// elements.
 /// </summary>
 [GlobalClass]
-public partial class AsyncLineView : Node, AsyncDialogueViewBase
+public partial class LinePresenter : Node, DialoguePresenter
 {
     [Export] public DialogueRunner? dialogueRunner;
 
     /// <summary>
-    /// The canvas group that contains the UI elements used by this Line
-    /// View.
+    /// The Control that contains the UI elements used by this Line
+    /// Presenter.
     /// </summary>
     /// <remarks>
     /// If <see cref="useFadeEffect"/> is true, then the alpha value of this
@@ -28,7 +28,7 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
     /// and dismissal.
     /// </remarks>
     /// <seealso cref="useFadeEffect"/>
-    [Export] public Control? viewControl;
+    [Export] public Control? presenterControl;
 
     /// <summary>
     /// The <see cref="RichTextLabel"/> object that displays the text of
@@ -89,18 +89,18 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
 
 
     /// <summary>
-    /// Controls whether the line view should fade in when lines appear, and
+    /// Controls whether the line presenter should fade in when lines appear, and
     /// fade out when lines disappear.
     /// </summary>
     /// <remarks><para>If this value is <see langword="true"/>, the <see
-    /// cref="viewControl"/> object's alpha property will animate from 0 to
+    /// cref="presenterControl"/> object's alpha property will animate from 0 to
     /// 1 over the course of <see cref="fadeUpDuration"/> seconds when lines
     /// appear, and animate from 1 to zero over the course of <see
     /// cref="fadeDownDuration"/> seconds when lines disappear.</para>
     /// <para>If this value is <see langword="false"/>, the <see
-    /// cref="viewControl"/> object will appear instantaneously.</para>
+    /// cref="presenterControl"/> object will appear instantaneously.</para>
     /// </remarks>
-    /// <seealso cref="viewControl"/>
+    /// <seealso cref="presenterControl"/>
     /// <seealso cref="fadeUpDuration"/>
     /// <seealso cref="fadeDownDuration"/>
     [Export] public bool useFadeEffect = true;
@@ -123,17 +123,17 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
 
 
     /// <summary>
-    /// Controls whether this Line View will automatically to the Dialogue
+    /// Controls whether this Line Presenter will automatically to the Dialogue
     /// Runner that the line is complete as soon as the line has finished
     /// appearing.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If this value is true, the Line View will 
+    /// If this value is true, the Line Presenter will 
     /// </para>
     /// <para style="note"><para>The <see cref="DialogueRunner"/> will not
     /// proceed to the next piece of content (e.g. the next line, or the
-    /// next options) until all Dialogue Views have reported that they have
+    /// next options) until all Dialogue Presenters have reported that they have
     /// finished presenting their lines. If a <see cref="LineView"/> doesn't
     /// report that it's finished until it receives input, the <see
     /// cref="DialogueRunner"/> will end up pausing.</para>
@@ -192,7 +192,7 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
     /// '<' or '>' in your dialogue.
     /// If you need a more advanced or nuanced way to use
     /// BBCode in your yarn scripts, it's recommended to implement your own custom
-    /// dialogue view. 
+    /// Dialogue Presenter. 
     /// https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
     /// </summary>
     [Export] public bool ConvertHTMLToBBCode;
@@ -221,9 +221,9 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
     /// <inheritdoc/>
     public YarnTask OnDialogueCompleteAsync()
     {
-        if (IsInstanceValid(viewControl))
+        if (IsInstanceValid(presenterControl))
         {
-            viewControl!.Visible = false;
+            presenterControl!.Visible = false;
         }
 
         return YarnTask.CompletedTask;
@@ -238,9 +238,9 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
 
     public override void _Ready()
     {
-        if (IsInstanceValid(viewControl))
+        if (IsInstanceValid(presenterControl))
         {
-            viewControl!.Visible = false;
+            presenterControl!.Visible = false;
         }
 
         if (useTypewriterEffect)
@@ -264,7 +264,7 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
             if (dialogueRunner == null)
             {
                 GD.PushWarning(
-                    $"{nameof(AsyncLineView)} failed to find a dialogue runner! Please ensure that a {nameof(DialogueRunner)} is present, or set the {nameof(dialogueRunner)} property in the Inspector.",
+                    $"{nameof(LinePresenter)} failed to find a dialogue runner! Please ensure that a {nameof(DialogueRunner)} is present, or set the {nameof(dialogueRunner)} property in the Inspector.",
                     this);
             }
         }
@@ -284,13 +284,13 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
     }
 
     /// <summary>Presents a line using the configured text view.</summary>
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/param"/>
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/returns"/>
+    /// <inheritdoc cref="DialoguePresenter.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/param"/>
+    /// <inheritdoc cref="DialoguePresenter.RunLineAsync(LocalizedLine, LineCancellationToken)" path="/returns"/>
     public async YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
     {
         if (lineText == null)
         {
-            GD.PushError($"Line view does not have a text view. Skipping line {line.TextID} (\"{line.RawText}\")");
+            GD.PushError($"Line Presenter does not have a text view. Skipping line {line.TextID} (\"{line.RawText}\")");
             return;
         }
 
@@ -302,7 +302,7 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
             if (characterNameText == null)
             {
                 GD.PushWarning(
-                    $"Line view is configured to show character names, but no character name text view was provided.",
+                    $"Line Presenter is configured to show character names, but no character name text view was provided.",
                     this);
             }
             else
@@ -343,14 +343,13 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
             }
         }
 
-        if (IsInstanceValid(viewControl))
+        if (IsInstanceValid(presenterControl))
         {
             // fading up the UI
-            viewControl!.Visible = true;
+            presenterControl!.Visible = true;
             if (useFadeEffect)
             {
-             
-                await Effects.FadeAlphaAsync(viewControl, 0, 1, fadeDownDuration, token.HurryUpToken);
+                await Effects.FadeAlphaAsync(presenterControl, 0, 1, fadeDownDuration, token.HurryUpToken);
                 if (!IsInstanceValid(this))
                 {
                     return;
@@ -359,8 +358,8 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
             else
             {
                 // We're not fading up, so set the view control's alpha to 1 immediately.
-                var oldModulate = viewControl.Modulate;
-                viewControl.Modulate = new Color(oldModulate.R, oldModulate.G, oldModulate.B, 1.0f);
+                var oldModulate = presenterControl.Modulate;
+                presenterControl.Modulate = new Color(oldModulate.R, oldModulate.G, oldModulate.B, 1.0f);
             }
         }
 
@@ -413,26 +412,26 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
         // if we are set to autoadvance how long do we hold for before continuing?
         if (autoAdvance)
         {
-            await YarnTask.Delay((int) (autoAdvanceDelay * 1000), token.NextLineToken);
+            await YarnTask.Delay((int)(autoAdvanceDelay * 1000), token.NextLineToken);
         }
         else
         {
             await YarnTask.WaitUntilCanceled(token.NextLineToken);
         }
 
-        if (IsInstanceValid(viewControl))
+        if (IsInstanceValid(presenterControl))
         {
             // we fade down the UI
             if (useFadeEffect)
             {
-                await Effects.FadeAlphaAsync(viewControl, 1, 0, fadeDownDuration, token.HurryUpToken);
+                await Effects.FadeAlphaAsync(presenterControl, 1, 0, fadeDownDuration, token.HurryUpToken);
                 if (!IsInstanceValid(this))
                 {
                     return;
                 }
             }
 
-            viewControl!.Visible = false;
+            presenterControl!.Visible = false;
         }
 
         // the final bit of clean up is to remove the cancel listener from the button
@@ -443,11 +442,11 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
         }
     }
 
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/summary"/> 
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/param"/> 
-    /// <inheritdoc cref="AsyncDialogueViewBase.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/returns"/> 
+    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/summary"/> 
+    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/param"/> 
+    /// <inheritdoc cref="DialoguePresenter.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/returns"/> 
     /// <remarks>
-    /// This dialogue view does not handle any options.
+    /// This Dialogue Presenter does not handle any options.
     /// </remarks>
     public YarnTask<DialogueOption?> RunOptionsAsync(DialogueOption[] dialogueOptions,
         CancellationToken cancellationToken)
@@ -507,7 +506,7 @@ public partial class AsyncLineView : Node, AsyncDialogueViewBase
 public abstract partial class TemporalMarkupHandler : Node
 {
     /// <summary>
-    /// Called when the line view receives the line, to prepare for showing
+    /// Called when the Line Presenter receives the line, to prepare for showing
     /// the line.
     /// </summary>
     /// <remarks>
@@ -543,7 +542,7 @@ public abstract partial class TemporalMarkupHandler : Node
     /// whether the </param>
     /// <returns>A task that completes when the <see
     /// cref="TemporalMarkupHandler"/> has completed presenting this
-    /// character. Dialogue views will wait until this task is complete
+    /// character. Dialogue Presenters will wait until this task is complete
     /// before displaying the remainder of the line.</returns>
     public abstract YarnTask PresentCharacter(int currentCharacterIndex, RichTextLabel text,
         CancellationToken cancellationToken);
@@ -656,7 +655,6 @@ public sealed partial class TypewriterHandler : TemporalMarkupHandler
             {
                 pauses.Pop();
                 pauseDuration = pause.duration;
-                
             }
         }
 
@@ -665,7 +663,7 @@ public sealed partial class TypewriterHandler : TemporalMarkupHandler
         float timePoint = accumulatedPauses;
         if (lettersPerSecond > 0)
         {
-            timePoint += (float) currentCharacterIndex * SecondsPerLetter;
+            timePoint += (float)currentCharacterIndex * SecondsPerLetter;
         }
 
         await YarnTask.WaitUntil(() => accumulatedTime >= timePoint, cancellationToken);

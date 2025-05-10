@@ -1,5 +1,5 @@
 extends Button
-class_name SimpleGDScriptOptionView 
+class_name SimpleGDScriptOptionItem
 @export var label: RichTextLabel 
 
 var option_dict: Dictionary

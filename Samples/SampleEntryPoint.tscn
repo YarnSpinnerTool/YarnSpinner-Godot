@@ -11,7 +11,7 @@ _spaceButton = NodePath("HBoxContainer/VBoxContainer/Space")
 _visualNovelButton = NodePath("HBoxContainer/VBoxContainer2/Visual Novel")
 _markupPaletteButton = NodePath("HBoxContainer/VBoxContainer3/MarkupPalette")
 _pausingTypewriterButton = NodePath("HBoxContainer/VBoxContainer4/PausingTypewriter")
-_roundedViewsButton = NodePath("HBoxContainer/VBoxContainer5/RoundedViews")
+_roundedViewsButton = NodePath("HBoxContainer/VBoxContainer5/RoundedUI")
 _sqliteButton = NodePath("HBoxContainer/VBoxContainer6/SQLite")
 _gdscriptButton = NodePath("HBoxContainer/VBoxContainer7/GDScriptIntegration")
 
@@ -67,7 +67,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
-text = "0.3.0-b5"
+text = "0.3.0-b6"
 script = ExtResource("2_shsu2")
 
 [node name="Logo" type="TextureRect" parent="."]
@@ -190,14 +190,14 @@ scroll_active = false
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RoundedViews" type="Button" parent="HBoxContainer/VBoxContainer5"]
+[node name="RoundedUI" type="Button" parent="HBoxContainer/VBoxContainer5"]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
-text = "Rounded Views"
+text = "Rounded UI"
 
 [node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer5"]
 layout_mode = 2

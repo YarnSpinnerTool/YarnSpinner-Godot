@@ -18,20 +18,20 @@ namespace YarnSpinnerGodot;
 
 /// <summary>
 /// A Line Cancellation Token stores information about whether a dialogue
-/// view should stop its delivery.
+/// presenter should stop its delivery.
 /// </summary>
 /// <remarks>
-/// <para>Dialogue views receive Line Cancellation Tokens as a parameter to
-/// <see cref="AsyncDialogueViewBase.RunLineAsync"/>. Line Cancellation
+/// <para>Dialogue presenter receive Line Cancellation Tokens as a parameter to
+/// <see cref="DialoguePresenter.RunLineAsync"/>. Line Cancellation
 /// Tokens indicate whether the user has requested that the line's delivery
-/// should be hurried up, and whether the dialogue view should stop showing
+/// should be hurried up, and whether the dialogue presenter should stop showing
 /// the current line.</para>
 /// </remarks>
 public struct LineCancellationToken
 {
     /// <summary>
     /// A <see cref="CancellationToken"/> that becomes cancelled when a <see
-    /// cref="DialogueRunner"/> wishes all dialogue views to stop running
+    /// cref="DialogueRunner"/> wishes all dialogue presenters to stop running
     /// the current line. For example, on-screen UI should be dismissed, and
     /// any ongoing audio playback should be stopped.
     /// </summary>
@@ -42,7 +42,7 @@ public struct LineCancellationToken
 
     /// <summary>
     /// A <see cref="CancellationToken"/> that becomes cancelled when a <see
-    /// cref="DialogueRunner"/> wishes all dialogue views to speed up their
+    /// cref="DialogueRunner"/> wishes all dialogue presenters to speed up their
     /// delivery of their line, if appropriate. For example, UI animations
     /// should be played faster or skipped.
     /// </summary>
@@ -57,7 +57,7 @@ public struct LineCancellationToken
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If this value is <see langword="true"/>, dialogue views should
+    /// If this value is <see langword="true"/>, dialogue presenters should
     /// present the current line, so that the next piece of content can
     /// be shown to the user.
     /// </para>
@@ -72,7 +72,7 @@ public struct LineCancellationToken
     /// be hurried up.
     /// </summary>
     /// <remarks><para>If this value is <see langword="true"/>, dialogue
-    /// views should speed up any ongoing delivery of the line, such as
+    /// presenters should speed up any ongoing delivery of the line, such as
     /// on-screen animations, but are not required to finish delivering the
     /// line entirely (that is, UI elements may remain on screen).</para>
     /// <para>If <see cref="IsNextLineRequested"/> is <see
@@ -194,10 +194,10 @@ public partial class DialogueRunner : Godot.Node
     }
 
     /// <summary>
-    /// The list of dialogue views that the dialogue runner delivers content
+    /// The list of dialogue presenters that the dialogue runner delivers content
     /// to.
     /// </summary>
-    [Export] public Array<Godot.Node?> dialogueViews = new();
+    [Export] public Array<Godot.Node?> dialoguePresenters = [];
 
     /// <summary>
     /// Gets a value that indicates if the dialogue is actively
@@ -224,7 +224,7 @@ public partial class DialogueRunner : Godot.Node
     /// <summary>
     /// If this value is set, when an option is selected, the line contained
     /// in it (<see cref="OptionSet.Option.Line"/>) will be delivered to the
-    /// dialogue runner's dialogue views as though it had been written as a
+    /// dialogue runner's dialogue presenters as though it had been written as a
     /// separate line.
     /// </summary>
     /// <remarks>
@@ -316,8 +316,8 @@ public partial class DialogueRunner : Godot.Node
     /// Gets a completed <see cref="YarnTask{DialogueOption}"/> that
     /// contains a <see langword="null"/> value.
     /// </summary>
-    /// <remarks>Dialogue views can return this value from their <see
-    /// cref="AsyncDialogueViewBase.RunOptionsAsync(DialogueOption[],
+    /// <remarks>dialogue presenters can return this value from their <see
+    /// cref="DialoguePresenter.RunOptionsAsync(DialogueOption[],
     /// CancellationToken)" method to indicate that no option was selected.
     /// />
     public static YarnTask<DialogueOption?> NoOptionSelected
@@ -360,13 +360,13 @@ public partial class DialogueRunner : Godot.Node
     /// </summary>
     public override void _Ready()
     {
-        foreach (var view in dialogueViews)
+        foreach (var presenter in dialoguePresenters)
         {
-            if (view == null || view is not AsyncDialogueViewBase && view.GetScript().Obj is not GDScript)
+            if (presenter == null || presenter is not DialoguePresenter && presenter.GetScript().Obj is not GDScript)
             {
                 GD.PushError(
-                    $"Node {view?.Name} ({view?.GetType()}) added to {nameof(dialogueViews)} does not appear to be a dialogue view. " +
-                    $"Ensure only dialogue views are added to {nameof(dialogueViews)}.");
+                    $"Node {presenter?.Name} ({presenter?.GetType()}) added to {nameof(dialoguePresenters)} does not appear to be a dialogue presenter. " +
+                    $"Ensure only dialogue presenters are added to {nameof(dialoguePresenters)}.");
             }
         }
 
@@ -385,7 +385,7 @@ public partial class DialogueRunner : Godot.Node
 
     /// <summary>
     /// Stops the dialogue immediately, and cancels any currently running
-    /// dialogue views.
+    /// dialogue presenters.
     /// </summary>
     public void Stop()
     {
@@ -474,26 +474,26 @@ public partial class DialogueRunner : Godot.Node
         currentLineHurryUpSource = null;
 
         var pendingTasks = new HashSet<YarnTask>();
-        foreach (var view in this.dialogueViews)
+        foreach (var presenter in this.dialoguePresenters)
         {
-            if (view == null)
+            if (!IsInstanceValid(presenter))
             {
-                // The view doesn't exist. Skip it.
+                // The presenter doesn't exist. Skip it.
                 continue;
             }
 
-            if (view is AsyncDialogueViewBase asyncView)
+            if (presenter is DialoguePresenter asyncPresenter)
             {
-                // Tell all of our views that the dialogue has finished
+                // Tell all of our presenters that the dialogue has finished
                 async YarnTask RunCompletion()
                 {
                     try
                     {
-                        await ((AsyncDialogueViewBase) view).OnDialogueCompleteAsync();
+                        await ((DialoguePresenter)presenter).OnDialogueCompleteAsync();
                     }
                     catch (System.Exception e)
                     {
-                        GD.PushError(e, view);
+                        GD.PushError(e, presenter);
                     }
                 }
 
@@ -501,24 +501,24 @@ public partial class DialogueRunner : Godot.Node
 
                 pendingTasks.Add(task);
             }
-            else if (view.GetScript().Obj is GDScript)
+            else if (presenter.GetScript().Obj is GDScript)
             {
                 const string gdScriptMethodName = "on_dialogue_complete_async";
 
                 async YarnTask RunGDScriptCompletion()
                 {
-                    if (!view.HasMethod(gdScriptMethodName))
+                    if (!presenter.HasMethod(gdScriptMethodName))
                     {
                         return;
                     }
 
-                    var methodReturn = view.Call(gdScriptMethodName);
+                    var methodReturn = presenter.Call(gdScriptMethodName);
 
                     if (methodReturn.Obj != null &&
                         methodReturn.As<GodotObject>().GetClass() == "GDScriptFunctionState")
                     {
                         //  GDScript method with await statements - wait for them to finish.
-                        await ((SceneTree) Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
+                        await ((SceneTree)Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
                     }
                 }
 
@@ -526,7 +526,7 @@ public partial class DialogueRunner : Godot.Node
             }
         }
 
-        // Wait for all views to finish doing their clean-up
+        // Wait for all presenters to finish doing their clean-up
         await YarnTask.WhenAll(pendingTasks);
     }
 
@@ -577,17 +577,16 @@ public partial class DialogueRunner : Godot.Node
                 // Attempt a last-ditch dispatch by emitting our 'onUnhandledCommand'
                 // signal. Even with nothing connected, it seems there's a default handler registered as a fallback.
                 // ignore that one with a Linq expression.
-                List<Dictionary> connections = GetSignalConnectionList(SignalName.onUnhandledCommand).Where(
-                    dict =>
+                List<Dictionary> connections = GetSignalConnectionList(SignalName.onUnhandledCommand).Where(dict =>
+                {
+                    if (!dict.ContainsKey("callable"))
                     {
-                        if (!dict.ContainsKey("callable"))
-                        {
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        var handlerCallable = dict["callable"].AsCallable();
-                        return !(handlerCallable.Target == this && handlerCallable.Delegate == null);
-                    }).ToList();
+                    var handlerCallable = dict["callable"].AsCallable();
+                    return !(handlerCallable.Target == this && handlerCallable.Delegate == null);
+                }).ToList();
                 if (connections.Count > 0)
                 {
                     // We can emit the signal!
@@ -641,7 +640,7 @@ public partial class DialogueRunner : Godot.Node
     }
 
     /// <summary>
-    /// Runs a localised line on all dialogue views.
+    /// Runs a localised line on all dialogue presenters.
     /// </summary>
     /// <remarks>
     /// This method can be called from two places: 1. when a line is being run,
@@ -679,26 +678,26 @@ public partial class DialogueRunner : Godot.Node
 
         var pendingTasks = new HashSet<YarnTask>();
 
-        foreach (var view in this.dialogueViews)
+        foreach (var presenter in this.dialoguePresenters)
         {
-            if (view == null)
+            if (!IsInstanceValid(presenter))
             {
-                // The view doesn't exist. Skip it.
+                // The presenter doesn't exist. Skip it.
                 continue;
             }
 
-            // Legacy support: if this view is a v2-style DialogueViewBase,
+            // Legacy support: if this presenter is a v2-style DialogueViewBase,
             // then set its requestInterrupt delegate to be one that stops
             // the current line.
 #pragma warning disable CS0618 // 'construct' is obsolete
-            if (view is DialogueViewBase v2View)
+            if (presenter is DialogueViewBase v2View)
             {
                 v2View.requestInterrupt = RequestNextLine;
             }
 #pragma warning restore CS0618 // 'construct' is obsolete
-            if (view is AsyncDialogueViewBase asyncView)
+            if (presenter is DialoguePresenter asyncPresenter)
             {
-                // Tell all of our views to run this line, and give them a
+                // Tell all of our presenters to run this line, and give them a
                 // cancellation token they can use to interrupt the line if needed.
 
                 async YarnTask RunLineAndInvokeCompletion(LineCancellationToken token)
@@ -706,11 +705,11 @@ public partial class DialogueRunner : Godot.Node
                     try
                     {
                         // Run the line and wait for it to finish
-                        await asyncView.RunLineAsync(localisedLine, token);
+                        await asyncPresenter.RunLineAsync(localisedLine, token);
                     }
                     catch (Exception e)
                     {
-                        GD.PushError(e, view);
+                        GD.PushError(e, presenter);
                     }
                 }
 
@@ -718,32 +717,31 @@ public partial class DialogueRunner : Godot.Node
 
                 pendingTasks.Add(task);
             }
-            else if (view.GetScript().Obj != null && view.GetScript().As<Resource>() is GDScript)
+            else if (presenter.GetScript().Obj != null && presenter.GetScript().As<Resource>() is GDScript)
             {
-                async YarnTask WaitForGDScriptView(Godot.Node gdScriptView)
+                async YarnTask WaitForGDScriptPresenter(Godot.Node gdscriptPresenter)
                 {
                     const string gdscriptMethodName = "run_line_async";
-                    if (!gdScriptView.HasMethod(gdscriptMethodName))
+                    if (!gdscriptPresenter.HasMethod(gdscriptMethodName))
                     {
                         return;
                     }
 
-                    // todo cancel token... 
-                    var methodReturn = gdScriptView.Call(gdscriptMethodName,
-                        GDScriptViewAdapter.LocalizedLineToDict(localisedLine));
+                    var methodReturn = gdscriptPresenter.Call(gdscriptMethodName,
+                        GDScriptPresenterAdapter.LocalizedLineToDict(localisedLine));
                     if (methodReturn.Obj != null &&
                         methodReturn.As<GodotObject>().GetClass() == "GDScriptFunctionState")
                     {
                         //  GDScript method with await statements - wait for them to finish.
-                        await ((SceneTree) Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
+                        await ((SceneTree)Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
                     }
                 }
 
-                pendingTasks.Add(WaitForGDScriptView(view));
+                pendingTasks.Add(WaitForGDScriptPresenter(presenter));
             }
         }
 
-        // Wait for all line view tasks to finish delivering the line.
+        // Wait for all line presenter tasks to finish delivering the line.
         await YarnTask.WhenAll(pendingTasks);
         if (!IsInstanceValid(this))
         {
@@ -804,14 +802,14 @@ public partial class DialogueRunner : Godot.Node
 
         var dialogueSelectionTCS = new YarnTaskCompletionSource<DialogueOption?>();
 
-        async YarnTask WaitForOptionsView(AsyncDialogueViewBase? view)
+        async YarnTask WaitForOptionsPresenter(DialoguePresenter? presenter)
         {
-            if (view == null)
+            if (presenter == null)
             {
                 return;
             }
 
-            var result = await view.RunOptionsAsync(localisedOptions, optionCancellationSource.Token);
+            var result = await presenter.RunOptionsAsync(localisedOptions, optionCancellationSource.Token);
             if (!IsInstanceValid(this))
             {
                 return;
@@ -819,37 +817,36 @@ public partial class DialogueRunner : Godot.Node
 
             if (result != null)
             {
-                // We no longer need the other views, so tell them to stop
+                // We no longer need the other presenters, so tell them to stop
                 // by cancelling the option selection.
                 optionCancellationSource.Cancel();
                 dialogueSelectionTCS.TrySetResult(result);
             }
         }
 
-        async YarnTask WaitForGDScriptView(Godot.Node gdScriptView)
+        async YarnTask WaitForGDScriptPresenter(Godot.Node gdScriptPresenter)
         {
             const string gdscriptMethodName = "run_options_async";
-            if (!gdScriptView.HasMethod(gdscriptMethodName))
+            if (!gdScriptPresenter.HasMethod(gdscriptMethodName))
             {
                 return;
             }
 
             const int noOptionSelected = -99;
             int selectedOption = noOptionSelected;
-            var methodReturn = gdScriptView.Call(gdscriptMethodName,
-                GDScriptViewAdapter.DialogueOptionsToDictArray(localisedOptions),
+            var methodReturn = gdScriptPresenter.Call(gdscriptMethodName,
+                GDScriptPresenterAdapter.DialogueOptionsToDictArray(localisedOptions),
                 Callable.From((int gdScriptSetOption) => selectedOption = gdScriptSetOption));
 
 
             if (methodReturn.Obj != null && methodReturn.As<GodotObject>().GetClass() == "GDScriptFunctionState")
             {
                 // callable is from GDScript with await statements
-                await ((SceneTree) Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
+                await ((SceneTree)Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
             }
 
 
-            // selectedOption will be set by the Callable sent to the GDScript view.
-            while (selectedOption == noOptionSelected)
+            // selectedOption will be set by the Callable sent to the GDScript presenter.
             {
                 await YarnTask.NextFrame();
                 if (!IsInstanceValid(this))
@@ -867,20 +864,20 @@ public partial class DialogueRunner : Godot.Node
         }
 
         var pendingTasks = new List<YarnTask>();
-        foreach (var view in this.dialogueViews)
+        foreach (var presenter in this.dialoguePresenters)
         {
-            if (view == null || !IsInstanceValid(view))
+            if (!IsInstanceValid(presenter))
             {
                 continue;
             }
 
-            if (view is AsyncDialogueViewBase asyncView)
+            if (presenter is DialoguePresenter asyncPresenter)
             {
-                pendingTasks.Add(WaitForOptionsView(asyncView));
+                pendingTasks.Add(WaitForOptionsPresenter(asyncPresenter));
             }
-            else if (view.GetScript().Obj is GDScript)
+            else if (presenter.GetScript().Obj is GDScript)
             {
-                pendingTasks.Add(WaitForGDScriptView(view));
+                pendingTasks.Add(WaitForGDScriptPresenter(presenter));
             }
         }
 
@@ -891,7 +888,7 @@ public partial class DialogueRunner : Godot.Node
             return;
         }
 
-        // at this point now every view has finished their handling of the options
+        // at this point now every presenter has finished their handling of the options
         // the first one to return a non-null value will be the one that is chosen option
         // or if everyone returned null that's an error
         DialogueOption? selectedOption;
@@ -902,7 +899,7 @@ public partial class DialogueRunner : Godot.Node
         }
         catch (Exception e)
         {
-            // If a view threw an exception while getting the option,
+            // If a presenter threw an exception while getting the option,
             // propagate it
             GD.PushError(e);
             return;
@@ -920,10 +917,10 @@ public partial class DialogueRunner : Godot.Node
 
         else if (selectedOption == null)
         {
-            // None of our option views returned an option, and our dialogue
+            // None of our option presenters returned an option, and our dialogue
             // wasn't cancelled. That's not allowed, because we don't know what
             // to do next!
-            GD.PushError($"No dialogue view returned an option selection! Hanging here!");
+            GD.PushError($"No dialogue presenter returned an option selection! Hanging here!");
             return;
         }
 
@@ -1010,35 +1007,35 @@ public partial class DialogueRunner : Godot.Node
         async YarnTask StartDialogueAsync()
         {
             var tasks = new List<YarnTask>();
-            foreach (var view in dialogueViews)
+            foreach (var presenter in dialoguePresenters)
             {
-                if (view == null || !IsInstanceValid(view))
+                if (presenter == null || !IsInstanceValid(presenter))
                 {
                     continue;
                 }
 
-                if (view is AsyncDialogueViewBase asyncView)
+                if (presenter is DialoguePresenter asyncPresenter)
                 {
-                    tasks.Add(asyncView.OnDialogueStartedAsync());
+                    tasks.Add(asyncPresenter.OnDialogueStartedAsync());
                 }
 
-                if (view.GetScript().Obj is GDScript)
+                if (presenter.GetScript().Obj is GDScript)
                 {
                     const string gdScriptMethodName = "on_dialogue_start_async";
 
                     async Task GDScriptDialogueStart()
                     {
-                        if (!view.HasMethod(gdScriptMethodName))
+                        if (!presenter.HasMethod(gdScriptMethodName))
                         {
                             return;
                         }
 
-                        var returnValue = view.Call(gdScriptMethodName);
+                        var returnValue = presenter.Call(gdScriptMethodName);
                         if (returnValue.Obj != null &&
                             returnValue.As<GodotObject>().GetClass() == "GDScriptFunctionState")
                         {
                             // callable is from GDScript with await statements
-                            await ((SceneTree) Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
+                            await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
                         }
                     }
 
@@ -1058,14 +1055,14 @@ public partial class DialogueRunner : Godot.Node
     }
 
     /// <summary>
-    /// Requests that all dialogue views stop showing the current line, and
+    /// Requests that all dialogue presenters stop showing the current line, and
     /// prepare to show the next piece of content.
     /// </summary>
     /// <remarks>
     /// <para>
     /// The specific behaviour of what happens when this method is called
     /// depends on the implementation of the Dialogue Runner's current
-    /// dialogue views.
+    /// dialogue presenters.
     /// </para>
     /// <para>
     /// If the dialogue runner is not currently running a line (for example,
@@ -1088,14 +1085,14 @@ public partial class DialogueRunner : Godot.Node
     }
 
     /// <summary>
-    /// Requests that all dialogue views speed up their delivery of the
+    /// Requests that all dialogue presenters speed up their delivery of the
     /// current line.
     /// </summary>
     /// <remarks>
     /// <para>
     /// The specific behaviour of what happens when this method is called
     /// depends on the implementation of the Dialogue Runner's current
-    /// dialogue views.
+    /// dialogue presenters.
     /// </para>
     /// <para>
     /// If the dialogue runner is not currently running a line (for example,
@@ -1126,7 +1123,7 @@ public partial class DialogueRunner : Godot.Node
     /// </summary>
     public static Godot.Node FindChild(string name)
     {
-        return ((SceneTree) Engine.GetMainLoop()).Root.FindChild(name, true, false);
+        return ((SceneTree)Engine.GetMainLoop()).Root.FindChild(name, true, false);
     }
 
     /// <summary>
@@ -1165,7 +1162,7 @@ public partial class DialogueRunner : Godot.Node
         var argsCount = methodInfo[0]["args"].AsGodotArray().Count;
         var argTypes = methodInfo[0]["args"].AsGodotArray().ToList()
             .ConvertAll((argDictionary) =>
-                (Variant.Type) argDictionary.AsGodotDictionary()["type"].AsInt32());
+                (Variant.Type)argDictionary.AsGodotDictionary()["type"].AsInt32());
         var invalidTargetMsg =
             $"Handler node for {commandName} is invalid. Was it freed?";
 
@@ -1184,7 +1181,7 @@ public partial class DialogueRunner : Godot.Node
             if (returnValue.Obj != null && returnValue.As<GodotObject>().GetClass() == "GDScriptFunctionState")
             {
                 // callable is from GDScript with await statements
-                await ((SceneTree) Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
+                await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
             }
         }
 

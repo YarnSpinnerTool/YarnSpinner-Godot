@@ -9,7 +9,7 @@ using Godot;
 
 namespace YarnSpinnerGodot;
 
-public partial class AsyncOptionItem : Control
+public partial class OptionItem : Control
 {
     [Export] RichTextLabel? text;
     [Export] private BaseButton? button;
@@ -22,7 +22,7 @@ public partial class AsyncOptionItem : Control
     {
         if (!IsInstanceValid(button))
         {
-            GD.PushError($"No {button} is set on this {nameof(AsyncOptionItem)}");
+            GD.PushError($"No {button} is set on this {nameof(OptionItem)}");
             return;
         }
 
@@ -59,12 +59,12 @@ public partial class AsyncOptionItem : Control
     {
         if (!IsInstanceValid(text))
         {
-            GD.PushError($"No {text} {nameof(RichTextLabel)} is set on this {nameof(AsyncOptionItem)}");
+            GD.PushError($"No {text} {nameof(RichTextLabel)} is set on this {nameof(OptionItem)}");
         }
 
         if (!IsInstanceValid(button))
         {
-            GD.PushError($"No {button} is set on this {nameof(AsyncOptionItem)}");
+            GD.PushError($"No {button} is set on this {nameof(OptionItem)}");
         }
         else
         {

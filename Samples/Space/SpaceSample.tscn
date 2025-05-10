@@ -144,9 +144,8 @@ MaxX = 1200
 
 [node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("4")]
 
-[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0" node_paths=PackedStringArray("dialogueViews")]
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("12_qnfx0")
-dialogueViews = [NodePath("../AsyncLineView"), NodePath("../AsyncOptionsView"), NodePath("../../LineAdvancer")]
 autoStart = true
 startNode = "SpaceIntro"
 

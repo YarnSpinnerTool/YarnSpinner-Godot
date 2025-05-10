@@ -27,7 +27,7 @@ namespace YarnSpinnerGodot;
 /// </summary>
 [GlobalClass]
 #pragma warning disable CS0618 // Type or member is obsolete
-public partial class GDScriptViewAdapter : Node, DialogueViewBase
+public partial class GDScriptPresenterAdapter : Node, DialogueViewBase
 #pragma warning restore CS0618 // Type or member is obsolete
 {
     /// <summary>

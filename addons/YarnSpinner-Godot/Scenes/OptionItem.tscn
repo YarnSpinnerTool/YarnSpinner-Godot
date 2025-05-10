@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b56ngcrq31nc5"]
 
-[ext_resource type="Script" uid="uid://e8endtpbxsql" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncOptionItem.cs" id="1_nktd7"]
+[ext_resource type="Script" uid="uid://e8endtpbxsql" path="res://addons/YarnSpinner-Godot/Runtime/Async/OptionItem.cs" id="1_lld20"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pe0aq"]
 content_margin_left = 7.0
@@ -19,7 +19,7 @@ offset_right = 119.0
 offset_bottom = -42.0
 size_flags_horizontal = 3
 mouse_filter = 1
-script = ExtResource("1_nktd7")
+script = ExtResource("1_lld20")
 text = NodePath("RichTextLabel")
 button = NodePath("Button")
 

@@ -6,7 +6,7 @@ using Godot;
 namespace YarnSpinnerGodot;
 
 /// <summary>
-/// Obsolete: Use <see cref="AsyncOptionItem"/>
+/// Obsolete: Use <see cref="OptionItem"/>
 /// </summary>
 public partial class OptionView : BaseButton
 {

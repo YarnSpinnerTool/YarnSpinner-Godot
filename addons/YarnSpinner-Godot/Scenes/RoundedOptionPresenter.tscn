@@ -1,9 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://dhnl6qatalt6x"]
 
-[ext_resource type="StyleBox" uid="uid://itxqi5xpilu6" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewStylebox.tres" id="1_brfok"]
-[ext_resource type="StyleBox" uid="uid://cqadffkf802cr" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewFocusedStyleBox.tres" id="2_tuu8c"]
+[ext_resource type="StyleBox" uid="uid://itxqi5xpilu6" path="res://addons/YarnSpinner-Godot/Scenes/RoundedUIStylebox.tres" id="1_brfok"]
+[ext_resource type="StyleBox" uid="uid://cqadffkf802cr" path="res://addons/YarnSpinner-Godot/Scenes/RoundedUIFocusedStyleBox.tres" id="2_tuu8c"]
 [ext_resource type="Script" uid="uid://e8endtpbxsql" path="res://addons/YarnSpinner-Godot/Runtime/Async/AsyncOptionItem.cs" id="3_kb3mh"]
-[ext_resource type="StyleBox" uid="uid://c3mta1ok76ssl" path="res://addons/YarnSpinner-Godot/Scenes/RoundedViewRichTextLabelStyleBox.tres" id="4_vp3pp"]
+[ext_resource type="StyleBox" uid="uid://c3mta1ok76ssl" path="res://addons/YarnSpinner-Godot/Scenes/RoundedUIRichTextLabelStyleBox.tres" id="4_vp3pp"]
+
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_m3qic"]
 
