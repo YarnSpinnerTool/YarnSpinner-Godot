@@ -38,16 +38,16 @@ public partial class SaliencySetter : Node
             return;
         }
 
-
+        
         dialogueRunner!.Ready += () =>
         {
             IContentSaliencyStrategy chosenStrategy = SaliencyStrategy switch
             {
                 SaliencyType.First => new FirstSaliencyStrategy(),
                 SaliencyType.Best => new BestSaliencyStrategy(),
-                SaliencyType.BestLeastRecentlyViewed => new BestLeastRecentlyViewedSalienceStrategy(
+                SaliencyType.BestLeastRecentlyViewed => new BestLeastRecentlyViewedSaliencyStrategy(
                     dialogueRunner.VariableStorage),
-                SaliencyType.RandomBestLeastRecentlyViewed => new RandomBestLeastRecentlyViewedSalienceStrategy(
+                SaliencyType.RandomBestLeastRecentlyViewed => new RandomBestLeastRecentlyViewedSaliencyStrategy(
                     dialogueRunner.VariableStorage),
                 _ => throw new Exception("Unknown Saliency Strategy")
             };

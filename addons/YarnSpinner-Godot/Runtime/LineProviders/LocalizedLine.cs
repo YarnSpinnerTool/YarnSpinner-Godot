@@ -99,7 +99,5 @@ public class LocalizedLine
         RawText = "!! ERROR: Missing line!",
         Substitutions = System.Array.Empty<string>(),
         TextID = "<missing>",
-        Text = new MarkupParseResult
-            {Text = "!! ERROR: Missing line!", Attributes = new System.Collections.Generic.List<MarkupAttribute>()}
-    };
+        Text = new MarkupParseResult("!! ERROR: Missing line!", new System.Collections.Generic.List<MarkupAttribute>())    };
 }
