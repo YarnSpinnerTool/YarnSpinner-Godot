@@ -1,42 +1,43 @@
-﻿#nullable disable
+﻿#nullable enable 
 using Godot;
+using Yarn.Markup;
 
 namespace YarnSpinnerGodot;
 
 /// <summary>
-/// Represents a line, ready to be presented to the user in the
-/// localisation they have specified.
+/// Represents a line, ready to be presented to the user in the localisation
+/// they have specified.
 /// </summary>
 public class LocalizedLine
 {
     /// <summary>
     /// DialogueLine's ID
     /// </summary>
-    public string TextID;
+    public string TextID = "<unknown>";
 
     /// <summary>
     /// DialogueLine's inline expression's substitution
     /// </summary>
-    public string[] Substitutions;
+    public string[] Substitutions = System.Array.Empty<string>();
 
     /// <summary>
     /// DialogueLine's text
     /// </summary>
-    public string RawText;
+    public string? RawText;
 
     /// <summary>
     /// Any metadata associated with this line.
     /// </summary>
-    public string[] Metadata;
+    public string[] Metadata = System.Array.Empty<string>();
 
     /// <summary>
     /// The name of the character, if present.
     /// </summary>
     /// <remarks>
-    /// This value will be <see langword="null"/> if the line does not
-    /// have a character name.
+    /// This value will be <see langword="null"/> if the line does not have
+    /// a character name.
     /// </remarks>
-    public string CharacterName
+    public string? CharacterName
     {
         get
         {
@@ -53,25 +54,25 @@ public class LocalizedLine
     }
 
     /// <summary>
-    /// The Resource associated with this line, if any.
+    /// The asset associated with this line, if any.
     /// </summary>
-    public Resource LineResource;
+    public PackedScene? Asset;
 
     /// <summary>
-    /// The underlying <see cref="Yarn.Markup.MarkupParseResult"/> for
-    /// this line.
+    /// The underlying <see cref="Yarn.Markup.MarkupParseResult"/> for this
+    /// line.
     /// </summary>
-    public Yarn.Markup.MarkupParseResult Text { get; set; }
+    public MarkupParseResult Text { get; set; }
 
     /// <summary>
-    /// The underlying <see cref="Yarn.Markup.MarkupParseResult"/> for
-    /// this line, with any `character` attribute removed.
+    /// The underlying <see cref="Yarn.Markup.MarkupParseResult"/> for this
+    /// line, with any `character` attribute removed.
     /// </summary>
     /// <remarks>
-    /// If the line has no `character` attribute, this method returns
-    /// the same value as <see cref="Text"/>.
+    /// If the line has no `character` attribute, this method returns the
+    /// same value as <see cref="Text"/>.
     /// </remarks>
-    public Yarn.Markup.MarkupParseResult TextWithoutCharacterName
+    public MarkupParseResult TextWithoutCharacterName
     {
         get
         {
@@ -80,8 +81,23 @@ public class LocalizedLine
             {
                 return Text.DeleteRange(characterNameAttribute);
             }
-
-            return Text;
+            else
+            {
+                return Text;
+            }
         }
     }
+
+    /// <summary>
+    /// A <see cref="LocalizedLine"/> object that represents content not
+    /// being found.
+    /// </summary>
+    public static readonly LocalizedLine InvalidLine = new LocalizedLine
+    {
+        Asset = null,
+        Metadata = System.Array.Empty<string>(),
+        RawText = "!! ERROR: Missing line!",
+        Substitutions = System.Array.Empty<string>(),
+        TextID = "<missing>",
+        Text = new MarkupParseResult("!! ERROR: Missing line!", new System.Collections.Generic.List<MarkupAttribute>())    };
 }

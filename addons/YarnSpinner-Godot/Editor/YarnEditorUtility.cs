@@ -4,7 +4,7 @@ using Godot;
 using File = System.IO.File;
 using Path = System.IO.Path;
 
-namespace YarnSpinnerGodot.Editor;
+namespace YarnSpinnerGodot;
 
 /// <summary>
 /// Contains utility methods for working with Yarn Spinner content in

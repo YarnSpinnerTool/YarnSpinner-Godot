@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnproject"
+type="Resource"
+uid="uid://c0qdj0h48fu6a"
+path="res://.godot/imported/GDScriptIntegration.yarnproject-3447483eda8ff87e2d80c8bc61bf66c1.tres"
+
+[deps]
+
+source_file="res://Samples/GDScriptIntegration/Dialogue/GDScriptIntegration.yarnproject"
+dest_files=["res://.godot/imported/GDScriptIntegration.yarnproject-3447483eda8ff87e2d80c8bc61bf66c1.tres"]
+
+[params]
+

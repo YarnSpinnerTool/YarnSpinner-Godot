@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dnyy064638ly1"]
+[gd_scene load_steps=5 format=3 uid="uid://dnyy064638ly1"]
 
-[ext_resource type="Script" path="res://Samples/SampleEntryPoint.cs" id="1"]
+[ext_resource type="Script" uid="uid://0y1x11g66ue4" path="res://Samples/SampleEntryPoint.cs" id="1"]
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
+[ext_resource type="Script" uid="uid://c3xcfucrfxoia" path="res://Samples/SampleVersionNumberLabel.cs" id="2_shsu2"]
 [ext_resource type="Texture2D" uid="uid://pbrr5yyepbx8" path="res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png" id="3_bcudv"]
 
 [node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton", "_roundedViewsButton", "_sqliteButton", "_gdscriptButton")]
@@ -10,7 +11,7 @@ _spaceButton = NodePath("HBoxContainer/VBoxContainer/Space")
 _visualNovelButton = NodePath("HBoxContainer/VBoxContainer2/Visual Novel")
 _markupPaletteButton = NodePath("HBoxContainer/VBoxContainer3/MarkupPalette")
 _pausingTypewriterButton = NodePath("HBoxContainer/VBoxContainer4/PausingTypewriter")
-_roundedViewsButton = NodePath("HBoxContainer/VBoxContainer5/RoundedViews")
+_roundedViewsButton = NodePath("HBoxContainer/VBoxContainer5/RoundedUI")
 _sqliteButton = NodePath("HBoxContainer/VBoxContainer6/SQLite")
 _gdscriptButton = NodePath("HBoxContainer/VBoxContainer7/GDScriptIntegration")
 
@@ -36,6 +37,39 @@ theme_override_font_sizes/normal_font_size = 48
 bbcode_enabled = true
 text = "[u]YarnSpinner Samples[/u]"
 
+[node name="PluginVersionLabel" type="RichTextLabel" parent="."]
+clip_contents = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -502.0
+offset_top = 257.0
+offset_right = 89.0
+offset_bottom = 364.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "Plugin Version"
+
+[node name="PluginVersionValue" type="RichTextLabel" parent="."]
+clip_contents = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -294.0
+offset_top = 257.0
+offset_right = 297.0
+offset_bottom = 364.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "0.3.0"
+script = ExtResource("2_shsu2")
+
 [node name="Logo" type="TextureRect" parent="."]
 offset_left = 76.0
 offset_top = 55.0
@@ -52,8 +86,8 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -696.0
 offset_top = -64.0
-offset_right = 696.0
-offset_bottom = 340.0
+offset_right = 744.0
+offset_bottom = 397.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 8
@@ -79,7 +113,9 @@ theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Basic dialogue demo
 Talking to NPCs
-"
+Line Groups
+Node Groups
+Shadow lines"
 scroll_active = false
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer"]
@@ -154,14 +190,14 @@ scroll_active = false
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RoundedViews" type="Button" parent="HBoxContainer/VBoxContainer5"]
+[node name="RoundedUI" type="Button" parent="HBoxContainer/VBoxContainer5"]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
-text = "Rounded Views"
+text = "Rounded UI"
 
 [node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer5"]
 layout_mode = 2

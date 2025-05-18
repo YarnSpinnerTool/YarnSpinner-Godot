@@ -4,15 +4,22 @@
 extends Control
 @export var dialogue_runner: Node  
 @export var logo: Control 
-@export var yarn_project: YarnProject
+@export var yarn_project: Resource
+
 func _ready() -> void:
 	dialogue_runner.AddCommandHandlerCallable("show_logo", show_logo)
+	dialogue_runner.AddCommandHandlerCallable("log", log)
 	dialogue_runner.onDialogueComplete.connect(on_dialogue_complete)
 	var var_name : String = "$myVariableSetFromGDScript"
 	dialogue_runner.variableStorage.SetValue( var_name, "Yay!")
 	var var_value = dialogue_runner.variableStorage.GetVariantValue(var_name)
 	print("Value of %s: %s" % [var_name, var_value])
 
+func log(message: String) -> void:
+	# Example command that does not use `await`, to test 
+	# that no errors are thrown if nothing is returned from a command in GDScript. 
+	print(message)
+	
 func show_logo(logo_path) -> void:
 	"""
 	Async handler for the <<show_logo logo_path>> command.

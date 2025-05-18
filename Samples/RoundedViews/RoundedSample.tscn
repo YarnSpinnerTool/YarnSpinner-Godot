@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dqe5yshlcmnpg" path="res://addons/YarnSpinner-Godot/Scenes/RoundedDialogueSystem.tscn" id="1_e1fcx"]
 [ext_resource type="Resource" uid="uid://i6tlrqbg4dbf" path="res://Samples/RoundedViews/Rounded.yarnproject" id="2_s6ssf"]
-[ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="3_cw7ad"]
+[ext_resource type="Script" uid="uid://dmcdy8evncukk" path="res://Samples/ReturnOnComplete.cs" id="3_cw7ad"]
 
 [node name="RoundedSample" type="Node2D"]
 
@@ -10,7 +10,10 @@
 
 [node name="DialogueRunner" parent="RoundedYarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("2_s6ssf")
-startAutomatically = true
+autoStart = true
+
+[node name="TextLineProvider" parent="RoundedYarnSpinnerCanvasLayer" index="5"]
+YarnProject = ExtResource("2_s6ssf")
 
 [node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
 script = ExtResource("3_cw7ad")

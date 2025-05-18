@@ -1,10 +1,8 @@
-#nullable disable
 #if TOOLS
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,11 +15,15 @@ using Google.Protobuf;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Yarn;
 using Yarn.Compiler;
+using Yarn.Utility;
 using File = System.IO.File;
-using FileAccess = System.IO.FileAccess;
 using Path = System.IO.Path;
+#if YARNSPINNER_DEBUG
+using System.Diagnostics;
+#endif
 
-namespace YarnSpinnerGodot.Editor;
+#nullable enable
+namespace YarnSpinnerGodot;
 
 [Tool]
 public static class YarnProjectEditorUtility
@@ -36,9 +38,9 @@ public static class YarnProjectEditorUtility
     /// </summary>
     /// <param name="scriptPath"></param>
     /// <returns></returns>
-    public static string GetDestinationProjectPath(string scriptPath)
+    public static string? GetDestinationProjectPath(string scriptPath)
     {
-        string destinationProjectPath = null;
+        string? destinationProjectPath = null;
         var globalScriptPath = Path.GetFullPath(ProjectSettings.GlobalizePath(scriptPath));
         var allProjects = FindAllYarnProjects();
         foreach (var project in allProjects)
@@ -74,12 +76,11 @@ public static class YarnProjectEditorUtility
             .Select(ProjectSettings.LocalizePath);
     }
 
-    private const int PROJECT_UPDATE_TIMEOUT = 80; // ms 
+    private const int PROJECT_UPDATE_TIMEOUT = 500; // ms 
 
     private static ConcurrentDictionary<string, DateTime> _projectPathToLastUpdateTime =
         new();
 
-    private static Dictionary<string, Task> _projectPathToUpdateTask = new();
     private static object _lastUpdateLock = new();
 
     /// <summary>
@@ -91,59 +92,70 @@ public static class YarnProjectEditorUtility
     /// <param name="project">The yarn project to re-compile scripts for</param>
     public static void UpdateYarnProject(YarnProject project)
     {
-        if (project == null)
+        if (!GodotObject.IsInstanceValid(project))
         {
             return;
         }
 
-        ;
         if (string.IsNullOrEmpty(project.ResourcePath))
         {
             return;
         }
 
-        lock (_lastUpdateLock)
+        TimeSpan? lastCompile = null;
+        if (_projectPathToLastUpdateTime.ContainsKey(project.ResourcePath))
         {
-            _projectPathToLastUpdateTime[project.ResourcePath] = DateTime.Now;
-            if (!_projectPathToUpdateTask.ContainsKey(project.ResourcePath))
-            {
-                _projectPathToUpdateTask[project.ResourcePath] = UpdateYarnProjectTask(project);
-            }
-        }
-    }
-
-    private static async Task UpdateYarnProjectTask(YarnProject project)
-    {
-        TimeSpan getTimeDiff()
-        {
-            lock (_lastUpdateLock)
-            {
-                return DateTime.Now - _projectPathToLastUpdateTime[project.ResourcePath];
-            }
+            lastCompile = (DateTime.Now - _projectPathToLastUpdateTime[project.ResourcePath]);
         }
 
-        while (getTimeDiff() < TimeSpan.FromMilliseconds(PROJECT_UPDATE_TIMEOUT))
+        if (lastCompile is { TotalMilliseconds: < PROJECT_UPDATE_TIMEOUT })
         {
-            // wait to update the yarn project until we haven't received another request in PROJECT_UPDATE_TIMEOUT ms
-            await Task.Delay(PROJECT_UPDATE_TIMEOUT);
+            // skip repeated compilations in case many yarn files under the same yarn project
+            // trigger repeated compiles
+            return;
         }
 
         try
         {
-            CompileAllScripts(project);
+            UpdateYarnProjectImmediate(project);
+        }
+        finally
+        {
+            // update the cooldown even if the import failed
+            _projectPathToLastUpdateTime[project.ResourcePath] = DateTime.Now;
+        }
+    }
+
+    /// <summary>
+    /// Like <see cref="UpdateYarnProject"/>, but rather than queueing up an update,
+    /// update it immediately. Call this when you don't anticipate another
+    /// update request to be triggered  within a second or so.
+    /// </summary>
+    public static void UpdateYarnProjectImmediate(YarnProject project)
+    {
+        try
+        {
+            var compilationResult = CompileAllScripts(project);
             SaveYarnProject(project);
+            if (project is { generateVariablesSourceFile: true, ResourcePath: not null }
+                && compilationResult != null)
+            {
+                var fileName = project.variablesClassName + ".cs";
+
+                var generatedSourcePath =
+                    Path.Combine(Path.GetDirectoryName(ProjectSettings.GlobalizePath(project.ResourcePath))!,
+                        fileName);
+                bool generated = GenerateVariableSource(generatedSourcePath, project, compilationResult);
+                if (generated)
+                {
+                    YarnSpinnerPlugin.editorInterface.GetResourceFilesystem().ScanSources();
+                }
+            }
         }
         catch (Exception e)
         {
             GD.PushError(
                 $"Error updating {nameof(YarnProject)} '{project.ResourcePath}': {e.Message}{e.StackTrace}");
-        }
-        finally
-        {
-            lock (_lastUpdateLock)
-            {
-                _projectPathToUpdateTask.Remove(project.ResourcePath);
-            }
         }
     }
 
@@ -169,6 +181,13 @@ public static class YarnProjectEditorUtility
                 {
                     GD.PrintErr(
                         $"Can't update localization for {loc.Key} because it doesn't have a Strings file.");
+                    continue;
+                }
+
+                if (project.baseLocalization == null)
+                {
+                    GD.PrintErr(
+                        $"Can't update localization for {loc.Key} because it doesn't have a {nameof(project.baseLocalization)}.");
                     continue;
                 }
 
@@ -376,7 +395,7 @@ public static class YarnProjectEditorUtility
         var updateHandlerType = assembly.GetType("System.Text.Json.JsonSerializerOptionsUpdateHandler");
         var clearCacheMethod =
             updateHandlerType?.GetMethod("ClearCache", BindingFlags.Static | BindingFlags.Public);
-        clearCacheMethod?.Invoke(null, new object[] {null});
+        clearCacheMethod?.Invoke(null, new object?[] { null });
     }
 
     public static void SaveYarnProject(YarnProject project)
@@ -408,7 +427,7 @@ public static class YarnProjectEditorUtility
         }
     }
 
-    public static void CompileAllScripts(YarnProject project)
+    public static CompilationResult? CompileAllScripts(YarnProject project)
     {
         lock (project)
         {
@@ -422,29 +441,31 @@ public static class YarnProjectEditorUtility
             {
                 GD.Print(
                     $"No .yarn files found matching the {nameof(project.JSONProject.SourceFilePatterns)} in {project.JSONProjectPath}");
-                return;
+                return null;
             }
 
-            var library = new Library();
+            var library = Actions.GetLibrary();
 
             IEnumerable<Diagnostic> errors;
             project.ProjectErrors = Array.Empty<YarnProjectError>();
 
-            // We now now compile!
+            // We now compile!
             var scriptAbsolutePaths = sourceScripts.ToList().Where(s => s != null)
                 .Select(ProjectSettings.GlobalizePath).ToList();
             // Store the compiled program
-            byte[] compiledBytes = null;
-            CompilationResult? compilationResult = new CompilationResult?();
+            byte[]? compiledBytes = null;
+            CompilationResult? compilationResult = new CompilationResult();
             if (scriptAbsolutePaths.Count > 0)
             {
                 var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
                 // job.VariableDeclarations = localDeclarations;
                 job.CompilationType = CompilationJob.Type.FullCompilation;
                 job.Library = library;
+                job.LanguageVersion = project.JSONProject.FileVersion;
+
                 compilationResult = Yarn.Compiler.Compiler.Compile(job);
 
-                errors = compilationResult.Value.Diagnostics.Where(d =>
+                errors = compilationResult.Diagnostics.Where(d =>
                     d.Severity == Diagnostic.DiagnosticSeverity.Error);
 
                 if (errors.Any())
@@ -468,14 +489,14 @@ public static class YarnProjectEditorUtility
                             FileName = ProjectSettings.LocalizePath(e.FileName)
                         });
                     project.ProjectErrors = projectErrors.ToArray();
-                    return;
+                    return compilationResult;
                 }
 
-                if (compilationResult.Value.Program == null)
+                if (compilationResult.Program == null)
                 {
                     GD.PushError(
                         "public error: Failed to compile: resulting program was null, but compiler did not report errors.");
-                    return;
+                    return compilationResult;
                 }
 
                 // Store _all_ declarations - both the ones in this
@@ -487,12 +508,12 @@ public static class YarnProjectEditorUtility
                 // the user.
 
                 var newDeclarations = new List<Declaration>() //localDeclarations
-                    .Concat(compilationResult.Value.Declarations)
+                    .Concat(compilationResult.Declarations)
                     .Where(decl => !decl.Name.StartsWith("$Yarn.Internal."))
                     .Where(decl => decl.Type is not FunctionType)
                     .Select(decl =>
                     {
-                        SerializedDeclaration existingDeclaration = null;
+                        SerializedDeclaration? existingDeclaration = null;
                         // try to re-use a declaration if one exists to avoid changing the .tres file so much
                         foreach (var existing in project.SerializedDeclarations)
                         {
@@ -512,12 +533,12 @@ public static class YarnProjectEditorUtility
                 // compilation
                 project.ProjectErrors = Array.Empty<YarnProjectError>();
 
-                CreateYarnInternalLocalizationAssets(project, compilationResult.Value);
+                CreateYarnInternalLocalizationAssets(project, compilationResult);
 
                 using var memoryStream = new MemoryStream();
                 using var outputStream = new CodedOutputStream(memoryStream);
                 // Serialize the compiled program to memory
-                compilationResult.Value.Program.WriteTo(outputStream);
+                compilationResult.Program.WriteTo(outputStream);
                 outputStream.Flush();
 
                 compiledBytes = memoryStream.ToArray();
@@ -531,6 +552,8 @@ public static class YarnProjectEditorUtility
             {
                 GD.PushError($"Failed to save updated {nameof(YarnProject)}: {saveErr}");
             }
+
+            return compilationResult;
         }
     }
 
@@ -581,25 +604,6 @@ public static class YarnProjectEditorUtility
         }
 
         return compilationResult;
-    }
-
-    public static FunctionInfo CreateFunctionInfoFromMethodGroup(MethodInfo method)
-    {
-        var returnType = $"-> {method.ReturnType.Name}";
-
-        var parameters = method.GetParameters();
-        var p = new string[parameters.Length];
-        for (int i = 0; i < parameters.Length; i++)
-        {
-            var q = parameters[i].ParameterType;
-            p[i] = parameters[i].Name;
-        }
-
-        var info = new FunctionInfo();
-        info.Name = method.Name;
-        info.ReturnType = returnType;
-        info.Parameters = p;
-        return info;
     }
 
     /// <summary>
@@ -664,24 +668,24 @@ public static class YarnProjectEditorUtility
     {
         CompilationResult? compilationResult = CompileStringsOnly(project);
 
-        if (!compilationResult.HasValue)
+        if (compilationResult == null)
         {
             // We only get no value if we have no scripts to work with.
             // In this case, return an empty collection - there's no
             // error, but there's no content either.
-            return new List<StringTableEntry>();
+            return Array.Empty<StringTableEntry>();
         }
 
         var errors =
-            compilationResult.Value.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
+            compilationResult.Diagnostics.Where(d => d.Severity == Diagnostic.DiagnosticSeverity.Error);
 
         if (errors.Any())
         {
             GD.PrintErr("Can't generate a strings table from a Yarn Project that contains compile errors", null);
-            return null;
+            return Array.Empty<StringTableEntry>();
         }
 
-        return GetStringTableEntries(project, compilationResult.Value);
+        return GetStringTableEntries(project, compilationResult);
     }
 
     private static CompilationResult? CompileStringsOnly(YarnProject project)
@@ -705,36 +709,40 @@ public static class YarnProjectEditorUtility
     private static IEnumerable<LineMetadataTableEntry> LineMetadataTableEntriesFromCompilationResult(
         CompilationResult result)
     {
-        return result.StringTable.Select(x =>
+        if (result.StringTable == null)
         {
-            var meta = new LineMetadataTableEntry();
-            meta.ID = x.Key;
-            meta.File = ProjectSettings.LocalizePath(x.Value.fileName);
-            meta.Node = x.Value.nodeName;
-            meta.LineNumber = x.Value.lineNumber.ToString();
-            meta.Metadata = RemoveLineIDFromMetadata(x.Value.metadata).ToArray();
-            return meta;
+            return Array.Empty<LineMetadataTableEntry>();
+        }
+
+        return result.StringTable.Select(x => new LineMetadataTableEntry
+        {
+            ID = x.Key,
+            File = ProjectSettings.LocalizePath(x.Value.fileName),
+            Node = x.Value.nodeName,
+            LineNumber = x.Value.lineNumber.ToString(),
+            Metadata = RemoveLineIDFromMetadata(x.Value.metadata).ToArray()
         }).Where(x => x.Metadata.Length > 0);
     }
 
     private static IEnumerable<StringTableEntry> GetStringTableEntries(YarnProject project,
         CompilationResult result)
     {
-        return result.StringTable.Select(x =>
-            {
-                var entry = new StringTableEntry();
+        if (result.StringTable == null)
+        {
+            return Array.Empty<StringTableEntry>();
+        }
 
-                entry.ID = x.Key;
-                entry.Language = project.defaultLanguage;
-                entry.Text = x.Value.text;
-                entry.File = ProjectSettings.LocalizePath(x.Value.fileName);
-                entry.Node = x.Value.nodeName;
-                entry.LineNumber = x.Value.lineNumber.ToString();
-                entry.Lock = YarnImporter.GetHashString(x.Value.text, 8);
-                entry.Comment = GenerateCommentWithLineMetadata(x.Value.metadata);
-                return entry;
-            }
-        );
+        return result.StringTable.Select(x => new StringTableEntry
+        {
+            ID = x.Key,
+            Language = project.defaultLanguage,
+            Text = x.Value.text,
+            File = ProjectSettings.LocalizePath(x.Value.fileName),
+            Node = x.Value.nodeName,
+            LineNumber = x.Value.lineNumber.ToString(),
+            Lock = x.Value.text == null ? "" : YarnImporter.GetHashString(x.Value.text, 8),
+            Comment = GenerateCommentWithLineMetadata(x.Value.metadata)
+        });
     }
 
     /// <summary>
@@ -822,7 +830,9 @@ public static class YarnProjectEditorUtility
                 return Array.Empty<string>();
             }
 
-            return result.StringTable.Where(i => i.Value.isImplicitTag == false).Select(i => i.Key);
+            return result.StringTable == null
+                ? Array.Empty<string>()
+                : result.StringTable.Where(i => i.Value.isImplicitTag == false).Select(i => i.Key);
         }).ToList(); // immediately execute this query so we can determine timing information
 
 #if YARNSPINNER_DEBUG
@@ -894,6 +904,319 @@ public static class YarnProjectEditorUtility
         }
 
         return projects;
+    }
+
+
+    /// <summary>
+    /// A regular expression that matches characters following the start of
+    /// the string or an underscore. 
+    /// </summary>
+    /// <remarks>
+    /// Used as part of converting variable names from snake_case to
+    /// CamelCase when generating C# variable source code.
+    /// </remarks>
+    private static readonly System.Text.RegularExpressions.Regex SnakeCaseToCamelCase =
+        new System.Text.RegularExpressions.Regex(@"(^|_)(\w)");
+
+
+    private static bool GenerateVariableSource(string outputPath, YarnProject project,
+        CompilationResult compilationResult)
+    {
+        if (!GodotObject.IsInstanceValid(project))
+        {
+            GD.PushError("Can't generate variable source for null project!");
+            return false;
+        }
+
+        string? existingContent = null;
+
+        if (File.Exists(outputPath))
+        {
+            // If the file already exists on disk, read it all in now. We'll
+            // compare it to what we generated and, if the contents match
+            // exactly, we don't need to re-import the resulting C# script.
+            existingContent = File.ReadAllText(outputPath);
+        }
+
+        if (string.IsNullOrEmpty(project.variablesClassName))
+        {
+            GD.PushError("Can't generate variable interface, because the specified class name is empty.");
+            return false;
+        }
+
+        var sb = new StringBuilder();
+        int indentLevel = 0;
+        const int indentSize = 4;
+
+        void WriteLine(string line = "", int offset = 0)
+        {
+            if (line.Length > 0)
+            {
+                sb.Append(new string(' ', (indentLevel + offset) * indentSize));
+            }
+
+            sb.AppendLine(line);
+        }
+
+        void WriteComment(string comment = "") => WriteLine("// " + comment);
+
+        if (string.IsNullOrEmpty(project.variablesClassNamespace) == false)
+        {
+            WriteLine($"namespace {project.variablesClassNamespace} {{");
+            WriteLine();
+            indentLevel += 1;
+        }
+
+        WriteLine("using YarnSpinnerGodot;");
+        WriteLine();
+
+        void WriteGeneratedCodeAttribute()
+        {
+            var toolName = "YarnSpinner";
+            var toolVersion = YarnSpinnerPlugin.VersionString;
+            WriteLine($"[System.CodeDom.Compiler.GeneratedCode(\"{toolName}\", \"{toolVersion}\")]");
+        }
+
+        // For each user-defined enum, create a C# enum type
+        IEnumerable<EnumType> enumTypes = compilationResult.UserDefinedTypes.OfType<Yarn.EnumType>();
+
+        foreach (var type in enumTypes)
+        {
+            WriteLine($"/// <summary>");
+            if (string.IsNullOrEmpty(type.Description) == false)
+            {
+                WriteLine($"/// {type.Description}");
+            }
+            else
+            {
+                WriteLine($"/// {type.Name}");
+            }
+
+            WriteLine($"/// </summary>");
+
+            WriteLine($"/// <remarks>");
+            WriteLine($"/// Automatically generated from Yarn project at {project.ResourcePath}.");
+            WriteLine($"/// </remarks>");
+
+            WriteGeneratedCodeAttribute();
+
+            if (type.RawType == Types.String)
+            {
+                // String-backed enums are represented as CRC32 hashes of
+                // the raw value, which we store as uints
+                WriteLine($"public enum {type.Name} : uint {{");
+            }
+            else
+            {
+                WriteLine($"public enum {type.Name} {{");
+            }
+
+            indentLevel += 1;
+
+            foreach (var enumCase in type.EnumCases)
+            {
+                WriteLine();
+
+                WriteLine($"/// <summary>");
+                if (string.IsNullOrEmpty(enumCase.Value.Description) == false)
+                {
+                    WriteLine($"/// {enumCase.Value.Description}");
+                }
+                else
+                {
+                    WriteLine($"/// {enumCase.Key}");
+                }
+
+                WriteLine($"/// </summary>");
+
+                if (type.RawType == Types.Number)
+                {
+                    WriteLine($"{enumCase.Key} = {enumCase.Value.Value},");
+                }
+                else if (type.RawType == Types.String)
+                {
+                    WriteLine($"/// <remarks>");
+                    WriteLine($"/// Backing value: \"{enumCase.Value.Value}\"");
+                    WriteLine($"/// </remarks>");
+                    var stringValue = (string)enumCase.Value.Value;
+                    WriteComment($"\"{stringValue}\"");
+                    WriteLine($"{enumCase.Key} = {CRC32.GetChecksum(stringValue)},");
+                }
+                else
+                {
+                    WriteComment(
+                        $"Error: enum case {type.Name}.{enumCase.Key} has an invalid raw type {type.RawType.Name}");
+                }
+            }
+
+            indentLevel -= 1;
+
+            WriteLine($"}}");
+            WriteLine();
+        }
+
+        if (enumTypes.Any())
+        {
+            // Generate an extension class that extends the above enums with
+            // methods that accesses their backing value
+            WriteGeneratedCodeAttribute();
+            WriteLine($"internal static class {project.variablesClassName}TypeExtensions {{");
+            indentLevel += 1;
+            foreach (var enumType in enumTypes)
+            {
+                var backingType = enumType.RawType == Types.Number ? "int" : "string";
+                WriteLine($"internal static {backingType} GetBackingValue(this {enumType.Name} enumValue) {{");
+                indentLevel += 1;
+                WriteLine($"switch (enumValue) {{");
+                indentLevel += 1;
+
+                foreach (var @case in enumType.EnumCases)
+                {
+                    WriteLine($"case {enumType.Name}.{@case.Key}:", 1);
+                    if (enumType.RawType == Types.Number)
+                    {
+                        WriteLine($"return {@case.Value.Value};", 2);
+                    }
+                    else if (enumType.RawType == Types.String)
+                    {
+                        WriteLine($"return \"{@case.Value.Value}\";", 2);
+                    }
+                    else
+                    {
+                        throw new System.ArgumentException($"Invalid Yarn enum raw type {enumType.RawType}");
+                    }
+                }
+
+                WriteLine("default:", 1);
+                WriteLine("throw new System.ArgumentException($\"{enumValue} is not a valid enum case.\");");
+
+                indentLevel -= 1;
+                WriteLine("}");
+                indentLevel -= 1;
+                WriteLine("}");
+            }
+
+            indentLevel -= 1;
+            WriteLine("}");
+        }
+
+        WriteGeneratedCodeAttribute();
+        WriteLine(
+            $"public partial class {project.variablesClassName} : {project.variablesClassParent}, YarnSpinnerGodot.IGeneratedVariableStorage {{");
+
+        indentLevel += 1;
+
+        var declarationsToGenerate = compilationResult.Declarations
+            .Where(d => d.IsVariable == true)
+            .Where(d => d.Name.StartsWith("$Yarn.Internal") == false);
+
+        if (declarationsToGenerate.Count() == 0)
+        {
+            WriteComment("This yarn project does not declare any variables.");
+        }
+
+        foreach (var decl in declarationsToGenerate)
+        {
+            string? cSharpTypeName = null;
+
+            if (decl.Type == Yarn.Types.String)
+            {
+                cSharpTypeName = "string";
+            }
+            else if (decl.Type == Yarn.Types.Number)
+            {
+                cSharpTypeName = "float";
+            }
+            else if (decl.Type == Yarn.Types.Boolean)
+            {
+                cSharpTypeName = "bool";
+            }
+            else if (decl.Type is EnumType enumType1)
+            {
+                cSharpTypeName = enumType1.Name;
+            }
+            else
+            {
+                WriteLine(
+                    $"#warning Can't generate a property for variable {decl.Name}, because its type ({decl.Type}) can't be handled.");
+                WriteLine();
+            }
+
+
+            WriteComment($"Accessor for {decl.Type} {decl.Name}");
+
+            // Remove '$'
+            string cSharpVariableName = decl.Name.TrimStart('$');
+
+            // Convert snake_case to CamelCase
+            cSharpVariableName = SnakeCaseToCamelCase.Replace(cSharpVariableName,
+                (match) => { return match.Groups[2].Value.ToUpperInvariant(); });
+
+            // Capitalise first letter
+            cSharpVariableName =
+                cSharpVariableName.Substring(0, 1).ToUpperInvariant() + cSharpVariableName.Substring(1);
+
+            if (decl.Description != null)
+            {
+                WriteLine("/// <summary>");
+                WriteLine($"/// {decl.Description}");
+                WriteLine("/// </summary>");
+            }
+
+            WriteLine($"public {cSharpTypeName} {cSharpVariableName} {{");
+
+            indentLevel += 1;
+
+            if (decl.Type is EnumType enumType)
+            {
+                WriteLine($"get => this.GetEnumValueOrDefault<{cSharpTypeName}>(\"{decl.Name}\");");
+            }
+            else
+            {
+                WriteLine($"get => this.GetValueOrDefault<{cSharpTypeName}>(\"{decl.Name}\");");
+            }
+
+            if (decl.IsInlineExpansion == false)
+            {
+                // Only generate a setter if it's a variable that can be modified
+                if (decl.Type is EnumType e)
+                {
+                    WriteLine($"set => this.SetValue(\"{decl.Name}\", value.GetBackingValue());");
+                }
+                else
+                {
+                    WriteLine($"set => this.SetValue<{cSharpTypeName}>(\"{decl.Name}\", value);");
+                }
+            }
+
+            indentLevel -= 1;
+
+            WriteLine($"}}");
+
+            WriteLine();
+        }
+
+        indentLevel -= 1;
+
+        WriteLine($"}}");
+
+        if (string.IsNullOrEmpty(project.variablesClassNamespace) == false)
+        {
+            indentLevel -= 1;
+            WriteLine($"}}");
+        }
+
+        if (existingContent != null && existingContent.Equals(sb.ToString(), System.StringComparison.Ordinal))
+        {
+            // What we generated is identical to what's already on disk.
+            // Don't write it.
+            return false;
+        }
+
+        GD.Print($"Writing to {outputPath}");
+        File.WriteAllText(outputPath, sb.ToString());
+
+        return true;
     }
 }
 #endif

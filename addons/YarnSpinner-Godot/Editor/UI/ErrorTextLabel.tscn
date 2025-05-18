@@ -1,10 +1,10 @@
-[gd_scene format=2]
+[gd_scene format=3 uid="uid://cy7ephty1lujj"]
 
 [node name="ErrorTextLabel" type="Label"]
 offset_top = 22.0
 offset_right = 1024.0
 offset_bottom = 22.0
-minimum_size = Vector2( 0, 20 )
+minimum_size = Vector2(0, 20)
 size_flags_horizontal = 3
 size_flags_vertical = 2
 text = "extraneous input 'h' expecting {NEWLINE, '#'}"

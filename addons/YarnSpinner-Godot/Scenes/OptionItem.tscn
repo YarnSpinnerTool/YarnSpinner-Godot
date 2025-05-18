@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://b56ngcrq31nc5"]
+
+[ext_resource type="Script" uid="uid://e8endtpbxsql" path="res://addons/YarnSpinner-Godot/Runtime/Async/OptionItem.cs" id="1_lld20"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pe0aq"]
+content_margin_left = 7.0
+content_margin_right = 6.0
+
+[node name="OptionView" type="PanelContainer" node_paths=PackedStringArray("text", "button")]
+custom_minimum_size = Vector2(0, 26)
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -113.0
+offset_top = -142.0
+offset_right = 119.0
+offset_bottom = -42.0
+size_flags_horizontal = 3
+mouse_filter = 1
+script = ExtResource("1_lld20")
+text = NodePath("RichTextLabel")
+button = NodePath("Button")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+mouse_filter = 2
+theme_override_font_sizes/bold_italics_font_size = 24
+theme_override_font_sizes/italics_font_size = 24
+theme_override_font_sizes/mono_font_size = 24
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxEmpty_pe0aq")
+bbcode_enabled = true
+text = "[center]Option View[/center]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0

@@ -1,6 +1,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Godot;
 using Yarn;
 using Yarn.Compiler;
@@ -13,16 +14,16 @@ namespace YarnSpinnerGodot;
 [Tool]
 public class SerializedDeclaration
 {
-    public static List<IType> BuiltInTypesList = new()
+    public static List<IType> TypesList = new()
     {
-        BuiltinTypes.String,
-        BuiltinTypes.Boolean,
-        BuiltinTypes.Number
+        Types.String,
+        Types.Boolean,
+        Types.Number
     };
 
     public string name;
 
-    public string typeName = BuiltinTypes.String.Name;
+    public string typeName = Types.String.Name;
 
     public bool defaultValueBool;
     public float defaultValueNumber;
@@ -47,19 +48,38 @@ public class SerializedDeclaration
         isImplicit = decl.IsImplicit;
         sourceYarnAssetPath = ProjectSettings.LocalizePath(decl.SourceFileName);
 
-        if (typeName == BuiltinTypes.String.Name)
+        if (typeName == Types.String.Name)
         {
-            defaultValueString = Convert.ToString(decl.DefaultValue);
+            defaultValueString = Convert.ToString(decl.DefaultValue, CultureInfo.InvariantCulture);
         }
-        else if (typeName == BuiltinTypes.Boolean.Name)
+        else if (typeName == Types.Boolean.Name)
         {
             defaultValueBool = Convert.ToBoolean(decl.DefaultValue);
         }
-        else if (typeName == BuiltinTypes.Number.Name)
+        else if (typeName == Types.Number.Name)
         {
             defaultValueNumber = Convert.ToSingle(decl.DefaultValue);
         }
+        else if (decl.Type is EnumType enumDecl)
+        {
+            typeName = $"{enumDecl.Name} Enum ({enumDecl.RawType.Name})";
+
+            var defaultValue = decl.DefaultValue;
+            if (enumDecl.RawType.Name == Types.String.Name)
+            {
+                defaultValueString = Convert.ToString(defaultValue, CultureInfo.InvariantCulture);
+            }
+            else if (enumDecl.RawType.Name == Types.Boolean.Name)
+            {
+                defaultValueBool = Convert.ToBoolean(defaultValue);
+            }
+            else if (enumDecl.RawType.Name == Types.Number.Name)
+            {
+                defaultValueNumber = Convert.ToSingle(defaultValue);
+            }
+        }
         else
+
         {
             throw new InvalidOperationException($"Invalid declaration type {decl.Type.Name}");
         }

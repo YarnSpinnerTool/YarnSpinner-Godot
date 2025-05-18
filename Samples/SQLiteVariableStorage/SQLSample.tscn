@@ -1,26 +1,24 @@
 [gd_scene load_steps=5 format=3 uid="uid://dt33g06nhtxn2"]
 
 [ext_resource type="PackedScene" uid="uid://dqe5yshlcmnpg" path="res://addons/YarnSpinner-Godot/Scenes/RoundedDialogueSystem.tscn" id="1_8wwci"]
-[ext_resource type="Resource" uid="uid://tsj53mnkwps3" path="res://Samples/SQLiteVariableStorage/SQLSample.yarnproject" id="2_73843"]
-[ext_resource type="Script" path="res://Samples/SQLiteVariableStorage/SQLVariableStorage.cs" id="3_71oeg"]
-[ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="4_lgfx4"]
+[ext_resource type="Resource" uid="uid://tsj53mnkwps3" path="res://Samples/SQLiteVariableStorage/SQLSample.yarnproject" id="2_bai3o"]
+[ext_resource type="Script" uid="uid://dfqlokuygykct" path="res://Samples/SQLiteVariableStorage/SQLVariableStorage.cs" id="3_71oeg"]
+[ext_resource type="Script" uid="uid://dmcdy8evncukk" path="res://Samples/ReturnOnComplete.cs" id="4_lgfx4"]
 
 [node name="SqlSample" type="Node2D"]
 
 [node name="RoundedYarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_8wwci")]
 
-[node name="DialogueRunner" parent="RoundedYarnSpinnerCanvasLayer" index="0" node_paths=PackedStringArray("variableStorage")]
-yarnProject = ExtResource("2_73843")
-variableStorage = NodePath("../SQLVariableStorage")
+[node name="DialogueRunner" parent="RoundedYarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("2_bai3o")
+autoStart = true
 startNode = "SqlSample"
-startAutomatically = true
 
 [node name="LineView" parent="RoundedYarnSpinnerCanvasLayer" index="2"]
 useFadeEffect = true
-fadeInTime = 0.2
 
-[node name="OptionsListView" parent="RoundedYarnSpinnerCanvasLayer" index="3"]
-fadeTime = 0.2
+[node name="TextLineProvider" parent="RoundedYarnSpinnerCanvasLayer" index="5"]
+YarnProject = ExtResource("2_bai3o")
 
 [node name="ColorRect" type="ColorRect" parent="RoundedYarnSpinnerCanvasLayer"]
 z_index = -6

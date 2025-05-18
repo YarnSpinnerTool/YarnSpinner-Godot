@@ -5,7 +5,7 @@ using System.Text;
 using Godot;
 using Godot.Collections;
 
-namespace YarnSpinnerGodot.Editor;
+namespace YarnSpinnerGodot;
 
 /// <summary>
 /// A <see cref="EditorImportPlugin"/> for Yarn scripts (.yarn files)

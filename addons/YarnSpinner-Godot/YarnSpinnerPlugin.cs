@@ -1,5 +1,5 @@
 #if TOOLS
-#nullable disable 
+#nullable disable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Runtime.Serialization.Json;
 using System.Text.Json;
 using Godot;
 using Yarn.Compiler;
-using YarnSpinnerGodot.Editor;
+using YarnSpinnerGodot;
 using Array = Godot.Collections.Array;
 
 namespace YarnSpinnerGodot;
@@ -26,7 +26,8 @@ public partial class YarnSpinnerPlugin : EditorPlugin
     public static EditorInterface editorInterface;
 #endif
 
-    private const string TOOLS_MENU_NAME = "YarnSpinner";
+    private const string ToolsMenuName = "YarnSpinner";
+    public const string VersionString = "0.3.0";
 
     private List<EditorInspectorPlugin> _inspectorPlugins =
         new();
@@ -53,34 +54,34 @@ public partial class YarnSpinnerPlugin : EditorPlugin
         get
         {
             _idToToolsMenuItem ??= new()
-                {
-                    [0] =
-                        new ToolsMenuItem()
-                        {
-                            MenuName = "Create Yarn Script",
-                            Handler = CreateYarnScript,
-                        },
-                    [1] =
-                        new ToolsMenuItem()
-                        {
-                            MenuName = "Create Yarn Project",
-                            Handler = CreateYarnProject,
-                        },
-                    [2] =
-                        new ToolsMenuItem()
-                        {
-                            MenuName = "Create Markup Palette",
-                            Handler = CreateMarkupPalette,
-                        }
-                    // TODO: actions source generation 
-                    //     [8] =
-                    //     new ToolsMenuItem()
-                    //     {
-                    //         MenuName = "Update Yarn Commands",
-                    //         Handler = ActionSourceCodeGenerator.GenerateYarnActionSourceCode,
-                    //     }
-                    // 
-                };
+            {
+                [0] =
+                    new ToolsMenuItem()
+                    {
+                        MenuName = "Create Yarn Script",
+                        Handler = CreateYarnScript,
+                    },
+                [1] =
+                    new ToolsMenuItem()
+                    {
+                        MenuName = "Create Yarn Project",
+                        Handler = CreateYarnProject,
+                    },
+                [2] =
+                    new ToolsMenuItem()
+                    {
+                        MenuName = "Create Markup Palette",
+                        Handler = CreateMarkupPalette,
+                    }
+                // TODO: actions source generation 
+                //     [8] =
+                //     new ToolsMenuItem()
+                //     {
+                //         MenuName = "Update Yarn Commands",
+                //         Handler = ActionSourceCodeGenerator.GenerateYarnActionSourceCode,
+                //     }
+                // 
+            };
 
             return _idToToolsMenuItem;
         }
@@ -116,8 +117,7 @@ public partial class YarnSpinnerPlugin : EditorPlugin
         _importPlugins.Add(projectImportPlugin);
         var projectInspectorPlugin = new YarnProjectInspectorPlugin();
         _inspectorPlugins.Add(projectInspectorPlugin);
-        var paletteInspectorPlugin = new YarnMarkupPaletteInspectorPlugin();
-        _inspectorPlugins.Add(paletteInspectorPlugin);
+
 
         foreach (var plugin in _inspectorPlugins)
         {
@@ -136,7 +136,7 @@ public partial class YarnSpinnerPlugin : EditorPlugin
         }
 
         _popup.IdPressed += OnPopupIDPressed;
-        AddToolSubmenuItem(TOOLS_MENU_NAME, _popup);
+        AddToolSubmenuItem(ToolsMenuName, _popup);
 
         AddCustomType(nameof(DialogueRunner), "Node", dialogueRunnerScript,
             miniYarnSpinnerIcon);

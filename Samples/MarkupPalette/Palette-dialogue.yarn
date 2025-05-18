@@ -1,6 +1,6 @@
 ﻿title: Start
 ---
-Alice: this is a [calm]quick[/calm] demonstration of using the [hype]new[/hype] MarkupPalette feature
+Alice: this is a [calm]quick[/calm] demonstration of using the [hype]new[/hype] [b]MarkupPalette[/b] feature
 Bob: [calm]oh[/calm], cool, [hype]colours[/hype]!
 Alice: yes indeed, [turbohype]colours[/turbohype].
 
@@ -10,8 +10,8 @@ Alice: well [calm]first[/calm] you make a [hype]new[/hype] MarkupPalette resourc
 Bob: uh huh
 Alice: and then [turbohype]configure[/turbohype] the colours how you like
 Bob: right [calm]ok[/calm] and then
-Alice: and then [hype]just[/hype] give it to your dialogue views
-Alice: then you add the [calm]\[markup\][/calm] to your lines
+Alice: and then [hype]just[/hype] give it to your dialogue presenters
+Alice: then you add the [calm]\[markup\][/calm] [u]to your lines[/u]
 Alice: and th[hype]en yo[/hype]u are done!
 Bob: [calm]wowsers[/calm]
 Alice: [turbohype]wowsers[/turbohype] indeed

@@ -1,11 +1,53 @@
-[gd_resource type="Resource" script_class="MarkupPalette" load_steps=2 format=3 uid="uid://c631us202ijmk"]
+[gd_resource type="Resource" script_class="MarkupPalette" load_steps=8 format=3 uid="uid://c631us202ijmk"]
 
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/Views/MarkupPalette.cs" id="1_6b5jh"]
+[ext_resource type="Script" uid="uid://dn5hil73gapip" path="res://addons/YarnSpinner-Godot/Runtime/Views/MarkupPalette.cs" id="1_6b5jh"]
+[ext_resource type="Script" uid="uid://dgubfud07ghdr" path="res://addons/YarnSpinner-Godot/Runtime/Views/FormatMarker.cs" id="1_ir7mg"]
+
+[sub_resource type="Resource" id="Resource_my8im"]
+script = ExtResource("1_ir7mg")
+Marker = "b"
+Color = Color(1, 1, 1, 1)
+Boldened = true
+Italicised = false
+Underlined = false
+Strikedthrough = false
+
+[sub_resource type="Resource" id="Resource_lbgvk"]
+script = ExtResource("1_ir7mg")
+Marker = "u"
+Color = Color(1, 1, 1, 1)
+Boldened = false
+Italicised = false
+Underlined = true
+Strikedthrough = false
+
+[sub_resource type="Resource" id="Resource_ni5um"]
+script = ExtResource("1_ir7mg")
+Marker = "calm"
+Color = Color(0.136169, 0.566038, 0.184834, 1)
+Boldened = false
+Italicised = false
+Underlined = false
+Strikedthrough = false
+
+[sub_resource type="Resource" id="Resource_8bx5h"]
+script = ExtResource("1_ir7mg")
+Marker = "hype"
+Color = Color(0.754717, 0.162608, 0.0747597, 1)
+Boldened = false
+Italicised = false
+Underlined = false
+Strikedthrough = false
+
+[sub_resource type="Resource" id="Resource_ctqap"]
+script = ExtResource("1_ir7mg")
+Marker = "turbohype"
+Color = Color(0.735849, 0.0173549, 0.722466, 1)
+Boldened = false
+Italicised = false
+Underlined = false
+Strikedthrough = false
 
 [resource]
 script = ExtResource("1_6b5jh")
-ColourMarkers = {
-"calm": Color(0.136169, 0.566038, 0.184834, 1),
-"hype": Color(0.754717, 0.162608, 0.0747597, 1),
-"turbohype": Color(0.735849, 0.0173549, 0.722466, 1)
-}
+FormatMarkers = Array[Object]([SubResource("Resource_my8im"), SubResource("Resource_lbgvk"), SubResource("Resource_ni5um"), SubResource("Resource_8bx5h"), SubResource("Resource_ctqap")])

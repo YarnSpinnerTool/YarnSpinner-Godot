@@ -2,7 +2,7 @@
 #if TOOLS
 using Godot;
 
-namespace YarnSpinnerGodot.Editor.UI;
+namespace YarnSpinnerGodot;
 
 /// <summary>
 /// This class is used to save the locale code associated

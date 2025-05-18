@@ -12,7 +12,7 @@ using Yarn;
 using Yarn.Compiler;
 using Array = System.Array;
 #if TOOLS
-using YarnSpinnerGodot.Editor;
+using YarnSpinnerGodot;
 #endif
 
 namespace YarnSpinnerGodot;
@@ -40,8 +40,6 @@ namespace YarnSpinnerGodot;
 [GlobalClass]
 public partial class YarnProject : Resource
 {
-    public static JsonSerializerOptions JSONOptions = new() {IncludeFields = true};
-
     /// <summary>
     /// File extension of JSON yarn project files.
     /// </summary>
@@ -82,14 +80,45 @@ public partial class YarnProject : Resource
 
     [Export] public string CompiledYarnProgramBase64;
 
-    public static List<Resource> ScriptsWithParseErrors => new();
-
     [Export] public Localization baseLocalization;
 
     /// <summary>
     /// res:// path to the .yarnproject file
     /// </summary>
     [Export] public string JSONProjectPath;
+
+    /// <summary>
+    /// Whether to generate a C# file that contains properties for each variable.
+    /// </summary>
+    /// <seealso cref="variablesClassName"/>
+    /// <seealso cref="variablesClassNamespace"/>
+    /// <seealso cref="variablesClassParent"/>
+    [Export] public bool generateVariablesSourceFile;
+
+    /// <summary>
+    /// The name of the generated variables storage class.
+    /// </summary>
+    /// <seealso cref="generateVariablesSourceFile"/>
+    /// <seealso cref="variablesClassNamespace"/>
+    /// <seealso cref="variablesClassParent"/>
+    [Export] public string variablesClassName = "YarnVariables";
+
+    /// <summary>
+    /// The namespace of the generated variables storage class.
+    /// </summary>
+    /// <seealso cref="generateVariablesSourceFile"/>
+    /// <seealso cref="variablesClassName"/>
+    /// <seealso cref="variablesClassParent"/>
+    [Export] public string variablesClassNamespace = null;
+
+    /// <summary>
+    /// The parent class of the generated variables storage class.
+    /// </summary>
+    /// <seealso cref="generateVariablesSourceFile"/>
+    /// <seealso cref="variablesClassName"/>
+    /// <seealso cref="variablesClassNamespace"/>
+    [Export] public string variablesClassParent = typeof(InMemoryVariableStorage).FullName;
+
 #if TOOLS
     public string DefaultJSONProjectPath => new Regex(@"\.tres$").Replace(ResourcePath, ".yarnproject");
     private Yarn.Compiler.Project _jsonProject;
@@ -153,7 +182,8 @@ public partial class YarnProject : Resource
             {
                 try
                 {
-                    _lineMetadata = JsonSerializer.Deserialize<LineMetadata>(_lineMetadataJSON, JSONOptions);
+                    _lineMetadata =
+                        JsonSerializer.Deserialize(_lineMetadataJSON, YarnJSONContext.Default.LineMetadata);
                 }
                 catch (Exception e)
                 {
@@ -172,7 +202,7 @@ public partial class YarnProject : Resource
         set
         {
             _lineMetadata = value;
-            _lineMetadataJSON = JsonSerializer.Serialize(_lineMetadata, JSONOptions);
+            _lineMetadataJSON = JsonSerializer.Serialize(_lineMetadata, YarnJSONContext.Default.LineMetadata);
 #if TOOLS
             YarnProjectEditorUtility.ClearJSONCache();
 #endif
@@ -196,7 +226,8 @@ public partial class YarnProject : Resource
             {
                 try
                 {
-                    _listOfFunctions = JsonSerializer.Deserialize<FunctionInfo[]>(_listOfFunctionsJSON);
+                    _listOfFunctions = JsonSerializer.Deserialize(_listOfFunctionsJSON,
+                        YarnJSONContext.Default.FunctionInfoArray);
                 }
                 catch (Exception e)
                 {
@@ -214,7 +245,8 @@ public partial class YarnProject : Resource
         set
         {
             _listOfFunctions = value;
-            _listOfFunctionsJSON = JsonSerializer.Serialize(_listOfFunctions, JSONOptions);
+            _listOfFunctionsJSON =
+                JsonSerializer.Serialize(_listOfFunctions, YarnJSONContext.Default.FunctionInfoArray);
 #if TOOLS
             YarnProjectEditorUtility.ClearJSONCache();
 #endif
@@ -239,7 +271,8 @@ public partial class YarnProject : Resource
                 try
                 {
                     _serializedDeclarations =
-                        JsonSerializer.Deserialize<SerializedDeclaration[]>(_serializedDeclarationsJSON, YarnProject.JSONOptions);
+                        JsonSerializer.Deserialize(_serializedDeclarationsJSON,
+                            YarnJSONContext.Default.SerializedDeclarationArray);
                 }
                 catch (Exception e)
                 {
@@ -257,7 +290,8 @@ public partial class YarnProject : Resource
         set
         {
             _serializedDeclarations = value;
-            _serializedDeclarationsJSON = JsonSerializer.Serialize(_serializedDeclarations, JSONOptions);
+            _serializedDeclarationsJSON = JsonSerializer.Serialize(_serializedDeclarations,
+                YarnJSONContext.Default.SerializedDeclarationArray);
 #if TOOLS
             YarnProjectEditorUtility.ClearJSONCache();
 #endif

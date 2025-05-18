@@ -1,22 +1,23 @@
 <Project>
     <Choose>
-        <!-- Editor only --> 
+        <!-- Editor only -->
         <When Condition="$(DefineConstants.Contains('TOOLS'))">
             <ItemGroup>
-                <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0"  />
+                <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0"/>
             </ItemGroup>
         </When>
     </Choose>
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2"/>
-        <PackageReference Include="CsvHelper" Version="12.2.2" />
+        <Compile Remove="addons\YarnSpinner-Godot\SourceGenerator\**"/>
+
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1"/>
+        <PackageReference Include="CsvHelper" Version="12.2.2"/>
         <PackageReference Include="Google.Protobuf" Version="3.25.2"/>
-        <PackageReference Include="System.Text.Json" Version="8.0.5" />
-        <Reference Include="YarnSpinner">
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\YarnSpinner.dll</HintPath>
-        </Reference>
-        <Reference Include="YarnSpinner.Compiler" >
-            <HintPath>addons\YarnSpinner-Godot\Runtime\DLLs\YarnSpinner.Compiler.dll</HintPath>
-        </Reference>
+        <PackageReference Include="System.Text.Json" Version="8.0.5"/>
+        <PackageReference Include="YarnSpinner" Version="3.0.0"/>
+        <PackageReference Include="YarnSpinner.Compiler" Version="3.0.0"/>
+        <ProjectReference Include="addons\YarnSpinner-Godot\SourceGenerator\YarnSpinnerGodotSourceGenerator.csproj"
+                          ReferenceOutputAssembly="false"
+                          OutputItemType="analyzer"/>
     </ItemGroup>
 </Project>

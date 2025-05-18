@@ -1,17 +1,16 @@
-[gd_scene load_steps=11 format=3 uid="uid://hvtydqjfdlf5"]
+[gd_scene load_steps=10 format=3 uid="uid://hvtydqjfdlf5"]
 
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" id="1_1er8s"]
-[ext_resource type="Resource" uid="uid://c0qdj0h48fu6a" path="res://Samples/GDScriptIntegration/GDScriptIntegration.yarnproject" id="2_15buf"]
-[ext_resource type="Script" path="res://Samples/GDScriptIntegration/CrossLanguageScriptingExample.gd" id="3_05a7h"]
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/Views/GDScriptViewAdapter.cs" id="3_8do86"]
-[ext_resource type="Script" path="res://Samples/ReturnOnComplete.cs" id="4_6b5el"]
-[ext_resource type="Script" path="res://Samples/GDScriptIntegration/SimpleGDScriptLineView.gd" id="4_ixyx4"]
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="8_fijq0"]
-[ext_resource type="Script" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="9_a8pi7"]
-[ext_resource type="Script" path="res://Samples/GDScriptIntegration/SimpleGDScriptOptionsListView.gd" id="9_dujw4"]
-[ext_resource type="PackedScene" uid="uid://bwrwry811vrgh" path="res://Samples/GDScriptIntegration/SimpleGDScriptOptionView.tscn" id="10_s0v7h"]
+[ext_resource type="Script" uid="uid://budnld4qd513n" path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" id="1_1er8s"]
+[ext_resource type="Resource" uid="uid://c0qdj0h48fu6a" path="res://Samples/GDScriptIntegration/Dialogue/GDScriptIntegration.yarnproject" id="2_15buf"]
+[ext_resource type="Script" uid="uid://c05tpjdxqouun" path="res://Samples/GDScriptIntegration/CrossLanguageScriptingExample.gd" id="3_05a7h"]
+[ext_resource type="Script" uid="uid://dmcdy8evncukk" path="res://Samples/ReturnOnComplete.cs" id="4_6b5el"]
+[ext_resource type="Script" uid="uid://duwtbk038obhy" path="res://Samples/GDScriptIntegration/SimpleGDScriptLinePresenter.gd" id="4_ixyx4"]
+[ext_resource type="PackedScene" uid="uid://bwrwry811vrgh" path="res://Samples/GDScriptIntegration/SimpleGDScriptOptionItem.tscn" id="6_xg5ge"]
+[ext_resource type="Script" uid="uid://b1o5xpu22evvx" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="8_fijq0"]
+[ext_resource type="Script" uid="uid://c5gxawri864uf" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="9_a8pi7"]
+[ext_resource type="Script" uid="uid://g8vef2vk57xe" path="res://Samples/GDScriptIntegration/SimpleGDScriptOptionsPresenter.gd" id="9_dujw4"]
 
-[node name="PaletteSample" type="Node2D"]
+[node name="GDScriptIntegrationSample" type="Node2D"]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = 0
@@ -29,7 +28,7 @@ color = Color(0.00260118, 0.121715, 0.193433, 1)
 
 [node name="GDScriptYarnSpinnerCanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="DialogueRunner" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("variableStorage", "dialogueViews", "lineProvider")]
+[node name="DialogueRunner" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("variableStorage", "lineProvider", "dialoguePresenters")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,9 +39,10 @@ mouse_filter = 2
 script = ExtResource("1_1er8s")
 yarnProject = ExtResource("2_15buf")
 variableStorage = NodePath("../InMemoryVariableStorage")
-dialogueViews = [NodePath("../LineViewAdapter"), NodePath("../OptionsListView")]
-startNode = "GDScriptIntegration"
 lineProvider = NodePath("../TextLineProvider")
+dialoguePresenters = [NodePath("../LinePresenter"), NodePath("../OptionsPresenter")]
+autoStart = true
+startNode = "GDScriptIntegration"
 
 [node name="CrossLanguageScriptingExample" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("dialogue_runner", "logo")]
 layout_mode = 3
@@ -56,7 +56,7 @@ yarn_project = ExtResource("2_15buf")
 
 [node name="VariableDebugText" type="RichTextLabel" parent="GDScriptYarnSpinnerCanvasLayer"]
 
-[node name="LineViewAdapter" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("GDScriptView")]
+[node name="LinePresenter" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("continue_button", "character_name_label", "line_text_label", "presenter_control")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -64,10 +64,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("3_8do86")
-GDScriptView = NodePath("SimpleGDScriptLineView")
+script = ExtResource("4_ixyx4")
+continue_button = NodePath("PresenterControl/ContinueButton")
+character_name_label = NodePath("PresenterControl/CharacterNameText")
+line_text_label = NodePath("PresenterControl/LineText")
+presenter_control = NodePath("PresenterControl")
 
-[node name="ViewControl" type="Control" parent="GDScriptYarnSpinnerCanvasLayer/LineViewAdapter"]
+[node name="PresenterControl" type="Control" parent="GDScriptYarnSpinnerCanvasLayer/LinePresenter"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -75,7 +78,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LineText" type="RichTextLabel" parent="GDScriptYarnSpinnerCanvasLayer/LineViewAdapter/ViewControl"]
+[node name="LineText" type="RichTextLabel" parent="GDScriptYarnSpinnerCanvasLayer/LinePresenter/PresenterControl"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -96,7 +99,7 @@ theme_override_font_sizes/bold_font_size = 36
 bbcode_enabled = true
 text = "The dialogue text should appear here!"
 
-[node name="ColorRect" type="ColorRect" parent="GDScriptYarnSpinnerCanvasLayer/LineViewAdapter/ViewControl/LineText"]
+[node name="ColorRect" type="ColorRect" parent="GDScriptYarnSpinnerCanvasLayer/LinePresenter/PresenterControl/LineText"]
 modulate = Color(0.203922, 0.192157, 0.192157, 0.458824)
 show_behind_parent = true
 layout_mode = 1
@@ -109,7 +112,7 @@ offset_bottom = -158.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CharacterNameText" type="RichTextLabel" parent="GDScriptYarnSpinnerCanvasLayer/LineViewAdapter/ViewControl"]
+[node name="CharacterNameText" type="RichTextLabel" parent="GDScriptYarnSpinnerCanvasLayer/LinePresenter/PresenterControl"]
 self_modulate = Color(0.321569, 0.87451, 0.254902, 1)
 layout_mode = 1
 anchors_preset = 8
@@ -131,14 +134,14 @@ theme_override_font_sizes/bold_font_size = 36
 bbcode_enabled = true
 text = "Character Name"
 
-[node name="ColorRect" type="ColorRect" parent="GDScriptYarnSpinnerCanvasLayer/LineViewAdapter/ViewControl/CharacterNameText"]
+[node name="ColorRect" type="ColorRect" parent="GDScriptYarnSpinnerCanvasLayer/LinePresenter/PresenterControl/CharacterNameText"]
 modulate = Color(0.203922, 0.192157, 0.192157, 0.458824)
 show_behind_parent = true
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="ContinueButton" type="Button" parent="GDScriptYarnSpinnerCanvasLayer/LineViewAdapter/ViewControl"]
+[node name="ContinueButton" type="Button" parent="GDScriptYarnSpinnerCanvasLayer/LinePresenter/PresenterControl"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -155,16 +158,7 @@ mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 36
 text = "Continue"
 
-[node name="SimpleGDScriptLineView" type="Control" parent="GDScriptYarnSpinnerCanvasLayer/LineViewAdapter" node_paths=PackedStringArray("continue_button", "character_name_label", "line_text_label")]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("4_ixyx4")
-continue_button = NodePath("../ViewControl/ContinueButton")
-character_name_label = NodePath("../ViewControl/CharacterNameText")
-line_text_label = NodePath("../ViewControl/LineText")
-
-[node name="OptionsListView" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("GDScriptView")]
+[node name="OptionsPresenter" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("options_container", "presenter_control")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -172,10 +166,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("3_8do86")
-GDScriptView = NodePath("SimpleGDScriptOptionsListView")
+script = ExtResource("9_dujw4")
+option_item_prefab = ExtResource("6_xg5ge")
+options_container = NodePath("PresenterControl/VBoxContainer")
+presenter_control = NodePath("PresenterControl")
 
-[node name="ViewControl" type="Control" parent="GDScriptYarnSpinnerCanvasLayer/OptionsListView"]
+[node name="PresenterControl" type="Control" parent="GDScriptYarnSpinnerCanvasLayer/OptionsPresenter"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -183,7 +179,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GDScriptYarnSpinnerCanvasLayer/OptionsListView/ViewControl"]
+[node name="VBoxContainer" type="VBoxContainer" parent="GDScriptYarnSpinnerCanvasLayer/OptionsPresenter/PresenterControl"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 1
 anchors_preset = 8
@@ -198,20 +194,12 @@ offset_bottom = 287.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SimpleGDScriptOptionsListView" type="Control" parent="GDScriptYarnSpinnerCanvasLayer/OptionsListView" node_paths=PackedStringArray("options_container", "view_control")]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("9_dujw4")
-option_view_prefab = ExtResource("10_s0v7h")
-options_container = NodePath("../ViewControl/VBoxContainer")
-view_control = NodePath("../ViewControl")
-
 [node name="InMemoryVariableStorage" type="Node" parent="GDScriptYarnSpinnerCanvasLayer"]
 script = ExtResource("8_fijq0")
 
 [node name="TextLineProvider" type="Node2D" parent="GDScriptYarnSpinnerCanvasLayer"]
 script = ExtResource("9_a8pi7")
+YarnProject = ExtResource("2_15buf")
 
 [node name="Logo" type="TextureRect" parent="GDScriptYarnSpinnerCanvasLayer"]
 visible = false

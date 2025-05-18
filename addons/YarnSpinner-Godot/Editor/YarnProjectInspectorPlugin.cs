@@ -8,9 +8,8 @@ using Godot;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Yarn;
 using Yarn.Compiler;
-using YarnSpinnerGodot.Editor.UI;
 
-namespace YarnSpinnerGodot.Editor;
+namespace YarnSpinnerGodot;
 
 [Tool]
 public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
@@ -70,6 +69,9 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 nameof(YarnProject.baseLocalization),
                 nameof(YarnProject.ImportPath),
                 nameof(YarnProject.JSONProjectPath),
+                nameof(YarnProject.variablesClassName),
+                nameof(YarnProject.variablesClassNamespace),
+                nameof(YarnProject.variablesClassParent),
                 // can't use nameof for private fields here
                 "_baseLocalizationJSON",
                 "_lineMetadataJSON",
@@ -161,20 +163,25 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
 
                         var typeName = declaration.typeName;
                         var defaultValue = "";
-                        if (typeName == BuiltinTypes.String.Name)
+                        if (typeName == Types.String.Name || typeName.Contains($"Enum ({Types.String.Name})"))
                         {
                             defaultValue = declaration.defaultValueString;
                         }
-                        else if (typeName == BuiltinTypes.Boolean.Name)
+                        else if (typeName == Types.Boolean.Name || typeName.Contains($"Enum ({Types.Boolean.Name})"))
                         {
                             defaultValue = declaration.defaultValueBool.ToString();
                         }
-                        else if (typeName == BuiltinTypes.Number.Name)
+                        else if (typeName == Types.Number.Name || typeName.Contains($"Enum ({Types.Number.Name})"))
                         {
                             defaultValue = declaration.defaultValueNumber.ToString(CultureInfo.InvariantCulture);
                         }
 
-                        labelText += $"Default value: {defaultValue}\n";
+                        if (!string.IsNullOrWhiteSpace(declaration.description))
+                        {
+                            labelText += $"\n{declaration.description}";
+                        }
+
+                        labelText += $"Default value: {defaultValue}\n\n";
                         var label = _fileNameLabelScene.Instantiate<Label>();
                         label.Text = labelText;
                         vbox.AddChild(label);
@@ -188,6 +195,100 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 return true;
             }
 
+            if (path == nameof(YarnProject.generateVariablesSourceFile))
+            {
+                var generationEnabledCheckbox = new CheckBox {Text = "Generate variables source file"};
+                generationEnabledCheckbox.ButtonPressed = _project.generateVariablesSourceFile;
+                generationEnabledCheckbox.Toggled += OnGenerateVariablesSourceToggled;
+                AddCustomControl(generationEnabledCheckbox);
+
+                if (_project.generateVariablesSourceFile)
+                {
+                    var classNameHbox = new HBoxContainer
+                    {
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                    };
+                    var classNameTooltip = "The name of the generated variables storage class.";
+
+                    var classNameLabel = new Label
+                    {
+                        Text = "Variables class name",
+                        TooltipText = classNameTooltip,
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                    };
+                    var classNameTextInput = new LineEdit
+                    {
+                        PlaceholderText = "",
+                        Text = _project.variablesClassName,
+                        TooltipText = classNameTooltip,
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                    };
+                    classNameTextInput.TextChanged += VariablesClassNameTextChanged;
+                    classNameHbox.AddChild(classNameLabel);
+                    classNameHbox.AddChild(classNameTextInput);
+                    AddCustomControl(classNameHbox);
+
+                    var classNamespaceHbox = new HBoxContainer
+                    {
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                    };
+                    var classNamespaceTooltip =
+                        "The namespace of the generated variables storage class.";
+
+                    var classNamespaceLabel = new Label
+                    {
+                        Text = "Variables class namepace",
+                        TooltipText = classNamespaceTooltip,
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                    };
+                    var classNamespaceTextInput = new LineEdit
+                    {
+                        PlaceholderText = "",
+                        Text = _project.variablesClassNamespace,
+                        TooltipText = classNamespaceTooltip,
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                    };
+                    classNamespaceTextInput.TextChanged += VariablesClassNamespaceTextChanged;
+                    classNamespaceHbox.AddChild(classNamespaceLabel);
+                    classNamespaceHbox.AddChild(classNamespaceTextInput);
+                    AddCustomControl(classNamespaceHbox);
+
+                    var parentHbox = new HBoxContainer
+                    {
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                    };
+                    var parentTooltip = "The parent class the generated variables storage class will inherit from.";
+
+                    var parentLabel = new Label
+                    {
+                        Text = "Variables class parent",
+                        TooltipText = parentTooltip,
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                    };
+                    var parentTextInput = new LineEdit
+                    {
+                        PlaceholderText = "",
+                        Text = _project.variablesClassParent,
+                        TooltipText = parentTooltip,
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+                    };
+                    parentTextInput.TextChanged += VariablesClassParentTextChanged;
+                    parentHbox.AddChild(parentLabel);
+                    parentHbox.AddChild(parentTextInput);
+                    AddCustomControl(parentHbox);
+                    AddCustomControl(new Label
+                    {
+                        Text = "The file will be generated the next time the project is reimported, " +
+                               "or if you press the \"Re-compile Scripts in Project\" button above.",
+                        SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                        AutowrapMode = TextServer.AutowrapMode.WordSmart,
+                    });
+                }
+
+                AddCustomControl(new HSeparator {SizeFlagsHorizontal = Control.SizeFlags.ExpandFill});
+                return true;
+            }
+
             return false;
         }
         catch (Exception e)
@@ -196,6 +297,17 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 $"Error in {nameof(YarnProjectInspectorPlugin)}: {e.Message}\n{e.StackTrace}");
             return false;
         }
+    }
+
+    private void OnGenerateVariablesSourceToggled(bool on)
+    {
+        if (!IsInstanceValid(_project))
+        {
+            return;
+        }
+
+        _project.generateVariablesSourceFile = on;
+        _project.NotifyPropertyListChanged();
     }
 
     /// <summary>
@@ -303,8 +415,14 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 Yarn.Compiler.Project.LoadFromFile(
                     ProjectSettings.GlobalizePath(_project.JSONProjectPath));
 
-            var recompileButton = new Button();
-            recompileButton.Text = "Re-compile Scripts in Project";
+            var yarnProjectVersionLabel = new Label {Text = $"Language Version: {_project.JSONProject.FileVersion}"};
+            AddCustomControl(yarnProjectVersionLabel);
+            var recompileButton = new Button
+            {
+                Text = "Re-compile Scripts in Project",
+                TooltipText =
+                    "Compile all scripts that appear in source scripts below. Also generates the variable storage class file if enabled."
+            };
             recompileButton.Connect(BaseButton.SignalName.Pressed,
                 Callable.From(OnRecompileClicked));
             AddCustomControl(recompileButton);
@@ -514,6 +632,21 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
         }
     }
 
+    private void VariablesClassNameTextChanged(string newText)
+    {
+        _project.variablesClassName = newText;
+    }
+
+    private void VariablesClassNamespaceTextChanged(string newText)
+    {
+        _project.variablesClassNamespace = newText;
+    }
+
+    private void VariablesClassParentTextChanged(string newText)
+    {
+        _project.variablesClassParent = newText;
+    }
+
     private void OnBaseLocaleChanged()
     {
         if (!IsInstanceValid(_project))
@@ -561,8 +694,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
             return;
         }
 
-        YarnProjectEditorUtility.CompileAllScripts(_project);
-        YarnProjectEditorUtility.SaveYarnProject(_project);
+        YarnProjectEditorUtility.UpdateYarnProjectImmediate(_project);
         _compileErrorsPropertyEditor.Refresh();
         _project.NotifyPropertyListChanged();
     }

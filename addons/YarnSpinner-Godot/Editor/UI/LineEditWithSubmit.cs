@@ -2,7 +2,7 @@
 #if TOOLS
 using Godot;
 
-namespace YarnSpinnerGodot.Editor.UI;
+namespace YarnSpinnerGodot;
 
 /// <summary>
 /// LineEdit component with an associated button.

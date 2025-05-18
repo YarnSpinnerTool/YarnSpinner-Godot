@@ -47,14 +47,8 @@ public partial class VisualNovelManager : Node
             StartDialogue("ja");
         _colorOverlay = GetNode<ColorRect>(_colorOverlayPath);
         _dialogueRunner = GetNode<DialogueRunner>(_dialogueRunnerPath);
-        _dialogueRunner.AddCommandHandler<string, float, string>("PlayAudio", PlayAudio);
-        _dialogueRunner.AddCommandHandler<string, string, string, string, string>("Act", SetActor);
-        _dialogueRunner.AddCommandHandler("Move", new Func<string, string, string, float, Task>(MoveSprite));
-        _dialogueRunner.AddCommandHandler<string, string>("Flip", FlipSprite);
-        _dialogueRunner.AddCommandHandler("Shake", new Func<string, float, Task>(ShakeSprite));
-        _dialogueRunner.AddCommandHandler("Hide", new Action<string>(HideSprite));
-        _dialogueRunner.AddCommandHandler("StopAudioAll", StopAudioAll);
-        _dialogueRunner.AddCommandHandler<string, float, float, float>("Fade", Fade);
+
+
         _dialogueRunner.onDialogueComplete += OnDialogueComplete;
         _englishButton.GrabFocus();
     }
@@ -62,10 +56,10 @@ public partial class VisualNovelManager : Node
     public void StartDialogue(string locale)
     {
         TranslationServer.SetLocale(locale);
-        ((TextLineProvider)_dialogueRunner.lineProvider).textLanguageCode = locale;
+        ((TextLineProvider) _dialogueRunner.lineProvider).textLanguageCode = locale;
         _dialogueStartUi.Visible = false;
         _dialogueCanvas.Visible = true;
-        _dialogueRunner.StartDialogue(_dialogueRunner.startNode);
+        _dialogueRunner.StartDialogue("Start");
     }
 
     private void OnDialogueComplete()
@@ -112,28 +106,34 @@ public partial class VisualNovelManager : Node
 
     private List<AudioStreamPlayer2D> _audioPlayers = new();
 
-    private async void PlayAudio(string streamName, float volume = 1.0f, string doLoop = "loop")
+    [YarnCommand]
+    public void PlayAudio(string streamName, float volume = 1.0f, string doLoop = "loop")
     {
-        if (!_audioShortNameToUuid.ContainsKey(streamName))
+        async YarnTask PlayAudioAsync()
         {
-            GD.PrintErr($"The audio stream name {streamName} was not defined in {nameof(_audioShortNameToUuid)}");
-            return;
+            if (!_audioShortNameToUuid.ContainsKey(streamName))
+            {
+                GD.PrintErr($"The audio stream name {streamName} was not defined in {nameof(_audioShortNameToUuid)}");
+                return;
+            }
+
+            var stream = ResourceLoader.Load<AudioStream>(_audioShortNameToUuid[streamName]);
+            var player = new AudioStreamPlayer2D();
+            player.VolumeDb = Mathf.LinearToDb(volume);
+            player.Stream = stream;
+            _audioPlayers.Add(player);
+            AddChild(player);
+            player.Play();
+            if (doLoop != "loop")
+            {
+                await DefaultActions.Wait(stream.GetLength());
+                player.Stop();
+                _audioPlayers.Remove(player);
+                player.QueueFree();
+            }
         }
 
-        var stream = ResourceLoader.Load<AudioStream>(_audioShortNameToUuid[streamName]);
-        var player = new AudioStreamPlayer2D();
-        player.VolumeDb = Mathf.LinearToDb(volume);
-        player.Stream = stream;
-        _audioPlayers.Add(player);
-        AddChild(player);
-        player.Play();
-        if (doLoop != "loop")
-        {
-            await DefaultActions.Wait(stream.GetLength());
-            player.Stop();
-            _audioPlayers.Remove(player);
-            player.QueueFree();
-        }
+        PlayAudioAsync().Forget();
     }
 
     private class Actor
@@ -214,6 +214,7 @@ public partial class VisualNovelManager : Node
     // screenPosY=0.5, moveTime=1.0>> screenPosX and screenPosY are
     // normalized screen coordinates (0.0 - 1.0) moveTime is the time
     // in seconds it will take to reach that position
+    [YarnCommand("Move")]
     public async Task MoveSprite(string actorOrSpriteName, string screenPosX = "0.5", string screenPosY = "0.5",
         float moveTime = 1)
     {
@@ -230,7 +231,7 @@ public partial class VisualNovelManager : Node
                 // calculate the sprite movement this frame, 
                 // trying to normalize it based on framerate
                 var timeRatio = delta / moveTime;
-                var movement = new Vector2((float)timeRatio * distance.X, (float)timeRatio * distance.Y);
+                var movement = new Vector2((float) timeRatio * distance.X, (float) timeRatio * distance.Y);
                 actor.Rect.Position += movement;
                 elapsed += delta;
                 await DefaultActions.Wait(delta); // wait a frame
@@ -241,6 +242,7 @@ public partial class VisualNovelManager : Node
     }
 
     // shake a sprite
+    [YarnCommand("Shake")]
     public async Task ShakeSprite(string actorOrSpriteName, float moveTime)
     {
         var actor = _actors[actorOrSpriteName];
@@ -279,6 +281,7 @@ public partial class VisualNovelManager : Node
         actor.Rect.Position = initialPos;
     }
 
+    [YarnCommand("Act")]
     public void SetActor(string actorName, string spriteName, string positionX = "", string positionY = "",
         string colorHex = "")
     {
@@ -299,12 +302,14 @@ public partial class VisualNovelManager : Node
         MoveChild(rect, 1);
     }
 
-    public void HideSprite(String actorOrSpriteName)
+    [YarnCommand("Hide")]
+    public void HideSprite(string actorOrSpriteName)
     {
         _actors[actorOrSpriteName].Rect.Visible = false;
     }
 
     /// flip a sprite, or force the sprite to face a direction
+    [YarnCommand("Flip")]
     public void FlipSprite(string actorOrSpriteName, string xDirection = null)
     {
         bool newFlip;
@@ -332,7 +337,8 @@ public partial class VisualNovelManager : Node
         rect.FlipH = newFlip;
     }
 
-    private void StopAudioAll()
+    [YarnCommand]
+    public void StopAudioAll()
     {
         foreach (var player in _audioPlayers)
         {
@@ -348,6 +354,7 @@ public partial class VisualNovelManager : Node
     /// <summary>typical screen fade effect, good for transitions?
     /// usage: Fade( #hexcolor, startAlpha, endAlpha, fadeTime
     /// )</summary>
+    [YarnCommand]
     public async Task Fade(string fadeColorHex, float startAlpha = 0, float endAlpha = 1, float fadeTime = 1)
     {
         var elapsed = 0d;
@@ -359,7 +366,7 @@ public partial class VisualNovelManager : Node
         while (elapsed < fadeTime && Mathf.Abs(endAlpha - newColor.A) > 0.001)
         {
             var timeRatio = elapsed / fadeTime;
-            newColor.A = (float)(startAlpha + timeRatio * colorDifference);
+            newColor.A = (float) (startAlpha + timeRatio * colorDifference);
             _colorOverlay.Color = newColor;
             elapsed += delay / 1000d;
             await Task.Delay(delay);

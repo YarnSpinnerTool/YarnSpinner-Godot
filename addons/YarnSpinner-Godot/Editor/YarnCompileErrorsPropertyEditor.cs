@@ -3,7 +3,7 @@
 using Godot;
 using Array = Godot.Collections.Array;
 
-namespace YarnSpinnerGodot.Editor;
+namespace YarnSpinnerGodot;
 
 [Tool]
 public partial class YarnCompileErrorsPropertyEditor : EditorProperty

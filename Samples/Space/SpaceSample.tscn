@@ -1,8 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://ddbq27wcm6emj"]
+[gd_scene load_steps=21 format=3 uid="uid://ddbq27wcm6emj"]
 
-[ext_resource type="Resource" uid="uid://d2lkhhnqha4qi" path="res://Samples/Space/Dialogue/SpaceYarnProject.yarnproject" id="1"]
-[ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_3dm8d"]
-[ext_resource type="Script" path="res://Samples/Space/Scripts/SpaceSample.cs" id="3"]
+[ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_b8xl3"]
+[ext_resource type="Script" uid="uid://c7djt487dc5x8" path="res://Samples/Space/Scripts/SpaceSample.cs" id="3"]
 [ext_resource type="Texture2D" uid="uid://dsxwawdra77cw" path="res://Samples/Space/Sprites/Ship-Face-Neutral.png" id="3_b3htj"]
 [ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://b47akckvwuptw" path="res://Samples/Space/Sprites/Ship.png" id="4_adhl1"]
@@ -10,10 +9,14 @@
 [ext_resource type="Texture2D" uid="uid://u2fbx0x644y6" path="res://Samples/Space/Sprites/Background.jpg" id="6_lstjv"]
 [ext_resource type="Texture2D" uid="uid://bof87dtlnbrt0" path="res://Samples/Space/Sprites/Wall.png" id="7_ld3rh"]
 [ext_resource type="Texture2D" uid="uid://d3utr21wvs3n6" path="res://Samples/Space/Sprites/Player.png" id="8_18hb1"]
-[ext_resource type="Script" path="res://Samples/Space/Player.cs" id="14"]
-[ext_resource type="Script" path="res://Samples/Space/Scripts/StopButton.cs" id="14_1b0fg"]
-[ext_resource type="Script" path="res://Samples/Space/SpaceCamera.cs" id="15"]
-[ext_resource type="Script" path="res://Samples/Space/DialogueTarget.cs" id="16"]
+[ext_resource type="Resource" uid="uid://d2lkhhnqha4qi" path="res://Samples/Space/Dialogue/SpaceYarnProject.yarnproject" id="12_qnfx0"]
+[ext_resource type="Script" uid="uid://blf0j4be8lq0x" path="res://Samples/Space/Player.cs" id="14"]
+[ext_resource type="Script" uid="uid://nhglc85n1674" path="res://Samples/Space/Scripts/StopButton.cs" id="14_1b0fg"]
+[ext_resource type="Script" uid="uid://qvr0xr1w3wsj" path="res://Samples/Space/SpaceCamera.cs" id="15"]
+[ext_resource type="Script" uid="uid://djut45fdy72i4" path="res://Samples/Space/DialogueTarget.cs" id="16"]
+[ext_resource type="Script" uid="uid://bf4840p86g0m7" path="res://Samples/Space/Dialogue/SpaceYarnVariables.cs" id="16_i6fc8"]
+[ext_resource type="Script" uid="uid://c0v73pfpw3801" path="res://addons/YarnSpinner-Godot/Runtime/SaliencySetter.cs" id="16_nbkjm"]
+[ext_resource type="Script" uid="uid://cjg4pbfkkr03m" path="res://addons/YarnSpinner-Godot/Runtime/Async/LineAdvancer.cs" id="17_wrty4"]
 
 [sub_resource type="CapsuleShape2D" id="3"]
 radius = 40.02
@@ -28,7 +31,7 @@ size = Vector2(314, 2122)
 
 [node name="SpaceSample" type="Node2D" node_paths=PackedStringArray("dialogueRunner", "shipFace")]
 script = ExtResource("3")
-ShipHappySprite = ExtResource("2_3dm8d")
+ShipHappySprite = ExtResource("2_b8xl3")
 ShipNeutralSprite = ExtResource("3_b3htj")
 dialogueRunner = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
 shipFace = NodePath("Ship/ShipFaceSprite")
@@ -131,29 +134,26 @@ offset_right = 4096.0
 offset_bottom = 1536.0
 texture = ExtResource("7_ld3rh")
 
-[node name="SpaceCamera" type="Camera2D" parent="."]
+[node name="SpaceCamera" type="Camera2D" parent="." node_paths=PackedStringArray("followTarget")]
 position = Vector2(3, 630)
 anchor_mode = 0
 script = ExtResource("15")
-followTargetPath = NodePath("../Player")
+followTarget = NodePath("../Player")
 MinX = 3
 MaxX = 1200
 
 [node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("4")]
 
 [node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
-yarnProject = ExtResource("1")
+yarnProject = ExtResource("12_qnfx0")
+autoStart = true
 startNode = "SpaceIntro"
-startAutomatically = true
 
-[node name="LineView" parent="YarnSpinnerCanvasLayer" index="2"]
-ConvertHTMLToBBCode = true
-
-[node name="LineText" parent="YarnSpinnerCanvasLayer/LineView/ViewControl" index="0"]
-theme_override_font_sizes/normal_font_size = 34
+[node name="InMemoryVariableStorage" parent="YarnSpinnerCanvasLayer" index="4"]
+script = ExtResource("16_i6fc8")
 
 [node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
-textLanguageCode = "en"
+YarnProject = ExtResource("12_qnfx0")
 
 [node name="StopButton" type="Button" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("DialogueRunner")]
 self_modulate = Color(1, 0, 0, 1)
@@ -165,5 +165,15 @@ offset_bottom = 832.0
 text = "Stop Dialogue"
 script = ExtResource("14_1b0fg")
 DialogueRunner = NodePath("../DialogueRunner")
+
+[node name="SaliencySetter" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
+script = ExtResource("16_nbkjm")
+dialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+SaliencyStrategy = 3
+
+[node name="LineAdvancer" type="Node2D" parent="." node_paths=PackedStringArray("runner")]
+script = ExtResource("17_wrty4")
+runner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+hurryUpAction = "dialogue_hurry"
 
 [editable path="YarnSpinnerCanvasLayer"]

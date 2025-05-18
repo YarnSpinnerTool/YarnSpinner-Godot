@@ -1,10 +1,19 @@
-<Project Sdk="Godot.NET.Sdk/4.3.0">
+<Project Sdk="Godot.NET.Sdk/4.4.1">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <NoWarn>RS2008</NoWarn> <!-- We do not have the AnalyserReleases.*.md files written to satisfy this warning -->
+    <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <WarningsAsErrors>true</WarningsAsErrors>
+    <WarningsAsErrors>Nullable</WarningsAsErrors>
     <!--Turn on Nullable so that we can fail the build if there are any incompatible scripts-->
     <Nullable>enable</Nullable>
+    <!-- Include this when debugging source generation -->
+    <DefineConstants>$(DefineConstants);YARN_SOURCE_GENERATION_DEBUG_LOGGING;YARNSPINNER_DEBUG</DefineConstants>
+
+    <!-- Uncomment the following two lines if you want to see the generated 
+    Command/Function C# file on disk for debugging purposes. -->
+<!--    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+<!--    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+
   </PropertyGroup>
   <ItemGroup>
     <!-- Add some extra files for ease of developing samples -->
@@ -12,17 +21,13 @@
     <None Include="addons\YarnSpinner-Godot\plugin.cfg" />
     <None Include="**\*.md" />
     <None Include="**\*.yarn" />
+    <None Include="**\*.yarnproject" />
     <None Include="**\*.gd" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Remove="Generated\**" />
     <!-- For SQL variable storage sample -->
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="todotest\NodeCompleteTest.yarn.import" />
-    <Content Include="todotest\test.tscn" />
-    <Content Include="todotest\test.yarnproject" />
-    <Content Include="todotest\test.yarnproject.import" />
-  </ItemGroup>
+
+  <!-- How to include the plugin code in your .csproj -->
   <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
 </Project>

@@ -23,8 +23,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        godotVersion: ["4.1.4", "4.2.2", "4.3.0"]
-        targetFramework: ["net6.0", "net7.0"]
+        godotVersion: ["4.4.0"]
+        targetFramework: ["net8.0"]
+        nullable: ["enable", "disable"]
     name: Build
     runs-on: ubuntu-latest
 
@@ -39,6 +40,9 @@ jobs:
       - name: Set Target Framework ${{ matrix.targetFramework }}
         run: |
           sed -i 's|<TargetFramework>.*<|<TargetFramework>'${{ matrix.targetFramework }}'<|g' YarnSpinner-Godot.csproj
+      - name: Set Nullable ${{ matrix.nullable }}
+        run: |
+          sed -i 's|<Nullable>.*<|<Nullable>'${{ matrix.nullable }}'<|g' YarnSpinner-Godot.csproj
 
       - uses: chickensoft-games/setup-godot@v1
         name: 🤖 Setup Godot

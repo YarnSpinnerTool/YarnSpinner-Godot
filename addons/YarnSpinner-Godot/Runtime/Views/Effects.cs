@@ -1,6 +1,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Godot;
 
@@ -88,8 +89,6 @@ public static class Effects
     {
         var mainTree = (SceneTree) Engine.GetMainLoop();
 
-        stopToken?.Start();
-
         var color = control.Modulate;
         color.A = from;
         control.Modulate = color;
@@ -124,6 +123,57 @@ public static class Effects
 
         control.Modulate = color;
         stopToken?.Complete();
+    }
+
+    /// <summary>
+    /// A Task that fades a <see cref="CanvasGroup"/> object's opacity
+    /// from <paramref name="from"/> to <paramref name="to"/> over the
+    /// course of <see cref="fadeTime"/> seconds, and then returns.
+    /// </summary>
+    /// <param name="from">The opacity value to start fading from, ranging
+    /// from 0 to 1.</param>
+    /// <param name="to">The opacity value to end fading at, ranging from 0
+    /// to 1.</param>
+    /// <param name="stopToken">A <see cref="TaskInterruptToken"/> that
+    /// can be used to interrupt the task.</param>
+    public static async Task FadeAlphaAsync(Control control, float from, float to, float fadeTime,
+        CancellationToken token)
+    {
+        var mainTree = (SceneTree) Engine.GetMainLoop();
+
+        var color = control.Modulate;
+        color.A = from;
+        control.Modulate = color;
+
+        var destinationColor = color;
+        destinationColor.A = to;
+
+        var tween = control.CreateTween();
+        tween.TweenProperty(control, "modulate", destinationColor, fadeTime);
+        while (tween.IsRunning())
+        {
+            if (!GodotObject.IsInstanceValid(control))
+            {
+                // the control was deleted from the scene
+                return;
+            }
+
+            if (token.IsCancellationRequested)
+            {
+                tween.Kill();
+                return;
+            }
+
+            await DefaultActions.Wait(mainTree.Root.GetProcessDeltaTime());
+        }
+
+        color.A = to;
+        if (color.A == 1f)
+        {
+            control.Visible = true;
+        }
+
+        control.Modulate = color;
     }
 
     public static async Task Typewriter(RichTextLabel text, float lettersPerSecond,
@@ -197,7 +247,7 @@ public static class Effects
         // Wait a single frame to let the text component process its
         // content, otherwise text.textInfo.characterCount won't be
         // accurate
-        await DefaultActions.Wait(LineView.FrameWaitTime);
+        await DefaultActions.Wait(LinePresenter.FrameWaitTime);
         if (!GodotObject.IsInstanceValid(text))
         {
             return;

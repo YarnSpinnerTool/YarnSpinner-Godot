@@ -35,6 +35,10 @@ namespace YarnSpinnerGodot;
 /// </summary>
 public abstract partial  class VariableStorageBehaviour : Godot.Node, IVariableStorage
 {
+    public Program Program { get; set; }
+
+    public ISmartVariableEvaluator SmartVariableEvaluator { get; set; }
+
     /// <inheritdoc/>
     public abstract bool TryGetValue<T>(string variableName, out T result);
 
@@ -75,4 +79,16 @@ public abstract partial  class VariableStorageBehaviour : Godot.Node, IVariableS
     /// Intended to be a point for custom saving, editors, etc.
     /// </summary>
     public abstract (System.Collections.Generic.Dictionary<string,float>,System.Collections.Generic.Dictionary<string,string>,System.Collections.Generic.Dictionary<string,bool>) GetAllVariables();
+    
+    public VariableKind GetVariableKind(string name)
+    {
+        if (this.Contains(name))
+        {
+            return VariableKind.Stored;
+        }
+        else
+        {
+            return Program.GetVariableKind(name);
+        }
+    }
 }

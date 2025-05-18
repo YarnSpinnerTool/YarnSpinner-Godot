@@ -3,7 +3,7 @@ tags:
 colorID: 0
 position: 721,130
 ---
-<<if visited("Ship") is false>>
+<<once>>
     Ship: Hey, friend.  #line:5837f2 #firstline
     Player: Hi, Ship. #line:ship09
     Player: How's space? #line:ship10
@@ -11,13 +11,12 @@ position: 721,130
     <<setsprite ShipFace happy>>
     Ship: It's HUGE! #line:ship12
     <<setsprite ShipFace neutral>>
-<<else>>
+<<endonce>>
+
+<<if $should_see_ship is true and $sally_warning is false>>
     <<setsprite ShipFace happy>>
     Ship: Hey!! #line:ship13
     <<setsprite ShipFace neutral>>
-<<endif>>
-
-<<if $should_see_ship is true and $sally_warning is false>>
     Player: Sally said you wanted to see me? #line:ship01
     <<setsprite ShipFace happy>> 
     Ship: She totally did!! #line:ship03
@@ -30,5 +29,60 @@ position: 721,130
     <<wait 1>>
     Player: Uh. #line:ship07
     <<setsprite ShipFace neutral>>
+<<else>>
+<<jump ShipChat>>
 <<endif>>
+===
+
+// Node groups example. YarnSpinner will pick from these same-named 
+// nodes based on the saliency strategy set on dialogueRunner.Dialogue.ContentSaliencyStrategy 
+// They must have a when: tag to be in a node group. 
+
+title: ShipChat
+when: always
+---
+<<setsprite ShipFace happy>>
+Ship: Remember that alien made of crystals that we met? That was cool. 
+===
+
+title: ShipChat
+when: always
+---
+Ship: Remind me again, are you a shapeshifting species?
+Ship: Oh that's right, you're just a human. How, um, exciting. 
+<<setsprite ShipFace neutral>>
+===
+
+title: ShipChat
+when: always
+---
+<<setsprite ShipFace happy>>
+Ship: I was built in the Gamma Quadrant. It's still my favorite quadrant.
+===
+ 
+ 
+title: ShipChat
+when: $apologized_to_sally
+---
+<<setsprite ShipFace neutral>>
+Ship: Don't feel too bad about the console. She probably didn't mean the thing about the flaying.
+<<setsprite ShipFace happy>>
+Ship: I mean she's only done that twice ever. And only once to a crew member.
+===
+
+title: ShipChat
+when: always
+---
+<<setsprite ShipFace happy>>
+Ship: Did I ever tell you about the psychic giant cyclops of Beltridion Blue? 
+<<detour Cyclops>>
+Ship: Easily in the top ten cyclops planets I've ever been to. 
+===
+
+title: Cyclops
+---
+Ship: Of course as a machine, they were unable to read my mind. 
+Ship: But they could certainly read Sally's, and boy did they make her embarrassed.
+Ship: That's why I was surprised when she gifted them our archives on how to manufacture monocles.
+Ship: Their King, Iris, said I was an 'amazing device'. 
 ===

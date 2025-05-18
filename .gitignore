@@ -6,7 +6,7 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
-
+Generated/
 ## VisualStudio
 
 .vs/
