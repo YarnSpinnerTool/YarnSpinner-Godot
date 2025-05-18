@@ -13,7 +13,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Renamed `AsyncLineView` to be `LinePresenter`
 - Renamed `AsyncOptionItem` to be `OptionItem`
 - Renamed `AsyncOptionsView` to be `OptionsPresenter`
-- Renamed `VoiceOverView` to be `VoiceOverPresenter`
 - Renamed `viewControl` property in all `*Presenter` classes to `presenterControl`
 
 ## [0.3.0-beta 5] 2025-05-04
