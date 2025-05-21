@@ -413,9 +413,7 @@ public static class YarnProjectEditorUtility
         {
             project.JSONProjectPath = project.DefaultJSONProjectPath;
         }
-
-        // Prevent plugin failing to load when code is rebuilt
-        ClearJSONCache();
+        
         var saveErr = ResourceSaver.Save(project, project.ImportPath);
         if (saveErr != Error.Ok)
         {

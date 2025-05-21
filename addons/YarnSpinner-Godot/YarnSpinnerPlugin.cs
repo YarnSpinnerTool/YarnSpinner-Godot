@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Runtime.Serialization.Json;
 using System.Text.Json;
@@ -90,6 +91,15 @@ public partial class YarnSpinnerPlugin : EditorPlugin
     private PopupMenu _popup;
     public const string YARN_PROJECT_EXTENSION = ".yarnproject";
 
+    [ModuleInitializer]
+    public static void Initialize()
+    {
+#if TOOLS
+        AssemblyLoadContext.GetLoadContext(Assembly.GetExecutingAssembly())
+            .Unloading += alc => { YarnProjectEditorUtility.ClearJSONCache(); };
+#endif
+    }
+
     public override void _EnterTree()
     {
 #if !GODOT4_2_OR_GREATER
@@ -165,7 +175,7 @@ public partial class YarnSpinnerPlugin : EditorPlugin
     /// <param name="id"></param>
     public void OnPopupIDPressed(long id)
     {
-        if (IDToToolsMenuItem.TryGetValue((int) id, out var menuItem))
+        if (IDToToolsMenuItem.TryGetValue((int)id, out var menuItem))
         {
             menuItem.Handler();
         }

@@ -203,9 +203,6 @@ public partial class YarnProject : Resource
         {
             _lineMetadata = value;
             _lineMetadataJSON = JsonSerializer.Serialize(_lineMetadata, YarnJSONContext.Default.LineMetadata);
-#if TOOLS
-            YarnProjectEditorUtility.ClearJSONCache();
-#endif
         }
     }
 
@@ -247,9 +244,6 @@ public partial class YarnProject : Resource
             _listOfFunctions = value;
             _listOfFunctionsJSON =
                 JsonSerializer.Serialize(_listOfFunctions, YarnJSONContext.Default.FunctionInfoArray);
-#if TOOLS
-            YarnProjectEditorUtility.ClearJSONCache();
-#endif
         }
     }
 
@@ -292,9 +286,6 @@ public partial class YarnProject : Resource
             _serializedDeclarations = value;
             _serializedDeclarationsJSON = JsonSerializer.Serialize(_serializedDeclarations,
                 YarnJSONContext.Default.SerializedDeclarationArray);
-#if TOOLS
-            YarnProjectEditorUtility.ClearJSONCache();
-#endif
         }
     }
 

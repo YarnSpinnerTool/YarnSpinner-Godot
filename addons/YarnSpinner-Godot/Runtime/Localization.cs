@@ -71,9 +71,6 @@ public partial class Localization : Resource
 
             _stringTableJSON =
                 JsonSerializer.Serialize(_stringTable, YarnJSONContext.Default.DictionaryStringStringTableEntry);
-#if TOOLS
-            YarnProjectEditorUtility.ClearJSONCache();
-#endif
         }
     }
 
