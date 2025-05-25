@@ -6,12 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
-using System.Runtime.Serialization.Json;
-using System.Text.Json;
 using Godot;
-using Yarn.Compiler;
-using YarnSpinnerGodot;
-using Array = Godot.Collections.Array;
 
 namespace YarnSpinnerGodot;
 
@@ -91,7 +86,10 @@ public partial class YarnSpinnerPlugin : EditorPlugin
     private PopupMenu _popup;
     public const string YARN_PROJECT_EXTENSION = ".yarnproject";
 
+#pragma warning disable CA2255
+    // Used to avoid "failed to unload assembly" error in Godot. 
     [ModuleInitializer]
+#pragma warning restore CA2255
     public static void Initialize()
     {
 #if TOOLS

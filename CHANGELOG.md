@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.2] 2025-05-25
+
+* Fix #87 Support node paths for locating nodes for commands.
+* Fix #88 - Make the error message clearer when a lambda is registered as a command handler from GDScript that lambdas are not supported.
+
 ## [0.3.1] 2025-05-21
 
 - Add ModuleInitializer that clears System.Text.Json cache to fix assembly unload issue #32 - thanks eoemcgregor

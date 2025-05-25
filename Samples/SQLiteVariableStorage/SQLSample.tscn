@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dt33g06nhtxn2"]
+[gd_scene load_steps=6 format=3 uid="uid://dt33g06nhtxn2"]
 
 [ext_resource type="PackedScene" uid="uid://dqe5yshlcmnpg" path="res://addons/YarnSpinner-Godot/Scenes/RoundedDialogueSystem.tscn" id="1_8wwci"]
 [ext_resource type="Resource" uid="uid://tsj53mnkwps3" path="res://Samples/SQLiteVariableStorage/SQLSample.yarnproject" id="2_bai3o"]
 [ext_resource type="Script" uid="uid://dfqlokuygykct" path="res://Samples/SQLiteVariableStorage/SQLVariableStorage.cs" id="3_71oeg"]
 [ext_resource type="Script" uid="uid://dmcdy8evncukk" path="res://Samples/ReturnOnComplete.cs" id="4_lgfx4"]
+[ext_resource type="Script" uid="uid://csrrlgmbjsoha" path="res://Samples/SQLiteVariableStorage/SQLSampleCommands.cs" id="5_y8hox"]
 
 [node name="SqlSample" type="Node2D"]
 
@@ -13,9 +14,6 @@
 yarnProject = ExtResource("2_bai3o")
 autoStart = true
 startNode = "SqlSample"
-
-[node name="LineView" parent="RoundedYarnSpinnerCanvasLayer" index="2"]
-useFadeEffect = true
 
 [node name="TextLineProvider" parent="RoundedYarnSpinnerCanvasLayer" index="5"]
 YarnProject = ExtResource("2_bai3o")
@@ -37,5 +35,13 @@ script = ExtResource("3_71oeg")
 [node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
 script = ExtResource("4_lgfx4")
 dialogueRunner = NodePath("../RoundedYarnSpinnerCanvasLayer/DialogueRunner")
+
+[node name="Nested" type="Node2D" parent="."]
+
+[node name="CommandsNodeA" type="Node2D" parent="Nested"]
+script = ExtResource("5_y8hox")
+
+[node name="CommandsNodeB" type="Node2D" parent="Nested"]
+script = ExtResource("5_y8hox")
 
 [editable path="RoundedYarnSpinnerCanvasLayer"]
