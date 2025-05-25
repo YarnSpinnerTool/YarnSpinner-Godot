@@ -362,7 +362,8 @@ public partial class DialogueRunner : Godot.Node
     {
         foreach (var presenter in dialoguePresenters)
         {
-            if (presenter == null || presenter is not DialoguePresenterBase && presenter.GetScript().Obj is not GDScript)
+            if (presenter == null ||
+                presenter is not DialoguePresenterBase && presenter.GetScript().Obj is not GDScript)
             {
                 GD.PushError(
                     $"Node {presenter?.Name} ({presenter?.GetType()}) added to {nameof(dialoguePresenters)} does not appear to be a dialogue presenter. " +
@@ -1126,9 +1127,17 @@ public partial class DialogueRunner : Godot.Node
         return ((SceneTree)Engine.GetMainLoop()).Root.FindChild(name, true, false);
     }
 
+    public static Godot.Node FindNodeByPath(string path)
+    {
+        return ((SceneTree)Engine.GetMainLoop()).Root.GetNode(path);
+    }
+
     /// <summary>
     /// Add a command handler using a Callable rather than a C# delegate.
     /// Mostly useful for integrating with GDScript.
+    ///
+    /// Note that only object methods can be used, you CANNOT pass a GDScript lambda.
+    /// 
     /// If the last argument to your handler is a Callable, your command will be
     /// considered an async blocking command. When the work for your command is done,
     /// call the Callable that the DialogueRunner will pass to your handler. Then
@@ -1142,6 +1151,17 @@ public partial class DialogueRunner : Godot.Node
     /// will be invoked when the command is called.</param>
     public void AddCommandHandlerCallable(string commandName, Callable handler)
     {
+        // Custom Callables cannot be passed to C#.
+        // See: https://github.com/godotengine/godot/issues/76108#issuecomment-1719304017
+        // A lambda is a custom callable, so lacks a method to call or any useful info.
+        if (!IsInstanceValid(handler.Target) && handler.Delegate == null)
+        {
+            GD.PushError(
+                $"Callable provided to {nameof(AddCommandHandlerCallable)} has no Target nor Delegate. " +
+                "Did you pass a lambda? Lambdas cannot be passed to this method.");
+            return;
+        }
+
         if (!IsInstanceValid(handler.Target))
         {
             GD.PushError(

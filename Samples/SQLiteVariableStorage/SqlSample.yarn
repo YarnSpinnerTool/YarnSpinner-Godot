@@ -19,7 +19,11 @@ tags:
 <<declare $impressed = false as bool>>
 <<declare $nthApplicant = 0 as number>>
 <<set $nthApplicant to dice(6)>>
-Guide: Alright, you're my [ordinal value={$nthApplicant} one="%st" two="%nd" few="%rd" other="%th" /] this morning. #line:0d2bca2 
+// Locate a Node with a script with the [YarnCommand] attribute via NodePath (relative to the scene tree root)
+<<do_something "/root/SqlSample/Nested/CommandsNodeA">>
+// or by name anywhere in the tree: 
+<<do_something "CommandsNodeB">>
+Guide: Alright, you're my [ordinal value={$nthApplicant} one="%st" two="%nd" few="%rd" other="%th" /]  this morning. #line:0d2bca2 
 Guide: Hmm, how do you say your name!? It says "S-Q-L". #line:0e6b788 
 -> Eskew-well  #line:0f551f3 
   <<set $characterName to CharacterName.Eskewwell>>

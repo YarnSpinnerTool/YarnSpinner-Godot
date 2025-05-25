@@ -390,7 +390,9 @@ public class Actions : ICommandDispatcher
 
                 parameters.RemoveAt(0);
 
-                var gameObject = DialogueRunner.FindChild(gameObjectName);
+                var gameObject = gameObjectName.Contains('/')
+                    ? DialogueRunner.FindNodeByPath(gameObjectName)
+                    : DialogueRunner.FindChild(gameObjectName);
 
                 if (gameObject == null)
                 {
@@ -516,12 +518,12 @@ public class Actions : ICommandDispatcher
 
         readonly Dictionary<Type, string> TypeFriendlyNames = new Dictionary<Type, string>
         {
-            {typeof(int), "number"},
-            {typeof(float), "number"},
-            {typeof(double), "number"},
-            {typeof(Decimal), "number"},
-            {typeof(string), "string"},
-            {typeof(bool), "bool"},
+            { typeof(int), "number" },
+            { typeof(float), "number" },
+            { typeof(double), "number" },
+            { typeof(Decimal), "number" },
+            { typeof(string), "string" },
+            { typeof(bool), "bool" },
         };
     }
 
@@ -702,7 +704,8 @@ public class Actions : ICommandDispatcher
         {
             return (arg, i) =>
             {
-                Godot.Node gameObject = DialogueRunner.FindChild(arg);
+                Node gameObject =
+                    arg.Contains('/') ? DialogueRunner.FindNodeByPath(arg) : DialogueRunner.FindChild(arg);
                 if (!GodotObject.IsInstanceValid(gameObject))
                 {
                     return null;
@@ -750,6 +753,7 @@ public class Actions : ICommandDispatcher
                     {
                         return Variant.From(arg);
                     }
+
                     // It's nullable, convert it to non-nullable for GDScript compatibility.
                     return Variant.From(Convert.ChangeType(arg, nullableType));
                 }
@@ -810,7 +814,7 @@ public class Actions : ICommandDispatcher
 
     public void AddCommandHandler(string commandName, Func<object> handler)
     {
-        this.AddCommandHandler(commandName, (Delegate) handler);
+        this.AddCommandHandler(commandName, (Delegate)handler);
     }
 
     /// <summary>
