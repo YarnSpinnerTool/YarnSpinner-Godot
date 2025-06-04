@@ -25,8 +25,8 @@ jobs:
       fail-fast: false
       matrix:
         configuration: [ "--export-debug", "--export-release" ]
-        platform: [ { preset: "linux_amd64", bin: "linux_amd64/YarnSpinnerGodot_Samples.x86_64" },
-                    { preset: "win64", bin: "win64/YarnSpinnerGodot_Samples.exe" } ]
+        platform: [ { preset: "linux_amd64", bin: "export/YarnSpinnerGodot_Samples.x86_64" },
+                    { preset: "win64", bin: "export/YarnSpinnerGodot_Samples.exe" } ]
     
     
     name: Export ${{ matrix.configuration }}  ${{ matrix.platform.preset }}
@@ -46,7 +46,8 @@ jobs:
           version: 4.4.0
           # Use .NET-enabled version of Godot (the default is also true).
           use-dotnet: true
-
+          include-templates: true
+          
       - name: 🔬 Verify Setup
         run: |
           dotnet --version
@@ -61,4 +62,5 @@ jobs:
 
       - name: Export
         run: |
+          mkdir export
           godot --headless --verbose ${{ matrix.configuration }}  ${{ matrix.platform.preset }}  ${{ matrix.platform.bin }}
