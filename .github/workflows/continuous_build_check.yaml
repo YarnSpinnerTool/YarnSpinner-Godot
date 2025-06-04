@@ -8,11 +8,11 @@ on:
       # don't need to re-run the build for now if only markdown changes
       - '**/*.md'
       - 'docs/**'
-  pull_request: 
+  pull_request:
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_NOLOGO: true
-  
+
 defaults:
   run:
     shell: bash
@@ -23,9 +23,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        godotVersion: ["4.4.0"]
-        targetFramework: ["net8.0"]
-        nullable: ["enable", "disable"]
+        godotVersion: [ "4.4.0" ]
+        configuration: [ "--export-debug", "--export-release" ]
+        platform: [ { preset: "linux_amd64", bin: "linux_amd64/YarnSpinnerGodot_Samples.x86_64" },
+                    { preset: "win64", bin: "win64/YarnSpinnerGodot_Samples.exe" } ]
+    
+    
     name: Build
     runs-on: ubuntu-latest
 
@@ -36,13 +39,6 @@ jobs:
         with:
           clean: false # we clean what we want to clean ourselves above, and try to keep some cache
           submodules: recursive
-
-      - name: Set Target Framework ${{ matrix.targetFramework }}
-        run: |
-          sed -i 's|<TargetFramework>.*<|<TargetFramework>'${{ matrix.targetFramework }}'<|g' YarnSpinner-Godot.csproj
-      - name: Set Nullable ${{ matrix.nullable }}
-        run: |
-          sed -i 's|<Nullable>.*<|<Nullable>'${{ matrix.nullable }}'<|g' YarnSpinner-Godot.csproj
 
       - uses: chickensoft-games/setup-godot@v1
         name: 🤖 Setup Godot
@@ -55,10 +51,14 @@ jobs:
         run: |
           dotnet --version
           godot --version
-          
-      - name: Build solution
+
+      - name: Build solution & Import
         id: buildSolution
         run: |
           godot --headless --path . --verbose -e --build-solutions --quit 
-          dotnet build
+          godot --headless --path . --verbose -e --import --quit 
         timeout-minutes: 3
+
+      - name: Export
+        run: |
+          godot --headless --verbose ${{ matrix.configuration }}  ${{ matrix.platform.preset }}  ${{ matrix.platform.bin }}
