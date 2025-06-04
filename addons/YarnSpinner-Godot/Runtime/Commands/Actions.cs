@@ -246,20 +246,20 @@ public class Actions : ICommandDispatcher
                     // the method.
                     var parameterArrayElementType = parameters[i].ParameterType.GetElementType();
                     var paramIndex = i;
-                    // var paramsArray = new List<object?>();
-                    var paramsArray = Array.CreateInstance(parameterArrayElementType!, argumentCount - i);
+                    var paramsArray = new List<object?>();
                     while (i < argumentCount)
                     {
                         arg = args[i];
                         if (converter == null)
                         {
-                            paramsArray.SetValue(arg, i);
+                            paramsArray.Add(arg);
                         }
                         else
                         {
                             try
                             {
-                                paramsArray.SetValue(converter.Invoke(arg, i), i - paramIndex);
+                                // todo test
+                                paramsArray[i - paramIndex] = converter.Invoke(arg, i);
                             }
                             catch (Exception e)
                             {
@@ -311,7 +311,7 @@ public class Actions : ICommandDispatcher
                 {
                     // If the parameter is a params array, provide an empty
                     // array of the appropriate type.
-                    finalArgs[i] = Array.CreateInstance(parameter.ParameterType!.GetElementType()!, 0);
+                    finalArgs[i] = Array.Empty<object>();
                 }
                 else
                 {
