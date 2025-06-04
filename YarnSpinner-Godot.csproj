@@ -35,6 +35,9 @@
         <Compile Remove="Generated\**"/>
         <!-- For SQL variable storage sample -->
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172"/>
+        <!-- AOT: Root the assemblies to avoid trimming. -->
+        <TrimmerRootAssembly Include="GodotSharp" />
+        <TrimmerRootAssembly Include="$(TargetName)" />
     </ItemGroup>
 
     <!-- How to include the plugin code in your .csproj -->
