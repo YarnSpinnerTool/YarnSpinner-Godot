@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.3] 2025-06-12
+
+* Update YarnSpinner DLLs to 3.0.2
+### Added
+
+* Added a new function, has_any_content, which takes the name of a node group and returns true if any of its member nodes could run.
+
+### Updated
+
+* Fixed a bug where interpolated boolean values inside markup were being incorrectly determined as a string and not a bool.
+
+
 ## [0.3.2] 2025-05-25
 
 * Fix #87 Support node paths for locating nodes for commands.
