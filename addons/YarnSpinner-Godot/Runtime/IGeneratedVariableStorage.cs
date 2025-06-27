@@ -80,21 +80,32 @@ public static class GeneratedVariableStorageExtensions
             return default;
         }
 
-        uint caseValue;
+        int caseValue;
 
-        if (result.GetType() == typeof(string))
+        if (result is string stringResult)
         {
             // Convert the string value to a hash
-            caseValue = CRC32.GetChecksum((string) result);
+
+            caseValue = (int)CRC32.GetChecksum(stringResult);
+        }
+        else if (result is float floatResult)
+        {
+            caseValue = (int)floatResult;
+        }
+        else if (result is int intResult)
+        {
+            caseValue = intResult;
         }
         else
         {
-            caseValue = (uint) result;
+            GD.PushError(
+                $"Failed to get a value of type {typeof(T).Name} for variable {variableName}: received an unexpected variable type {result.GetType()} from variable storage");
+            return default;
         }
 
         if (Enum.IsDefined(typeof(T), caseValue))
         {
-            return (T) Enum.ToObject(typeof(T), caseValue);
+            return (T)Enum.ToObject(typeof(T), caseValue);
         }
         else
         {
