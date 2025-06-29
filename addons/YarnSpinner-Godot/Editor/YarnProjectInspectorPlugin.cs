@@ -197,6 +197,9 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
 
             if (path == nameof(YarnProject.generateVariablesSourceFile))
             {
+                const string editInstructions =
+                    "\nEdit settings related to variable storage source generation in " +
+                    "the Import panel for this Yarn project.";
                 var generationEnabledCheckbox = new CheckBox
                 {
                     Text = "Generate variables source file",
@@ -204,8 +207,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     Disabled = true,
                     TooltipText =
                         "Automatically generate a C# script with getters and setters for each variable declared " +
-                        "in this project. Edit settings related to variable storage source generation in " +
-                        "the Import panel for this Yarn project."
+                        $"in this project. {editInstructions}"
                 };
                 generationEnabledCheckbox.Toggled += OnGenerateVariablesSourceToggled;
                 AddCustomControl(generationEnabledCheckbox);
@@ -215,7 +217,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     var classNameHbox = new HBoxContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                        TooltipText = "The name of the generated variables storage class."
+                        TooltipText = $"The name of the generated variables storage class. {editInstructions}"
                     };
 
                     var classNameLabel = new Label
@@ -235,7 +237,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     var classNamespaceHbox = new HBoxContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                        TooltipText = "The namespace of the generated variables storage class."
+                        TooltipText = $"The namespace of the generated variables storage class. {editInstructions}"
                     };
 
                     var classNamespaceLabel = new Label
@@ -255,7 +257,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     var parentHbox = new HBoxContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                        TooltipText = "The parent class the generated variables storage class will inherit from."
+                        TooltipText = $"The parent class the generated variables storage class will inherit from. {editInstructions}"
                     };
 
                     var parentLabel = new Label
@@ -273,7 +275,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     AddCustomControl(parentHbox);
                     AddCustomControl(new Label
                     {
-                        Text = "The file will be generated the next time the project is reimported, " +
+                        Text = "The file will be generated each time the project is reimported, " +
                                "or if you press the \"Re-compile Scripts in Project\" button above.",
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
                         AutowrapMode = TextServer.AutowrapMode.WordSmart,

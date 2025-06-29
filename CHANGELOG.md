@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.4] 2025-07-x
+
+* Fix fade up variable not being used for LinePresenter (PR #97 by @spirifoxy)
+* Fix errors when using `IGeneratedVariableStorage.GetEnumValueOrDefault` related to casting floats to uint
+* fix #98 - use import settings for variable storage source generation so that those settings are version controlled
+
 ## [0.3.3] 2025-06-12
 
 * Update YarnSpinner DLLs to 3.0.2
@@ -14,7 +20,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Updated
 
 * Fixed a bug where interpolated boolean values inside markup were being incorrectly determined as a string and not a bool.
-
 
 ## [0.3.2] 2025-05-25
 
