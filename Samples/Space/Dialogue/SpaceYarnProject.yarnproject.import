@@ -12,3 +12,7 @@ dest_files=["res://.godot/imported/SpaceYarnProject.yarnproject-a079bc9c48189d15
 
 [params]
 
+generateVariablesSourceFile=true
+variablesClassName="SpaceYarnVariables"
+variablesClassNamespace=""
+variablesClassParent="YarnSpinnerGodot.InMemoryVariableStorage"

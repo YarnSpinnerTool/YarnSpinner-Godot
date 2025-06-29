@@ -135,7 +135,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                 });
                 AddCustomControl(header);
-                if (_project.SerializedDeclarations is {Length: >= 1})
+                if (_project.SerializedDeclarations is { Length: >= 1 })
                 {
                     var scrollContainer = new ScrollContainer
                     {
@@ -197,8 +197,16 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
 
             if (path == nameof(YarnProject.generateVariablesSourceFile))
             {
-                var generationEnabledCheckbox = new CheckBox {Text = "Generate variables source file"};
-                generationEnabledCheckbox.ButtonPressed = _project.generateVariablesSourceFile;
+                var generationEnabledCheckbox = new CheckBox
+                {
+                    Text = "Generate variables source file",
+                    ButtonPressed = _project.generateVariablesSourceFile,
+                    Disabled = true,
+                    TooltipText =
+                        "Automatically generate a C# script with getters and setters for each variable declared " +
+                        "in this project. Edit settings related to variable storage source generation in " +
+                        "the Import panel for this Yarn project."
+                };
                 generationEnabledCheckbox.Toggled += OnGenerateVariablesSourceToggled;
                 AddCustomControl(generationEnabledCheckbox);
 
@@ -207,74 +215,61 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     var classNameHbox = new HBoxContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                        TooltipText = "The name of the generated variables storage class."
                     };
-                    var classNameTooltip = "The name of the generated variables storage class.";
 
                     var classNameLabel = new Label
                     {
                         Text = "Variables class name",
-                        TooltipText = classNameTooltip,
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
                     };
-                    var classNameTextInput = new LineEdit
+                    var classNameValue = new Label
                     {
-                        PlaceholderText = "",
                         Text = _project.variablesClassName,
-                        TooltipText = classNameTooltip,
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
                     };
-                    classNameTextInput.TextChanged += VariablesClassNameTextChanged;
                     classNameHbox.AddChild(classNameLabel);
-                    classNameHbox.AddChild(classNameTextInput);
+                    classNameHbox.AddChild(classNameValue);
                     AddCustomControl(classNameHbox);
 
                     var classNamespaceHbox = new HBoxContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                        TooltipText = "The namespace of the generated variables storage class."
                     };
-                    var classNamespaceTooltip =
-                        "The namespace of the generated variables storage class.";
 
                     var classNamespaceLabel = new Label
                     {
                         Text = "Variables class namepace",
-                        TooltipText = classNamespaceTooltip,
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
                     };
-                    var classNamespaceTextInput = new LineEdit
+                    var classNamespaceValue = new Label
                     {
-                        PlaceholderText = "",
                         Text = _project.variablesClassNamespace,
-                        TooltipText = classNamespaceTooltip,
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
                     };
-                    classNamespaceTextInput.TextChanged += VariablesClassNamespaceTextChanged;
                     classNamespaceHbox.AddChild(classNamespaceLabel);
-                    classNamespaceHbox.AddChild(classNamespaceTextInput);
+                    classNamespaceHbox.AddChild(classNamespaceValue);
                     AddCustomControl(classNamespaceHbox);
 
                     var parentHbox = new HBoxContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                        TooltipText = "The parent class the generated variables storage class will inherit from."
                     };
-                    var parentTooltip = "The parent class the generated variables storage class will inherit from.";
 
                     var parentLabel = new Label
                     {
                         Text = "Variables class parent",
-                        TooltipText = parentTooltip,
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
                     };
-                    var parentTextInput = new LineEdit
+                    var parentValue = new Label
                     {
-                        PlaceholderText = "",
                         Text = _project.variablesClassParent,
-                        TooltipText = parentTooltip,
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
                     };
-                    parentTextInput.TextChanged += VariablesClassParentTextChanged;
                     parentHbox.AddChild(parentLabel);
-                    parentHbox.AddChild(parentTextInput);
+                    parentHbox.AddChild(parentValue);
                     AddCustomControl(parentHbox);
                     AddCustomControl(new Label
                     {
@@ -285,7 +280,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     });
                 }
 
-                AddCustomControl(new HSeparator {SizeFlagsHorizontal = Control.SizeFlags.ExpandFill});
+                AddCustomControl(new HSeparator { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill });
                 return true;
             }
 
@@ -394,7 +389,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
     {
         try
         {
-            _project = (YarnProject) @object;
+            _project = (YarnProject)@object;
             if (IsTresYarnProject(_project))
             {
                 AddCustomControl(new Label
@@ -415,7 +410,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 Yarn.Compiler.Project.LoadFromFile(
                     ProjectSettings.GlobalizePath(_project.JSONProjectPath));
 
-            var yarnProjectVersionLabel = new Label {Text = $"Language Version: {_project.JSONProject.FileVersion}"};
+            var yarnProjectVersionLabel = new Label { Text = $"Language Version: {_project.JSONProject.FileVersion}" };
             AddCustomControl(yarnProjectVersionLabel);
             var recompileButton = new Button
             {
@@ -460,9 +455,9 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
             foreach (var pattern in _project.JSONProject.SourceFilePatterns)
             {
                 scriptPatternsGrid.AddChild(new Label()); // spacer
-                scriptPatternsGrid.AddChild(new Label {Text = pattern});
+                scriptPatternsGrid.AddChild(new Label { Text = pattern });
                 var patternDeleteButton = new SourcePatternDeleteButton
-                    {Text = "x", Project = _project, Pattern = pattern};
+                    { Text = "x", Project = _project, Pattern = pattern };
 
                 scriptPatternsGrid.AddChild(patternDeleteButton);
             }
@@ -500,7 +495,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                 SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
             };
-            matchingScriptsHeader.AddChild(new Label {Text = "Matching Scripts"});
+            matchingScriptsHeader.AddChild(new Label { Text = "Matching Scripts" });
             matchingScriptsHeader.AddChild(new Label
             {
                 Text = numScriptsText,
@@ -525,17 +520,17 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
             AddCustomControl(_sourceScriptsListLabel);
 
             var localeGrid = new GridContainer
-                {SizeFlagsHorizontal = Control.SizeFlags.ExpandFill};
+                { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
             localeGrid.Columns = 3;
 
-            var label = new Label {Text = "Localization CSVs"};
+            var label = new Label { Text = "Localization CSVs" };
             localeGrid.AddChild(label);
 
             _localeTextEntry = new LineEditWithSubmit
             {
                 PlaceholderText = "locale code",
                 SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                SubmitButton = new Button {Text = "Add"},
+                SubmitButton = new Button { Text = "Add" },
             };
             localeGrid.AddChild(_localeTextEntry);
 
@@ -568,14 +563,14 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 pathLabel.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
                 pathLabel.ClipText = true;
                 picker.AddChild(pathLabel);
-                var pickerButton = new Button {Text = "Browse"};
+                var pickerButton = new Button { Text = "Browse" };
                 _pendingCSVFileLocaleCode = locale.Key;
                 pickerButton.Connect(BaseButton.SignalName.Pressed,
                     Callable.From(SelectLocaleCSVPath));
                 picker.AddChild(pickerButton);
                 localeGrid.AddChild(picker);
                 var deleteButton = new LocaleDeleteButton
-                    {Text = "X", LocaleCode = locale.Key, Plugin = this};
+                    { Text = "X", LocaleCode = locale.Key, Plugin = this };
                 deleteButton.Connect(BaseButton.SignalName.Pressed,
                     new Callable(deleteButton,
                         nameof(LocaleDeleteButton.OnPressed)));
@@ -588,9 +583,9 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
             {
                 SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
             };
-            baseLocaleRow.AddChild(new Label {Text = "Base language"});
+            baseLocaleRow.AddChild(new Label { Text = "Base language" });
 
-            var changeBaseLocaleButton = new Button {Text = "Change"};
+            var changeBaseLocaleButton = new Button { Text = "Change" };
             _baseLocaleInput = new LineEditWithSubmit
             {
                 Text = _project.JSONProject.BaseLanguage,
