@@ -84,14 +84,7 @@ public partial class YarnProjectImporter : EditorImportPlugin
     }
 
     public override bool _GetOptionVisibility(string path, StringName optionName, Dictionary options)
-    {
-        if (optionName == nameof(YarnProject.generateVariablesSourceFile))
-        {
-            return true;
-        }
-
-        return options.GetValueOrDefault(nameof(YarnProject.generateVariablesSourceFile), false).AsBool();
-    }
+        => true;
 
     public override Error _Import(
         string assetPath,
