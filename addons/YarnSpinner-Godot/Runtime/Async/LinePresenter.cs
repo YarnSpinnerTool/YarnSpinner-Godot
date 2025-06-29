@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Godot;
+using Godot.Collections;
 
 
 namespace YarnSpinnerGodot;
@@ -212,11 +213,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
     public const float FrameWaitTime = 0.16f;
     private TypewriterHandler? typewriter;
 
-    /// <summary>
-    /// A list of <see cref="TemporalMarkupHandler"/> objects that will be
-    /// used to handle markers in the line.
-    /// </summary>
-    public List<TemporalMarkupHandler> temporalProcessors = new List<TemporalMarkupHandler>();
+    [Export] Array<ActionMarkupHandler> eventHandlers = [];
 
     /// <inheritdoc/>
     public YarnTask OnDialogueCompleteAsync()
@@ -241,6 +238,15 @@ public partial class LinePresenter : Node, DialoguePresenterBase
         if (IsInstanceValid(presenterControl))
         {
             presenterControl!.Visible = false;
+        }
+
+        if (useTypewriterEffect)
+        {
+            // need to add a pause handler also
+            // and add it to the front of the list
+            // that way it always happens first
+            var pauser = new PauseEventProcessor();
+            ActionMarkupHandlers.Insert(0, pauser);
         }
 
         if (useTypewriterEffect)
