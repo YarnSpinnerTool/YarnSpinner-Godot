@@ -94,8 +94,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                 };
                 var errorAreaHeight = 40;
-                if (_project.ProjectErrors != null &&
-                    _project.ProjectErrors.Length > 0)
+                if (_project.ProjectErrors is { Length: > 0 })
                 {
                     errorAreaHeight = 200;
                 }
@@ -142,30 +141,33 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
                         SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                     };
-
-                    var vbox = new VBoxContainer
+                    var marginContainer = new MarginContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                        SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
+                        SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                     };
-                    scrollContainer.AddChild(vbox);
-                    foreach (var declaration in _project.SerializedDeclarations)
+                    marginContainer.AddThemeConstantOverride("margin_left", 15);
+                    marginContainer.AddThemeConstantOverride("margin_right", 15);
+                    marginContainer.AddThemeConstantOverride("margin_top", 15);
+                    marginContainer.AddThemeConstantOverride("margin_bottom", 15);
+                    var tree = new Tree();
+                    var root = tree.CreateItem();
+                    tree.HideRoot = true;
+                    tree.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
+                    tree.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+
+                    scrollContainer.AddChild(marginContainer);
+
+                    foreach (var declaration in _project.SerializedDeclarations.OrderBy(d => d.name))
                     {
-                        var labelText = $"{declaration.name} ({declaration.typeName})\n";
-                        if (declaration.isImplicit)
-                        {
-                            labelText += "Implicitly declared.";
-                        }
-                        else
-                        {
-                            labelText += $"Declared in {declaration.sourceYarnAssetPath}\n";
-                        }
+                        var variableTreeNode = tree.CreateItem(root);
+                        variableTreeNode.SetText(0, declaration.name);
 
                         var typeName = declaration.typeName;
                         var defaultValue = "";
                         if (typeName == Types.String.Name || typeName.Contains($"Enum ({Types.String.Name})"))
                         {
-                            defaultValue = declaration.defaultValueString;
+                            defaultValue = $"\"{declaration.defaultValueString}\"";
                         }
                         else if (typeName == Types.Boolean.Name || typeName.Contains($"Enum ({Types.Boolean.Name})"))
                         {
@@ -176,19 +178,30 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                             defaultValue = declaration.defaultValueNumber.ToString(CultureInfo.InvariantCulture);
                         }
 
+
+                        var locationNode = tree.CreateItem(variableTreeNode);
+                        locationNode.SetText(0,
+                            declaration.isImplicit
+                                ? "Implicitly declared."
+                                : $"Declared in {declaration.sourceYarnAssetPath}\n");
+
+                        var variableTypeNode = tree.CreateItem(variableTreeNode);
+                        variableTypeNode.SetText(0, $"Type: {declaration.typeName}");
+                        var defaultValueNode = tree.CreateItem(variableTreeNode);
+                        defaultValueNode.SetText(0, $"Default value: {defaultValue}");
                         if (!string.IsNullOrWhiteSpace(declaration.description))
                         {
-                            labelText += $"\n{declaration.description}";
+                            var descriptionNode = tree.CreateItem(variableTreeNode);
+                            descriptionNode.SetText(0, $"Description: {declaration.description}");
                         }
 
-                        labelText += $"Default value: {defaultValue}\n\n";
-                        var label = _fileNameLabelScene.Instantiate<Label>();
-                        label.Text = labelText;
-                        vbox.AddChild(label);
+
+                        variableTreeNode.Collapsed = true;
                     }
 
+                    marginContainer.AddChild(tree);
                     scrollContainer.CustomMinimumSize =
-                        new Vector2(0, 150);
+                        new Vector2(0, 250);
                     AddCustomControl(scrollContainer);
                 }
 
@@ -257,7 +270,8 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     var parentHbox = new HBoxContainer
                     {
                         SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-                        TooltipText = $"The parent class the generated variables storage class will inherit from. {editInstructions}"
+                        TooltipText =
+                            $"The parent class the generated variables storage class will inherit from. {editInstructions}"
                     };
 
                     var parentLabel = new Label
