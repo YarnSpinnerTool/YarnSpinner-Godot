@@ -94,8 +94,7 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                     SizeFlagsVertical = Control.SizeFlags.ExpandFill,
                 };
                 var errorAreaHeight = 40;
-                if (_project.ProjectErrors != null &&
-                    _project.ProjectErrors.Length > 0)
+                if (_project.ProjectErrors is { Length: > 0 })
                 {
                     errorAreaHeight = 200;
                 }
