@@ -27,7 +27,7 @@ public partial class SpaceYarnVariables : YarnSpinnerGodot.InMemoryVariableStora
 
     // Accessor for Bool $should_see_ship
     /// <summary>
-    /// Ship.yarn, node Ship, line 14
+    /// If the player has been told they should talk to the ship.
     /// </summary>
     public bool ShouldSeeShip {
         get => this.GetValueOrDefault<bool>("$should_see_ship");
@@ -36,7 +36,7 @@ public partial class SpaceYarnVariables : YarnSpinnerGodot.InMemoryVariableStora
 
     // Accessor for Bool $sally_warning
     /// <summary>
-    /// Ship.yarn, node Ship, line 14
+    /// Whether the ship has relayed Sally's warning to the player.
     /// </summary>
     public bool SallyWarning {
         get => this.GetValueOrDefault<bool>("$sally_warning");
