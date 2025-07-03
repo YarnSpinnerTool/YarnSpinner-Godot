@@ -355,7 +355,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
             presenterControl!.Visible = true;
             if (useFadeEffect)
             {
-                await Effects.FadeAlphaAsync(presenterControl, 0, 1, fadeDownDuration, token.HurryUpToken);
+                await Effects.FadeAlphaAsync(presenterControl, 0, 1, fadeUpDuration, token.HurryUpToken);
                 if (!IsInstanceValid(this))
                 {
                     return;
