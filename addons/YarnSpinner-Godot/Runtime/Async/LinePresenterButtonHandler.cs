@@ -5,7 +5,7 @@ Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
 using System.Threading;
 using Godot;
 using Yarn.Markup;
-
+#nullable enable
 namespace YarnSpinnerGodot;
 
 public partial class LinePresenterButtonHandler : ActionMarkupHandler

@@ -12,6 +12,7 @@ using Godot;
 using Yarn;
 using Node = Godot.Node;
 
+#nullable enable
 namespace YarnSpinnerGodot;
 
 using ActionRegistrationMethod = Action<IActionRegistration, RegistrationType>;
@@ -415,8 +416,10 @@ public class Actions : ICommandDispatcher
                 {
                     CommandDispatchResult.ParameterParseStatusType.Succeeded => CommandDispatchResult.StatusType
                         .Succeeded,
-                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterType => CommandDispatchResult.StatusType.InvalidParameter,
-                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterCount => CommandDispatchResult.StatusType.InvalidParameterCount,
+                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterType => CommandDispatchResult
+                        .StatusType.InvalidParameter,
+                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterCount => CommandDispatchResult
+                        .StatusType.InvalidParameterCount,
                     _ => throw new InvalidOperationException("Internal error: invalid parameter parse result " +
                                                              parseArgsStatus),
                 };

@@ -1,7 +1,7 @@
 ﻿using Godot;
 
 namespace YarnSpinnerGodot;
-
+#nullable enable
 /// <summary>
 /// Custom replacement marker for <see cref="MarkupPalette"/>
 /// </summary>

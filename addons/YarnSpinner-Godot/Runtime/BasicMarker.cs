@@ -1,7 +1,7 @@
 ﻿using Godot;
 
 namespace YarnSpinnerGodot;
-
+#nullable enable
 /// <summary>
 /// Contains information describing the formatting style of text within
 /// a named marker.

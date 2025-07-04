@@ -7,12 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.3.5] TODO
 
 * Fix #100 - Enhance the display of story variables in the yarn project inspector with a tree view
-
 - `DialogueRunner.SetProject` now sets the `Program` of its internal `Dialogue` object. Previously, this didn't happen
   until `StartDialogue()`.
-- Renamed `TemporalMarkupProcessor` to `ActionMarkupHandler`.
-- Renamed `AttributeMarkerProcessor` to `ReplacementMarkupHandler`
-- Renamed `FormatForMarker` to `PaletteForMarker` in `MarkupPalette`.
+-  Breaking Change:  Renamed `TemporalMarkupProcessor` to `ActionMarkupHandler`.
+-  Breaking Change: Renamed `AttributeMarkerProcessor` to `ReplacementMarkupHandler`
+-  Breaking Change: Renamed `FormatForMarker` to `PaletteForMarker` in `MarkupPalette`.
+-  Breaking Change: dialogue presenters must now implement the field `ActionMarkupHandlers`. You can paste this code into your presenter to bring it up to date: `public List<IActionMarkupHandler> ActionMarkupHandlers { get; } = [];`
 - `LinePresenterButtonHandler` is a new `ActionMarkupHandler` subclass that manages the continue button on the line
   view. A button used with this script will "hurry up"/ skip animations if the line is not yet finished displaying.
   Otherwise, it will continue to the next line of dialogue.
