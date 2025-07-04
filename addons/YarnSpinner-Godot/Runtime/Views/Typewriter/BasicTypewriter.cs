@@ -74,9 +74,9 @@ public class BasicTypewriter : IAsyncTypewriter
                 while (!cancellationToken.IsCancellationRequested
                        && (accumulatedDelay < secondsPerCharacter))
                 {
-                    var timeBeforeYield = Time.GetTicksMsec() * 1000;
+                    var timeBeforeYield = Time.GetTicksMsec() / 1000f;
                     await YarnTask.Yield();
-                    var timeAfterYield = Time.GetTicksMsec() * 1000;
+                    var timeAfterYield = Time.GetTicksMsec() / 1000f;
                     accumulatedDelay += timeAfterYield - timeBeforeYield;
                 }
 

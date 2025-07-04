@@ -1,5 +1,6 @@
 #nullable disable
 using System;
+using System.Collections.Generic;
 using Godot;
 using Yarn.Markup;
 using Node = Godot.Node;
@@ -251,4 +252,6 @@ public partial class GDScriptPresenterAdapter : Node, DialogueViewBase
             GDScriptView.Call(gdScriptName);
         }
     }
+
+    public List<IActionMarkupHandler> ActionMarkupHandlers { get; } = [];
 }

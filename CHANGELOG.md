@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased 
+## [0.3.5] TODO
 
 * Fix #100 - Enhance the display of story variables in the yarn project inspector with a tree view 
+- `DialogueRunner.SetProject` now sets the `Program` of its internal `Dialogue` object. Previously, this didn't happen until `StartDialogue()`.
+- Renamed `TemporalMarkupProcessor` to `ActionMarkupHandler`.
+- Renamed `AttributeMarkerProcessor` to `ReplacementMarkupHandler`
+- Renamed `FormatForMarker` to `PaletteForMarker` in `MarkupPalette`.
+- `LinePresenterButtonHandler` is a new `ActionMarkupHandler` subclass that manages the continue button on the line view.
 
 ## [0.3.4] 2025-06-29
 

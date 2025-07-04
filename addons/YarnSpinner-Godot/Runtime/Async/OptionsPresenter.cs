@@ -106,6 +106,8 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
         return YarnTask.CompletedTask;
     }
 
+    public List<IActionMarkupHandler> ActionMarkupHandlers { get; } = [];
+
     /// <summary>
     /// Called by Godot to set up the object.
     /// </summary>

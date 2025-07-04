@@ -5,8 +5,6 @@ Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -14,13 +12,10 @@ using Godot;
 using Yarn;
 using Node = Godot.Node;
 
-
-#nullable enable
-
 namespace YarnSpinnerGodot;
 
-using ActionRegistrationMethod = System.Action<IActionRegistration, RegistrationType>;
-using Converter = System.Func<string, int, object?>;
+using ActionRegistrationMethod = Action<IActionRegistration, RegistrationType>;
+using Converter = Func<string, int, object?>;
 
 public enum RegistrationType
 {
@@ -44,37 +39,11 @@ internal static class DiagnosticUtility
 {
     public static string EnglishPluraliseNounCount(int count, string name, bool prefixCount = false)
     {
-        string result;
-        if (count == 1)
-        {
-            result = name;
-        }
-        else
-        {
-            result = name + "s";
-        }
-
-        if (prefixCount)
-        {
-            return count.ToString() + " " + result;
-        }
-        else
-        {
-            return result;
-        }
+        string result = count == 1 ? name : name + "s";
+        return prefixCount ? $"{count} {result}" : result;
     }
 
-    public static string EnglishPluraliseWasVerb(int count)
-    {
-        if (count == 1)
-        {
-            return "was";
-        }
-        else
-        {
-            return "were";
-        }
-    }
+    public static string EnglishPluraliseWasVerb(int count) => count == 1 ? "was" : "were";
 }
 
 public class Actions : ICommandDispatcher
@@ -145,10 +114,6 @@ public class Actions : ICommandDispatcher
                     return CommandType.IsVoid;
                 }
 
-                if (typeof(IEnumerator).IsAssignableFrom(returnType))
-                {
-                    return CommandType.IsCoroutine;
-                }
 
                 if (typeof(Task).IsAssignableFrom(returnType))
                 {
@@ -173,17 +138,6 @@ public class Actions : ICommandDispatcher
             ReturnsTask,
 
             /// <summary>
-            /// The method returns <see cref="IEnumerator"/> (that is, it is
-            /// a coroutine).
-            /// </summary>
-            /// <remarks>
-            /// Code that invokes this command should use <see
-            /// cref="MonoBehaviour.StartCoroutine(IEnumerator)"/> to begin
-            /// the coroutine.
-            /// </remarks>
-            IsCoroutine,
-
-            /// <summary>
             /// The method is not a valid command (that is, it does not
             /// return <see cref="void"/>, <see cref="Coroutine"/>, or <see
             /// cref="IEnumerator"/>.)
@@ -199,10 +153,12 @@ public class Actions : ICommandDispatcher
         {
             var parameters = Method.GetParameters();
 
+            var lastParameterIsArray = parameters.Length > 0 && parameters[parameters.Length - 1].ParameterType.IsArray;
+
             var (min, max) = ParameterCount;
 
             int argumentCount = args.Length;
-            if (argumentCount < min || argumentCount > max)
+            if (argumentCount < min || (argumentCount > max && !lastParameterIsArray))
             {
                 // Wrong number of arguments.
                 string requirementDescription;
@@ -222,7 +178,7 @@ public class Actions : ICommandDispatcher
                 }
 
                 message =
-                    $"{this.Name} requires {requirementDescription}, but {argumentCount} {DiagnosticUtility.EnglishPluraliseWasVerb(argumentCount)} provided.";
+                    $"{Name} requires {requirementDescription}, but {argumentCount} {DiagnosticUtility.EnglishPluraliseWasVerb(argumentCount)} provided.";
                 result = default;
                 return CommandDispatchResult.ParameterParseStatusType.InvalidParameterCount;
             }
@@ -231,15 +187,27 @@ public class Actions : ICommandDispatcher
 
             var argsQueue = new Queue(args);
 
+            var paramsArgs = new List<object>();
+
             for (int i = 0; i < argumentCount; i++)
             {
-                var parameterIsParamsArray = parameters[i].GetCustomAttribute<ParamArrayAttribute>() != null;
+                var parameterIsArray = parameters[i].ParameterType.IsArray;
 
                 string arg = args[i];
                 Converter converter = Converters[i];
 
-                if (parameterIsParamsArray)
+                if (parameterIsArray)
                 {
+                    if (i < parameters.Length - 1)
+                    {
+                        // The parameter is an array, but it isn't the last
+                        // parameter. That's not allowed.
+                        message =
+                            $"Parameter {i} ({parameters[i].Name}): is an array, but is not the last parameter of {parameters[i].Member.Name}.";
+                        result = default;
+                        return CommandDispatchResult.ParameterParseStatusType.InvalidParameterType;
+                    }
+
                     // Consume all remaining arguments, passing them through
                     // the final converter, and produce an array from the
                     // results. This array will be the final parameter to
@@ -311,7 +279,7 @@ public class Actions : ICommandDispatcher
                 {
                     // If the parameter is a params array, provide an empty
                     // array of the appropriate type.
-                    finalArgs[i] = Array.CreateInstance(parameter.ParameterType!.GetElementType()!, 0);
+                    finalArgs[i] = Array.CreateInstance(parameter.ParameterType.GetElementType()!, 0);
                 }
                 else
                 {
@@ -364,7 +332,7 @@ public class Actions : ICommandDispatcher
             }
         }
 
-        internal CommandDispatchResult Invoke(Godot.Node dispatcher, List<string> parameters)
+        internal CommandDispatchResult Invoke(Node dispatcher, List<string> parameters)
         {
             object? target;
 
@@ -379,7 +347,7 @@ public class Actions : ICommandDispatcher
                     return new CommandDispatchResult(CommandDispatchResult.StatusType.InvalidParameterCount,
                         YarnTask.CompletedTask)
                     {
-                        Message = $"{this.Name} needs a target, but none was specified",
+                        Message = $"{Name} needs a target, but none was specified",
                     };
                 }
 
@@ -403,18 +371,18 @@ public class Actions : ICommandDispatcher
                     };
                 }
 
-                // We've found a target.  Does it have a childthat's
+                // We've found a target.  Does it have a descendent that's
                 // the right type of object to call the method on?
-                var targetComponent = gameObject.GetType().IsAssignableTo(this.DeclaringType)
+                var targetComponent = gameObject.GetType().IsAssignableTo(DeclaringType)
                     ? gameObject
-                    : FindTypedNodeInChildren(gameObject, this.DeclaringType);
+                    : FindTypedNodeInChildren(gameObject, DeclaringType);
 
                 if (!GodotObject.IsInstanceValid(targetComponent))
                 {
                     return new CommandDispatchResult(CommandDispatchResult.StatusType.TargetMissingComponent)
                     {
                         Message =
-                            $"{this.Name} can't be called on {gameObjectName}, because it doesn't have a {this.DeclaringType.Name}",
+                            $"{Name} can't be called on {gameObjectName}, because it doesn't have a {DeclaringType.Name}",
                     };
                 }
 
@@ -435,11 +403,11 @@ public class Actions : ICommandDispatcher
             {
                 // We don't know what to call this method on.
                 throw new InvalidOperationException(
-                    $"Internal error: {nameof(CommandRegistration)} \"{this.Name}\" has no {nameof(Target)}, but method is not static and ${DynamicallyFindsTarget} is false");
+                    $"Internal error: {nameof(CommandRegistration)} \"{Name}\" has no {nameof(Target)}, but method is not static and ${DynamicallyFindsTarget} is false");
             }
 
             var parseArgsStatus =
-                this.TryParseArgs(parameters.ToArray(), out var finalParameters, out var errorMessage);
+                TryParseArgs(parameters.ToArray(), out var finalParameters, out var errorMessage);
 
             if (parseArgsStatus != CommandDispatchResult.ParameterParseStatusType.Succeeded)
             {
@@ -447,10 +415,8 @@ public class Actions : ICommandDispatcher
                 {
                     CommandDispatchResult.ParameterParseStatusType.Succeeded => CommandDispatchResult.StatusType
                         .Succeeded,
-                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterType => CommandDispatchResult
-                        .StatusType.InvalidParameter,
-                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterCount => CommandDispatchResult
-                        .StatusType.InvalidParameterCount,
+                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterType => CommandDispatchResult.StatusType.InvalidParameter,
+                    CommandDispatchResult.ParameterParseStatusType.InvalidParameterCount => CommandDispatchResult.StatusType.InvalidParameterCount,
                     _ => throw new InvalidOperationException("Internal error: invalid parameter parse result " +
                                                              parseArgsStatus),
                 };
@@ -461,9 +427,9 @@ public class Actions : ICommandDispatcher
                 };
             }
 
-            var returnValue = this.Method.Invoke(target, finalParameters);
+            var returnValue = Method.Invoke(target, finalParameters);
 
-            if (returnValue is System.Threading.Tasks.Task task)
+            if (returnValue is Task task)
             {
                 // The method returned a task. Convert it to a YarnTask.
                 return new CommandDispatchResult(
@@ -471,11 +437,9 @@ public class Actions : ICommandDispatcher
                     task
                 );
             }
-            else
-            {
-                // The method returned no value.
-                return new CommandDispatchResult(CommandDispatchResult.StatusType.Succeeded);
-            }
+
+            // The method returned no value.
+            return new CommandDispatchResult(CommandDispatchResult.StatusType.Succeeded);
         }
 
         public string UsageString
@@ -555,11 +519,17 @@ public class Actions : ICommandDispatcher
 
     public void AddCommandHandler(string commandName, Delegate handler)
     {
+        if (commandName.Contains(' '))
+        {
+            GD.PushError(
+                $"Failed to register command {commandName}: command names are not allowed to contain spaces.");
+            return;
+        }
+
         if (_commands.ContainsKey(commandName))
         {
             GD.PushError(
                 $"Failed to register command {commandName}: a command by this name has already been registered.");
-            return;
         }
         else
         {
@@ -572,6 +542,12 @@ public class Actions : ICommandDispatcher
 
     public void AddFunction(string name, Delegate implementation)
     {
+        if (name.Contains(' '))
+        {
+            GD.PushError($"Cannot add function {name}: function names are not allowed to contain spaces.");
+            return;
+        }
+
         if (Library.FunctionExists(name))
         {
             GD.PushError($"Cannot add function {name}: one already exists");
@@ -579,19 +555,25 @@ public class Actions : ICommandDispatcher
         }
 #if YARN_SOURCE_GENERATION_DEBUG_LOGGING
         GD.Print(
-            $"Registering command {name} from method {implementation.Method.DeclaringType?.FullName}.{implementation.Method.Name}");
+            $"Registering command {name} from method {implementation.Method?.DeclaringType?.FullName}.{implementation?.Method?.Name}");
 #endif
 
-        Library.RegisterFunction(name, implementation);
+        Library.RegisterFunction(name, implementation!);
     }
 
     public void AddCommandHandler(string commandName, MethodInfo methodInfo)
     {
+        if (commandName.Contains(' '))
+        {
+            GD.PushError(
+                $"Failed to register command {commandName}: command names are not allowed to contain spaces.");
+            return;
+        }
+
         if (_commands.ContainsKey(commandName))
         {
             GD.PushError(
                 $"Failed to register command {commandName}: a command by this name has already been registered.");
-            return;
         }
         else
         {
@@ -624,7 +606,7 @@ public class Actions : ICommandDispatcher
         // no-op
     }
 
-    CommandDispatchResult ICommandDispatcher.DispatchCommand(string command, Godot.Node coroutineHost)
+    CommandDispatchResult ICommandDispatcher.DispatchCommand(string command, Node coroutineHost)
     {
         var commandPieces = new List<string>(DialogueRunner.SplitCommandText(command));
 
@@ -644,10 +626,8 @@ public class Actions : ICommandDispatcher
 
             return registration.Invoke(coroutineHost, commandPieces);
         }
-        else
-        {
-            return new CommandDispatchResult(CommandDispatchResult.StatusType.CommandUnknown);
-        }
+
+        return new CommandDispatchResult(CommandDispatchResult.StatusType.CommandUnknown);
     }
 
     private static Converter[] CreateConverters(MethodInfo method)
@@ -660,6 +640,17 @@ public class Actions : ICommandDispatcher
 
         foreach (var parameterInfo in parameterInfos)
         {
+            if (parameterInfo.ParameterType.IsArray)
+            {
+                // Array parameters are permitted, but only if they're the
+                // last parameter
+                if (i != parameterInfos.Length - 1)
+                {
+                    throw new ArgumentException(
+                        $"Can't register method {method.Name}: Parameter {i + 1} ({parameterInfo.Name}): array parameters are required to be last.");
+                }
+            }
+
             result[i] = CreateConverter(parameterInfo, i);
             i++;
         }
@@ -667,13 +658,12 @@ public class Actions : ICommandDispatcher
         return result;
     }
 
-    private static System.Func<string, int, object?> CreateConverter(ParameterInfo parameter, int index)
+    private static Func<string, int, object?> CreateConverter(ParameterInfo parameter, int index)
     {
         var targetType = parameter.ParameterType;
         string name = parameter.Name!;
-        var parameterIsParamsArray = parameter.GetCustomAttribute<ParamArrayAttribute>() != null;
 
-        if (targetType.IsArray && parameterIsParamsArray)
+        if (targetType.IsArray)
         {
             // This parameter is a params array. Make a converter for that
             // array's element type; at dispatch time, we'll repeatedly call
@@ -683,12 +673,10 @@ public class Actions : ICommandDispatcher
             var elementConverter = CreateConverterFunction(paramsArrayType!, name);
             return elementConverter;
         }
-        else
-        {
-            // This parameter is for a single value. Make a converter that
-            // receives a single string, 
-            return CreateConverterFunction(targetType, name);
-        }
+
+        // This parameter is for a single value. Make a converter that
+        // receives a single string, 
+        return CreateConverterFunction(targetType, name);
     }
 
     private static Converter CreateConverterFunction(Type targetType, string parameterName)
@@ -769,7 +757,7 @@ public class Actions : ICommandDispatcher
         };
     }
 
-    private static Godot.Node? FindTypedNodeInChildren(Godot.Node node, Type type)
+    private static Node? FindTypedNodeInChildren(Node node, Type type)
     {
         if (type.IsInstanceOfType(node))
         {
@@ -798,70 +786,13 @@ public class Actions : ICommandDispatcher
         ActionRegistrationMethods.Add(registerActions);
     }
 
-    public static Yarn.Library GetLibrary()
-    {
-        var library = new Yarn.Library();
-
-        var proxy = new LibraryRegistrationProxy(library);
-
-        foreach (var registrationMethod in ActionRegistrationMethods)
-        {
-            registrationMethod.Invoke(proxy, RegistrationType.Compilation);
-        }
-
-        return library;
-    }
-
     public void AddCommandHandler(string commandName, Func<object> handler)
     {
-        this.AddCommandHandler(commandName, (Delegate)handler);
+        AddCommandHandler(commandName, (Delegate)handler);
     }
 
-    /// <summary>
-    /// A helper class that registers functions into a <see
-    /// cref="Yarn.Library"/>.
-    /// </summary>
-    private class LibraryRegistrationProxy : IActionRegistration
+    public void RegisterFunctionDeclaration(string name, Type returnType, Type[] parameterTypes)
     {
-        private Library library;
-
-        public LibraryRegistrationProxy(Library library)
-        {
-            this.library = library;
-        }
-
-        public void AddCommandHandler(string commandName, Delegate handler)
-        {
-            // No action; this class does not handle commands, only
-            // functions.
-            return;
-        }
-
-        public void AddCommandHandler(string commandName, MethodInfo methodInfo)
-        {
-            // No action; this class does not handle commands, only
-            // functions.
-            return;
-        }
-
-        public void AddFunction(string name, Delegate implementation)
-        {
-            // Check to see if the function already exists in our Library,
-            // and error out if it does
-            if (library.FunctionExists(name))
-            {
-                throw new ArgumentException(
-                    $"Cannot register function {name}: a function with this name already exists");
-            }
-
-            // Register this function in the library
-            library.RegisterFunction(name, implementation);
-        }
-
-        public void RemoveCommandHandler(string commandName) =>
-            throw new InvalidOperationException("This class does not support removing actions.");
-
-        public void RemoveFunction(string name) =>
-            throw new InvalidOperationException("This class does not support removing actions.");
+        /* no-op */
     }
 }

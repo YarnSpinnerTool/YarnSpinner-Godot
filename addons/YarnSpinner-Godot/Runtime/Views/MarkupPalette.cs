@@ -19,7 +19,9 @@ public partial class MarkupPalette : Resource
     /// <summary>
     /// A list containing all the color markers defined in this palette.
     /// </summary>
-    [Export] public Array<FormatMarker> FormatMarkers;
+    [Export] public Array<BasicMarker> BasicMarkers = [];
+
+    public List<CustomMarker> CustomMarkers = [];
 
     /// <summary>
     /// Determines the colour for a particular marker inside this palette.
@@ -33,8 +35,7 @@ public partial class MarkupPalette : Resource
     /// palette; <see langword="false"/> otherwise.</returns>
     public bool ColorForMarker(string Marker, out Color colour)
     {
-        FormatMarkers ??= new Array<FormatMarker>(); // default to empty array
-        foreach (var item in FormatMarkers)
+        foreach (var item in BasicMarkers)
         {
             if (item.Marker == Marker)
             {
@@ -47,21 +48,64 @@ public partial class MarkupPalette : Resource
         return false;
     }
 
-    /// <summary>
-    /// Gets formatting information. for a particular marker inside this
-    /// palette.
-    /// </summary>
-    /// <param name="markerName">The marker you want to get formatting
-    /// information for.</param>
-    /// <param name="palette">The <see cref="FormatMarker"/> for the given
-    /// marker name, or a default format if a marker named <paramref
-    /// name="markerName"/> was not found.</param>
-    /// <returns><see langword="true"/> if the marker exists within this
-    /// palette; <see langword="false"/> otherwise.</returns>
-    public bool FormatForMarker(string markerName, out FormatMarker palette)
+    public bool PaletteForMarker(string markerName, out CustomMarker palette)
     {
-        FormatMarkers ??= new Array<FormatMarker>(); // default to empty array
-        foreach (var item in FormatMarkers)
+        // we first check if we have a marker of that name in the basic markers
+        foreach (var item in BasicMarkers)
+        {
+            if (item.Marker == markerName)
+            {
+                System.Text.StringBuilder front = new();
+                System.Text.StringBuilder back = new();
+
+                // do we have a custom colour set?
+                if (item.CustomColor)
+                {
+                    front.AppendFormat("[color=#{0}]", item.Color.ToHtml());
+                    back.Append("[/color]");
+                }
+
+                // do we need to bold it?
+                if (item.Boldened)
+                {
+                    front.Append("[b]");
+                    back.Append("[/b]");
+                }
+
+                // do we need to italicise it?
+                if (item.Italicised)
+                {
+                    front.Append("[i]");
+                    back.Append("[/i]");
+                }
+
+                // do we need to underline it?
+                if (item.Underlined)
+                {
+                    front.Append("[u]");
+                    back.Append("[/u]");
+                }
+
+                // do we need to strikethrough it?
+                if (item.Strikedthrough)
+                {
+                    front.Append("[s]");
+                    back.Append("[/s]");
+                }
+
+                palette = new CustomMarker()
+                {
+                    Marker = item.Marker,
+                    Start = front.ToString(),
+                    End = back.ToString(),
+                    MarkerOffset = 0,
+                };
+                return true;
+            }
+        }
+
+        // we now check if we have one in the format markers
+        foreach (var item in CustomMarkers)
         {
             if (item.Marker == markerName)
             {
@@ -70,16 +114,10 @@ public partial class MarkupPalette : Resource
             }
         }
 
-        palette = new FormatMarker()
-        {
-            Color = Colors.Black,
-            Boldened = false,
-            Italicised = false,
-            Strikedthrough = false,
-            Underlined = false,
-            Marker = "undefined",
-        };
-
+        // we don't have anything for this marker
+        // so we return false and a default marker
+        palette = new();
         return false;
     }
 }
+

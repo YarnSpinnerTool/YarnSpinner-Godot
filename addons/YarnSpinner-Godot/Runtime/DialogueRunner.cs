@@ -968,6 +968,8 @@ public partial class DialogueRunner : Godot.Node
         }
 
         this.yarnProject = project;
+
+        Dialogue.SetProgram(project.Program);
     }
 
     /// <summary>

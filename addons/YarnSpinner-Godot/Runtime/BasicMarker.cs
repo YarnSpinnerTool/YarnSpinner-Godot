@@ -1,25 +1,30 @@
-#nullable disable
-using Godot;
+﻿using Godot;
 
 namespace YarnSpinnerGodot;
 
 /// <summary>
 /// Contains information describing the formatting style of text within
 /// a named marker.
+/// <see cref="MarkupPalette"/>
 /// </summary>
 [GlobalClass]
-public partial class FormatMarker : Resource
+public partial class BasicMarker : Resource
 {
     /// <summary>
     /// The name of the marker which can be used in text to indicate
     /// specific formatting.
     /// </summary>
-    [Export] public string Marker;
+    [Export] public string? Marker;
+
+    /// <summary>
+    /// Indicates whethere or not the text associated with this marker should have a custom colour.
+    /// </summary>
+    [Export] public bool CustomColor;
 
     /// <summary>
     /// The color to use for text associated with this marker.
     /// </summary>
-    [Export] public Color Color = Colors.Black;
+    [Export] public Color Color;
 
     /// <summary>
     /// Indicates whether the text associated with this marker should be
