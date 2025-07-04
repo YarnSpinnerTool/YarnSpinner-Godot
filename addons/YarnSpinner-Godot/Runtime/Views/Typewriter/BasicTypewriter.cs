@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using System.Text.RegularExpressions;
+
 namespace YarnSpinnerGodot;
 
 using System;
@@ -34,6 +36,11 @@ public class BasicTypewriter : IAsyncTypewriter
     /// cref="ActionMarkupHandlers"/>.</remarks>
     public float CharactersPerSecond { get; set; } = 0f;
 
+    /// <summary>
+    /// Whether we will replace <> characters with [] to display them as BBCode.
+    /// </summary>
+    public bool ConvertHTMLToBBCode;
+
     /// <inheritdoc/>
     public async YarnTask RunTypewriter(Yarn.Markup.MarkupParseResult line, CancellationToken cancellationToken)
     {
@@ -45,6 +52,7 @@ public class BasicTypewriter : IAsyncTypewriter
         {
             Text.VisibleCharacters = 0;
             Text.Text = line.Text;
+            ConvertHTMLToBBCodeIfConfigured();
 
             // Let every markup handler know that display is about to begin
             foreach (var markupHandler in ActionMarkupHandlers)
@@ -103,6 +111,18 @@ public class BasicTypewriter : IAsyncTypewriter
         foreach (var markupHandler in ActionMarkupHandlers)
         {
             markupHandler.OnLineDisplayComplete();
+        }
+    }
+
+    /// <summary>
+    /// If <see cref="ConvertHTMLToBBCode"/> is true, replace any HTML tags in the line text and
+    /// character name text with BBCode tags.
+    /// </summary>
+    private void ConvertHTMLToBBCodeIfConfigured()
+    {
+        if (ConvertHTMLToBBCode)
+        {
+            Text!.Text = Regex.Replace(Text.Text, LinePresenter.HtmlTagPattern, "[$1]");
         }
     }
 }

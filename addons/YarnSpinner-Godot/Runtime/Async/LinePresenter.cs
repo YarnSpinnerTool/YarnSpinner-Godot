@@ -194,6 +194,9 @@ public partial class LinePresenter : Node, DialoguePresenterBase
     /// </summary>
     [Export] Array<ActionMarkupHandler> eventHandlers = [];
 
+    public const string  HtmlTagPattern = @"<(.*?)>";
+
+
     /// <inheritdoc/>
     public YarnTask OnDialogueCompleteAsync()
     {
@@ -286,7 +289,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
         }
 
         lineText.Text = text.Text;
-        ConvertHTMLToBBCodeIfConfigured();
+
         var continueHandler = Callable.From(OnContinuePressed);
         // setting the continue button up to let us advance dialogue
 
@@ -324,6 +327,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
                 ActionMarkupHandlers = this.ActionMarkupHandlers,
                 Text = this.lineText,
                 CharactersPerSecond = this.typewriterEffectSpeed,
+                ConvertHTMLToBBCode = this.ConvertHTMLToBBCode,
             };
 
             await typewriter.RunTypewriter(text, token.HurryUpToken);
@@ -404,13 +408,12 @@ public partial class LinePresenter : Node, DialoguePresenterBase
     {
         if (ConvertHTMLToBBCode)
         {
-            const string htmlTagPattern = @"<(.*?)>";
             if (IsInstanceValid(characterNameText))
             {
-                characterNameText!.Text = Regex.Replace(characterNameText.Text, htmlTagPattern, "[$1]");
+                characterNameText!.Text = Regex.Replace(characterNameText.Text, HtmlTagPattern, "[$1]");
             }
 
-            lineText!.Text = Regex.Replace(lineText.Text, htmlTagPattern, "[$1]");
+            lineText!.Text = Regex.Replace(lineText.Text, HtmlTagPattern, "[$1]");
         }
     }
 }

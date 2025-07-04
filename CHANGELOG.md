@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Renamed `AttributeMarkerProcessor` to `ReplacementMarkupHandler`
 - Renamed `FormatForMarker` to `PaletteForMarker` in `MarkupPalette`.
 - `LinePresenterButtonHandler` is a new `ActionMarkupHandler` subclass that manages the continue button on the line view.
+- `LinePresenter` now implements its typewriter effect with `BasicTypewriter`, an implementation of the `IAsyncTypewriter` interface.
+- The typewriter effect in `LinePresenter` is now framerate-independent.
+- Add ActionMarkupHandlers  to the `eventHandlers` array in the inspecotr of LinePresenter. If you're making your own custom presenter, you can follow the example of LinePresent on how to set up your own inspector array of ActionMarkupHandlers.
+- Fix #76 `DialogueRunner.AddCommandHandler` and the `[YarnCommand]` attribute now supports methods whose last parameter is an array of values.
 
 ## [0.3.4] 2025-06-29
 
