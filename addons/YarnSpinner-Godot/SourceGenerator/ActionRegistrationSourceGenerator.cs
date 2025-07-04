@@ -81,7 +81,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
 
-
+        string projectPath = null;
         output.WriteLine(DateTime.Now);
 
         // Try to locate project.godot 
