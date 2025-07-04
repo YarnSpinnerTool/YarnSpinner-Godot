@@ -19,6 +19,7 @@ tags:
 <<declare $impressed = false as bool>>
 <<declare $nthApplicant = 0 as number>>
 <<set $nthApplicant to dice(6)>>
+Guide: Hello ${get_random_string()}.
 // Locate a Node with a script with the [YarnCommand] attribute via NodePath (relative to the scene tree root)
 <<do_something "/root/SqlSample/Nested/CommandsNodeA">>
 // or by name anywhere in the tree: 

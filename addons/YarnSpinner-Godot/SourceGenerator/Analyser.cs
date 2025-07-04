@@ -591,14 +591,6 @@ namespace YarnSpinnerGodot
                 return AsyncType.AsyncCoroutine;
             }
 
-            // If the method returns a Coroutine, then it is potentially async
-            // (because if it returns null, it's sync, and if it returns non-null,
-            // it's async)
-            if (returnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::UnityEngine.Coroutine")
-            {
-                return AsyncType.MaybeAsyncCoroutine;
-            }
-
             // If it's anything else, then this action is invalid. Return the
             // default value; other parts of the action detection process will throw
             // errors.

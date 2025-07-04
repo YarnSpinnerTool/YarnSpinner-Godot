@@ -34,7 +34,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             return null;
         }
 
-        // One of those files is (AssemblyName).[Unity]AdditionalFile.txt, and it
+        // One of those files is (AssemblyName).[godot]AdditionalFile.txt, and it
         // contains the path to the project
         var relevantFiles = context.AdditionalFiles.Where(
             i => i.Path.EndsWith($".godot")
@@ -84,15 +84,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 
         output.WriteLine(DateTime.Now);
 
-        // We need to know if the settings are configured to not perform codegen
-        // to link attributed methods. This is kinda annoying because the path
-        // root of the project settings and the root path of this process are
-        // *very* different. So, what we do is we use the included Compilation
-        // Assembly additional file that Unity gives us. This file, if opened,
-        // has the path of the Unity project, which we can then use to get the
-        // settings. If any stage of this fails, then we bail out and assume
-        // that codegen is desired.
-        string? projectPath = null;
+        // Try to locate project.godot 
         if (context.AdditionalFiles.Any())
         {
             var relevants = context.AdditionalFiles.Where(i => i.Path.Contains($"{context.Compilation.AssemblyName}.AdditionalFile.txt"));
@@ -159,7 +151,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 
             if (compilationReferencesYarnSpinner == false)
             {
-                // This compilation doesn't reference YarnSpinner.Unity. Any
+                // This compilation doesn't reference YarnSpinner.Compiler. Any
                 // code that we generate that references symbols in that
                 // assembly won't work.
                 output.WriteLine($"Assembly {context.Compilation.AssemblyName} doesn't reference {YarnSpinnerCompilerAssemblyName}. Not generating any code for it.");
@@ -522,7 +514,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
         var rootPath = GetProjectRoot(context);
         if (rootPath != null)
         {
-            tempPath = Path.Combine(rootPath, "Logs", "Packages", "dev.yarnspinner.unity");
+            tempPath = Path.Combine(rootPath, "Logs",  "yarn_spinner_godot");
         }
         else
         {

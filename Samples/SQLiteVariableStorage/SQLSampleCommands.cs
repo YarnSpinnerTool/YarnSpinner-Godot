@@ -19,6 +19,6 @@ public partial class SQLSampleCommands : Node2D
     [YarnFunction("get_random_string")]
     public static string GetRandomString()
     {
-        return Random.Shared.GetItems(new string[] { "string one", "string two" }, 1)[0];
+        return Random.Shared.GetItems(new string[] { "mate", "friendo", "pal" }, 1)[0];
     }
 }

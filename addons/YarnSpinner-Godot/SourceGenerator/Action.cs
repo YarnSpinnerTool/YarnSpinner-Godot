@@ -229,7 +229,38 @@ namespace YarnSpinnerGodot
             {
                 diagnostics.Add(Diagnostic.Create(Diagnostics.YS1002ActionMethodsMustHaveAValidName, this.MethodDeclarationSyntax.GetLocation(), this.Name));
             }
+            // Actions that are registered via an attribute must be publicly
+            // accessible
+            if (this.DeclarationType == DeclarationType.Attribute)
+            {
+                if (MethodSymbol.DeclaredAccessibility != Accessibility.Public)
+                {
+                    // The method is not public
+                    diagnostics.Add(Diagnostic.Create(
+                        Diagnostics.YS1001ActionMethodsMustBePublic,
+                        diagnosticLocation, identifier, MethodSymbol.DeclaredAccessibility));
+                }
+                else
+                {
+                    var containingType = MethodSymbol.ContainingType;
 
+                    while (containingType != null)
+                    {
+                        if (containingType.DeclaredAccessibility != Accessibility.Public)
+                        {
+                            // The method is public, but it's within a type that
+                            // is not
+                            var typeName = containingType.Name ?? "(anonymous)";
+                            diagnostics.Add(Diagnostic.Create(
+                                Diagnostics.YS1007ActionsMustBeInPublicTypes,
+                                diagnosticLocation, identifier, typeName, containingType.DeclaredAccessibility));
+                            break;
+                        }
+                        containingType = containingType.ContainingType;
+                    }
+
+                }
+            }
             switch (Type)
             {
                 case ActionType.Invalid:
@@ -237,7 +268,6 @@ namespace YarnSpinnerGodot
                         var actionAttributes = MethodSymbol.GetAttributes().Where(attr => Analyser.IsAttributeYarnCommand(attr));
 
                         var count = actionAttributes.Count();
-
                         if (count != 1)
                         {
                             diagnostics.Add(Diagnostic.Create(Diagnostics.YS1005ActionMethodsMustHaveOneActionAttribute, diagnosticLocation, 0));
@@ -258,7 +288,7 @@ namespace YarnSpinnerGodot
                     break;
 
                 default:
-                    diagnostics.Add(Diagnostic.Create(Diagnostics.YS1000UnknownError, methodDeclaration.Identifier.GetLocation(), $"Internal error: invalid type {Type}"));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.YS1000UnknownError, diagnosticLocation, $"Internal error: invalid type {Type}"));
                     break;
             }
 
@@ -597,7 +627,7 @@ namespace YarnSpinnerGodot
                 return getMethodInvocation;
             }
         }
-        
+
         public SyntaxNode GetFunctionDeclarationSyntax(string dialogueRunnerVariableName = "dialogueRunner")
         {
             var typeOfMethodReturn = SyntaxFactory.TypeOfExpression(SyntaxFactory.ParseTypeName(MethodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
