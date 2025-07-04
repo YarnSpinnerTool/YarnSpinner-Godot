@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="MarkupPalette" load_steps=8 format=3 uid="uid://c631us202ijmk"]
+[gd_resource type="Resource" script_class="MarkupPalette" load_steps=9 format=3 uid="uid://c631us202ijmk"]
 
 [ext_resource type="Script" uid="uid://dn5hil73gapip" path="res://addons/YarnSpinner-Godot/Runtime/Views/MarkupPalette.cs" id="1_6b5jh"]
 [ext_resource type="Script" uid="uid://b3q2v7wyxccs0" path="res://addons/YarnSpinner-Godot/Runtime/BasicMarker.cs" id="1_8qmsx"]
+[ext_resource type="Script" uid="uid://lvtve3yjd8v7" path="res://addons/YarnSpinner-Godot/Runtime/CustomMarker.cs" id="2_jkr81"]
 
 [sub_resource type="Resource" id="Resource_8qmsx"]
 script = ExtResource("1_8qmsx")
@@ -61,3 +62,4 @@ metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
 [resource]
 script = ExtResource("1_6b5jh")
 BasicMarkers = Array[ExtResource("1_8qmsx")]([SubResource("Resource_8qmsx"), SubResource("Resource_jkr81"), SubResource("Resource_tv2va"), SubResource("Resource_kbrmq"), SubResource("Resource_oxr51")])
+CustomMarkers = Array[ExtResource("2_jkr81")]([])

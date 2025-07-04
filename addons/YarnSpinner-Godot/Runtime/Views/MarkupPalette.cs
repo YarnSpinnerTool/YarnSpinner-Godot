@@ -21,7 +21,7 @@ public partial class MarkupPalette : Resource
     /// </summary>
     [Export] public Array<BasicMarker> BasicMarkers = [];
 
-    public List<CustomMarker> CustomMarkers = [];
+    [Export] public Array<CustomMarker> CustomMarkers = [];
 
     /// <summary>
     /// Determines the colour for a particular marker inside this palette.
@@ -120,4 +120,3 @@ public partial class MarkupPalette : Resource
         return false;
     }
 }
-
