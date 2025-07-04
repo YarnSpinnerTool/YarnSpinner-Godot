@@ -18,7 +18,7 @@ public static class Diagnostics
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
                         description: "[YarnCommand] and [YarnFunction] attributed methods must be public so that the codegen can reference them.",
-                        helpLinkUri: "https://docs.yarnspinner.dev/using-yarnspinner-with-unity/creating-commands-functions");
+                        helpLinkUri: "https://docs.yarnspinner.dev/yarn-spinner-for-other-engines/godot/creating-commands-functions");
 
     public static readonly DiagnosticDescriptor YS1002ActionMethodsMustHaveAValidName = new DiagnosticDescriptor(
                         "YS1002",
@@ -28,7 +28,7 @@ public static class Diagnostics
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
                         description: "[YarnCommand] and [YarnFunction] attributed methods must follow Yarn ID rules so that Yarn scripts can reference them.",
-                        helpLinkUri: "https://docs.yarnspinner.dev/using-yarnspinner-with-unity/creating-commands-functions");
+                        helpLinkUri: "https://docs.yarnspinner.dev/yarn-spinner-for-other-engines/godot/creating-commands-functions");
     public static readonly DiagnosticDescriptor YS1003CommandMethodsMustHaveAValidReturnType = new DiagnosticDescriptor(
                         "YS1003",
                         title: $"YarnCommand methods must return a valid type",
@@ -36,7 +36,7 @@ public static class Diagnostics
                         category: "Yarn Spinner",
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
-                        helpLinkUri: "https://docs.yarnspinner.dev/using-yarnspinner-with-unity/creating-commands-functions");
+                        helpLinkUri: "https://docs.yarnspinner.dev/yarn-spinner-for-other-engines/godot/creating-commands-functions");
     public static readonly DiagnosticDescriptor YS1004FunctionMethodsMustHaveAValidReturnType = new DiagnosticDescriptor(
                         "YS1004",
                         title: $"YarnFunction methods must return a valid type",
@@ -44,7 +44,7 @@ public static class Diagnostics
                         category: "Yarn Spinner",
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
-                        helpLinkUri: "https://docs.yarnspinner.dev/using-yarnspinner-with-unity/creating-commands-functions");
+                        helpLinkUri: "https://docs.yarnspinner.dev/yarn-spinner-for-other-engines/godot/creating-commands-functions");
     public static readonly DiagnosticDescriptor YS1005ActionMethodsMustHaveOneActionAttribute = new DiagnosticDescriptor(
                         "YS1005",
                         title: $"Yarn action methods must have a single YarnCommand or YarnAction attribute",
@@ -52,7 +52,7 @@ public static class Diagnostics
                         category: "Yarn Spinner",
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
-                        helpLinkUri: "https://docs.yarnspinner.dev/using-yarnspinner-with-unity/creating-commands-functions");
+                        helpLinkUri: "https://docs.yarnspinner.dev/yarn-spinner-for-other-engines/godot/creating-commands-functions");
 
     public static readonly DiagnosticDescriptor YS1006YarnFunctionsMustBeStatic = new DiagnosticDescriptor(
                         "YS1006",
@@ -61,6 +61,14 @@ public static class Diagnostics
                         category: "Yarn Spinner",
                         defaultSeverity: DiagnosticSeverity.Warning,
                         isEnabledByDefault: true,
-                        helpLinkUri: "https://docs.yarnspinner.dev/using-yarnspinner-with-unity/creating-commands-functions");
+                        helpLinkUri: "https://docs.yarnspinner.dev/yarn-spinner-for-other-engines/godot/creating-commands-functions");
+    public static readonly DiagnosticDescriptor YS1007ActionsMustBeInPublicTypes = new DiagnosticDescriptor(
+                        "YS1006",
+                        title: $"Yarn action methods must be in a public type",
+                        messageFormat: "Yarn actions must be in a publicly accessible type. {0}'s containing type, {1}, is {2}.",
+                        category: "Yarn Spinner",
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true,
+                        helpLinkUri: "https://docs.yarnspinner.dev/yarn-spinner-for-other-engines/godot/creating-commands-functions");
 
 }

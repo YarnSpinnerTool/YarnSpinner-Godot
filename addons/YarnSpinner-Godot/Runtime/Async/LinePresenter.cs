@@ -412,7 +412,6 @@ public partial class LinePresenter : Node, DialoguePresenterBase
             {
                 characterNameText!.Text = Regex.Replace(characterNameText.Text, HtmlTagPattern, "[$1]");
             }
-
             lineText!.Text = Regex.Replace(lineText.Text, HtmlTagPattern, "[$1]");
         }
     }
