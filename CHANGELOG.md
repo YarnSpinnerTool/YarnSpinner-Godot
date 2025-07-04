@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Renamed `TemporalMarkupProcessor` to `ActionMarkupHandler`.
 - Renamed `AttributeMarkerProcessor` to `ReplacementMarkupHandler`
 - Renamed `FormatForMarker` to `PaletteForMarker` in `MarkupPalette`.
-- `LinePresenterButtonHandler` is a new `ActionMarkupHandler` subclass that manages the continue button on the line view.
+- `LinePresenterButtonHandler` is a new `ActionMarkupHandler` subclass that manages the continue button on the line view.  A button used with this script will "hurry up"/ skip animations if the  line is not yet finished displaying. Otherwise, it will continue to the next line of dialogue.
 - `LinePresenter` now implements its typewriter effect with `BasicTypewriter`, an implementation of the `IAsyncTypewriter` interface.
 - The typewriter effect in `LinePresenter` is now framerate-independent.
 - Add ActionMarkupHandlers  to the `eventHandlers` array in the inspecotr of LinePresenter. If you're making your own custom presenter, you can follow the example of LinePresent on how to set up your own inspector array of ActionMarkupHandlers.
