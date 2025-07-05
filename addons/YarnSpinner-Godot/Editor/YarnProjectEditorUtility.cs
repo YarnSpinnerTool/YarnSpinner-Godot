@@ -507,6 +507,7 @@ public static class YarnProjectEditorUtility
                 return null;
             }
 
+            var library = Actions.GetLibrary();
 
             IEnumerable<Diagnostic> errors;
             project.ProjectErrors = Array.Empty<YarnProjectError>();
@@ -519,6 +520,7 @@ public static class YarnProjectEditorUtility
             CompilationResult? compilationResult = new CompilationResult();
             if (scriptAbsolutePaths.Count > 0)
             {
+
                 // Get all function declarations found in the Unity project
                 var functionDeclarationReceiver = new FunctionDeclarationReceiver();
 
@@ -530,6 +532,7 @@ public static class YarnProjectEditorUtility
                 var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
                 // job.VariableDeclarations = localDeclarations;
                 job.CompilationType = CompilationJob.Type.FullCompilation;
+                job.Library = library;
                 job.LanguageVersion = project.JSONProject.FileVersion;
                 job.Declarations = functionDeclarationReceiver.FunctionDeclarations;
 
