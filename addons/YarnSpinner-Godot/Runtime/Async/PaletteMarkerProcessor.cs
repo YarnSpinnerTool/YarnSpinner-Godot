@@ -16,7 +16,7 @@ namespace YarnSpinnerGodot;
 /// will process tags in a Yarn line named <c>[happy]</c> by inserting the
 /// appropriate TextMeshProp style tags defined for the "happy" style.</remarks>
 [GlobalClass]
-public partial class PaletteMarkerProcessor : AttributeMarkerProcessor
+public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
 {
     /// <summary>
     /// The <see cref="MarkupPalette"/> to use when applying styles.
@@ -44,59 +44,36 @@ public partial class PaletteMarkerProcessor : AttributeMarkerProcessor
     {
         if (palette == null)
         {
-            return new List<LineParser.MarkupDiagnostic>
+            var list = new List<LineParser.MarkupDiagnostic>
+                { new($"No palette set on {nameof(PaletteMarkerProcessor)}") };
+            return list;
+        }
+
+
+        if (palette.PaletteForMarker(marker.Name, out var format))
+        {
+            childBuilder.Insert(0, format.Start);
+            childBuilder.Append(format.End);
+
+            // finally we need to know if we have to offset the markers
+            // most of the time we won't have to do anything
+            if (format.MarkerOffset != 0)
             {
-                new LineParser.MarkupDiagnostic($"No palette set on {nameof(PaletteMarkerProcessor)}")
-            };
+                // we now need to move any children attributes down by however many characters were added to the front
+                // this is only the case if visible glyphs were added
+                // as in for example adding <b> to the front doesn't add any visible glyphs so won't need to offset anything
+                // and because markers are all 0-offset relative to parents
+                for (int i = 0; i < childAttributes.Count; i++)
+                {
+                    childAttributes[i] = childAttributes[i].Shift(format.MarkerOffset);
+                }
+            }
+
+            return ReplacementMarkupHandler.NoDiagnostics;
         }
 
-        // get the colour for this marker
-        if (!palette.FormatForMarker(marker.Name, out var style))
-        {
-            var error = new List<LineParser.MarkupDiagnostic>
-            {
-                new LineParser.MarkupDiagnostic($"Unable to identify a palette for {marker.Name}")
-            };
-            return error;
-        }
-
-        // we will always add the colour because we don't really know what the
-        // default is anyways
-        childBuilder.Insert(0, $"[color=#{(style.Color.ToHtml())}]");
-        childBuilder.Append("[/color]");
-
-        // do we need to bold it?
-        if (style.Boldened)
-        {
-            childBuilder.Insert(0, "[b]");
-            childBuilder.Append("[/b]");
-        }
-
-        // do we need to italicise it?
-        if (style.Italicised)
-        {
-            childBuilder.Insert(0, "[i]");
-            childBuilder.Append("[/i]");
-        }
-
-        // do we need to underline it?
-        if (style.Underlined)
-        {
-            childBuilder.Insert(0, "[u]");
-            childBuilder.Append("[/u]");
-        }
-
-        // do we need to strikethrough it?
-        if (style.Strikedthrough)
-        {
-            childBuilder.Insert(0, "[s]");
-            childBuilder.Append("[/s]");
-        }
-
-        // we don't need to modify the children attributes because TMP knows
-        // that the <color> tags aren't visible so we can just say we are done
-        // now
-        return NoDiagnostics;
+        var diagnostic = new LineParser.MarkupDiagnostic($"was unable to find a matching marker for {marker.Name}");
+        return new List<LineParser.MarkupDiagnostic>() { diagnostic };
     }
 
     /// <summary>
@@ -108,7 +85,7 @@ public partial class PaletteMarkerProcessor : AttributeMarkerProcessor
     {
         if (!IsInstanceValid(lineProvider))
         {
-            lineProvider = (LineProviderBehaviour) ((DialogueRunner) (DialogueRunner.FindChild(nameof(DialogueRunner))))
+            lineProvider = (LineProviderBehaviour)((DialogueRunner)(DialogueRunner.FindChild(nameof(DialogueRunner))))
                 .LineProvider;
         }
 
@@ -118,9 +95,38 @@ public partial class PaletteMarkerProcessor : AttributeMarkerProcessor
             return;
         }
 
-        foreach (var colour in palette.FormatMarkers)
+        if (palette == null)
         {
-            lineProvider!.RegisterMarkerProcessor(colour.Marker, this);
+            return;
+        }
+
+        if (palette.BasicMarkers.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var marker in palette.BasicMarkers)
+        {
+            if (string.IsNullOrEmpty(marker.Marker))
+            {
+                GD.PushError(
+                    $"A marker is added to {nameof(MarkupPalette.BasicMarkers)} without a marker name specified.");
+                continue;
+            }
+
+            lineProvider.RegisterMarkerProcessor(marker.Marker, this);
+        }
+
+        foreach (var marker in palette.CustomMarkers)
+        {
+            if (string.IsNullOrEmpty(marker.Marker))
+            {
+                GD.PushError(
+                    $"A marker is added to {nameof(MarkupPalette.CustomMarkers)} without a marker name specified.");
+                continue;
+            }
+
+            lineProvider.RegisterMarkerProcessor(marker.Marker, this);
         }
     }
 }

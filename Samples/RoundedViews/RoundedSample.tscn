@@ -11,8 +11,28 @@
 [node name="DialogueRunner" parent="RoundedYarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("2_s6ssf")
 autoStart = true
+runSelectedOptionAsLine = false
+
+[node name="LinePresenter" parent="RoundedYarnSpinnerCanvasLayer" index="2"]
+showCharacterNameInLineView = true
+fadeUpDuration = 0.25
+fadeDownDuration = 0.1
+autoAdvance = false
+autoAdvanceDelay = 1.0
+useTypewriterEffect = true
+typewriterEffectSpeed = 60
+
+[node name="OptionsPresenter" parent="RoundedYarnSpinnerCanvasLayer" index="3"]
+showsLastLine = false
+showUnavailableOptions = false
+fadeUpDuration = 0.25
+fadeDownDuration = 0.1
+
+[node name="InMemoryVariableStorage" parent="RoundedYarnSpinnerCanvasLayer" index="4"]
+showDebug = false
 
 [node name="TextLineProvider" parent="RoundedYarnSpinnerCanvasLayer" index="5"]
+textLanguageCode = "en-US"
 YarnProject = ExtResource("2_s6ssf")
 
 [node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]

@@ -4,7 +4,7 @@
 [ext_resource type="Resource" uid="uid://tsj53mnkwps3" path="res://Samples/SQLiteVariableStorage/SQLSample.yarnproject" id="2_bai3o"]
 [ext_resource type="Script" uid="uid://dfqlokuygykct" path="res://Samples/SQLiteVariableStorage/SQLVariableStorage.cs" id="3_71oeg"]
 [ext_resource type="Script" uid="uid://dmcdy8evncukk" path="res://Samples/ReturnOnComplete.cs" id="4_lgfx4"]
-[ext_resource type="Script" uid="uid://csrrlgmbjsoha" path="res://Samples/SQLiteVariableStorage/SQLSampleCommands.cs" id="5_y8hox"]
+[ext_resource type="Script" uid="uid://d3lvxnbb74617" path="res://Samples/SQLiteVariableStorage/SQLSampleCommands.cs" id="5_y8hox"]
 
 [node name="SqlSample" type="Node2D"]
 

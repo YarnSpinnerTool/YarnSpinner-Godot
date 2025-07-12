@@ -4,9 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased 
+## [0.3.5] 2025-07-12
 
-* Fix #100 - Enhance the display of story variables in the yarn project inspector with a tree view 
+* Fix #100 - Enhance the display of story variables in the yarn project inspector with a tree view
+- `DialogueRunner.SetProject` now sets the `Program` of its internal `Dialogue` object. Previously, this didn't happen
+  until `StartDialogue()`.
+-  Breaking Change:  Renamed `TemporalMarkupProcessor` to `ActionMarkupHandler`.
+-  Breaking Change: Renamed `AttributeMarkerProcessor` to `ReplacementMarkupHandler`
+-  Breaking Change: Renamed `FormatForMarker` to `PaletteForMarker` in `MarkupPalette`.
+-  Breaking Change: dialogue presenters must now implement the field `ActionMarkupHandlers`. You can paste this code into your presenter to bring it up to date: `public List<IActionMarkupHandler> ActionMarkupHandlers { get; } = [];`
+- `LinePresenterButtonHandler` is a new `ActionMarkupHandler` subclass that manages the continue button on the line
+  view. A button used with this script will "hurry up"/ skip animations if the line is not yet finished displaying.
+  Otherwise, it will continue to the next line of dialogue.
+- `LinePresenter` now implements its typewriter effect with `BasicTypewriter`, an implementation of the
+  `IAsyncTypewriter` interface.
+- The typewriter effect in `LinePresenter` is now framerate-independent.
+- Add ActionMarkupHandlers to the `eventHandlers` array in the inspecotr of LinePresenter. If you're making your own
+  custom presenter, you can follow the example of LinePresent on how to set up your own inspector array of
+  ActionMarkupHandlers.
+- Fix #76 `DialogueRunner.AddCommandHandler` and the `[YarnCommand]` attribute now supports methods whose last parameter
+  is an array of values.
+- Breaking Change: Removed deprecated example view scripts (LineView, OptionsListView, OptionView) that used the v0.2
+  version of the dialogue view APIs.
+- Breaking Change: Updated MarkupPalette to have two type of palette markers available - basic markers that support text
+  styling, and custom markers that allow for customized replacements.
 
 ## [0.3.4] 2025-06-29
 
@@ -17,26 +38,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.3.3] 2025-06-12
 
 * Update YarnSpinner DLLs to 3.0.2
+
 ### Added
 
-* Added a new function, has_any_content, which takes the name of a node group and returns true if any of its member nodes could run.
+* Added a new function, has_any_content, which takes the name of a node group and returns true if any of its member
+  nodes could run.
 
 ### Updated
 
-* Fixed a bug where interpolated boolean values inside markup were being incorrectly determined as a string and not a bool.
+* Fixed a bug where interpolated boolean values inside markup were being incorrectly determined as a string and not a
+  bool.
 
 ## [0.3.2] 2025-05-25
 
 * Fix #87 Support node paths for locating nodes for commands.
-* Fix #88 - Make the error message clearer when a lambda is registered as a command handler from GDScript that lambdas are not supported.
+* Fix #88 - Make the error message clearer when a lambda is registered as a command handler from GDScript that lambdas
+  are not supported.
 
 ## [0.3.1] 2025-05-21
 
 - Add ModuleInitializer that clears System.Text.Json cache to fix assembly unload issue #32 - thanks eoemcgregor
 
-## [0.3.0] 2025-05-18 
+## [0.3.0] 2025-05-18
 
-- Stable release of all the 0.3 beta changes 
+- Stable release of all the 0.3 beta changes
 
 ## [0.3.0-beta 6] 2025-05-10
 

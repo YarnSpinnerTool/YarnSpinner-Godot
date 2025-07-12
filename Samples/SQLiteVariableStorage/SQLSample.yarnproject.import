@@ -12,3 +12,7 @@ dest_files=["res://.godot/imported/SQLSample.yarnproject-492bf8c35d4a0f0a8978692
 
 [params]
 
+generateVariablesSourceFile=false
+variablesClassName="YarnVariables"
+variablesClassNamespace=""
+variablesClassParent="YarnSpinnerGodot.InMemoryVariableStorage"

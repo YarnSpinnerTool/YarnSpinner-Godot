@@ -192,6 +192,7 @@ namespace YarnSpinnerGodot
         // The names of the methods that register commands and functions
         private const string AddCommandHandlerMethodName = "AddCommandHandler";
         private const string AddFunctionMethodName = "AddFunction";
+        private const string RegisterFunctionDeclarationName = "RegisterFunctionDeclaration";
 
         /// <summary>
         /// The list of parameters that this action takes.
@@ -200,39 +201,66 @@ namespace YarnSpinnerGodot
 
         public List<Microsoft.CodeAnalysis.Diagnostic> Validate(Compilation compilation)
         {
-         var methodDeclaration = Declaration as MethodDeclarationSyntax;
-
-            if (methodDeclaration == null)
-            {
-                throw new NotImplementedException("Todo: handle case where action's method is not a MethodDeclaration");
-            }
-
-            if (this.Name == null)
-            {
-                throw new NullReferenceException("Action name is null");
-            }
-
-            if (this.MethodSymbol == null)
-            {
-                throw new NullReferenceException($"Method symbol for {Name} is null");
-            }
-
+            var methodDeclaration = Declaration as MethodDeclarationSyntax;
             var diagnostics = new List<Microsoft.CodeAnalysis.Diagnostic>();
-
-            if (this.MethodSymbol.DeclaredAccessibility != Accessibility.Public)
+            if (this.MethodDeclarationSyntax == null)
             {
-                // Method is not public
-                diagnostics.Add(Diagnostic.Create(Diagnostics.YS1001ActionMethodsMustBePublic, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier, MethodSymbol.DeclaredAccessibility));
+                // No declaration syntax - we have nowhere to attach any diagnostics to
+                return diagnostics;
             }
 
-            // This is not a full validation of the naming rules of commands,
-            // but is good enough to catch the most common situations:
-            // whitespace and periods.
-            if (Name.Contains(".") || Name.Any(x => Char.IsWhiteSpace(x)))
+            Location diagnosticLocation;
+            string identifier;
+
+            if (this.Declaration is MethodDeclarationSyntax methodDeclarationSyntax)
             {
-                diagnostics.Add(Diagnostic.Create(Diagnostics.YS1002ActionMethodsMustHaveAValidName, methodDeclaration.Identifier.GetLocation(), this.Name));
+                diagnosticLocation = methodDeclarationSyntax.Identifier.GetLocation();
+                identifier = methodDeclarationSyntax.Identifier.ToString();
+            }
+            else
+            {
+                diagnosticLocation = this.MethodDeclarationSyntax.GetLocation();
+                identifier = "(anonymous function)";
             }
 
+            // Commands are parsed as whitespace, so spaces in the command name
+            // would render the command un-callable.
+            if (Name.Any(x => Char.IsWhiteSpace(x)))
+            {
+                diagnostics.Add(Diagnostic.Create(Diagnostics.YS1002ActionMethodsMustHaveAValidName, this.MethodDeclarationSyntax.GetLocation(), this.Name));
+            }
+            // Actions that are registered via an attribute must be publicly
+            // accessible
+            if (this.DeclarationType == DeclarationType.Attribute)
+            {
+                if (MethodSymbol.DeclaredAccessibility != Accessibility.Public)
+                {
+                    // The method is not public
+                    diagnostics.Add(Diagnostic.Create(
+                        Diagnostics.YS1001ActionMethodsMustBePublic,
+                        diagnosticLocation, identifier, MethodSymbol.DeclaredAccessibility));
+                }
+                else
+                {
+                    var containingType = MethodSymbol.ContainingType;
+
+                    while (containingType != null)
+                    {
+                        if (containingType.DeclaredAccessibility != Accessibility.Public)
+                        {
+                            // The method is public, but it's within a type that
+                            // is not
+                            var typeName = containingType.Name ?? "(anonymous)";
+                            diagnostics.Add(Diagnostic.Create(
+                                Diagnostics.YS1007ActionsMustBeInPublicTypes,
+                                diagnosticLocation, identifier, typeName, containingType.DeclaredAccessibility));
+                            break;
+                        }
+                        containingType = containingType.ContainingType;
+                    }
+
+                }
+            }
             switch (Type)
             {
                 case ActionType.Invalid:
@@ -240,14 +268,13 @@ namespace YarnSpinnerGodot
                         var actionAttributes = MethodSymbol.GetAttributes().Where(attr => Analyser.IsAttributeYarnCommand(attr));
 
                         var count = actionAttributes.Count();
-
                         if (count != 1)
                         {
-                            diagnostics.Add(Diagnostic.Create(Diagnostics.YS1005ActionMethodsMustHaveOneActionAttribute, methodDeclaration.Identifier.GetLocation(), 0));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.YS1005ActionMethodsMustHaveOneActionAttribute, diagnosticLocation, 0));
                         }
                         else
                         {
-                            diagnostics.Add(Diagnostic.Create(Diagnostics.YS1000UnknownError, methodDeclaration.Identifier.GetLocation(), "Method marked as 'not an action' but it had one attribute"));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.YS1000UnknownError, diagnosticLocation, "Method marked as 'not an action' but it had one attribute"));
                         }
                     }
                     break;
@@ -261,7 +288,7 @@ namespace YarnSpinnerGodot
                     break;
 
                 default:
-                    diagnostics.Add(Diagnostic.Create(Diagnostics.YS1000UnknownError, methodDeclaration.Identifier.GetLocation(), $"Internal error: invalid type {Type}"));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.YS1000UnknownError, diagnosticLocation, $"Internal error: invalid type {Type}"));
                     break;
             }
 
@@ -270,29 +297,43 @@ namespace YarnSpinnerGodot
 
         private IEnumerable<Diagnostic> ValidateFunction(Compilation compilation)
         {
-            var methodDeclaration = Declaration as MethodDeclarationSyntax;
 
-            if (methodDeclaration == null)
+            string identifier;
+            Location returnTypeLocation;
+            Location identifierLocation;
+
+            if (this.Declaration == null)
             {
-                throw new NotImplementedException("Todo: handle case where action's method is not a MethodDeclaration");
+                // No declaration - we can't attach any diagnostics
+                yield break;
             }
 
-            var methodSymbol = this.MethodSymbol as IMethodSymbol;
+            if (this.Declaration is MethodDeclarationSyntax methodDeclarationSyntax)
+            {
+                identifierLocation = methodDeclarationSyntax.Identifier.GetLocation();
+                returnTypeLocation = methodDeclarationSyntax.ReturnType.GetLocation();
+                identifier = methodDeclarationSyntax.Identifier.ToString();
+            }
+            else
+            {
+                identifierLocation = Declaration.GetLocation();
+                returnTypeLocation = this.Declaration.GetLocation();
+                identifier = "(anonymous function)";
+            }
 
-            if (methodSymbol == null)
+            if (this.MethodSymbol == null)
             {
                 throw new NotImplementedException("Todo: handle case where action's method is not a IMethodSymbol");
             }
 
             // Functions must be static
-            if (methodSymbol.IsStatic == false)
+            if (this.MethodSymbol.MethodKind == MethodKind.Ordinary && this.MethodSymbol.IsStatic == false)
             {
-                yield return Diagnostic.Create(Diagnostics.YS1006YarnFunctionsMustBeStatic,
-                    methodDeclaration.Identifier.GetLocation());
+                yield return Diagnostic.Create(Diagnostics.YS1006YarnFunctionsMustBeStatic, identifierLocation);
             }
 
             // Functions must return a number, string, or bool
-            var returnTypeSymbol = methodSymbol.ReturnType;
+            var returnTypeSymbol = this.MethodSymbol.ReturnType;
 
             switch (returnTypeSymbol.SpecialType)
             {
@@ -311,9 +352,7 @@ namespace YarnSpinnerGodot
                 case SpecialType.System_String:
                     break;
                 default:
-                    yield return Diagnostic.Create(Diagnostics.YS1004FunctionMethodsMustHaveAValidReturnType,
-                        methodDeclaration.ReturnType.GetLocation(), methodDeclaration.Identifier.ToString(),
-                        methodDeclaration.ReturnType.ToString());
+                    yield return Diagnostic.Create(Diagnostics.YS1004FunctionMethodsMustHaveAValidReturnType, returnTypeLocation, identifier, returnTypeSymbol.ToString());
                     break;
 
             }
@@ -416,7 +455,7 @@ namespace YarnSpinnerGodot
                         SyntaxFactory.ParseTypeName(
                             returnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
             }
-            
+
             // TODO:  generic AddCommandHandler<T1, T2> not working in Godot.
             if (typeArguments.Any() && MethodSymbol?.IsStatic == true)
             {
@@ -425,7 +464,7 @@ namespace YarnSpinnerGodot
                 // AddCommandHandler/Function that takes type parameters. Create
                 // a new GenericName for AddCommandHandler/Function and provide
                 // it with the type parameter list that we just built.
-            
+
                 nameSyntax = SyntaxFactory.GenericName(
                     SyntaxFactory.Identifier(registrationMethodName),
                     SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList(typeArguments))
@@ -587,6 +626,66 @@ namespace YarnSpinnerGodot
 
                 return getMethodInvocation;
             }
+        }
+
+        public SyntaxNode GetFunctionDeclarationSyntax(string dialogueRunnerVariableName = "dialogueRunner")
+        {
+            var typeOfMethodReturn = SyntaxFactory.TypeOfExpression(SyntaxFactory.ParseTypeName(MethodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
+            var typeOfMethodParameters = MethodSymbol.Parameters.Select(p =>
+            {
+                string typeName = p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                TypeSyntax type = SyntaxFactory.ParseTypeName(typeName);
+                return SyntaxFactory.TypeOfExpression(type);
+            });
+
+            var arrayOfTypeParameters = SyntaxFactory.ArrayCreationExpression(
+                    SyntaxFactory.ArrayType(
+                        SyntaxFactory.ParseTypeName("System.Type"),
+                        SyntaxFactory.List(
+                            new[] {
+                                SyntaxFactory.ArrayRankSpecifier(
+                                    SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                                        SyntaxFactory.OmittedArraySizeExpression()
+                                    )
+                                )
+                            }
+                        )
+                    ),
+                    SyntaxFactory.InitializerExpression(
+                        SyntaxKind.ArrayInitializerExpression,
+
+                        SyntaxFactory.SeparatedList<ExpressionSyntax>(
+                            typeOfMethodParameters
+                        )
+                    )
+                );
+
+            var argumentsToRegisterCall = SyntaxFactory.ArgumentList().AddArguments(new[]{
+                SyntaxFactory.Argument(
+                    SyntaxFactory.LiteralExpression(
+                        SyntaxKind.StringLiteralExpression,
+                        SyntaxFactory.Literal(this.Name)
+                    )
+                ),
+                SyntaxFactory.Argument(typeOfMethodReturn),
+                SyntaxFactory.Argument(arrayOfTypeParameters)
+            });
+
+            // Create the expression that refers to the
+            // 'RegisterFunctionDeclaration' instance method on the dialogue
+            // runner variable name we were provided.
+            var registerFunctionMethodAccess = SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxFactory.IdentifierName(dialogueRunnerVariableName),
+                SyntaxFactory.Token(SyntaxKind.DotToken),
+                SyntaxFactory.IdentifierName(RegisterFunctionDeclarationName)
+                );
+
+            var registerFunctionMethodInvocation = SyntaxFactory.InvocationExpression(registerFunctionMethodAccess, argumentsToRegisterCall);
+
+            var invocationStatement = SyntaxFactory.ExpressionStatement(registerFunctionMethodInvocation);
+
+            return invocationStatement;
         }
     }
 }
