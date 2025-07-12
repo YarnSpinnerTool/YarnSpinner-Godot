@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.3.5] TODO
+## [0.3.5] 2025-07-12
 
 * Fix #100 - Enhance the display of story variables in the yarn project inspector with a tree view
 - `DialogueRunner.SetProject` now sets the `Program` of its internal `Dialogue` object. Previously, this didn't happen
