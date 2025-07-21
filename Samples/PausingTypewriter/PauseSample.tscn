@@ -21,9 +21,6 @@ yarnProject = ExtResource("2_j3415")
 autoStart = true
 startNode = "Start"
 
-[node name="AsyncLineView" parent="YarnSpinnerCanvasLayer" index="2"]
-typewriterEffectSpeed = 600
-
 [node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
 YarnProject = ExtResource("2_j3415")
 
@@ -45,7 +42,7 @@ offset_bottom = 1542.0
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_njmvd")
 
-[node name="PauseResponder" type="Control" parent="." node_paths=PackedStringArray("face", "lineView")]
+[node name="PauseResponder" type="Control" parent="." node_paths=PackedStringArray("face", "linePresenter")]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -53,7 +50,7 @@ script = ExtResource("3_uqanb")
 face = NodePath("../Face")
 thinkingFace = ExtResource("4_1i87u")
 talkingFace = ExtResource("2_njmvd")
-lineView = NodePath("../YarnSpinnerCanvasLayer/AsyncLineView")
+linePresenter = NodePath("../YarnSpinnerCanvasLayer/LinePresenter")
 
 [node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
 script = ExtResource("6_otpsy")

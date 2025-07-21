@@ -30,7 +30,11 @@ position: 721,130
     Player: Uh. #line:ship07
     <<setsprite ShipFace neutral>>
 <<else>>
-<<jump ShipChat>>
+	<<if has_any_content("ShipChat")>>
+		<<jump ShipChat>>
+	<<else>>
+		<<stop>>
+	<<endif>>
 <<endif>>
 ===
 

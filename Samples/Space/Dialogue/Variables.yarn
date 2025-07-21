@@ -2,9 +2,9 @@ title: Program
 ---
 // demonstrates declare statement 
 
-/// Ship.yarn, node Ship, line 14
+/// If the player has been told they should talk to the ship.
 <<declare $should_see_ship = false>>
 
-/// Ship.yarn, node Ship, line 14
+/// Whether the ship has relayed Sally's warning to the player.
 <<declare $sally_warning = false>>
 ===

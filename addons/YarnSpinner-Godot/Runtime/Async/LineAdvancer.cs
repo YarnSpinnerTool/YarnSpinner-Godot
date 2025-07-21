@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,6 +84,8 @@ public partial class LineAdvancer : Node, DialoguePresenterBase
     {
         return YarnTask.CompletedTask;
     }
+
+    public List<IActionMarkupHandler> ActionMarkupHandlers { get; } = [];
 
     /// <summary>
     /// Called by a dialogue view to signal that a line is running.

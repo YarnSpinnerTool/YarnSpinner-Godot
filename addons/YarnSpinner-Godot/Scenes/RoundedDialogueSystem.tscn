@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dqe5yshlcmnpg"]
+[gd_scene load_steps=15 format=3 uid="uid://dqe5yshlcmnpg"]
 
 [ext_resource type="Script" uid="uid://budnld4qd513n" path="res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs" id="1_vq0dw"]
 [ext_resource type="Script" uid="uid://b8nsxur6opm4k" path="res://addons/YarnSpinner-Godot/Runtime/Async/LinePresenter.cs" id="2_dribl"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://b1o5xpu22evvx" path="res://addons/YarnSpinner-Godot/Runtime/InMemoryVariableStorage.cs" id="5_88l4y"]
 [ext_resource type="Script" uid="uid://c5gxawri864uf" path="res://addons/YarnSpinner-Godot/Runtime/LineProviders/TextLineProvider.cs" id="6_5v3f4"]
 [ext_resource type="Script" uid="uid://ba6k2ox6e4qg" path="res://addons/YarnSpinner-Godot/Runtime/Async/OptionsPresenter.cs" id="6_dpa5y"]
+[ext_resource type="Script" uid="uid://cm822dsbyq7mj" path="res://addons/YarnSpinner-Godot/Runtime/Async/LinePresenterButtonHandler.cs" id="6_xogki"]
 [ext_resource type="PackedScene" uid="uid://dhnl6qatalt6x" path="res://addons/YarnSpinner-Godot/Scenes/RoundedOptionPresenter.tscn" id="7_xsr4c"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ymf4v"]
@@ -42,7 +43,7 @@ startNode = "Start"
 
 [node name="VariableDebugText" type="RichTextLabel" parent="."]
 
-[node name="LinePresenter" type="Control" parent="." node_paths=PackedStringArray("dialogueRunner", "presenterControl", "lineText", "continueButton", "characterNameText", "characterNameContainer")]
+[node name="LinePresenter" type="Control" parent="." node_paths=PackedStringArray("dialogueRunner", "presenterControl", "lineText", "characterNameText", "characterNameContainer", "eventHandlers")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -53,10 +54,11 @@ script = ExtResource("2_dribl")
 dialogueRunner = NodePath("../DialogueRunner")
 presenterControl = NodePath("PresenterControl")
 lineText = NodePath("PresenterControl/LineText")
-continueButton = NodePath("PresenterControl/LineText/LineBubble/ContinueButton")
 characterNameText = NodePath("PresenterControl/LineText/CharacterNameText")
 characterNameContainer = NodePath("PresenterControl/LineText/CharacterNameText/CharacterNameBubble")
 useFadeEffect = false
+ConvertHTMLToBBCode = true
+eventHandlers = [NodePath("LinePresenterButtonHandler")]
 
 [node name="PresenterControl" type="Panel" parent="LinePresenter"]
 layout_mode = 2
@@ -169,6 +171,15 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
 theme_override_styles/panel = ExtResource("4_utoye")
+
+[node name="LinePresenterButtonHandler" type="Control" parent="LinePresenter" node_paths=PackedStringArray("continueButton", "dialogueRunner")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("6_xogki")
+continueButton = NodePath("../PresenterControl/LineText/LineBubble/ContinueButton")
+dialogueRunner = NodePath("../../DialogueRunner")
 
 [node name="OptionsPresenter" type="Control" parent="." node_paths=PackedStringArray("presenterControl", "lastLineText", "lastLineContainer", "lastLineCharacterNameText", "lastLineCharacterNameContainer", "optionParent")]
 layout_mode = 3

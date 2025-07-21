@@ -413,7 +413,7 @@ public static class YarnProjectEditorUtility
         {
             project.JSONProjectPath = project.DefaultJSONProjectPath;
         }
-        
+
         var saveErr = ResourceSaver.Save(project, project.ImportPath);
         if (saveErr != Error.Ok)
         {
@@ -422,6 +422,87 @@ public static class YarnProjectEditorUtility
         else
         {
             GD.Print($"Wrote updated YarnProject {project.ResourceName} to {project.ResourcePath}");
+        }
+    }
+
+    private class FunctionDeclarationReceiver : IActionRegistration, IDisposable
+    {
+        public List<Declaration> FunctionDeclarations = new();
+
+        public void AddCommandHandler(string commandName, System.Delegate handler)
+        {
+        }
+
+        public void AddCommandHandler(string commandName, MethodInfo methodInfo)
+        {
+        }
+
+        public void AddFunction(string name, System.Delegate implementation)
+        {
+        }
+
+        public void RegisterFunctionDeclaration(string name, System.Type returnType, System.Type[] parameterTypes)
+        {
+            if (Types.TypeMappings.TryGetValue(returnType, out var returnYarnType) == false)
+            {
+                GD.PushError($"Can't register function {name}: can't convert return type {returnType} to a Yarn type");
+                return;
+            }
+
+            var typeBuilder = new FunctionTypeBuilder().WithReturnType(returnYarnType);
+
+
+            for (int i = 0; i < parameterTypes.Length; i++)
+            {
+                System.Type? parameter = parameterTypes[i];
+
+                bool isParamsArray = false;
+
+                if (i == parameterTypes.Length - 1 && parameter.IsArray)
+                {
+                    // If this is the last parameter and it is an array,
+                    // treat it as though it were a params array and use the
+                    // type of the array
+                    parameter = parameter.GetElementType();
+                    isParamsArray = true;
+                }
+
+                if (Types.TypeMappings.TryGetValue(parameter!, out var parameterYarnType) == false)
+                {
+                    GD.PushError(
+                        $"Can't register function {name}: can't convert parameter {i} type {parameterYarnType} to a Yarn type");
+                    return;
+                }
+
+                if (isParamsArray)
+                {
+                    typeBuilder = typeBuilder.WithVariadicParameterType(parameterYarnType);
+                }
+                else
+                {
+                    typeBuilder = typeBuilder.WithParameter(parameterYarnType);
+                }
+            }
+
+            var decl = new DeclarationBuilder()
+                .WithName(name)
+                .WithType(typeBuilder.FunctionType)
+                .Declaration;
+
+            this.FunctionDeclarations.Add(decl);
+        }
+
+        public void RemoveCommandHandler(string commandName)
+        {
+        }
+
+        public void RemoveFunction(string name)
+        {
+        }
+
+        public void Dispose()
+        {
+            FunctionDeclarations.Clear();
         }
     }
 
@@ -455,11 +536,20 @@ public static class YarnProjectEditorUtility
             CompilationResult? compilationResult = new CompilationResult();
             if (scriptAbsolutePaths.Count > 0)
             {
+                // Get all function declarations found in the Unity project
+                var functionDeclarationReceiver = new FunctionDeclarationReceiver();
+
+                foreach (var registrationAction in Actions.ActionRegistrationMethods)
+                {
+                    registrationAction(functionDeclarationReceiver, RegistrationType.Compilation);
+                }
+
                 var job = CompilationJob.CreateFromFiles(scriptAbsolutePaths);
                 // job.VariableDeclarations = localDeclarations;
                 job.CompilationType = CompilationJob.Type.FullCompilation;
                 job.Library = library;
                 job.LanguageVersion = project.JSONProject.FileVersion;
+                job.Declarations = functionDeclarationReceiver.FunctionDeclarations;
 
                 compilationResult = Yarn.Compiler.Compiler.Compile(job);
 
@@ -942,7 +1032,7 @@ public static class YarnProjectEditorUtility
             return false;
         }
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         int indentLevel = 0;
         const int indentSize = 4;
 
@@ -998,16 +1088,9 @@ public static class YarnProjectEditorUtility
 
             WriteGeneratedCodeAttribute();
 
-            if (type.RawType == Types.String)
-            {
-                // String-backed enums are represented as CRC32 hashes of
-                // the raw value, which we store as uints
-                WriteLine($"public enum {type.Name} : uint {{");
-            }
-            else
-            {
-                WriteLine($"public enum {type.Name} {{");
-            }
+            // Enums are always stored as integers; strings are represented
+            // as CRC32 hashes of the raw value
+            WriteLine($"public enum {type.Name} {{");
 
             indentLevel += 1;
 
@@ -1038,7 +1121,11 @@ public static class YarnProjectEditorUtility
                     WriteLine($"/// </remarks>");
                     var stringValue = (string)enumCase.Value.Value;
                     WriteComment($"\"{stringValue}\"");
-                    WriteLine($"{enumCase.Key} = {CRC32.GetChecksum(stringValue)},");
+                    // Get the hash of the string, and convert it to a
+                    // signed integer. (Unity doesn't correctly handle enums
+                    // whose backing value is a uint (values over signed
+                    // integer max are clamped to zero), so we'll cast it here.)
+                    WriteLine($"{enumCase.Key} = {(int)CRC32.GetChecksum(stringValue)},");
                 }
                 else
                 {

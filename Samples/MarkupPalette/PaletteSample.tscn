@@ -25,9 +25,8 @@ color = Color(0.0509804, 0.0235294, 0.0509804, 1)
 
 [node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_luv5t")]
 
-[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0" node_paths=PackedStringArray("dialoguePresenters")]
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("2_yfv6n")
-dialoguePresenters = [NodePath("../LinePresenter"), NodePath("../LineAdvancer"), NodePath("../OptionsPresenter")]
 autoStart = true
 startNode = "Start"
 

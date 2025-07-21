@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Godot;
 
@@ -99,14 +100,14 @@ public interface DialoguePresenterBase
             // Wait for one of the following things to happen:
             // 1. RunLine completes successfully and calls PhaseComplete.
             // 2. The line is cancelled.
-            while (GodotObject.IsInstanceValid((GodotObject) this) && phaseComplete == false
-                                                                   && token.IsNextLineRequested == false
+            while (GodotObject.IsInstanceValid((GodotObject)this) && phaseComplete == false
+                                                                  && token.IsNextLineRequested == false
                   )
             {
                 await YarnTask.Yield();
             }
 
-            if (!GodotObject.IsInstanceValid((GodotObject) this))
+            if (!GodotObject.IsInstanceValid((GodotObject)this))
             {
                 return;
             }
@@ -118,12 +119,12 @@ public interface DialoguePresenterBase
             {
                 phaseComplete = false;
                 v2View.InterruptLine(line, PhaseComplete);
-                while (GodotObject.IsInstanceValid((GodotObject) this) && phaseComplete == false)
+                while (GodotObject.IsInstanceValid((GodotObject)this) && phaseComplete == false)
                 {
                     await YarnTask.Yield();
                 }
 
-                if (!GodotObject.IsInstanceValid((GodotObject) this))
+                if (!GodotObject.IsInstanceValid((GodotObject)this))
                 {
                     return;
                 }
@@ -134,7 +135,7 @@ public interface DialoguePresenterBase
             phaseComplete = false;
             v2View.DismissLine(PhaseComplete);
 
-            while (GodotObject.IsInstanceValid((GodotObject) this) && phaseComplete == false)
+            while (GodotObject.IsInstanceValid((GodotObject)this) && phaseComplete == false)
             {
                 await YarnTask.Yield();
             }
@@ -194,13 +195,13 @@ public interface DialoguePresenterBase
             // for this view to be cancelled.
             v2View.RunOptions(dialogueOptions, (selectedID) => { selectedOptionID = selectedID; });
 
-            while (GodotObject.IsInstanceValid((GodotObject) this) &&
+            while (GodotObject.IsInstanceValid((GodotObject)this) &&
                    selectedOptionID == -1 && cancellationToken.IsCancellationRequested == false)
             {
                 await YarnTask.Yield();
             }
 
-            if (!GodotObject.IsInstanceValid((GodotObject) this) || cancellationToken.IsCancellationRequested)
+            if (!GodotObject.IsInstanceValid((GodotObject)this) || cancellationToken.IsCancellationRequested)
             {
                 // We were cancelled or are exiting the game. Return null.
                 return null;
@@ -238,7 +239,8 @@ public interface DialoguePresenterBase
     /// nothing.</para>
     /// </remarks>
     /// <returns>A task that represents any work done by this Dialogue Presenter in order to get ready for dialogue to run.</returns>
-    public YarnTask OnDialogueStartedAsync()   {
+    public YarnTask OnDialogueStartedAsync()
+    {
         // backwards compatibility with 0.2.*
 #pragma warning disable CS0618 // Type or member is obsolete
         if (this is DialogueViewBase v2View)
@@ -280,4 +282,9 @@ public interface DialoguePresenterBase
 
         return YarnTask.CompletedTask;
     }
+
+    /// The collection of action markup handlers that the dialogue presenter
+    /// uses when presenting content.
+    /// </summary>
+    public List<IActionMarkupHandler> ActionMarkupHandlers { get; }
 }

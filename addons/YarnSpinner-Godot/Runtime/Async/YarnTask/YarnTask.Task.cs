@@ -22,7 +22,7 @@ public partial struct YarnTask
 
     public static implicit operator YarnTask(Task task)
     {
-        return new YarnTask {Task = task};
+        return new YarnTask { Task = task };
     }
 
     readonly public async void Forget()
@@ -76,7 +76,7 @@ public partial struct YarnTask
 
     public static partial YarnTask WhenAll(params YarnTask[] tasks)
     {
-        return WhenAll((IEnumerable<YarnTask>) tasks);
+        return WhenAll((IEnumerable<YarnTask>)tasks);
     }
 
     public static partial async YarnTask WhenAll(IEnumerable<YarnTask> tasks)
@@ -126,8 +126,8 @@ public partial struct YarnTask
     /// </summary>
     public static async Task NextFrame()
     {
-        var mainLoop = (SceneTree) Engine.GetMainLoop();
-        await (mainLoop).ToSignal(mainLoop, "process_frame");
+        var mainLoop = (SceneTree)Engine.GetMainLoop();
+        await mainLoop.ToSignal(mainLoop, SceneTree.SignalName.ProcessFrame);
     }
 
 #if USE_ADDRESSABLES
@@ -158,7 +158,7 @@ public partial struct YarnTask<T>
 
     public static implicit operator YarnTask<T>(Task<T> task)
     {
-        return new YarnTask<T> {Task = task};
+        return new YarnTask<T> { Task = task };
     }
 
     public static partial YarnTask<T> FromResult(T value)
