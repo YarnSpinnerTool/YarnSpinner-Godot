@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/4.4.1">
+<Project Sdk="Godot.NET.Sdk/4.5.0-beta.2">
     <PropertyGroup>
         <NoWarn>RS2008</NoWarn> <!-- We do not have the AnalyserReleases.*.md files written to satisfy this warning -->
         <TargetFramework>net8.0</TargetFramework>
@@ -26,20 +26,21 @@
     </Choose>
     <ItemGroup>
         <!-- Add some extra files for ease of developing samples -->
-        <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
-        <None Include="addons\YarnSpinner-Godot\plugin.cfg"/>
-        <None Include="**\*.md"/>
-        <None Include="**\*.yarn"/>
-        <None Include="**\*.yarnproject"/>
-        <None Include="**\*.gd"/>
-        <Compile Remove="Generated\**"/>
+        <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
+        <None Include="addons\YarnSpinner-Godot\plugin.cfg" />
+        <None Include="**\*.md" />
+        <None Include="**\*.yarn" />
+        <None Include="**\*.yarnproject" />
+        <None Include="**\*.gd" />
+        <Compile Remove="Generated\**" />
         <!-- For SQL variable storage sample -->
-        <PackageReference Include="sqlite-net-pcl" Version="1.9.172"/>
+        <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
         <!-- AOT: Root the assemblies to avoid trimming. -->
         <TrimmerRootAssembly Include="GodotSharp" />
         <TrimmerRootAssembly Include="$(TargetName)" />
+        <TrimmerRootAssembly Include="YarnSpinner" />
     </ItemGroup>
 
     <!-- How to include the plugin code in your .csproj -->
-    <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
+    <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
 </Project>
