@@ -22,7 +22,7 @@ public partial class OptionItem : Control
     {
         if (!IsInstanceValid(button))
         {
-            GD.PushError($"No {button} is set on this {nameof(OptionItem)}");
+            GD.PushError($"No {nameof(button)} is set on this {nameof(OptionItem)}");
             return;
         }
 
@@ -64,7 +64,7 @@ public partial class OptionItem : Control
 
         if (!IsInstanceValid(button))
         {
-            GD.PushError($"No {button} is set on this {nameof(OptionItem)}");
+            GD.PushError($"No {nameof(button)} is set on this {nameof(OptionItem)}");
         }
         else
         {

@@ -380,10 +380,13 @@ public class Actions : ICommandDispatcher
 
                 if (!GodotObject.IsInstanceValid(targetComponent))
                 {
+                    var objectErrorDisplayName =
+                        $"{gameObject.GetTree().Root.GetPathTo(gameObject)} (gameObject.GetType().Name)";
+
                     return new CommandDispatchResult(CommandDispatchResult.StatusType.TargetMissingComponent)
                     {
                         Message =
-                            $"{Name} can't be called on {gameObjectName}, because it doesn't have a {DeclaringType.Name}",
+                            $"{Name} can't be called on {objectErrorDisplayName}, because it doesn't have a {DeclaringType.Name}",
                     };
                 }
 
@@ -394,12 +397,14 @@ public class Actions : ICommandDispatcher
                 // The method is static; it therefore doesn't need a target.
                 target = null;
             }
+
             else if (Target != null)
             {
                 // The method is an instance method, so use the target we've
                 // stored.
                 target = Target;
             }
+
             else
             {
                 // We don't know what to call this method on.
@@ -409,7 +414,6 @@ public class Actions : ICommandDispatcher
 
             var parseArgsStatus =
                 TryParseArgs(parameters.ToArray(), out var finalParameters, out var errorMessage);
-
             if (parseArgsStatus != CommandDispatchResult.ParameterParseStatusType.Succeeded)
             {
                 var status = parseArgsStatus switch
@@ -431,7 +435,6 @@ public class Actions : ICommandDispatcher
             }
 
             var returnValue = Method.Invoke(target, finalParameters);
-
             if (returnValue is Task task)
             {
                 // The method returned a task. Convert it to a YarnTask.
