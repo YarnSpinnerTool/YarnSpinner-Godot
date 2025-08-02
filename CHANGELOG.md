@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.6] 2025-08-02
+
+* Improve error messages when `button` is not assigned on OptionItem
+* Improve error message when the Godot node passed to a yarn command is not of the correct type
+* Update System.Text.Json to `8.0.6`
+* Update Google.Protobuf to `3.31.1`
+* Update CsvHelper to 12.3.2
+
 ## [0.3.5] 2025-07-12
 
 * Fix #100 - Enhance the display of story variables in the yarn project inspector with a tree view

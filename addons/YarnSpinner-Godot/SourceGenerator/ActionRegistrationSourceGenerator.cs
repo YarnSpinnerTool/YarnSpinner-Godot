@@ -81,7 +81,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
 
-        string projectPath = null;
+        string? projectPath = null;
         output.WriteLine(DateTime.Now);
 
         // Try to locate project.godot 
@@ -608,22 +608,25 @@ internal class YSLSGenerator
     struct YarnActionCommand
     {
         internal string YarnName;
-        internal string DefinitionName;
+        internal string? DefinitionName;
         internal string Signature;
-        internal string FileName;
+        internal string? FileName;
         internal YarnActionParameter[] Parameters;
 
         internal Dictionary<string, object> ToDictionary()
         {
             var dict = new Dictionary<string, object>();
             dict["YarnName"] = YarnName;
-            dict["DefinitionName"] = DefinitionName;
+            if (!string.IsNullOrEmpty(DefinitionName))
+            {
+                dict["DefinitionName"] = DefinitionName!;
+            }
             dict["Signature"] = Signature;
             dict["Language"] = "csharp";
 
             if (!string.IsNullOrEmpty(FileName))
             {
-                dict["FileName"] = FileName;
+                dict["FileName"] = FileName!;
             }
 
             if (Parameters.Length > 0)
@@ -641,24 +644,27 @@ internal class YSLSGenerator
     struct YarnActionFunction
     {
         internal string YarnName;
-        internal string DefinitionName;
+        internal string? DefinitionName;
         internal string Signature;
         internal YarnActionParameter[] Parameters;
         internal string ReturnType;
-        internal string FileName;
+        internal string? FileName;
 
         internal Dictionary<string, object> ToDictionary()
         {
             var dict = new Dictionary<string, object>();
             dict["YarnName"] = YarnName;
-            dict["DefinitionName"] = DefinitionName;
+            if (!string.IsNullOrEmpty(DefinitionName))
+            {
+                dict["DefinitionName"] = DefinitionName!;
+            }
             dict["Signature"] = Signature;
             dict["ReturnType"] = ReturnType;
             dict["Language"] = "csharp";
 
             if (!string.IsNullOrEmpty(FileName))
             {
-                dict["FileName"] = FileName;
+                dict["FileName"] = FileName!;
             }
 
             if (Parameters.Length > 0)
