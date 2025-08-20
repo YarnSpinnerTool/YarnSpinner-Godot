@@ -670,7 +670,6 @@ public static class YarnProjectEditorUtility
     public static CompilationResult CompileProgram(FileInfo[] inputs)
     {
         // The list of all files and their associated compiled results
-        var results = new List<(FileInfo file, Program program, IDictionary<string, StringInfo> stringTable)>();
 
         var compilationJob = CompilationJob.CreateFromFiles(inputs.Select(fileInfo => fileInfo.FullName));
 
@@ -693,17 +692,7 @@ public static class YarnProjectEditorUtility
 
         return compilationResult;
     }
-
-    /// <summary>
-    /// If <see langword="true"/>, <see cref="ActionManager"/> will search
-    /// all assemblies that have been defined using an <see
-    /// cref="AssemblyDefinitionAsset"/> for commands and actions, when this
-    /// project is loaded into a <see cref="DialogueRunner"/>. Otherwise,
-    /// <see cref="assembliesToSearch"/> will be used.
-    /// </summary>
-    /// <seealso cref="assembliesToSearch"/>
-    public static bool searchAllAssembliesForActions = true;
-
+    
     private static void CreateYarnInternalLocalizationAssets(YarnProject project,
         CompilationResult compilationResult)
     {
@@ -761,7 +750,7 @@ public static class YarnProjectEditorUtility
             // We only get no value if we have no scripts to work with.
             // In this case, return an empty collection - there's no
             // error, but there's no content either.
-            return Array.Empty<StringTableEntry>();
+            return [];
         }
 
         var errors =
@@ -770,7 +759,7 @@ public static class YarnProjectEditorUtility
         if (errors.Any())
         {
             GD.PrintErr("Can't generate a strings table from a Yarn Project that contains compile errors", null);
-            return Array.Empty<StringTableEntry>();
+            return [];
         }
 
         return GetStringTableEntries(project, compilationResult);
@@ -779,7 +768,7 @@ public static class YarnProjectEditorUtility
     private static CompilationResult? CompileStringsOnly(YarnProject project)
     {
         var scriptPaths = project.JSONProject.SourceFiles.Where(s => s != null)
-            .Select(s => ProjectSettings.GlobalizePath(s)).ToList();
+            .Select(ProjectSettings.GlobalizePath).ToList();
 
         if (!scriptPaths.Any())
         {
@@ -799,7 +788,7 @@ public static class YarnProjectEditorUtility
     {
         if (result.StringTable == null)
         {
-            return Array.Empty<LineMetadataTableEntry>();
+            return [];
         }
 
         return result.StringTable.Select(x => new LineMetadataTableEntry
@@ -817,7 +806,7 @@ public static class YarnProjectEditorUtility
     {
         if (result.StringTable == null)
         {
-            return Array.Empty<StringTableEntry>();
+            return [];
         }
 
         return result.StringTable.Select(x => new StringTableEntry

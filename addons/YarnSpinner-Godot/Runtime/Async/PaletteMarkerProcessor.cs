@@ -100,11 +100,6 @@ public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
             return;
         }
 
-        if (palette.BasicMarkers.Count == 0)
-        {
-            return;
-        }
-
         foreach (var marker in palette.BasicMarkers)
         {
             if (string.IsNullOrEmpty(marker.Marker))
@@ -119,7 +114,7 @@ public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
 
         foreach (var marker in palette.CustomMarkers)
         {
-            if (string.IsNullOrEmpty(marker.Marker))
+            if (string.IsNullOrEmpty(marker?.Marker))
             {
                 GD.PushError(
                     $"A marker is added to {nameof(MarkupPalette.CustomMarkers)} without a marker name specified.");

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.7] 2025-08-20
+
+* Remove unused field YarnProjectEditorUtility.searchAllAssembliesForActions
+* Update Space sample to have a "Return to Samples" button
+* Update Markup sample to demonstrate custom replacement markup and custom action markup (playing a sound and animation) as certain text in a line is revealed.
+
 ## [0.3.6] 2025-08-02
 
 * Improve error messages when `button` is not assigned on OptionItem
