@@ -7,7 +7,6 @@
 [sub_resource type="Resource" id="Resource_8qmsx"]
 script = ExtResource("1_n23v5")
 Marker = "b"
-CustomColor = true
 Color = Color(1, 1, 1, 1)
 Boldened = true
 metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
@@ -15,7 +14,6 @@ metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
 [sub_resource type="Resource" id="Resource_jkr81"]
 script = ExtResource("1_n23v5")
 Marker = "u"
-CustomColor = true
 Color = Color(1, 1, 1, 1)
 Underlined = true
 metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
