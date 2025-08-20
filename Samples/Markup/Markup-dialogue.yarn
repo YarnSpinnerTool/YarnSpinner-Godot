@@ -1,10 +1,14 @@
 ﻿title: Start
 ---
+M.C.: In YarnSpinner for Godot 0.3, two new kinds of Markup were available. Replacement markup, and action markup. 
+M.C.: Add markup tags with \[square brackets\] in your .yarn files. In this sample markup to replace markup with images.
+M.C.: Like this. Rabbit! Wait, no. Let me try again. [pause=700/] ... [pause=300/] [rabbit/]! Nice. This one I did with a custom marker in my MarkupPalette.
+M.C: There we go [cool/]! [img width=100 path="party.png"][/img]
+M.C.: I can also use [laugh/]... [pause=500/] action markup to trigger [laugh/] events when certain text in a line reveals.
+M.C.: Now, I'll hand it over to Alice and Bob for a demonstration of styling with a markup palette! 
 Alice: this is a [calm]quick[/calm] demonstration of using the [hype]new[/hype] [b]MarkupPalette[/b] feature
 Bob: [calm]oh[/calm], cool, [hype]colours[/hype]!
 Alice: yes indeed, [turbohype]colours[/turbohype].
-
-
 Bob: so [calm]how does[/calm] one use this [turbohype]fabulous[/turbohype] [hype]new[/hype] feature?
 Alice: well [calm]first[/calm] you make a [hype]new[/hype] MarkupPalette resource
 Bob: uh huh

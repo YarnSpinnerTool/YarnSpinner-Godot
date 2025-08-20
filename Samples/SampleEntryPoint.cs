@@ -31,7 +31,7 @@ public partial class SampleEntryPoint : CanvasLayer
             "res://Samples/VisualNovel/VisualNovelSample.tscn"
         );
         _markupPaletteButton.Pressed += () => LoadSample(
-            "res://Samples/MarkupPalette/PaletteSample.tscn"
+            "res://Samples/Markup/MarkupSample.tscn"
         );
         _pausingTypewriterButton.Pressed += () => LoadSample(
             "res://Samples/PausingTypewriter/PauseSample.tscn"

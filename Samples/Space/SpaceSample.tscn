@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://ddbq27wcm6emj"]
+[gd_scene load_steps=22 format=3 uid="uid://ddbq27wcm6emj"]
 
 [ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_b8xl3"]
 [ext_resource type="Script" uid="uid://c7djt487dc5x8" path="res://Samples/Space/Scripts/SpaceSample.cs" id="3"]
@@ -10,10 +10,11 @@
 [ext_resource type="Texture2D" uid="uid://bof87dtlnbrt0" path="res://Samples/Space/Sprites/Wall.png" id="7_ld3rh"]
 [ext_resource type="Texture2D" uid="uid://d3utr21wvs3n6" path="res://Samples/Space/Sprites/Player.png" id="8_18hb1"]
 [ext_resource type="Resource" uid="uid://d2lkhhnqha4qi" path="res://Samples/Space/Dialogue/SpaceYarnProject.yarnproject" id="12_qnfx0"]
-[ext_resource type="Script" uid="uid://blf0j4be8lq0x" path="res://Samples/Space/Player.cs" id="14"]
+[ext_resource type="Script" uid="uid://blf0j4be8lq0x" path="res://Samples/Space/Scripts/Player.cs" id="14"]
 [ext_resource type="Script" uid="uid://nhglc85n1674" path="res://Samples/Space/Scripts/StopButton.cs" id="14_1b0fg"]
-[ext_resource type="Script" uid="uid://qvr0xr1w3wsj" path="res://Samples/Space/SpaceCamera.cs" id="15"]
-[ext_resource type="Script" uid="uid://djut45fdy72i4" path="res://Samples/Space/DialogueTarget.cs" id="16"]
+[ext_resource type="Script" uid="uid://qvr0xr1w3wsj" path="res://Samples/Space/Scripts/SpaceCamera.cs" id="15"]
+[ext_resource type="Script" uid="uid://bm14tjtg1ryic" path="res://Samples/Space/Scripts/ReturnToMenuButton.cs" id="15_x0h8y"]
+[ext_resource type="Script" uid="uid://djut45fdy72i4" path="res://Samples/Space/Scripts/DialogueTarget.cs" id="16"]
 [ext_resource type="Script" uid="uid://bf4840p86g0m7" path="res://Samples/Space/Dialogue/SpaceYarnVariables.cs" id="16_i6fc8"]
 [ext_resource type="Script" uid="uid://c0v73pfpw3801" path="res://addons/YarnSpinner-Godot/Runtime/SaliencySetter.cs" id="16_nbkjm"]
 [ext_resource type="Script" uid="uid://cjg4pbfkkr03m" path="res://addons/YarnSpinner-Godot/Runtime/Async/LineAdvancer.cs" id="17_wrty4"]
@@ -154,6 +155,17 @@ script = ExtResource("16_i6fc8")
 
 [node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
 YarnProject = ExtResource("12_qnfx0")
+
+[node name="ReturnToMenuButton" type="Button" parent="YarnSpinnerCanvasLayer"]
+self_modulate = Color(1, 0, 0, 1)
+custom_minimum_size = Vector2(180, 120)
+offset_left = 1394.0
+offset_top = 722.0
+offset_right = 1574.0
+offset_bottom = 842.0
+text = "Return To 
+Samples Menu"
+script = ExtResource("15_x0h8y")
 
 [node name="StopButton" type="Button" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("DialogueRunner")]
 self_modulate = Color(1, 0, 0, 1)

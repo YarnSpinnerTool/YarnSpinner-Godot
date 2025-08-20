@@ -1,0 +1,14 @@
+[remap]
+
+importer="yarnscript"
+type="Resource"
+uid="uid://cxb41xoif5iib"
+path="res://.godot/imported/Markup-dialogue.yarn-b21dc9130d0389bd2a023f103f742308.tres"
+
+[deps]
+
+source_file="res://Samples/Markup/Markup-dialogue.yarn"
+dest_files=["res://.godot/imported/Markup-dialogue.yarn-b21dc9130d0389bd2a023f103f742308.tres"]
+
+[params]
+
