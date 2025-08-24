@@ -95,7 +95,7 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
         lastSeenLine = null;
         if (IsInstanceValid(lastLineText))
         {
-            lastLineText!.Visible = false;
+            lastLineContainer.Visible = false;
         }
 
         if (IsInstanceValid(lastLineCharacterNameContainer))
