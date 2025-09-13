@@ -136,6 +136,12 @@ public partial class DialogueRunner : Godot.Node
     [Export] private VariableStorageBehaviour? variableStorage;
 
     /// <summary>
+    /// If true, errors will be logged at runtime if the <see cref="yarnProject"/>
+    /// on this dialogue runner has compilation errors. 
+    /// </summary>
+    [Export] public bool PrintProjectErrors = true;
+
+    /// <summary>
     /// Gets the <see cref="YarnProject"/> asset that this dialogue runner uses.
     /// </summary>
     /// <seealso cref="SetProject(YarnProject)"/>
@@ -330,28 +336,14 @@ public partial class DialogueRunner : Godot.Node
     private CancellationTokenSource? currentLineCancellationSource;
     private CancellationTokenSource? currentLineHurryUpSource;
 
-    // Will be set in _EnterTree
+    // Will be set in the constructor
     private ICommandDispatcher CommandDispatcher { get; set; } = null!;
 
-    /// <summary>
-    /// Called by Godot to set up the object.
-    /// </summary>
-    public override void _EnterTree()
+    public DialogueRunner()
     {
         var actions = new Actions(this, Dialogue.Library);
         CommandDispatcher = actions;
         actions.RegisterActions();
-
-
-        if (IsInstanceValid(VariableStorage) && IsInstanceValid(yarnProject))
-        {
-            this.VariableStorage.Program = this.YarnProject!.Program;
-        }
-
-        if (IsInstanceValid(yarnProject))
-        {
-            this.LineProvider.YarnProject = this.YarnProject;
-        }
     }
 
     /// <summary>
@@ -360,6 +352,17 @@ public partial class DialogueRunner : Godot.Node
     /// </summary>
     public override void _Ready()
     {
+        if (IsInstanceValid(VariableStorage) && IsInstanceValid(yarnProject))
+        {
+            this.VariableStorage.Program = this.YarnProject!.Program;
+        }
+
+        if (IsInstanceValid(yarnProject))
+        {
+            this.LineProvider.YarnProject = this.YarnProject;
+            CheckCompilationErrors();
+        }
+
         foreach (var presenter in dialoguePresenters)
         {
             if (presenter == null ||
@@ -970,6 +973,21 @@ public partial class DialogueRunner : Godot.Node
         this.yarnProject = project;
 
         Dialogue.SetProgram(project.Program);
+    }
+
+    private void CheckCompilationErrors()
+    {
+        if (!PrintProjectErrors)
+        {
+            return;
+        }
+
+        if (IsInstanceValid(yarnProject) && yarnProject.ProjectErrors?.Length > 0)
+        {
+            GD.PushError(
+                $"The yarn project at '{yarnProject.ResourcePath}' has compilation errors. " +
+                "Correct the syntax in your yarn scripts to update your dialogue.");
+        }
     }
 
     /// <summary>

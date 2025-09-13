@@ -194,7 +194,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
     /// </summary>
     [Export] Array<ActionMarkupHandler> eventHandlers = [];
 
-    public const string  HtmlTagPattern = @"<(.*?)>";
+    public const string HtmlTagPattern = @"<(.*?)>";
 
 
     /// <inheritdoc/>
@@ -231,6 +231,11 @@ public partial class LinePresenter : Node, DialoguePresenterBase
             // that way it always happens first
             var pauser = new PauseEventProcessor();
             ActionMarkupHandlers.Insert(0, pauser);
+        }
+
+        if (IsInstanceValid(lineText))
+        {
+            lineText.VisibleCharactersBehavior = TextServer.VisibleCharactersBehavior.CharsAfterShaping;
         }
 
         if (characterNameContainer == null && characterNameText != null)
@@ -289,10 +294,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
         }
 
         lineText.Text = text.Text;
-
-        var continueHandler = Callable.From(OnContinuePressed);
-        // setting the continue button up to let us advance dialogue
-
+        
         lineText.VisibleRatio = 0;
         // letting every action markup handler know that fade up (if set) is about to begin
         foreach (var processor in ActionMarkupHandlers)
@@ -412,6 +414,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
             {
                 characterNameText!.Text = Regex.Replace(characterNameText.Text, HtmlTagPattern, "[$1]");
             }
+
             lineText!.Text = Regex.Replace(lineText.Text, HtmlTagPattern, "[$1]");
         }
     }
