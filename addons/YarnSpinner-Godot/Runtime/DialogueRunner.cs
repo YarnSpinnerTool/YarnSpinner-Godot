@@ -339,12 +339,6 @@ public partial class DialogueRunner : Godot.Node
     // Will be set in the constructor
     private ICommandDispatcher CommandDispatcher { get; set; } = null!;
 
-    public DialogueRunner()
-    {
-        var actions = new Actions(this, Dialogue.Library);
-        CommandDispatcher = actions;
-        actions.RegisterActions();
-    }
 
     /// <summary>
     /// Called by Godot to start running dialogue if <see cref="autoStart"/>
@@ -352,9 +346,12 @@ public partial class DialogueRunner : Godot.Node
     /// </summary>
     public override void _Ready()
     {
+        var actions = new Actions(this, Dialogue.Library);
+        CommandDispatcher = actions;
+        actions.RegisterActions();
         if (IsInstanceValid(VariableStorage) && IsInstanceValid(yarnProject))
         {
-            this.VariableStorage.Program = this.YarnProject!.Program;
+            this.VariableStorage.Program = this.YarnProject!.Program; 
         }
 
         if (IsInstanceValid(yarnProject))
