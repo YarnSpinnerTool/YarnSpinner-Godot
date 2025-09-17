@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.3.10] 2025-TODO
+## [0.3.10] 2025-09-17
 
-* Improve DialogueRunner initialization by moving it back into _EnterTree, but prevent it from running multiple times
-* Update sample project to Godot 4.5 
+* Improve DialogueRunner initialization by moving it back into _EnterTree, but prevent it from running multiple times.
+* Update sample project to Godot 4.5.
+* Fix an issue where BasicMarkers in a MarkupPalette did not render correctly if they produced more than one BBCode tag (e.g. color, underline, and bold all in one marker).
 
 ## [0.3.9] 2025-09-13
 

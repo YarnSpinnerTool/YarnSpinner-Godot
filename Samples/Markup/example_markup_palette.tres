@@ -23,6 +23,7 @@ script = ExtResource("1_n23v5")
 Marker = "calm"
 CustomColor = true
 Color = Color(0.136169, 0.566038, 0.184834, 1)
+Italicised = true
 metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
 
 [sub_resource type="Resource" id="Resource_kbrmq"]
@@ -30,6 +31,7 @@ script = ExtResource("1_n23v5")
 Marker = "hype"
 CustomColor = true
 Color = Color(0.754717, 0.162608, 0.0747597, 1)
+Boldened = true
 metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
 
 [sub_resource type="Resource" id="Resource_oxr51"]
@@ -37,6 +39,8 @@ script = ExtResource("1_n23v5")
 Marker = "turbohype"
 CustomColor = true
 Color = Color(0.735849, 0.0173549, 0.722466, 1)
+Boldened = true
+Underlined = true
 metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
 
 [sub_resource type="Resource" id="Resource_jh8x2"]
