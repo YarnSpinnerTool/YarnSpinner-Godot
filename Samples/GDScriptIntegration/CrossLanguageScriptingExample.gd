@@ -14,6 +14,7 @@ func _ready() -> void:
 	dialogue_runner.variableStorage.SetValue( var_name, "Yay!")
 	var var_value = dialogue_runner.variableStorage.GetVariantValue(var_name)
 	print("Value of %s: %s" % [var_name, var_value])
+	dialogue_runner.call_deferred("StartDialogueForget", "GDScriptIntegration")
 
 func log(message: String) -> void:
 	# Example command that does not use `await`, to test 

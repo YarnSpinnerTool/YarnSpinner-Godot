@@ -41,7 +41,6 @@ yarnProject = ExtResource("2_15buf")
 variableStorage = NodePath("../InMemoryVariableStorage")
 lineProvider = NodePath("../TextLineProvider")
 dialoguePresenters = [NodePath("../LinePresenter"), NodePath("../OptionsPresenter")]
-autoStart = true
 startNode = "GDScriptIntegration"
 
 [node name="CrossLanguageScriptingExample" type="Control" parent="GDScriptYarnSpinnerCanvasLayer" node_paths=PackedStringArray("dialogue_runner", "logo")]
@@ -91,11 +90,11 @@ offset_right = 640.0
 offset_bottom = 193.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 36
+theme_override_font_sizes/bold_font_size = 36
 theme_override_font_sizes/bold_italics_font_size = 36
 theme_override_font_sizes/italics_font_size = 36
 theme_override_font_sizes/mono_font_size = 36
-theme_override_font_sizes/normal_font_size = 36
-theme_override_font_sizes/bold_font_size = 36
 bbcode_enabled = true
 text = "The dialogue text should appear here!"
 
@@ -126,11 +125,11 @@ offset_right = 279.0
 offset_bottom = -362.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 36
+theme_override_font_sizes/bold_font_size = 36
 theme_override_font_sizes/bold_italics_font_size = 36
 theme_override_font_sizes/italics_font_size = 36
 theme_override_font_sizes/mono_font_size = 36
-theme_override_font_sizes/normal_font_size = 36
-theme_override_font_sizes/bold_font_size = 36
 bbcode_enabled = true
 text = "Character Name"
 
