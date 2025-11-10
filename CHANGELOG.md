@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.11] 2025-xx-xx
+
+* Port the solution to [this issue](https://github.com/YarnSpinnerTool/IssuesDiscussion/issues/32), making StartDialogue and Stop on the DialogueRunner async methods.
+* Add ChangeDialogue(string nodeName) method to the dialogue runner to allow stopping the dialogue, 
+* Since making StartDialogue, Stop, and ChangeDialogue async prevents those methods from being exposed to GDScript, add StartDialogueForget, StopForget, and ChangeDialogueForget to the DialogueRunner to allow these functions to still be used from GDScript
+* Remove default empty values from CustomMarkers and BasicMarkers on MarkupPalette to avoid a Godot bug where exported values are reset. 
+* Fix an issue in LinePresenterButtonHandler where the  continueButton's Pressed handler was repeatedly re-connected for each line of dialogue.
+
 ## [0.3.10] 2025-09-17
 
 * Improve DialogueRunner initialization by moving it back into _EnterTree, but prevent it from running multiple times.

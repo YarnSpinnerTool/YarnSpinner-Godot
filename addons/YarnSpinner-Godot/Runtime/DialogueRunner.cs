@@ -410,6 +410,11 @@ public partial class DialogueRunner : Godot.Node
                 $"Auto Start was enabled on this {nameof(DialogueRunner)}, but no {nameof(startNode)} was provided");
             return;
         }
+        await YarnTask.NextFrame();
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
 
         await StartDialogue(startNode);
     }
@@ -421,11 +426,8 @@ public partial class DialogueRunner : Godot.Node
     public async YarnTask Stop()
     {
         dialogueCancellationCompletion = new YarnTaskCompletionSource();
-
         CancelDialogue();
-
         await dialogueCancellationCompletion.Task;
-
         dialogueCancellationCompletion = null;
     }
 

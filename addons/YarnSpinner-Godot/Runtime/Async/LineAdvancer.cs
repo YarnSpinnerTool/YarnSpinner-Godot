@@ -174,7 +174,7 @@ public partial class LineAdvancer : Node, DialoguePresenterBase
     {
         // Stop the dialogue runner, which will cancel the current line as
         // well as the entire dialogue.
-        if (runner != null)
+        if (IsInstanceValid(runner))
         {
             runner.Stop().Forget();
         }

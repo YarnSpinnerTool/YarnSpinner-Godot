@@ -19,9 +19,9 @@ public partial class MarkupPalette : Resource
     /// <summary>
     /// A list containing all the color markers defined in this palette.
     /// </summary>
-    [Export] public Array<BasicMarker> BasicMarkers = [];
+    [Export] public Array<BasicMarker> BasicMarkers;
 
-    [Export] public Array<CustomMarker> CustomMarkers = [];
+    [Export] public Array<CustomMarker> CustomMarkers;
 
     /// <summary>
     /// Determines the colour for a particular marker inside this palette.
