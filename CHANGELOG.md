@@ -24,7 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.3.8] 2025-09-13
 
-* Add functionality to log any yarn project compilation errors at runtime, to make them more noticeable to users. To turn this off, uncheck Print Project Errors in your Dialogue Runner inspector.
+* Add functionality to log any yarn project compilation errors at runtime, to make them more noticeable to users. sTo turn this off, uncheck Print Project Errors in your Dialogue Runner inspector.
 * Fix the behavior of OptionsPresenter.showUnavailableOptions. With this set to true, unavailable options will now appear and be disabled. 
 * Reorder some initialization logic in TextLineProvider and DialogueRunner
 * Clean up some unused code
