@@ -95,6 +95,10 @@ public class BasicTypewriter : IAsyncTypewriter
                     await processor
                         .OnCharacterWillAppear(i, line, cancellationToken)
                         .SuppressCancellationThrow();
+                    if (!GodotObject.IsInstanceValid(Text))
+                    {
+                        return;
+                    }
                 }
 
                 Text.VisibleCharacters += 1;
