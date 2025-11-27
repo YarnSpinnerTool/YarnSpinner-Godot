@@ -108,6 +108,7 @@ public static class Effects
 
             if (stopToken?.WasInterrupted ?? false)
             {
+                tween.CustomStep(fadeTime);
                 tween.Kill();
                 return;
             }
@@ -160,6 +161,7 @@ public static class Effects
 
             if (token.IsCancellationRequested)
             {
+                tween.CustomStep(fadeTime);
                 tween.Kill();
                 return;
             }
