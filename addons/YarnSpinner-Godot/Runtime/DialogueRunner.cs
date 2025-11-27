@@ -410,6 +410,7 @@ public partial class DialogueRunner : Godot.Node
                 $"Auto Start was enabled on this {nameof(DialogueRunner)}, but no {nameof(startNode)} was provided");
             return;
         }
+
         await YarnTask.NextFrame();
         if (!IsInstanceValid(this))
         {
@@ -428,6 +429,10 @@ public partial class DialogueRunner : Godot.Node
         dialogueCancellationCompletion = new YarnTaskCompletionSource();
         CancelDialogue();
         await dialogueCancellationCompletion.Task;
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
         dialogueCancellationCompletion = null;
     }
 
@@ -598,7 +603,10 @@ public partial class DialogueRunner : Godot.Node
 
         // Wait for all presenters to finish doing their clean-up
         await YarnTask.WhenAll(pendingTasks);
-
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
         // Finally, notify that dialogue is complete and tidy up.
         dialogueCompletionSource?.TrySetResult();
         EmitSignal(SignalName.onDialogueComplete);
@@ -642,6 +650,12 @@ public partial class DialogueRunner : Godot.Node
                 // will be Task.Completed, so this 'await' will return
                 // immediately.)
                 await dispatchResult.Task;
+                if (!IsInstanceValid(this))
+                {
+                    // quit early if the dialogue runner has been destroyed
+                    return;
+                }
+
                 break;
             case CommandDispatchResult.StatusType.NoTargetFound:
                 GD.PushError(
@@ -708,12 +722,21 @@ public partial class DialogueRunner : Godot.Node
             await LineProvider.GetLocalizedLineAsync(line,
                 dialogueCancellationSource?.Token ?? CancellationToken.None);
 
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
+
         if (localisedLine == LocalizedLine.InvalidLine)
         {
             GD.PushError($"Failed to get a localised line for {line.ID}!");
         }
 
         await RunLocalisedLine(localisedLine);
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
 
         if (dialogueCancellationSource?.IsCancellationRequested == false)
         {
@@ -867,6 +890,10 @@ public partial class DialogueRunner : Godot.Node
             var opt = options.Options[i];
             LocalizedLine localizedLine =
                 await LineProvider.GetLocalizedLineAsync(opt.Line, optionCancellationSource.Token);
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
 
             if (localizedLine == LocalizedLine.InvalidLine)
             {
@@ -927,16 +954,20 @@ public partial class DialogueRunner : Godot.Node
                 await ((SceneTree)Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
             }
 
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
 
             // selectedOption will be set by the Callable sent to the GDScript presenter.
+
+            await YarnTask.NextFrame();
+            if (!IsInstanceValid(this))
             {
-                await YarnTask.NextFrame();
-                if (!IsInstanceValid(this))
-                {
-                    // dialogue runner may have been deleted while awaiting.
-                    return;
-                }
+                // dialogue runner may have been deleted while awaiting.
+                return;
             }
+
 
             // if we got this far, selectedOption is not null anymore
             DialogueOption? result =
@@ -987,7 +1018,10 @@ public partial class DialogueRunner : Godot.Node
             return;
             // throw;
         }
-
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
         optionCancellationSource.Dispose();
 
         if (dialogueCancellationSource?.IsCancellationRequested ?? false)
@@ -1306,6 +1340,7 @@ public partial class DialogueRunner : Godot.Node
             {
                 // callable is from GDScript with await statements
                 await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
+                
             }
         }
 
