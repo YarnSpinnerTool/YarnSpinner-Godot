@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 * Since making StartDialogue, Stop, and ChangeDialogue async prevents those methods from being exposed to GDScript, add StartDialogueForget, StopForget, and ChangeDialogueForget to the DialogueRunner to allow these functions to still be used from GDScript
 * Remove default empty values from CustomMarkers and BasicMarkers on MarkupPalette to avoid a Godot bug where exported values are reset. 
 * Fix an issue in LinePresenterButtonHandler where the  continueButton's Pressed handler was repeatedly re-connected for each line of dialogue.
+* Complete tweens in Effects.cs when dialogue animations are skipped, by @fmoo 
 
 ## [0.3.10] 2025-09-17
 
