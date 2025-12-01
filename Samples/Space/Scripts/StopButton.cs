@@ -14,6 +14,6 @@ public partial class StopButton : Button
 
     public void StopButtonPressed()
     {
-        DialogueRunner.Stop();
+        DialogueRunner.Stop().Forget();
     }
 }

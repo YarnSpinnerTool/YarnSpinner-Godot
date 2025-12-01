@@ -9,9 +9,6 @@ public partial class SpaceYarnVariables : YarnSpinnerGodot.InMemoryVariableStora
     }
 
     // Accessor for Number $times_talked_sally_before_ship
-    /// <summary>
-    /// Implicitly declared in C:\Users\chris\RiderProjects\YarnSpinner-Godot\Samples\Space\Dialogue\Sally.yarn, node Sally
-    /// </summary>
     public float TimesTalkedSallyBeforeShip {
         get => this.GetValueOrDefault<float>("$times_talked_sally_before_ship");
         set => this.SetValue<float>("$times_talked_sally_before_ship", value);

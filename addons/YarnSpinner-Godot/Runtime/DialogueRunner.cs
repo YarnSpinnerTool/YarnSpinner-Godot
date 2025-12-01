@@ -331,24 +331,42 @@ public partial class DialogueRunner : Godot.Node
         get { return YarnTask.FromResult<DialogueOption?>(null); }
     }
 
-
     private CancellationTokenSource? dialogueCancellationSource;
     private CancellationTokenSource? currentLineCancellationSource;
     private CancellationTokenSource? currentLineHurryUpSource;
+    private YarnTaskCompletionSource? dialogueCompletionSource;
+    private YarnTaskCompletionSource? dialogueCancellationCompletion;
 
-    // Will be set in the constructor
-    private ICommandDispatcher? CommandDispatcher { get; set; }
-
-
-    public override void _EnterTree()
+    internal ICommandDispatcher CommandDispatcher
     {
-        if (CommandDispatcher == null)
+        get
+        {
+            EnsureCommandDispatcherReady();
+
+            if (_commandDispatcher != null)
+            {
+                return _commandDispatcher;
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(EnsureCommandDispatcherReady)} failed to set up command dispatcher");
+            }
+        }
+    }
+
+    private void EnsureCommandDispatcherReady()
+    {
+        if (_commandDispatcher == null)
         {
             var actions = new Actions(this, Dialogue.Library);
-            CommandDispatcher = actions;
+            _commandDispatcher = actions;
             actions.RegisterActions();
         }
     }
+
+    private ICommandDispatcher? _commandDispatcher;
+
 
     /// <summary>
     /// Called by Godot to start running dialogue if <see cref="autoStart"/>
@@ -380,24 +398,73 @@ public partial class DialogueRunner : Godot.Node
 
         if (autoStart)
         {
-            if (string.IsNullOrWhiteSpace(startNode))
-            {
-                GD.PushError(
-                    $"Auto Start was enabled on this {nameof(DialogueRunner)}, but no {nameof(startNode)} was provided");
-                return;
-            }
-
-            CallDeferred(nameof(StartDialogue), startNode);
+            AutoStart().Forget();
         }
+    }
+
+    private async YarnTask AutoStart()
+    {
+        if (string.IsNullOrWhiteSpace(startNode))
+        {
+            GD.PushError(
+                $"Auto Start was enabled on this {nameof(DialogueRunner)}, but no {nameof(startNode)} was provided");
+            return;
+        }
+
+        await YarnTask.NextFrame();
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
+
+        await StartDialogue(startNode);
     }
 
     /// <summary>
     /// Stops the dialogue immediately, and cancels any currently running
     /// dialogue presenters.
     /// </summary>
-    public void Stop()
+    public async YarnTask Stop()
     {
+        dialogueCancellationCompletion = new YarnTaskCompletionSource();
         CancelDialogue();
+        await dialogueCancellationCompletion.Task;
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
+        dialogueCancellationCompletion = null;
+    }
+
+    /// <summary>
+    /// Similar to <see cref="StartDialogueForget"/>. Exposes the async Stop() to GDScript.
+    /// </summary>
+    public void StopForget()
+    {
+        Stop().Forget();
+    }
+
+    /// <summary>
+    /// Stop the dialogue, wait for it to clean up, and then await starting the new dialogue
+    /// contained in nodeName.
+    /// </summary> 
+    public async YarnTask ChangeDialogue(string nodeName)
+    {
+        if (IsDialogueRunning)
+        {
+            await Stop();
+        }
+
+        await StartDialogue(nodeName);
+    }
+
+    /// <summary>
+    /// Similar to <see cref="StartDialogueForget"/>. Exposes ChangeDialogue(nodeName) to GDScript.
+    /// </summary>
+    /// <param name="nodeName"></param>
+    public void ChangeDialogueForget(string nodeName)
+    {
+        ChangeDialogue(nodeName).Forget();
     }
 
     /// <summary>
@@ -536,6 +603,21 @@ public partial class DialogueRunner : Godot.Node
 
         // Wait for all presenters to finish doing their clean-up
         await YarnTask.WhenAll(pendingTasks);
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
+        // Finally, notify that dialogue is complete and tidy up.
+        dialogueCompletionSource?.TrySetResult();
+        EmitSignal(SignalName.onDialogueComplete);
+
+        dialogueCancellationSource?.Dispose();
+        dialogueCancellationSource = null;
+        dialogueCompletionSource = null;
+
+        // finally we flag the cancellation as done
+        // this lets stop know that all views have been informed as to the cancellation
+        dialogueCancellationCompletion?.TrySetResult();
     }
 
     private void OnNodeCompleted(string completedNodeName)
@@ -568,6 +650,12 @@ public partial class DialogueRunner : Godot.Node
                 // will be Task.Completed, so this 'await' will return
                 // immediately.)
                 await dispatchResult.Task;
+                if (!IsInstanceValid(this))
+                {
+                    // quit early if the dialogue runner has been destroyed
+                    return;
+                }
+
                 break;
             case CommandDispatchResult.StatusType.NoTargetFound:
                 GD.PushError(
@@ -634,12 +722,21 @@ public partial class DialogueRunner : Godot.Node
             await LineProvider.GetLocalizedLineAsync(line,
                 dialogueCancellationSource?.Token ?? CancellationToken.None);
 
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
+
         if (localisedLine == LocalizedLine.InvalidLine)
         {
             GD.PushError($"Failed to get a localised line for {line.ID}!");
         }
 
         await RunLocalisedLine(localisedLine);
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
 
         if (dialogueCancellationSource?.IsCancellationRequested == false)
         {
@@ -793,6 +890,10 @@ public partial class DialogueRunner : Godot.Node
             var opt = options.Options[i];
             LocalizedLine localizedLine =
                 await LineProvider.GetLocalizedLineAsync(opt.Line, optionCancellationSource.Token);
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
 
             if (localizedLine == LocalizedLine.InvalidLine)
             {
@@ -853,16 +954,20 @@ public partial class DialogueRunner : Godot.Node
                 await ((SceneTree)Engine.GetMainLoop()).ToSignal(methodReturn.AsGodotObject(), "completed");
             }
 
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
 
             // selectedOption will be set by the Callable sent to the GDScript presenter.
+
+            await YarnTask.NextFrame();
+            if (!IsInstanceValid(this))
             {
-                await YarnTask.NextFrame();
-                if (!IsInstanceValid(this))
-                {
-                    // dialogue runner may have been deleted while awaiting.
-                    return;
-                }
+                // dialogue runner may have been deleted while awaiting.
+                return;
             }
+
 
             // if we got this far, selectedOption is not null anymore
             DialogueOption? result =
@@ -913,7 +1018,10 @@ public partial class DialogueRunner : Godot.Node
             return;
             // throw;
         }
-
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
         optionCancellationSource.Dispose();
 
         if (dialogueCancellationSource?.IsCancellationRequested ?? false)
@@ -1000,7 +1108,7 @@ public partial class DialogueRunner : Godot.Node
     /// <remarks><paramref name="nodeName"/> must be the name of a node in
     /// <see cref="YarnProject"/>.</remarks>
     /// <param name="nodeName">The name of the node to run.</param>
-    public void StartDialogue(string nodeName)
+    public async YarnTask StartDialogue(string nodeName)
     {
         if (yarnProject == null)
         {
@@ -1022,61 +1130,67 @@ public partial class DialogueRunner : Godot.Node
 
         dialogueCancellationSource = new CancellationTokenSource();
         LineProvider.YarnProject = yarnProject;
+
+        EnsureCommandDispatcherReady();
         Dialogue.SetProgram(yarnProject.Program);
         Dialogue.SetNode(nodeName);
 
         EmitSignal(SignalName.onDialogueStart);
 
-        StartDialogueAsync().Forget();
-
-        async YarnTask StartDialogueAsync()
+        var tasks = new List<YarnTask>();
+        foreach (var presenter in dialoguePresenters)
         {
-            var tasks = new List<YarnTask>();
-            foreach (var presenter in dialoguePresenters)
+            if (presenter == null || !IsInstanceValid(presenter))
             {
-                if (presenter == null || !IsInstanceValid(presenter))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                if (presenter is DialoguePresenterBase asyncPresenter)
-                {
-                    tasks.Add(asyncPresenter.OnDialogueStartedAsync());
-                }
+            if (presenter is DialoguePresenterBase asyncPresenter)
+            {
+                tasks.Add(asyncPresenter.OnDialogueStartedAsync());
+            }
 
-                if (presenter.GetScript().Obj is GDScript)
-                {
-                    const string gdScriptMethodName = "on_dialogue_start_async";
+            if (presenter.GetScript().Obj is GDScript)
+            {
+                const string gdScriptMethodName = "on_dialogue_start_async";
 
-                    async Task GDScriptDialogueStart()
+                async Task GDScriptDialogueStart()
+                {
+                    if (!presenter.HasMethod(gdScriptMethodName))
                     {
-                        if (!presenter.HasMethod(gdScriptMethodName))
-                        {
-                            return;
-                        }
-
-                        var returnValue = presenter.Call(gdScriptMethodName);
-                        if (returnValue.Obj != null &&
-                            returnValue.As<GodotObject>().GetClass() == "GDScriptFunctionState")
-                        {
-                            // callable is from GDScript with await statements
-                            await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
-                        }
+                        return;
                     }
 
-                    tasks.Add(GDScriptDialogueStart());
+                    var returnValue = presenter.Call(gdScriptMethodName);
+                    if (returnValue.Obj != null &&
+                        returnValue.As<GodotObject>().GetClass() == "GDScriptFunctionState")
+                    {
+                        // callable is from GDScript with await statements
+                        await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
+                    }
                 }
-            }
 
-            await YarnTask.WhenAll(tasks);
-            if (!IsInstanceValid(this))
-            {
-                // dialogue runner may have been deleted while awaiting.
-                return;
+                tasks.Add(GDScriptDialogueStart());
             }
-
-            Dialogue.Continue();
         }
+
+        await YarnTask.WhenAll(tasks);
+        if (!IsInstanceValid(this))
+        {
+            // dialogue runner may have been deleted while awaiting.
+            return;
+        }
+
+        Dialogue.Continue();
+    }
+
+    /// <summary>
+    /// The return type of StartDialogue prevents it from being called from GDScript.
+    /// Creating this non-async method allows dialogue to still be started from GDScript.
+    /// </summary>
+    public void StartDialogueForget(string nodeName)
+    {
+        StartDialogue(nodeName).Forget();
     }
 
     /// <summary>
@@ -1226,6 +1340,7 @@ public partial class DialogueRunner : Godot.Node
             {
                 // callable is from GDScript with await statements
                 await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
+                
             }
         }
 

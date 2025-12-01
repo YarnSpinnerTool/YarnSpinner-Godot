@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/4.5.0">
+<Project Sdk="Godot.NET.Sdk/4.5.1">
   <PropertyGroup>
     <NoWarn>RS2008</NoWarn> <!-- We do not have the AnalyserReleases.*.md files written to satisfy this warning -->
     <TargetFramework>net8.0</TargetFramework>

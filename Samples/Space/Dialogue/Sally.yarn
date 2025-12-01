@@ -3,7 +3,6 @@ tags:
 colorID: 0
 position: 524,111
 ---
-<<badsyntaxx
 <<declare $times_talked_sally_before_ship = 0>>
 <<declare $player_avoided_ship = $times_talked_sally_before_ship > 3>>
 <<once>>

@@ -56,10 +56,10 @@ public partial class VisualNovelManager : Node
     public void StartDialogue(string locale)
     {
         TranslationServer.SetLocale(locale);
-        ((TextLineProvider) _dialogueRunner.lineProvider).textLanguageCode = locale;
+        ((TextLineProvider)_dialogueRunner.lineProvider).textLanguageCode = locale;
         _dialogueStartUi.Visible = false;
         _dialogueCanvas.Visible = true;
-        _dialogueRunner.StartDialogue("Start");
+        _dialogueRunner.StartDialogue("Start").Forget();
     }
 
     private void OnDialogueComplete()
@@ -231,7 +231,7 @@ public partial class VisualNovelManager : Node
                 // calculate the sprite movement this frame, 
                 // trying to normalize it based on framerate
                 var timeRatio = delta / moveTime;
-                var movement = new Vector2((float) timeRatio * distance.X, (float) timeRatio * distance.Y);
+                var movement = new Vector2((float)timeRatio * distance.X, (float)timeRatio * distance.Y);
                 actor.Rect.Position += movement;
                 elapsed += delta;
                 await DefaultActions.Wait(delta); // wait a frame
@@ -366,7 +366,7 @@ public partial class VisualNovelManager : Node
         while (elapsed < fadeTime && Mathf.Abs(endAlpha - newColor.A) > 0.001)
         {
             var timeRatio = elapsed / fadeTime;
-            newColor.A = (float) (startAlpha + timeRatio * colorDifference);
+            newColor.A = (float)(startAlpha + timeRatio * colorDifference);
             _colorOverlay.Color = newColor;
             elapsed += delay / 1000d;
             await Task.Delay(delay);
