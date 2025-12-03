@@ -48,7 +48,7 @@ public partial class ImageMarkupProcessor : ReplacementMarkupHandler
         {
             // replace with <image tag> 
             childBuilder.Insert(0, value);
-            return new ReplacementMarkerResult();
+            return new ReplacementMarkerResult(value.Length);
         }
 
         if (marker.Name == "img")
@@ -77,7 +77,9 @@ public partial class ImageMarkupProcessor : ReplacementMarkupHandler
             var argsString = $"{widthString}{heightString}";
 
             // generic image markup
-            childBuilder.Insert(0, $"[img{argsString}]res://Samples/Markup/images/{imagePath.StringValue}[/img]");
+            var finalString = $"[img{argsString}]res://Samples/Markup/images/{imagePath.StringValue}[/img]";
+            childBuilder.Insert(0, finalString);
+            return new ReplacementMarkerResult(finalString.Length);
 
         }
 
