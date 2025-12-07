@@ -97,15 +97,34 @@ public partial class GDScriptPresenterAdapter : Node, DialogueViewBase
     public static Godot.Collections.Dictionary LocalizedLineToDict(LocalizedLine dialogueLine)
     {
         var dialogueLineDict = new Godot.Collections.Dictionary();
+
+        dialogueLineDict["raw_text"] = dialogueLine.RawText;
+        dialogueLineDict["text_id"] = dialogueLine.TextID;
+
         var metadataArray = new Godot.Collections.Array();
         metadataArray.AddRange(dialogueLine.Metadata ?? Array.Empty<string>());
         dialogueLineDict["metadata"] = metadataArray;
 
-        var textDict = new Godot.Collections.Dictionary();
-        textDict["text"] = dialogueLine.Text.Text;
-        textDict["text_without_character_name"] = dialogueLine.TextWithoutCharacterName.Text;
+        var textDict = MarkupParseResultToDict(dialogueLine.Text);
+        textDict["text_without_character_name"] = dialogueLine.TextWithoutCharacterName.Text; // for backwards compatibility
+
+        dialogueLineDict["text"] = textDict;
+        dialogueLineDict["text_without_character_name"] = MarkupParseResultToDict(dialogueLine.TextWithoutCharacterName);
+
+        var subList = new Godot.Collections.Array();
+        subList.AddRange(dialogueLine.Substitutions ?? Array.Empty<String>());
+        dialogueLineDict["substitutions"] = subList;
+
+        return dialogueLineDict;
+    }
+
+    public static Godot.Collections.Dictionary MarkupParseResultToDict(MarkupParseResult text)
+    {
+        var returnValue = new Godot.Collections.Dictionary();
+        returnValue["text"] = text.Text;
+
         var attributesList = new Godot.Collections.Array();
-        foreach (var attribute in dialogueLine.Text.Attributes)
+        foreach (var attribute in text.Attributes)
         {
             var attributeDict = new Godot.Collections.Dictionary();
             attributeDict["name"] = attribute.Name;
@@ -132,9 +151,8 @@ public partial class GDScriptPresenterAdapter : Node, DialogueViewBase
             attributesList.Add(attributeDict);
         }
 
-        textDict["attributes"] = attributesList;
-        dialogueLineDict["text"] = textDict;
-        return dialogueLineDict;
+        returnValue["attributes"] = attributesList;
+        return returnValue;
     }
 
     /// <inheritdoc/>
