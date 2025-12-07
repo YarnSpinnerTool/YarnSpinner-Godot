@@ -1,4 +1,4 @@
-class_name GDYS
+class_name YarnSpinner
 ## Helper class supporting C# to GDScript functionality
 ##
 ## This helper class creates GDScript versions of classes and other helper functions
@@ -15,16 +15,18 @@ class DialogueOption:
 	var line: LocalizedLine ## The line for this dialogue option
 	var is_available: bool ## Indicates whether this value should be presented as available
 
-	func _init(data: Dictionary = {}) -> void:
-		if data.is_empty(): return
+	static func from_dictionary(data: Dictionary = {}) -> DialogueOption:
 		if !data.has_all(["dialogue_option_id", "line"]):
 			push_error("YarnSpinner GDScript: Can't create DialogueOption, incorrect or missing data")
 			return
 
-		dialogue_option_id = data["dialogue_option_id"]
-		text_id = data["text_id"]
-		line = LocalizedLine.new(data["line"])
-		is_available = data["is_available"]
+		var option := DialogueOption.new()
+		option.dialogue_option_id = data["dialogue_option_id"]
+		option.text_id = data["text_id"]
+		option.line = LocalizedLine.from_dictionary(data["line"])
+		option.is_available = data["is_available"]
+
+		return option
 
 
 ## Represents a line, ready to be presented to the user in the localisation they have specified.
@@ -33,8 +35,8 @@ class DialogueOption:
 ## by the DialogueRunner for GDScript
 ## Mirrors YarnSpinnerGodot.LocalizedLine class
 class LocalizedLine:
-	var text: Line ## The underlying Line class for this line
-	var text_without_character_name: Line ## The original text with the character attribute removed
+	var text: MarkupParseResult ## The underlying MarkupParseResult class for this line
+	var text_without_character_name: MarkupParseResult ## The original text with the character attribute removed
 	var text_id: String ## DialogueLine's ID
 	var raw_text: String ## DialogueLine's unparsed text
 	var substitutions: Array ## DialogueLine's inline expression's substitution
@@ -49,26 +51,28 @@ class LocalizedLine:
 			else:
 				return name["properties"][0]["name"]
 
-	func _init(data: Dictionary = {}) -> void:
-		if data.is_empty(): return
+	static func from_dictionary(data: Dictionary = {}) -> LocalizedLine:
 		if !data.has_all(["text", "metadata"]):
 			push_error("YarnSpinner GDScript: Can't create LocalizedLine, incorrect or missing data")
 			return
 
-		text = Line.new(data["text"])
-		text_without_character_name = Line.new(data["text_without_character_name"])
-		text_id = data["text_id"]
-		raw_text = data["raw_text"]
-		substitutions = data["substitutions"]
-		metadata = data["metadata"]
+		var locline := LocalizedLine.new()
+		locline.text = MarkupParseResult.from_dictionary(data["text"])
+		locline.text_without_character_name = MarkupParseResult.from_dictionary(data["text_without_character_name"])
+		locline.text_id = data["text_id"]
+		locline.raw_text = data["raw_text"]
+		locline.substitutions = data["substitutions"]
+		locline.metadata = data["metadata"]
+
+		return locline
 
 
-## Line mirroring the MarkupParseResult values
+## MarkupParseResult mirroring the MarkupParseResult values
 ##
 ## Constructor takes a dictionary structured the same way as provided
 ## by the DialogueRunner for GDScript's "text" value
 ## Similar to Yarn.Markup.MarkupParseResult
-class Line:
+class MarkupParseResult:
 	var text: String ## The original text, with all parsed markers removed.
 
 	## List of attributes from the MarkupAttribute, in an array of dictionaries
@@ -80,15 +84,18 @@ class Line:
     ## "properties": Dictionary - the properties associated with this attribute.
 	var attributes: Array
 
-	func _init(data: Dictionary = {}) -> void:
-		if data.is_empty(): return
+	static func from_dictionary(data: Dictionary = {}) -> MarkupParseResult:
 		if !data.has_all(["text", "attributes"]):
-			push_error("YarnSpinner GDScript: Can't create LocalizedLine.Line, incorrect or missing data")
+			push_error("YarnSpinner GDScript: Can't create MarkupParseResult, incorrect or missing data")
 			return
 
-		text = data["text"]
-		attributes = data["attributes"]
+		var line := MarkupParseResult.new()
+		line.text = data["text"]
+		line.attributes = data["attributes"]
 
+		return line
+
+	## Returns the substring of Text covered by named attribute Position and Length properties.
 	func text_for_attribute(name: String) -> String:
 		var attr := try_get_attribute_with_name(name)
 
@@ -99,6 +106,7 @@ class Line:
 		else:
 			return text.substr(attr["position"], attr["length"])
 
+	## Gets the first attribute with the specified name, if present.
 	func try_get_attribute_with_name(name: String) -> Dictionary:
 		for value: Dictionary in attributes:
 			if value["name"] == (name): return value
@@ -107,7 +115,7 @@ class Line:
 
 
 ## Converts a dictionary array to an array of DialogueOption's
-static func new_dialogue_option_array(data: Array) -> Array[DialogueOption]:
+static func dialogue_options_from_array(data: Array) -> Array[DialogueOption]:
 	if data.is_empty():
 		push_error("YarnSpinner GDScript: Can't create DialogueOption Array, empty array")
 		return []
@@ -115,7 +123,7 @@ static func new_dialogue_option_array(data: Array) -> Array[DialogueOption]:
 	var return_data : Array[DialogueOption] = []
 
 	for val in data:
-		return_data.push_back(DialogueOption.new(val))
+		return_data.push_back(DialogueOption.from_dictionary(val))
 
 	return return_data
 

@@ -19,9 +19,9 @@ func run_line_async(line: Dictionary) -> void:
 
 	# line is a Dictionary converted from the LocalizedLine C# Class
 	# converts to GDScript LocalizedLine
-	var localized_line : GDYS.LocalizedLine = GDYS.LocalizedLine.new(line)
+	var localized_line : YarnSpinner.LocalizedLine = YarnSpinner.LocalizedLine.from_dictionary(line)
 	
-	var target_line: GDYS.Line
+	var target_line: YarnSpinner.MarkupParseResult
 	if localized_line.character_name.is_empty():
 		character_name_label.visible = false
 		target_line = localized_line.text

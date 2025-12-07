@@ -16,7 +16,7 @@ func run_options_async(options: Array, on_option_selected: Callable) -> void:
 
 	# options is a Dictionary converted from the LocalizedLine C# Class
 	# converts to GDScript DialogueOptions array
-	var dialogue_options := GDYS.new_dialogue_option_array(options)
+	var dialogue_options := YarnSpinner.dialogue_options_from_array(options)
 
 	# You can do await statements here if you want.
 	await get_tree().process_frame
