@@ -49,7 +49,7 @@ class LocalizedLine:
 			if name.is_empty():
 				return ""
 			else:
-				return name["properties"][0]["name"]
+				return name["properties"]["name"]
 
 	static func from_dictionary(data: Dictionary = {}) -> LocalizedLine:
 		if !data.has_all(["text", "metadata"]):
@@ -81,7 +81,7 @@ class MarkupParseResult:
 	## "length": int - the number of text elements in the plain text that this attribute covers.
 	## "name": String - the name of the attribute.
 	## "position": int - the position in the plain text where this attribute begins.
-    ## "properties": Dictionary - the properties associated with this attribute.
+	## "properties": Dictionary - the properties associated with this attribute.
 	var attributes: Array
 
 	static func from_dictionary(data: Dictionary = {}) -> MarkupParseResult:
