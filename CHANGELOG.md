@@ -8,9 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 * Update the base YarnSpinner libraries to 3.1.0. See details here: https://github.com/YarnSpinnerTool/YarnSpinner/releases/tag/v3.1.0
 * Removed the `ReplacementMarkupHandler.NoDiagnostics` static property, as this no longer matches any need due to core changes around replacement markup.
-* `ReplacementMarkuphandler` now returns a `ReplacementMarkerResult` instead of a list of diagnostics.
+* Breaking change: `ReplacementMarkuphandler` now returns a `ReplacementMarkerResult` instead of a list of diagnostics. Any custom ReplacementMarkupHandler will need to be updated. See `PaletteMarkerProcessor` as an example.
 * This is to match the behaviour change in core to fix a markup offset bug
 * Provide typed GDScript classes for LocalizedLine and MarkupParseResult Additional GDScript support for Presenters #111 by @KXI-System
+* Fix an issue where a CSV path would be applied to the wrong locale in the YarnProject inspector (#112)
 
 ## [0.3.11] 2025-12-01
 

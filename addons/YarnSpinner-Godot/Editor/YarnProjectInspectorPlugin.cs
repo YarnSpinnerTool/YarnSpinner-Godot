@@ -580,9 +580,12 @@ public partial class YarnProjectInspectorPlugin : EditorInspectorPlugin
                 pathLabel.ClipText = true;
                 picker.AddChild(pathLabel);
                 var pickerButton = new Button { Text = "Browse" };
-                _pendingCSVFileLocaleCode = locale.Key;
-                pickerButton.Connect(BaseButton.SignalName.Pressed,
-                    Callable.From(SelectLocaleCSVPath));
+
+                pickerButton.Pressed += () =>
+                {
+                    _pendingCSVFileLocaleCode = locale.Key;
+                    SelectLocaleCSVPath();
+                };
                 picker.AddChild(pickerButton);
                 localeGrid.AddChild(picker);
                 var deleteButton = new LocaleDeleteButton
