@@ -8,6 +8,11 @@ namespace YarnSpinnerGodot;
 
 public partial class DialogueRunner 
 {
+    /// <summary>
+    /// Convert a LocalizedLine to a Godot Dictionary that is more accessible from GDScript.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
     public static Godot.Collections.Dictionary MarkupParseResultToDict(MarkupParseResult text)
     {
         var returnValue = new Godot.Collections.Dictionary();
@@ -75,7 +80,6 @@ public partial class DialogueRunner
         textDict["text_without_character_name"] = dialogueLine.TextWithoutCharacterName.Text; // for backwards compatibility
 
         dialogueLineDict["text"] = textDict;
-        dialogueLineDict["text_without_character_name"] = MarkupParseResultToDict(dialogueLine.TextWithoutCharacterName);
 
         var subList = new Godot.Collections.Array();
         subList.AddRange(dialogueLine.Substitutions ?? Array.Empty<String>());

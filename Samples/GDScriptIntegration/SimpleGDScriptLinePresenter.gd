@@ -20,7 +20,13 @@ func run_line_async(line: Dictionary) -> void:
 	# line is a Dictionary converted from the LocalizedLine C# Class
 	# converts to GDScript LocalizedLine
 	var localized_line : YarnSpinner.LocalizedLine = YarnSpinner.LocalizedLine.from_dictionary(line)
-	
+	await _run_line_internal(localized_line)
+
+func dialogue_complete_async() -> void:
+	print("Dialogue complete ")
+	presenter_control.visible = false
+
+func _run_line_internal(localized_line: YarnSpinner.LocalizedLine) -> void:
 	character_name_label.visible = !localized_line.character_name.is_empty()
 	character_name_label.text = localized_line.character_name
 	
@@ -34,7 +40,3 @@ func run_line_async(line: Dictionary) -> void:
 
 	line_text_label.text = output_line
 	await continue_button.pressed
-
-func dialogue_complete_async() -> void:
-	print("Dialogue complete ")
-	presenter_control.visible = false
