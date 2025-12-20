@@ -833,7 +833,7 @@ public partial class DialogueRunner : Godot.Node
                     }
 
                     var methodReturn = gdscriptPresenter.Call(gdscriptMethodName,
-                        GDScriptPresenterAdapter.LocalizedLineToDict(localisedLine));
+                        LocalizedLineToDict(localisedLine));
                     if (methodReturn.Obj != null &&
                         methodReturn.As<GodotObject>().GetClass() == "GDScriptFunctionState")
                     {
@@ -944,7 +944,7 @@ public partial class DialogueRunner : Godot.Node
             const int noOptionSelected = -99;
             int selectedOption = noOptionSelected;
             var methodReturn = gdScriptPresenter.Call(gdscriptMethodName,
-                GDScriptPresenterAdapter.DialogueOptionsToDictArray(localisedOptions),
+                DialogueOptionsToDictArray(localisedOptions),
                 Callable.From((int gdScriptSetOption) => selectedOption = gdScriptSetOption));
 
 

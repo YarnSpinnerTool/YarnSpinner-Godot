@@ -20,29 +20,23 @@ func run_line_async(line: Dictionary) -> void:
 	# line is a Dictionary converted from the LocalizedLine C# Class
 	# converts to GDScript LocalizedLine
 	var localized_line : YarnSpinner.LocalizedLine = YarnSpinner.LocalizedLine.from_dictionary(line)
-	
-	var target_line: YarnSpinner.MarkupParseResult
-	if localized_line.character_name.is_empty():
-		character_name_label.visible = false
-		target_line = localized_line.text
-	else:
-		character_name_label.visible = true
-		character_name_label.text = localized_line.character_name
-		target_line = localized_line.text_without_character_name
-	
-	var output_line: String = target_line.text
-
-	var fx_attribute = target_line.try_get_attribute_with_name("fx")
-	if not fx_attribute.is_empty():
-		for property in fx_attribute["properties"]:
-			if property["type"] == "wave":
-				output_line = output_line.insert(fx_attribute["position"] + fx_attribute["length"], "[/wave]")
-				output_line = output_line.insert(fx_attribute["position"], "[wave]")
-
-	line_text_label.text = output_line
-
-	await continue_button.pressed
+	await _run_line_internal(localized_line)
 
 func dialogue_complete_async() -> void:
 	print("Dialogue complete ")
 	presenter_control.visible = false
+
+func _run_line_internal(localized_line: YarnSpinner.LocalizedLine) -> void:
+	character_name_label.visible = !localized_line.character_name.is_empty()
+	character_name_label.text = localized_line.character_name
+	
+	var output_line: String = localized_line.text_without_character_name.text
+
+	var fx_attribute = localized_line.text_without_character_name.try_get_attribute_with_name("fx")
+	if not fx_attribute.is_empty():
+		if fx_attribute["properties"]["type"] == "wave":
+			output_line = output_line.insert(fx_attribute["position"] + fx_attribute["length"], "[/wave]")
+			output_line = output_line.insert(fx_attribute["position"], "[wave]")
+
+	line_text_label.text = output_line
+	await continue_button.pressed
