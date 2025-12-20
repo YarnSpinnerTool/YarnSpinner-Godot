@@ -109,7 +109,7 @@ class MarkupParseResult:
 
 	## Deletes an attribute from this markup.
 	##
-	## This method deletes the range of text covered by attribute_to_delete, and updates the other attributes in this markup as follows:
+	## This method deletes the range of text covered by the name of attr_name_to_delete, and updates the other attributes in this markup as follows:
 	## - Attributes that start and end before the deleted attribute are unmodified.
 	## - Attributes that start before the deleted attribute and end inside it are truncated to remove the part overlapping the deleted attribute.
 	## - Attributes that have the same position and length as the deleted attribute are deleted, if they apply to any text.
@@ -118,15 +118,15 @@ class MarkupParseResult:
 	## - Attributes that start after the deleted attribute have their start point adjusted to account for the deleted text.
 	## - This method does not modify the current object. A new is returned.
 	##
-	## If attribute_to_delete is not an attribute of this, the behaviour is undefined.
-	func delete_range(attr_name: String) -> MarkupParseResult:
+	## If attr_name_to_delete is not an attribute of this, the behaviour is undefined.
+	func delete_range(attr_name_to_delete: String) -> MarkupParseResult:
 		if text.is_empty() or attributes.is_empty():
 			push_error("YarnSpinner GDScript: Markup parse result does not have any attributes")
 			return null
 
-		var attr_to_delete := try_get_attribute_with_name(attr_name)
+		var attr_to_delete := try_get_attribute_with_name(attr_name_to_delete)
 		if attr_to_delete.is_empty():
-			push_error("YarnSpinner GDScript: attribute with name %s does not exist" % attr_name)
+			push_error("YarnSpinner GDScript: attribute with name %s does not exist" % attr_name_to_delete)
 			return null
 
 		var new_result := MarkupParseResult.new()
@@ -200,7 +200,7 @@ class MarkupParseResult:
 		return {}
 
 
-## Converts a dictionary array to an array of DialogueOption's produced by DialogueRunner's run_options_async
+## Converts a dictionary array to an array of DialogueOptions produced by DialogueRunner's run_options_async
 static func dialogue_options_from_array(data: Array) -> Array[DialogueOption]:
 	if data.is_empty():
 		push_error("YarnSpinner GDScript: Can't create DialogueOption Array, empty array")
