@@ -16,8 +16,12 @@ namespace YarnSpinnerGodot;
 /// <seealso cref="LineProviderBehaviour"/>
 public abstract partial class ReplacementMarkupHandler : Node, IAttributeMarkerProcessor
 {
-    
+    /// <summary>
+    /// An empty collection of diagnostics.
+    /// </summary>
+    public static readonly List<LineParser.MarkupDiagnostic> NoDiagnostics = [];
+
     /// <inheritdoc/>
-    public abstract ReplacementMarkerResult ProcessReplacementMarker(MarkupAttribute marker,
+    public abstract List<LineParser.MarkupDiagnostic> ProcessReplacementMarker(MarkupAttribute marker,
         StringBuilder childBuilder, List<MarkupAttribute> childAttributes, string localeCode);
 }
