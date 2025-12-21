@@ -52,6 +52,7 @@ public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
 
         if (palette.PaletteForMarker(marker.Name, out var format))
         {
+            var childrenLength = childBuilder.Length;
             childBuilder.Insert(0, format.Start);
             childBuilder.Append(format.End);
 

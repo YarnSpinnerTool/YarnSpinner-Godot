@@ -15,5 +15,6 @@
     }
   },
   "baseLanguage": "en",
-  "compilerOptions": {}
+  "compilerOptions": {},
+  "definitionsFiles": []
 }

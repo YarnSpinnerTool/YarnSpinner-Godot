@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.3.11] 2025-xx-xx
+## [0.3.12] 2025-12-21
+
+* Provide typed GDScript classes for LocalizedLine and MarkupParseResult. Additional GDScript support for Presenters #111 and #113 by @KXI-System
+* Fix an issue where a CSV path would be applied to the wrong locale in the YarnProject inspector (#112)
+
+## [0.3.11] 2025-12-01
 
 * Port the solution to [this issue](https://github.com/YarnSpinnerTool/IssuesDiscussion/issues/32), making StartDialogue and Stop on the DialogueRunner async methods.
 * Add ChangeDialogue(string nodeName) method to the dialogue runner to allow stopping the dialogue, 

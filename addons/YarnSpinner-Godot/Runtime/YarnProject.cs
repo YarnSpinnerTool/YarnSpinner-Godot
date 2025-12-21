@@ -101,7 +101,7 @@ public partial class YarnProject : Resource
     /// <seealso cref="generateVariablesSourceFile"/>
     /// <seealso cref="variablesClassNamespace"/>
     /// <seealso cref="variablesClassParent"/>
-    [Export] public string variablesClassName = "YarnVariables";
+    [Export] public string variablesClassName;
 
     /// <summary>
     /// The namespace of the generated variables storage class.
@@ -109,7 +109,7 @@ public partial class YarnProject : Resource
     /// <seealso cref="generateVariablesSourceFile"/>
     /// <seealso cref="variablesClassName"/>
     /// <seealso cref="variablesClassParent"/>
-    [Export] public string variablesClassNamespace = null;
+    [Export] public string variablesClassNamespace;
 
     /// <summary>
     /// The parent class of the generated variables storage class.
@@ -117,7 +117,7 @@ public partial class YarnProject : Resource
     /// <seealso cref="generateVariablesSourceFile"/>
     /// <seealso cref="variablesClassName"/>
     /// <seealso cref="variablesClassNamespace"/>
-    [Export] public string variablesClassParent = typeof(InMemoryVariableStorage).FullName;
+    [Export] public string variablesClassParent;
 
 #if TOOLS
     public string DefaultJSONProjectPath => new Regex(@"\.tres$").Replace(ResourcePath, ".yarnproject");
