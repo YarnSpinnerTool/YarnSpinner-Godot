@@ -43,7 +43,7 @@ jobs:
       - uses: chickensoft-games/setup-godot@v1
         name: 🤖 Setup Godot
         with:
-          version: 4.4.0
+          version: 4.6.0
           # Use .NET-enabled version of Godot (the default is also true).
           use-dotnet: true
           include-templates: true
