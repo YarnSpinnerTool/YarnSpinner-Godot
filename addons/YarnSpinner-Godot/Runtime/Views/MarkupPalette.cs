@@ -19,9 +19,9 @@ public partial class MarkupPalette : Resource
     /// <summary>
     /// A list containing all the color markers defined in this palette.
     /// </summary>
-    [Export] public Array<BasicMarker> BasicMarkers = [];
+    [Export] public Array<BasicMarker> BasicMarkers;
 
-    [Export] public Array<CustomMarker> CustomMarkers = [];
+    [Export] public Array<CustomMarker> CustomMarkers;
 
     /// <summary>
     /// Determines the colour for a particular marker inside this palette.
@@ -57,40 +57,46 @@ public partial class MarkupPalette : Resource
             {
                 System.Text.StringBuilder front = new();
                 System.Text.StringBuilder back = new();
+                var closingTags = new Stack<string>();
 
                 // do we have a custom colour set?
                 if (item.CustomColor)
                 {
                     front.AppendFormat("[color=#{0}]", item.Color.ToHtml());
-                    back.Append("[/color]");
+                    closingTags.Push("[/color]");
                 }
 
                 // do we need to bold it?
                 if (item.Boldened)
                 {
                     front.Append("[b]");
-                    back.Append("[/b]");
+                    closingTags.Push("[/b]");
                 }
 
                 // do we need to italicise it?
                 if (item.Italicised)
                 {
                     front.Append("[i]");
-                    back.Append("[/i]");
+                    closingTags.Push("[/i]");
                 }
 
                 // do we need to underline it?
                 if (item.Underlined)
                 {
                     front.Append("[u]");
-                    back.Append("[/u]");
+                    closingTags.Push("[/u]");
                 }
 
                 // do we need to strikethrough it?
                 if (item.Strikedthrough)
                 {
                     front.Append("[s]");
-                    back.Append("[/s]");
+                    closingTags.Push("[/s]");
+                }
+
+                while (closingTags.Count > 0)
+                {
+                    back.Append(closingTags.Pop());
                 }
 
                 palette = new CustomMarker()

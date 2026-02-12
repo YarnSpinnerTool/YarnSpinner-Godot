@@ -93,9 +93,9 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
     public YarnTask OnDialogueCompleteAsync()
     {
         lastSeenLine = null;
-        if (IsInstanceValid(lastLineText))
+        if (IsInstanceValid(lastLineContainer))
         {
-            lastLineText!.Visible = false;
+            lastLineContainer.Visible = false;
         }
 
         if (IsInstanceValid(lastLineCharacterNameContainer))

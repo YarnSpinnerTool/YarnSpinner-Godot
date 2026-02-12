@@ -31,12 +31,6 @@ public partial class TextLineProvider : LineProviderBehaviour
         lineParser.DeregisterMarkerProcessor(attributeName);
     }
 
-    public override void _EnterTree()
-    {
-        lineParser.RegisterMarkerProcessor("select", builtInReplacer);
-        lineParser.RegisterMarkerProcessor("plural", builtInReplacer);
-        lineParser.RegisterMarkerProcessor("ordinal", builtInReplacer);
-    }
 
     public override void _Ready()
     {
@@ -46,7 +40,10 @@ public partial class TextLineProvider : LineProviderBehaviour
                 $"{nameof(YarnProject)} is not set on {nameof(TextLineProvider)}. You must set the yarn project for this " +
                 $"script to work properly. ");
         }
-
+        lineParser.RegisterMarkerProcessor("select", builtInReplacer);
+        lineParser.RegisterMarkerProcessor("plural", builtInReplacer);
+        lineParser.RegisterMarkerProcessor("ordinal", builtInReplacer);
+        
         if (string.IsNullOrWhiteSpace(LocaleCode))
         {
             LocaleCode = System.Globalization.CultureInfo.CurrentCulture.Name;

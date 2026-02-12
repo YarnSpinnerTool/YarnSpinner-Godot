@@ -22,7 +22,7 @@ public partial class OptionItem : Control
     {
         if (!IsInstanceValid(button))
         {
-            GD.PushError($"No {button} is set on this {nameof(OptionItem)}");
+            GD.PushError($"No {nameof(button)} is set on this {nameof(OptionItem)}");
             return;
         }
 
@@ -51,7 +51,10 @@ public partial class OptionItem : Control
             // When we're given an Option, use its text and update our
             // interactibility.
             text!.Text = value.Line.TextWithoutCharacterName.Text;
-            Visible = value.IsAvailable;
+            if (IsInstanceValid(button))
+            {
+                button.Disabled = !value.IsAvailable;
+            }
         }
     }
 
@@ -64,7 +67,7 @@ public partial class OptionItem : Control
 
         if (!IsInstanceValid(button))
         {
-            GD.PushError($"No {button} is set on this {nameof(OptionItem)}");
+            GD.PushError($"No {nameof(button)} is set on this {nameof(OptionItem)}");
         }
         else
         {
@@ -82,7 +85,7 @@ public partial class OptionItem : Control
         // We only want to invoke this once, because it's an error to
         // submit an option when the Dialogue Runner isn't expecting it. To
         // prevent this, we'll only invoke this if the flag hasn't been cleared already.
-        if (hasSubmittedOptionSelection == false && !completionToken.IsCancellationRequested)
+        if (!hasSubmittedOptionSelection && !completionToken.IsCancellationRequested)
         {
             hasSubmittedOptionSelection = true;
             OnOptionSelected?.TrySetResult(this.Option);

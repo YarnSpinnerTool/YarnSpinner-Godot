@@ -67,7 +67,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
-text = "0.3.5"
+text = "0.3.11"
 script = ExtResource("2_shsu2")
 
 [node name="Logo" type="TextureRect" parent="."]
@@ -153,15 +153,18 @@ theme = ExtResource("2")
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
-text = "Markup 
-Palette"
+text = "Markup "
 
 [node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer3"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
-text = "Use a Markup Palette to add color to dialogue"
+text = "* Action markup 
+* Replace-ment markup 
+* Color and style dialogue with a MarkupPalette
+
+"
 scroll_active = false
 
 [node name="VBoxContainer4" type="VBoxContainer" parent="HBoxContainer"]

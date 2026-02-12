@@ -72,7 +72,7 @@ public partial class Player : CharacterBody2D
                     {
                         var target = colliderNode.GetNode<DialogueTarget>(nameof(DialogueTarget));
                         _dialoguePlaying = true;
-                        DialogueRunner.StartDialogue(target.nodeName);
+                        DialogueRunner.StartDialogue(target.nodeName).Forget();
                         break;
                     }
                 }

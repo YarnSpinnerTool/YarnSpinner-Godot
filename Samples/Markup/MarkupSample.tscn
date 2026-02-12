@@ -1,0 +1,332 @@
+[gd_scene load_steps=13 format=3 uid="uid://uxc1jm6ayoar"]
+
+[ext_resource type="PackedScene" uid="uid://bv42g323prh5f" path="res://addons/YarnSpinner-Godot/Scenes/DefaultDialogueSystem.tscn" id="1_h3oqc"]
+[ext_resource type="Resource" uid="uid://rr8xlqj5fkjd" path="res://Samples/Markup/Markup.yarnproject" id="2_ximcx"]
+[ext_resource type="Script" uid="uid://c6ecl6k3dlc37" path="res://addons/YarnSpinner-Godot/Runtime/Async/PaletteMarkerProcessor.cs" id="3_1m3pj"]
+[ext_resource type="Resource" uid="uid://c631us202ijmk" path="res://Samples/Markup/example_markup_palette.tres" id="4_oshmd"]
+[ext_resource type="Script" uid="uid://cjg4pbfkkr03m" path="res://addons/YarnSpinner-Godot/Runtime/Async/LineAdvancer.cs" id="5_irekb"]
+[ext_resource type="Script" uid="uid://dmcdy8evncukk" path="res://Samples/ReturnOnComplete.cs" id="6_ghmc3"]
+[ext_resource type="Script" uid="uid://ckxp88w6vrkax" path="res://Samples/Markup/LaughActionMarkupProcessor.cs" id="7_1m3pj"]
+[ext_resource type="Script" uid="uid://bqfgm8vm3snym" path="res://Samples/Markup/ImageMarkupProcessor.cs" id="7_ximcx"]
+[ext_resource type="AudioStream" uid="uid://befj7r1owf3qx" path="res://Samples/Markup/sounds/laugh.wav" id="8_oshmd"]
+
+[sub_resource type="Animation" id="Animation_ghmc3"]
+resource_name = "RESET"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LaughTextParent:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.033333335),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("LaughTextParent/LaughText1:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LaughTextParent/LaughText2:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("LaughTextParent/LaughText3:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("LaughTextParent/LaughText4:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("LaughTextParent/LaughText5:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/6/type = "method"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("LaughAudio")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"stop"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_irekb"]
+resource_name = "laugh"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LaughTextParent:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.1),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("LaughTextParent/LaughText1:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.033333335, 0.46666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LaughTextParent/LaughText2:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.033333335, 0.76666665),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("LaughTextParent/LaughText3:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.03333334, 1.0333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("LaughTextParent/LaughText4:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.1, 1.2333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("LaughTextParent/LaughText5:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.06666667, 1.4666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/6/type = "method"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("LaughAudio")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.03333334),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [0.0],
+"method": &"play"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_k3o0c"]
+_data = {
+&"RESET": SubResource("Animation_ghmc3"),
+&"laugh": SubResource("Animation_irekb")
+}
+
+[node name="MarkupSample" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 0
+
+[node name="BackgroundColor" type="ColorRect" parent="CanvasLayer"]
+z_index = -7
+z_as_relative = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0509804, 0.0235294, 0.0509804, 1)
+
+[node name="Node2D" type="Node2D" parent="CanvasLayer"]
+
+[node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_h3oqc")]
+
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
+yarnProject = ExtResource("2_ximcx")
+autoStart = true
+startNode = "Start"
+
+[node name="LinePresenter" parent="YarnSpinnerCanvasLayer" index="2" node_paths=PackedStringArray("eventHandlers")]
+eventHandlers = [NodePath("LinePresenterButtonHandler"), NodePath("../LaughActionMarkupProcessor")]
+
+[node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
+YarnProject = ExtResource("2_ximcx")
+
+[node name="PaletteMarkerProcessor" type="Node2D" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("lineProvider")]
+script = ExtResource("3_1m3pj")
+palette = ExtResource("4_oshmd")
+lineProvider = NodePath("../TextLineProvider")
+
+[node name="ImageMarkupProcessor" type="Node2D" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("LineProvider")]
+script = ExtResource("7_ximcx")
+LineProvider = NodePath("../TextLineProvider")
+
+[node name="LineAdvancer" type="Node2D" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("runner")]
+script = ExtResource("5_irekb")
+runner = NodePath("../DialogueRunner")
+nextLineAction = ""
+
+[node name="LaughActionMarkupProcessor" type="Node2D" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("LaughAnimationPlayer")]
+script = ExtResource("7_1m3pj")
+LaughAnimationPlayer = NodePath("AnimationPlayer")
+
+[node name="LaughAudio" type="AudioStreamPlayer2D" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor"]
+stream = ExtResource("8_oshmd")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor"]
+libraries = {
+&"": SubResource("AnimationLibrary_k3o0c")
+}
+autoplay = "RESET"
+
+[node name="LaughTextParent" type="Control" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 201.0
+offset_top = -49.0
+offset_right = 241.0
+offset_bottom = -9.0
+
+[node name="LaughText1" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor/LaughTextParent"]
+visible = false
+clip_contents = false
+layout_mode = 0
+offset_left = 520.0
+offset_top = 681.0
+offset_right = 616.0
+offset_bottom = 757.0
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "[wave]Ha![/wave]"
+
+[node name="LaughText2" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor/LaughTextParent"]
+visible = false
+clip_contents = false
+layout_mode = 0
+offset_left = 657.0
+offset_top = 693.99994
+offset_right = 755.0
+offset_bottom = 769.99994
+rotation = 0.59233433
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "[wave]Ha![/wave]"
+
+[node name="LaughText3" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor/LaughTextParent"]
+visible = false
+clip_contents = false
+layout_mode = 0
+offset_left = 388.99997
+offset_top = 754.0
+offset_right = 486.99997
+offset_bottom = 830.0
+rotation = -0.6305285
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "[wave]Ha![/wave]"
+
+[node name="LaughText4" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor/LaughTextParent"]
+visible = false
+clip_contents = false
+layout_mode = 0
+offset_left = 484.99997
+offset_top = 778.00006
+offset_right = 583.0
+offset_bottom = 854.00006
+rotation = 0.09052086
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "[wave]Ha![/wave]"
+
+[node name="LaughText5" type="RichTextLabel" parent="YarnSpinnerCanvasLayer/LaughActionMarkupProcessor/LaughTextParent"]
+visible = false
+clip_contents = false
+layout_mode = 0
+offset_left = 577.0
+offset_top = 784.0
+offset_right = 675.0
+offset_bottom = 860.0
+rotation = -0.38039586
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "[wave]Ha![/wave]"
+
+[node name="ReturnOnComplete" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
+script = ExtResource("6_ghmc3")
+dialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
+
+[editable path="YarnSpinnerCanvasLayer"]

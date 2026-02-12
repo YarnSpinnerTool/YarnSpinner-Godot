@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="MarkupPalette" load_steps=10 format=3 uid="uid://c631us202ijmk"]
+
+[ext_resource type="Script" uid="uid://b3q2v7wyxccs0" path="res://addons/YarnSpinner-Godot/Runtime/BasicMarker.cs" id="1_n23v5"]
+[ext_resource type="Script" uid="uid://lvtve3yjd8v7" path="res://addons/YarnSpinner-Godot/Runtime/CustomMarker.cs" id="2_1n8i4"]
+[ext_resource type="Script" uid="uid://dn5hil73gapip" path="res://addons/YarnSpinner-Godot/Runtime/Views/MarkupPalette.cs" id="3_8w543"]
+
+[sub_resource type="Resource" id="Resource_8qmsx"]
+script = ExtResource("1_n23v5")
+Marker = "b"
+Color = Color(1, 1, 1, 1)
+Boldened = true
+metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
+
+[sub_resource type="Resource" id="Resource_jkr81"]
+script = ExtResource("1_n23v5")
+Marker = "u"
+Color = Color(1, 1, 1, 1)
+Underlined = true
+metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
+
+[sub_resource type="Resource" id="Resource_tv2va"]
+script = ExtResource("1_n23v5")
+Marker = "calm"
+CustomColor = true
+Color = Color(0.136169, 0.566038, 0.184834, 1)
+Italicised = true
+metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
+
+[sub_resource type="Resource" id="Resource_kbrmq"]
+script = ExtResource("1_n23v5")
+Marker = "hype"
+CustomColor = true
+Color = Color(0.754717, 0.162608, 0.0747597, 1)
+Boldened = true
+metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
+
+[sub_resource type="Resource" id="Resource_oxr51"]
+script = ExtResource("1_n23v5")
+Marker = "turbohype"
+CustomColor = true
+Color = Color(0.735849, 0.0173549, 0.722466, 1)
+Boldened = true
+Underlined = true
+metadata/_custom_type_script = "uid://b3q2v7wyxccs0"
+
+[sub_resource type="Resource" id="Resource_jh8x2"]
+script = ExtResource("2_1n8i4")
+Marker = "cool"
+Start = "[img=60]res://Samples/Markup/images/cool.png"
+End = "[/img]"
+metadata/_custom_type_script = "uid://lvtve3yjd8v7"
+
+[resource]
+script = ExtResource("3_8w543")
+BasicMarkers = Array[ExtResource("1_n23v5")]([SubResource("Resource_8qmsx"), SubResource("Resource_jkr81"), SubResource("Resource_tv2va"), SubResource("Resource_kbrmq"), SubResource("Resource_oxr51")])
+CustomMarkers = Array[ExtResource("2_1n8i4")]([SubResource("Resource_jh8x2")])

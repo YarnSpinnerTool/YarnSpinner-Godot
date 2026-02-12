@@ -72,69 +72,9 @@ public partial class GDScriptPresenterAdapter : Node, DialogueViewBase
         }
         else
         {
-            GDScriptView.Call(gdScriptName, LocalizedLineToDict(dialogueLine),
+            GDScriptView.Call(gdScriptName, DialogueRunner.LocalizedLineToDict(dialogueLine),
                 Callable.From(onDialogueLineFinished));
         }
-    }
-
-    /// <summary>
-    /// Convert a LocalizedLine to a Godot Dictionary that is more accessible from GDScript. 
-    /// 	# example: 
-    ///  {"metadata":["my_metadata"],
-    ///  "text":
-    ///      {
-    ///        "attributes":[
-    ///            { "length":8,"name":"fx","position":20,"properties":[{"type":"wave"}]},
-    ///         	{ "length":6,"name":"character","position":0,"properties":[{"name":"Gary"}]}
-    ///      ],
-    ///      "text":"Gary: So, can I use GDScript with YarnSpinner?",
-    ///      "text_without_character_name":"So, can I use GDScript with YarnSpinner?"
-    ///   }
-    ///  }
-    /// </summary>
-    /// <param name="dialogueLine"></param>
-    /// <returns></returns>
-    public static Godot.Collections.Dictionary LocalizedLineToDict(LocalizedLine dialogueLine)
-    {
-        var dialogueLineDict = new Godot.Collections.Dictionary();
-        var metadataArray = new Godot.Collections.Array();
-        metadataArray.AddRange(dialogueLine.Metadata ?? Array.Empty<string>());
-        dialogueLineDict["metadata"] = metadataArray;
-
-        var textDict = new Godot.Collections.Dictionary();
-        textDict["text"] = dialogueLine.Text.Text;
-        textDict["text_without_character_name"] = dialogueLine.TextWithoutCharacterName.Text;
-        var attributesList = new Godot.Collections.Array();
-        foreach (var attribute in dialogueLine.Text.Attributes)
-        {
-            var attributeDict = new Godot.Collections.Dictionary();
-            attributeDict["name"] = attribute.Name;
-            attributeDict["length"] = attribute.Length;
-            attributeDict["position"] = attribute.Position;
-            var propertiesList = new Godot.Collections.Array();
-            foreach (var property in attribute.Properties)
-            {
-                var propertyDict = new Godot.Collections.Dictionary();
-                var castValue = property.Value.Type switch
-                {
-                    MarkupValueType.Integer => Variant.From(property.Value.IntegerValue),
-                    MarkupValueType.Float => Variant.From(property.Value.FloatValue),
-                    MarkupValueType.String => Variant.From(property.Value.StringValue),
-                    MarkupValueType.Bool => Variant.From(property.Value.BoolValue),
-                    _ => new Variant(),
-                };
-
-                propertyDict[property.Key] = castValue;
-                propertiesList.Add(propertyDict);
-            }
-
-            attributeDict["properties"] = propertiesList;
-            attributesList.Add(attributeDict);
-        }
-
-        textDict["attributes"] = attributesList;
-        dialogueLineDict["text"] = textDict;
-        return dialogueLineDict;
     }
 
     /// <inheritdoc/>
@@ -154,7 +94,7 @@ public partial class GDScriptPresenterAdapter : Node, DialogueViewBase
         }
         else
         {
-            GDScriptView.Call(gdScriptName, LocalizedLineToDict(dialogueLine),
+            GDScriptView.Call(gdScriptName, DialogueRunner.LocalizedLineToDict(dialogueLine),
                 Callable.From(onDialogueLineFinished));
         }
     }
@@ -197,28 +137,8 @@ public partial class GDScriptPresenterAdapter : Node, DialogueViewBase
             return;
         }
 
-        var dialogueOptionsList = DialogueOptionsToDictArray(dialogueOptions);
+        var dialogueOptionsList = DialogueRunner.DialogueOptionsToDictArray(dialogueOptions);
         GDScriptView.Call(gdScriptName, dialogueOptionsList, Callable.From(onOptionSelected));
-    }
-
-    /// <summary>
-    /// Convert dialogue options to a Godot Array of Godot Dictionaries for compatibility with GDScript
-    /// </summary>
-    /// <param name="dialogueOptions">Array of DialogueOptions provided by the DialogueRunner</param>
-    public static Godot.Collections.Array DialogueOptionsToDictArray(DialogueOption[] dialogueOptions)
-    {
-        var dictOptions = new Godot.Collections.Array();
-        foreach (var option in dialogueOptions)
-        {
-            var optionDict = new Godot.Collections.Dictionary();
-            optionDict["dialogue_option_id"] = option.DialogueOptionID;
-            optionDict["text_id"] = option.TextID;
-            optionDict["line"] = LocalizedLineToDict(option.Line);
-            optionDict["is_available"] = option.IsAvailable;
-            dictOptions.Add(optionDict);
-        }
-
-        return dictOptions;
     }
 
     /// <inheritdoc/>

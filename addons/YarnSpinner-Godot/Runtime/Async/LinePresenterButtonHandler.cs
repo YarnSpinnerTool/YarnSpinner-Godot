@@ -35,6 +35,10 @@ public partial class LinePresenterButtonHandler : ActionMarkupHandler
 
         _displayComplete = false;
         continueButton.Disabled = true;
+        if (IsInstanceValid(continueButton))
+        {
+            continueButton.Pressed += OnClick;
+        }
     }
 
     public override void OnPrepareForLine(MarkupParseResult line, RichTextLabel text)
@@ -48,7 +52,6 @@ public partial class LinePresenterButtonHandler : ActionMarkupHandler
         // enable the button
         _displayComplete = false;
         continueButton.Disabled = false;
-        continueButton.Pressed += OnClick;
     }
 
     public void OnClick()
@@ -99,7 +102,14 @@ public partial class LinePresenterButtonHandler : ActionMarkupHandler
         }
 
         // disable interaction
-        continueButton.Pressed -= OnClick;
         continueButton.Disabled = true;
+    }
+
+    public override void _ExitTree()
+    {
+        if (IsInstanceValid(continueButton))
+        {
+            continueButton.Pressed -= OnClick;
+        }
     }
 }

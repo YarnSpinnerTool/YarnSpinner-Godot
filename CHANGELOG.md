@@ -4,6 +4,52 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.12] 2025-12-21
+
+* Provide typed GDScript classes for LocalizedLine and MarkupParseResult. Additional GDScript support for Presenters #111 and #113 by @KXI-System
+* Fix an issue where a CSV path would be applied to the wrong locale in the YarnProject inspector (#112)
+
+## [0.3.11] 2025-12-01
+
+* Port the solution to [this issue](https://github.com/YarnSpinnerTool/IssuesDiscussion/issues/32), making StartDialogue and Stop on the DialogueRunner async methods.
+* Add ChangeDialogue(string nodeName) method to the dialogue runner to allow stopping the dialogue, 
+* Since making StartDialogue, Stop, and ChangeDialogue async prevents those methods from being exposed to GDScript, add StartDialogueForget, StopForget, and ChangeDialogueForget to the DialogueRunner to allow these functions to still be used from GDScript
+* Remove default empty values from CustomMarkers and BasicMarkers on MarkupPalette to avoid a Godot bug where exported values are reset. 
+* Fix an issue in LinePresenterButtonHandler where the  continueButton's Pressed handler was repeatedly re-connected for each line of dialogue.
+* Complete tweens in Effects.cs when dialogue animations are skipped, by @fmoo 
+
+## [0.3.10] 2025-09-17
+
+* Improve DialogueRunner initialization by moving it back into _EnterTree, but prevent it from running multiple times.
+* Update sample project to Godot 4.5.
+* Fix an issue where BasicMarkers in a MarkupPalette did not render correctly if they produced more than one BBCode tag (e.g. color, underline, and bold all in one marker).
+
+## [0.3.9] 2025-09-13
+
+* Revert change to DialogueRunner initialization from 0.3.8.
+
+## [0.3.8] 2025-09-13
+
+* Add functionality to log any yarn project compilation errors at runtime, to make them more noticeable to users. sTo turn this off, uncheck Print Project Errors in your Dialogue Runner inspector.
+* Fix the behavior of OptionsPresenter.showUnavailableOptions. With this set to true, unavailable options will now appear and be disabled. 
+* Reorder some initialization logic in TextLineProvider and DialogueRunner
+* Clean up some unused code
+* Restore automatically setting VisibleCharactersBehavior to Characters After Shaping in LinePresenter for better typewriter effect integration.
+
+## [0.3.7] 2025-08-20
+
+* Remove unused field YarnProjectEditorUtility.searchAllAssembliesForActions
+* Update Space sample to have a "Return to Samples" button
+* Update Markup sample to demonstrate custom replacement markup and custom action markup (playing a sound and animation) as certain text in a line is revealed.
+
+## [0.3.6] 2025-08-02
+
+* Improve error messages when `button` is not assigned on OptionItem
+* Improve error message when the Godot node passed to a yarn command is not of the correct type
+* Update System.Text.Json to `8.0.6`
+* Update Google.Protobuf to `3.31.1`
+* Update CsvHelper to 12.3.2
+
 ## [0.3.5] 2025-07-12
 
 * Fix #100 - Enhance the display of story variables in the yarn project inspector with a tree view
