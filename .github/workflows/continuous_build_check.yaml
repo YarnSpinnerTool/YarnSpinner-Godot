@@ -56,6 +56,7 @@ jobs:
       - name: Build solution & Import
         id: buildSolution
         run: |
+          godot --import --headless
           godot --headless --path . --verbose -e --build-solutions --quit 
           godot --headless --path . --verbose -e --import --quit 
         timeout-minutes: 3
