@@ -43,7 +43,7 @@ jobs:
       - uses: chickensoft-games/setup-godot@v1
         name: 🤖 Setup Godot
         with:
-          version: 4.4.0
+          version: 4.6.0
           # Use .NET-enabled version of Godot (the default is also true).
           use-dotnet: true
           include-templates: true
@@ -56,6 +56,7 @@ jobs:
       - name: Build solution & Import
         id: buildSolution
         run: |
+          godot --import --headless
           godot --headless --path . --verbose -e --build-solutions --quit 
           godot --headless --path . --verbose -e --import --quit 
         timeout-minutes: 3
@@ -64,3 +65,4 @@ jobs:
         run: |
           mkdir export
           godot --headless --verbose ${{ matrix.configuration }}  ${{ matrix.platform.preset }}  ${{ matrix.platform.bin }}
+          
