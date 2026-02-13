@@ -15,6 +15,15 @@
 <!--    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
 
   </PropertyGroup>
+  <Choose>
+    <When Condition=" $(Configuration)=='ExportDebug' Or $(Configuration)=='ExportRelease'">
+      <!-- Exported game -->
+      <PropertyGroup>
+        <!-- To enable AOT compilation in exports -->
+        <PublishAot>true</PublishAot>
+      </PropertyGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <!-- Add some extra files for ease of developing samples -->
     <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
