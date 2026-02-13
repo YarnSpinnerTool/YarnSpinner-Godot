@@ -64,3 +64,8 @@ jobs:
         run: |
           mkdir export
           godot --headless --verbose ${{ matrix.configuration }}  ${{ matrix.platform.preset }}  ${{ matrix.platform.bin }}
+          
+      - name: Archive Failure Artifacts
+        if: ${{ failure() }}
+        run: |
+          ls -lart
