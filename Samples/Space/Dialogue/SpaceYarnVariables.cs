@@ -2,12 +2,6 @@ using YarnSpinnerGodot;
 
 [System.CodeDom.Compiler.GeneratedCode("YarnSpinner", "0.3.0")]
 public partial class SpaceYarnVariables : YarnSpinnerGodot.InMemoryVariableStorage, YarnSpinnerGodot.IGeneratedVariableStorage {
-    // Accessor for String $sampleName
-    public string SampleName {
-        get => this.GetValueOrDefault<string>("$sampleName");
-        set => this.SetValue<string>("$sampleName", value);
-    }
-
     // Accessor for Number $times_talked_sally_before_ship
     public float TimesTalkedSallyBeforeShip {
         get => this.GetValueOrDefault<float>("$times_talked_sally_before_ship");
@@ -41,6 +35,12 @@ public partial class SpaceYarnVariables : YarnSpinnerGodot.InMemoryVariableStora
     public bool SallyWarning {
         get => this.GetValueOrDefault<bool>("$sally_warning");
         set => this.SetValue<bool>("$sally_warning", value);
+    }
+
+    // Accessor for String $sampleName
+    public string SampleName {
+        get => this.GetValueOrDefault<string>("$sampleName");
+        set => this.SetValue<string>("$sampleName", value);
     }
 
 }
