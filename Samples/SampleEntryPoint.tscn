@@ -1,11 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://dnyy064638ly1"]
+[gd_scene format=3 uid="uid://dnyy064638ly1"]
 
 [ext_resource type="Script" uid="uid://0y1x11g66ue4" path="res://Samples/SampleEntryPoint.cs" id="1"]
 [ext_resource type="Theme" uid="uid://b2mp0b1wvnu8s" path="res://Samples/sample_default_theme.tres" id="2"]
 [ext_resource type="Script" uid="uid://c3xcfucrfxoia" path="res://Samples/SampleVersionNumberLabel.cs" id="2_shsu2"]
 [ext_resource type="Texture2D" uid="uid://pbrr5yyepbx8" path="res://addons/YarnSpinner-Godot/Editor/Icons/YarnSpinnerLogo.png" id="3_bcudv"]
 
-[node name="SampleEntryPoint" type="CanvasLayer" node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton", "_roundedViewsButton", "_sqliteButton", "_gdscriptButton")]
+[node name="SampleEntryPoint" type="CanvasLayer" unique_id=501891245 node_paths=PackedStringArray("_spaceButton", "_visualNovelButton", "_markupPaletteButton", "_pausingTypewriterButton", "_roundedViewsButton", "_sqliteButton", "_gdscriptButton")]
 script = ExtResource("1")
 _spaceButton = NodePath("HBoxContainer/VBoxContainer/Space")
 _visualNovelButton = NodePath("HBoxContainer/VBoxContainer2/Visual Novel")
@@ -15,13 +15,13 @@ _roundedViewsButton = NodePath("HBoxContainer/VBoxContainer5/RoundedUI")
 _sqliteButton = NodePath("HBoxContainer/VBoxContainer6/SQLite")
 _gdscriptButton = NodePath("HBoxContainer/VBoxContainer7/GDScriptIntegration")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1478326336]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.0431373, 0.0901961, 0.0470588, 1)
 
-[node name="Title" type="RichTextLabel" parent="."]
+[node name="Title" type="RichTextLabel" parent="." unique_id=193252348]
 clip_contents = false
 anchors_preset = 5
 anchor_left = 0.5
@@ -37,7 +37,7 @@ theme_override_font_sizes/normal_font_size = 48
 bbcode_enabled = true
 text = "[u]YarnSpinner Samples[/u]"
 
-[node name="PluginVersionLabel" type="RichTextLabel" parent="."]
+[node name="PluginVersionLabel" type="RichTextLabel" parent="." unique_id=2132340201]
 clip_contents = false
 anchors_preset = 5
 anchor_left = 0.5
@@ -53,7 +53,7 @@ theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Plugin Version"
 
-[node name="PluginVersionValue" type="RichTextLabel" parent="."]
+[node name="PluginVersionValue" type="RichTextLabel" parent="." unique_id=1112540167]
 clip_contents = false
 anchors_preset = 5
 anchor_left = 0.5
@@ -67,10 +67,10 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
-text = "0.3.11"
+text = "0.3.13"
 script = ExtResource("2_shsu2")
 
-[node name="Logo" type="TextureRect" parent="."]
+[node name="Logo" type="TextureRect" parent="." unique_id=1051631919]
 offset_left = 76.0
 offset_top = 55.0
 offset_right = 314.0
@@ -78,7 +78,7 @@ offset_bottom = 269.0
 texture = ExtResource("3_bcudv")
 expand_mode = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1279368332]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -93,11 +93,11 @@ grow_vertical = 2
 size_flags_vertical = 8
 alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=731109250]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Space" type="Button" parent="HBoxContainer/VBoxContainer"]
+[node name="Space" type="Button" parent="HBoxContainer/VBoxContainer" unique_id=888743355]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
@@ -106,7 +106,7 @@ theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
 text = "Space"
 
-[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer"]
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer" unique_id=1785441193]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
@@ -118,11 +118,11 @@ Node Groups
 Shadow lines"
 scroll_active = false
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer" unique_id=1923299801]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Visual Novel" type="Button" parent="HBoxContainer/VBoxContainer2"]
+[node name="Visual Novel" type="Button" parent="HBoxContainer/VBoxContainer2" unique_id=1218198861]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
@@ -132,7 +132,7 @@ theme_override_font_sizes/font_size = 27
 text = "Visual
  Novel"
 
-[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer2"]
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer2" unique_id=1497739487]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
@@ -142,11 +142,11 @@ Effect/ Animation Commands
 "
 scroll_active = false
 
-[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer" unique_id=1934888055]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarkupPalette" type="Button" parent="HBoxContainer/VBoxContainer3"]
+[node name="MarkupPalette" type="Button" parent="HBoxContainer/VBoxContainer3" unique_id=303366632]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
@@ -155,7 +155,7 @@ theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
 text = "Markup "
 
-[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer3"]
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer3" unique_id=1189343168]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
@@ -167,11 +167,11 @@ text = "* Action markup
 "
 scroll_active = false
 
-[node name="VBoxContainer4" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer4" type="VBoxContainer" parent="HBoxContainer" unique_id=1573324798]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PausingTypewriter" type="Button" parent="HBoxContainer/VBoxContainer4"]
+[node name="PausingTypewriter" type="Button" parent="HBoxContainer/VBoxContainer4" unique_id=445553658]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
@@ -181,7 +181,7 @@ theme_override_font_sizes/font_size = 27
 text = "Pausing
 Typewriter"
 
-[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer4"]
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer4" unique_id=1885744326]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
@@ -189,11 +189,11 @@ bbcode_enabled = true
 text = "Pausing at specific points while revealing your dialogue text"
 scroll_active = false
 
-[node name="VBoxContainer5" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer5" type="VBoxContainer" parent="HBoxContainer" unique_id=696498125]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RoundedUI" type="Button" parent="HBoxContainer/VBoxContainer5"]
+[node name="RoundedUI" type="Button" parent="HBoxContainer/VBoxContainer5" unique_id=2083224762]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
@@ -202,7 +202,7 @@ theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
 text = "Rounded UI"
 
-[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer5"]
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer5" unique_id=942446904]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
@@ -210,11 +210,11 @@ bbcode_enabled = true
 text = "Alternate dialogue UI style"
 scroll_active = false
 
-[node name="VBoxContainer6" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer6" type="VBoxContainer" parent="HBoxContainer" unique_id=829188392]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SQLite" type="Button" parent="HBoxContainer/VBoxContainer6"]
+[node name="SQLite" type="Button" parent="HBoxContainer/VBoxContainer6" unique_id=87729081]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
@@ -225,7 +225,7 @@ text = "SQLite
 Variable
 Storage"
 
-[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer6"]
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer6" unique_id=158977072]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
@@ -233,11 +233,11 @@ bbcode_enabled = true
 text = "Custom variable storage script storing variables in a SQLite database"
 scroll_active = false
 
-[node name="VBoxContainer7" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer7" type="VBoxContainer" parent="HBoxContainer" unique_id=324955247]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GDScriptIntegration" type="Button" parent="HBoxContainer/VBoxContainer7"]
+[node name="GDScriptIntegration" type="Button" parent="HBoxContainer/VBoxContainer7" unique_id=257084300]
 custom_minimum_size = Vector2(180, 100)
 layout_mode = 2
 theme = ExtResource("2")
@@ -246,7 +246,7 @@ theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 27
 text = "GDScript"
 
-[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer7"]
+[node name="features" type="RichTextLabel" parent="HBoxContainer/VBoxContainer7" unique_id=116614317]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
