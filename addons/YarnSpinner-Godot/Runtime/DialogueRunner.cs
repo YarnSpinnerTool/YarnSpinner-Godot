@@ -708,6 +708,11 @@ public partial class DialogueRunner : Godot.Node
             return;
         }
 
+        await YarnTask.NextFrame();
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
         Dialogue.Continue();
     }
 
