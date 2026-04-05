@@ -2,21 +2,19 @@
 Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
 */
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using System.Text;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Text;
 using YarnSpinnerGodot;
 using YarnAction = YarnSpinnerGodot.Action;
-using System.IO;
 
 #nullable enable
-
-
 
 [Generator]
 public class ActionRegistrationSourceGenerator : ISourceGenerator
@@ -27,7 +25,8 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 
     public static string? GetProjectRoot(GeneratorExecutionContext context)
     {
-        
+        // todo need to find alternate way to locate  project root if ... 
+
         // Try and find any additional files passed to the context
         if (!context.AdditionalFiles.Any())
         {
@@ -36,8 +35,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 
         // One of those files is (AssemblyName).[godot]AdditionalFile.txt, and it
         // contains the path to the project
-        var relevantFiles = context.AdditionalFiles.Where(
-            i => i.Path.EndsWith($".godot")
+        var relevantFiles = context.AdditionalFiles.Where(i => i.Path.EndsWith($".godot")
         );
 
         if (!relevantFiles.Any())
@@ -74,59 +72,17 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
         }
     }
 
-
     public void Execute(GeneratorExecutionContext context)
     {
         using var output = GetOutput(context);
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-
-        string? projectPath = null;
         output.WriteLine(DateTime.Now);
 
-        // Try to locate project.godot 
-        if (context.AdditionalFiles.Any())
-        {
-            var relevants = context.AdditionalFiles.Where(i => i.Path.Contains($"{context.Compilation.AssemblyName}.AdditionalFile.txt"));
-            if (relevants.Any())
-            {
-                var arsgacsaf = relevants.First();
-#pragma warning disable RS1035
-                if (File.Exists(arsgacsaf.Path))
+        // we don't have plugin settings right now to disable the source generation 
 
-                {
-                    try
-                    {
-                        projectPath = arsgacsaf.Path;
-                        var fullPath = Path.Combine(projectPath, "project.godot");
-                        output.WriteLine($"Attempting to read settings file at {fullPath}");
-                        var godotProjectText = File.ReadAllText(fullPath);
-                        if (godotProjectText.Contains("disableActionsCodeRegistration"))
-                        {
-                            output.WriteLine("Skipping codegen due to settings.");
-                            return;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        output.WriteLine($"Unable to determine Yarn settings, settings values will be ignored and codegen will occur: {e.Message}");
-                    }
-                }
-                else
-                {
-                    output.WriteLine($"The project settings path metadata file does not exist at: {arsgacsaf.Path}. Settings values will be ignored and codegen will occur");
-                }
-            }
-            else
-            {
-                output.WriteLine("Unable to determine Yarn settings path, no file containing the project path metadata was included. Settings values will be ignored and codegen will occur.");
-            }
-        }
-        else
-        {
-            output.WriteLine("Unable to determine Yarn settings path as no additional files were included. Settings values will be ignored and codegen will occur.");
-        }
 
+        bool hasCriticalActionErrors = false;
         try
         {
             output.WriteLine("Source code generation for assembly " + context.Compilation.AssemblyName);
@@ -154,7 +110,8 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
                 // This compilation doesn't reference YarnSpinner.Compiler. Any
                 // code that we generate that references symbols in that
                 // assembly won't work.
-                output.WriteLine($"Assembly {context.Compilation.AssemblyName} doesn't reference {YarnSpinnerCompilerAssemblyName}. Not generating any code for it.");
+                output.WriteLine(
+                    $"Assembly {context.Compilation.AssemblyName} doesn't reference {YarnSpinnerCompilerAssemblyName}. Not generating any code for it.");
                 return;
             }
 
@@ -163,14 +120,22 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             {
                 output.WriteLine("- " + symbol);
             }
-            
+
+
             // Don't generate source code for certain Yarn Spinner provided
             // assemblies - these always manually register any actions in them.
             var prefixesToIgnore = new List<string>()
             {
                 "YarnSpinnerGodot",
             };
-            
+            // note: godot - decrepit games : keeping this variable just for ease of comparison when porting
+            // no assemblies to exclude right now. 
+            // But DO generate source code for the Samples assembly and the Test assembly
+            var prefixesToKeep = new List<string>()
+            {
+
+            };
+
 
             if (context.Compilation.AssemblyName == null)
             {
@@ -178,11 +143,12 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
                 return;
             }
 
-            if (prefixesToIgnore.Any(prefix => context.Compilation.AssemblyName.StartsWith(prefix)))
+            if (prefixesToIgnore.Any(prefix => context.Compilation.AssemblyName.StartsWith(prefix)) &&
+                !prefixesToKeep.Any(prefix => context.Compilation.AssemblyName.StartsWith(prefix)))
             {
-                output.WriteLine($"Not generating registration code for {context.Compilation.AssemblyName}: we've been told to exclude it, because its name begins with one of these prefixes: {string.Join(", ", prefixesToIgnore)}");
+                output.WriteLine(
+                    $"Not generating registration code for {context.Compilation.AssemblyName}: we've been told to exclude it, because its name begins with one of these prefixes: {string.Join(", ", prefixesToIgnore)}");
                 return;
-
             }
 
             if (!(context.Compilation is CSharpCompilation compilation))
@@ -195,18 +161,16 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             var actions = new List<YarnAction>();
             foreach (var tree in compilation.SyntaxTrees)
             {
-                actions.AddRange(Analyser.GetActions(compilation, tree, output).Where(a => a.DeclarationType == DeclarationType.Attribute));
+                actions.AddRange(Analyser.GetActions(compilation, tree, output));
             }
 
-            if (actions.Any() == false)
+            if (actions.Count() == 0)
             {
-                output.WriteLine($"Didn't find any Yarn Actions in {context.Compilation.AssemblyName}. Not generating any source code for it.");
+                output.WriteLine(
+                    $"Didn't find any Yarn Actions in {context.Compilation.AssemblyName}. Not generating any source code for it.");
                 return;
             }
 
-
-
-            HashSet<string> removals = new HashSet<string>();
             // validating and logging all the actions
             foreach (var action in actions)
             {
@@ -216,27 +180,58 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
                     continue;
                 }
 
-                var diagnostics = action.Validate(compilation);
+                var diagnostics = action.Validate(compilation, output);
                 foreach (var diagnostic in diagnostics)
                 {
                     context.ReportDiagnostic(diagnostic);
-                    output.WriteLine($"Skipping '{action.Name}' ({action.MethodName}): {diagnostic}");
+                    if (diagnostic.Severity == DiagnosticSeverity.Warning ||
+                        diagnostic.Severity == DiagnosticSeverity.Error)
+                    {
+                        output.WriteLine($"Flagging '{action.Name}' ({action.MethodName}): {diagnostic}");
+                        action.ContainsErrors = true;
+
+                        if (diagnostic.Severity == DiagnosticSeverity.Error)
+                        {
+                            hasCriticalActionErrors = true;
+                        }
+                    }
                 }
 
-                if (diagnostics.Count > 0)
+                // Commands are parsed as whitespace, so spaces in the command name
+                // would render the command un-callable.
+                if (action.Name.Any(x => Char.IsWhiteSpace(x)))
                 {
+                    var descriptor = new DiagnosticDescriptor(
+                        "YS1002",
+                        $"Yarn {action.Type} methods must have a valid name",
+                        "YarnCommand and YarnFunction methods follow existing ID rules for Yarn. \"{0}\" is invalid.",
+                        "Yarn Spinner",
+                        DiagnosticSeverity.Warning,
+                        true,
+                        "[YarnCommand] and [YarnFunction] attributed methods must follow Yarn ID rules so that Yarn scripts can reference them.",
+                        "https://docs.yarnspinner.dev/using-yarnspinner-with-unity/creating-commands-functions");
+                    context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
+                        descriptor,
+                        action.Declaration?.GetLocation(),
+                        action.Name
+                    ));
+                    action.ContainsErrors = true;
+                    output.WriteLine(
+                        $"Action {action.MethodIdentifierName} will be flagged due to it's name {action.Name}");
                     continue;
                 }
 
-                // TODO: Allow async actions (i.e. action methods that return an
-                // awaitable type) once support for them is added to the actions
-                // system
-
-                output.WriteLine($"Action {action.Name}: {action.SourceFileName}:{action.Declaration?.GetLocation()?.GetLineSpan().StartLinePosition.Line} ({action.Type})");
+                output.WriteLine(
+                    $"Action {action.Name}: {action.SourceFileName}:{action.Declaration?.GetLocation()?.GetLineSpan().StartLinePosition.Line} ({action.Type})");
             }
 
-            // removing any actions that failed validation
-            actions = actions.Where(x => !removals.Contains(x.Name)).ToList();
+            if (hasCriticalActionErrors)
+            {
+                stopwatch.Stop();
+                output.WriteLine(
+                    $"Critical issues were encountered in the actions, aborting code generation, stopping analysis after {stopwatch.Elapsed.TotalMilliseconds}ms");
+                return;
+            }
 
             output.Write($"Generating source code...");
 
@@ -253,58 +248,52 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             output.WriteLine($"Done.");
 
             context.AddSource($"YarnActionRegistration-{compilation.AssemblyName}.Generated.cs", sourceText);
-            // todo plugin settings ? 
-            // if (settings != null)
-            // {
-            //     if (settings.generateYSLSFile)
-            //     {
-                    output.Write($"Generating ysls...");
-                    // generating the ysls
-                    YSLSGenerator generator = new YSLSGenerator(output);
 
-                    foreach (var action in actions)
-                    {
-                        generator.AddAction(action);
-                    }
-                    var ysls = generator.Serialise();
+            // no settings at the moment to disable ysls. Could use define symbol? 
+            output.Write($"Generating ysls...");
+            // generating the ysls
+
+            IEnumerable<string> commandJSON = actions.Where(a => a.Type == ActionType.Command).Select(a => a.ToJSON());
+            IEnumerable<string> functionJSON =
+                actions.Where(a => a.Type == ActionType.Function).Select(a => a.ToJSON());
+
+            var ysls = "{" +
+                       @"""version"":2," +
+                       $@"""commands"":[{string.Join(",", commandJSON)}]," +
+                       $@"""functions"":[{string.Join(",", functionJSON)}]" +
+                       "}";
+
+            output.WriteLine($"Done.");
+                // todo how to find projectpath
+            if (!string.IsNullOrEmpty("not empty todo"))
+            {
+                output.Write($"Writing generated ysls...");
+                var fullPath = Path.Combine("/Users/chris/",
+                    "todohowtolocate.ysls");
+                try
+                {
+                    System.IO.File.WriteAllText(fullPath, ysls);
                     output.WriteLine($"Done.");
+                }
+                catch (Exception e)
+                {
+                    output.WriteLine($"Unable to write ysls to disk: {e.Message}");
+                }
+            }
+            else
+            {
+                output.WriteLine("unable to identify project path, ysls will not be written to disk");
+            }
+        
 
-                    if (!string.IsNullOrEmpty(projectPath))
-                    {
-                        output.Write($"Writing generated ysls...");
 
-                        var fullPath = Path.Combine(projectPath, "ysls.json");
-                        try
-                        {
-                            System.IO.File.WriteAllText(fullPath, ysls);
-                            output.WriteLine($"Done.");
-                        }
-                        catch (Exception e)
-                        {
-                            output.WriteLine($"Unable to write ysls to disk: {e.Message}");
-                        }
-                    }
-                    else
-                    {
-                        output.WriteLine("unable to identify project path, ysls will not be written to disk");
-                    }
-                // }
-                // else
-                // {
-                //     output.WriteLine($"skipping ysls generation due to settings");
-                // }
-            // }
-            // else
-            // {
-            //     output.WriteLine($"skipping ysls generation due to settings not being found");
-            // }
+        stopwatch.Stop();
+        output.WriteLine($"Source code generation completed in {stopwatch.Elapsed.TotalMilliseconds}ms");
+        return;
 
-            stopwatch.Stop();
-            output.WriteLine($"Source code generation completed in {stopwatch.Elapsed.TotalMilliseconds}ms");
-            return;
+    }
 
-        }
-        catch (Exception e)
+catch (Exception e)
         {
             output.WriteLine($"{e}");
         }
@@ -316,12 +305,12 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
     SyntaxFactory.PredefinedType(
         SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
     SyntaxFactory.Identifier(methodName))
-.WithModifiers(
+    .WithModifiers(
     SyntaxFactory.TokenList(
         new[]{
             SyntaxFactory.Token(SyntaxKind.PublicKeyword),
             SyntaxFactory.Token(SyntaxKind.StaticKeyword)}))
-.WithBody(
+    .WithBody(
     SyntaxFactory.Block(
         SyntaxFactory.LocalDeclarationStatement(
             SyntaxFactory.VariableDeclaration(
@@ -426,8 +415,8 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             )
         )
     )
-)
-.NormalizeWhitespace();
+    )
+    .NormalizeWhitespace();
     }
 
     public static MethodDeclarationSyntax GenerateSingleLogMethod(string methodName, string text, string prefix)
@@ -514,7 +503,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
         var rootPath = GetProjectRoot(context);
         if (rootPath != null)
         {
-            tempPath = Path.Combine(rootPath, "Logs",  "yarn_spinner_godot");
+            tempPath = Path.Combine(rootPath, "Logs", "Packages", "dev.yarnspinner.unity");
         }
         else
         {
@@ -537,7 +526,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
         return tempPath;
     }
 
-    public YarnSpinnerGodot.ILogger GetOutput(GeneratorExecutionContext context)
+    public ILogger GetOutput(GeneratorExecutionContext context)
     {
         if (GetShouldLogToFile(context))
         {
@@ -546,11 +535,11 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             var path = System.IO.Path.Combine(tempPath, $"{nameof(ActionRegistrationSourceGenerator)}-{context.Compilation.AssemblyName}.txt");
             var outFile = System.IO.File.Open(path, System.IO.FileMode.Create);
 
-            return new YarnSpinnerGodot.FileLogger(new System.IO.StreamWriter(outFile));
+            return new FileLogger(new System.IO.StreamWriter(outFile));
         }
         else
         {
-            return new YarnSpinnerGodot.NullLogger();
+            return new NullLogger();
         }
     }
 
@@ -584,218 +573,3 @@ internal class ClassDeclarationSyntaxReceiver : ISyntaxReceiver
     }
 }
 
-internal class YSLSGenerator
-{
-    public YSLSGenerator(YarnSpinnerGodot.ILogger logger)
-    {
-        this.logger = logger;
-    }
-    struct YarnActionParameter
-    {
-        internal string Name;
-        internal string Type;
-        internal bool IsParamsArray;
-
-        internal Dictionary<string, object> ToDictionary()
-        {
-            var dict = new Dictionary<string, object>();
-            dict["Name"] = Name;
-            dict["Type"] = Type;
-            dict["IsParamsArray"] = IsParamsArray;
-            return dict;
-        }
-    }
-    struct YarnActionCommand
-    {
-        internal string YarnName;
-        internal string? DefinitionName;
-        internal string Signature;
-        internal string? FileName;
-        internal YarnActionParameter[] Parameters;
-
-        internal Dictionary<string, object> ToDictionary()
-        {
-            var dict = new Dictionary<string, object>();
-            dict["YarnName"] = YarnName;
-            if (!string.IsNullOrEmpty(DefinitionName))
-            {
-                dict["DefinitionName"] = DefinitionName!;
-            }
-            dict["Signature"] = Signature;
-            dict["Language"] = "csharp";
-
-            if (!string.IsNullOrEmpty(FileName))
-            {
-                dict["FileName"] = FileName!;
-            }
-
-            if (Parameters.Length > 0)
-            {
-                var pl = new List<Dictionary<string, object>>();
-                foreach (var p in Parameters)
-                {
-                    pl.Add(p.ToDictionary());
-                }
-                dict["Parameters"] = pl;
-            }
-            return dict;
-        }
-    }
-    struct YarnActionFunction
-    {
-        internal string YarnName;
-        internal string? DefinitionName;
-        internal string Signature;
-        internal YarnActionParameter[] Parameters;
-        internal string ReturnType;
-        internal string? FileName;
-
-        internal Dictionary<string, object> ToDictionary()
-        {
-            var dict = new Dictionary<string, object>();
-            dict["YarnName"] = YarnName;
-            if (!string.IsNullOrEmpty(DefinitionName))
-            {
-                dict["DefinitionName"] = DefinitionName!;
-            }
-            dict["Signature"] = Signature;
-            dict["ReturnType"] = ReturnType;
-            dict["Language"] = "csharp";
-
-            if (!string.IsNullOrEmpty(FileName))
-            {
-                dict["FileName"] = FileName!;
-            }
-
-            if (Parameters.Length > 0)
-            {
-                var pl = new List<Dictionary<string, object>>();
-                foreach (var p in Parameters)
-                {
-                    pl.Add(p.ToDictionary());
-                }
-                dict["Parameters"] = pl;
-            }
-            return dict;
-        }
-    }
-
-    internal YarnSpinnerGodot.ILogger logger;
-    List<YarnActionCommand> commands = new List<YarnActionCommand>();
-    List<YarnActionFunction> functions = new List<YarnActionFunction>();
-
-    internal string Serialise()
-    {
-        var commandLine = "\"Commands\":[]";
-        var functionLine = "\"Functions\":[]";
-        // do we have any commands?
-        if (commands.Count() > 0)
-        {
-            var result = string.Join(",", commands.Select(c => YarnSpinnerGodot.Json.Serialize(c.ToDictionary())));
-            commandLine = $"\"Commands\":[{result}]";
-        }
-        // do we have any functions?
-        if (functions.Count() > 0)
-        {
-            var result = string.Join(",", functions.Select(f => YarnSpinnerGodot.Json.Serialize(f.ToDictionary())));
-            functionLine = $"\"Functions\":[{result}]";
-        }
-        return $"{{{commandLine},{functionLine}}}";
-    }
-    internal void AddAction(YarnAction action)
-    {
-        switch (action.Type)
-        {
-            case ActionType.Command:
-                AddCommand(action);
-                break;
-            case ActionType.Function:
-                AddFunction(action);
-                break;
-            case ActionType.NotAnAction:
-                logger.WriteLine($"attempted to make a ysls string for {action.Name}, but it is not a command or function");
-                break;
-        }
-    }
-    private void AddFunction(YarnAction action)
-    {
-        var parameters = GenerateParams(action.Parameters);
-        var Signature = $"{action.Name}({string.Join(", ", parameters.Select(p => p.Name))})";
-        if (parameters.Length == 0)
-        {
-            Signature = $"{action.Name}()";
-        }
-        var function = new YarnActionFunction
-        {
-            YarnName = action.Name,
-            DefinitionName = action.MethodIdentifierName,
-            Signature = Signature,
-            Parameters = parameters,
-            ReturnType = InternalTypeToYarnType(action.MethodSymbol.ReturnType),
-            FileName = action.SourceFileName,
-        };
-        functions.Add(function);
-    }
-    private void AddCommand(YarnAction action)
-    {
-        var parameters = GenerateParams(action.Parameters);
-        var Signature = $"<<{action.Name} {string.Join(" ", parameters.Select(p => p.Name))}>>";
-        if (parameters.Length == 0)
-        {
-            Signature = $"<<{action.Name}>>";
-        }
-        var command = new YarnActionCommand
-        {
-            YarnName = action.Name,
-            DefinitionName = action.MethodIdentifierName,
-            Signature = Signature,
-            Parameters = parameters,
-            FileName = action.SourceFileName,
-        };
-        commands.Add(command);
-    }
-    private YarnActionParameter[] GenerateParams(List<Parameter> parameters)
-    {
-        List<YarnActionParameter> parameterList = new List<YarnActionParameter>();
-        foreach (var param in parameters)
-        {
-            var paramType = InternalTypeToYarnType(param.Type);
-
-            var parameter = new YarnActionParameter
-            {
-                Name = param.Name,
-                Type = paramType,
-                IsParamsArray = false,
-            };
-            parameterList.Add(parameter);
-        }
-        return parameterList.ToArray();
-    }
-    private string InternalTypeToYarnType(ITypeSymbol symbol)
-    {
-        var type = "any";
-        switch (symbol.SpecialType)
-        {
-            case SpecialType.System_Boolean:
-                type = "boolean";
-                break;
-            case SpecialType.System_SByte:
-            case SpecialType.System_Byte:
-            case SpecialType.System_Int16:
-            case SpecialType.System_UInt16:
-            case SpecialType.System_Int32:
-            case SpecialType.System_UInt32:
-            case SpecialType.System_Int64:
-            case SpecialType.System_UInt64:
-            case SpecialType.System_Decimal:
-            case SpecialType.System_Single:
-            case SpecialType.System_Double:
-                type = "number";
-                break;
-            case SpecialType.System_String:
-                type = "string";
-                break;
-        }
-        return type;
-    }
-}

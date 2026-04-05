@@ -13,13 +13,11 @@ using System.Linq;
 
 namespace YarnSpinnerGodot
 {
-
     public struct Position
     {
         public int Line;
         public int Column;
     }
-
 
     public struct Range
     {
@@ -33,20 +31,17 @@ namespace YarnSpinnerGodot
 
             return new Range
             {
-                Start =
-                {
-                    Line = start.Line + 1,
-                    Column = start.Character + 1,
-                },
-                End =
-                {
-                    Line = end.Line + 1,
-                    Column = end.Character + 1,
-                },
+                Start = {
+                Line = start.Line + 1,
+                Column = start.Character + 1,
+            },
+                End = {
+                Line = end.Line + 1,
+                Column = end.Character + 1,
+            },
             };
         }
     }
-
 
     public enum ActionType
     {
@@ -54,18 +49,15 @@ namespace YarnSpinnerGodot
         /// The method represents a command.
         /// </summary>
         Command,
-
         /// <summary>
         /// The method represents a function.
         /// </summary>
         Function,
-
         /// <summary>
         /// The method may have been intended to be an action, but its type
         /// cannot be determined.
         /// </summary>
         Invalid,
-
         /// <summary>
         /// The method is not a Yarn action.
         /// </summary>
@@ -79,7 +71,6 @@ namespace YarnSpinnerGodot
         /// The action is declared via a YarnCommand or YarnFunction attribute.
         /// </summary>
         Attribute,
-
         /// <summary>
         /// The action is declared by calling AddCommandHandler or AddFunction
         /// on a DialogueRunner.
@@ -93,7 +84,6 @@ namespace YarnSpinnerGodot
         /// The action operates synchronously.
         /// </summary>
         Sync,
-
         /// <summary>
         /// The action may operate asynchronously, and Dialogue Runners should
         /// check the return value of the action to determine whether to block
@@ -104,11 +94,39 @@ namespace YarnSpinnerGodot
         /// cref="Action.Type"/> is <see cref="ActionType.Command"/>.
         /// </remarks>
         MaybeAsyncCoroutine,
-
         /// <summary>
         /// The action operates asynchronously using a coroutine.
         /// </summary>
         AsyncCoroutine,
+
+        /// <summary>
+        /// The action operates asynchronously through c# async infrastructure
+        /// </summary>
+        AsyncTask,
+    }
+
+    static class ITypeSymbolExtension
+    {
+        public static string GetYarnTypeString(this ITypeSymbol typeSymbol)
+        {
+            return typeSymbol.SpecialType switch
+            {
+                SpecialType.System_Boolean => "bool",
+                SpecialType.System_SByte => "number",
+                SpecialType.System_Byte => "number",
+                SpecialType.System_Int16 => "number",
+                SpecialType.System_UInt16 => "number",
+                SpecialType.System_Int32 => "number",
+                SpecialType.System_UInt32 => "number",
+                SpecialType.System_Int64 => "number",
+                SpecialType.System_UInt64 => "number",
+                SpecialType.System_Decimal => "number",
+                SpecialType.System_Single => "number",
+                SpecialType.System_Double => "number",
+                SpecialType.System_String => "string",
+                _ => "any"
+            };
+        }
     }
 
     public struct Parameter
@@ -116,6 +134,13 @@ namespace YarnSpinnerGodot
         public bool IsOptional;
         public string Name;
         public ITypeSymbol Type;
+        public string? Description;
+        public string? DefaultValueString;
+        public bool IsParamsArray;
+
+        public AttributeData[]? Attributes;
+
+        public readonly string YarnTypeString => Type.GetYarnTypeString(); // this should change to support the subtypes through the same logic we use below, for now it's fine
     }
 
     public class Action
@@ -136,6 +161,8 @@ namespace YarnSpinnerGodot
         /// The method symbol for this action.
         /// </summary>
         public IMethodSymbol MethodSymbol { get; internal set; }
+
+        public string? Description { get; internal set; }
 
         /// <summary>
         /// The declaration of this action's method, if available.
@@ -199,9 +226,129 @@ namespace YarnSpinnerGodot
         /// </summary>
         public List<Parameter> Parameters = new List<Parameter>();
 
-        public List<Microsoft.CodeAnalysis.Diagnostic> Validate(Compilation compilation)
+        public string? ReturnDescription;
+        public string YarnReturnTypeString => this.MethodSymbol.ReturnType.GetYarnTypeString();
+
+        public bool ContainsErrors = false;
+
+        public string ToJSON()
         {
-            var methodDeclaration = Declaration as MethodDeclarationSyntax;
+            var result = new Dictionary<string, object?>();
+
+            result["yarnName"] = this.Name;
+            result["definitionName"] = this.MethodName;
+            result["fileName"] = this.SourceFileName;
+            if (!string.IsNullOrEmpty(this.Description))
+            {
+                result["documentation"] = this.Description;
+            }
+            result["language"] = "csharp";
+            result["async"] = this.AsyncType != AsyncType.Sync;
+
+            result["containsErrors"] = this.ContainsErrors;
+
+            if (this.Declaration != null)
+            {
+                var location = this.Declaration.GetLocation().GetLineSpan();
+
+                var startPosition = new Dictionary<string, int>()
+                {
+                    {"line", location.StartLinePosition.Line},
+                    {"character", location.StartLinePosition.Character},
+                };
+                var endPosition = new Dictionary<string, int>()
+                {
+                    {"line", location.EndLinePosition.Line},
+                    {"character", location.EndLinePosition.Character},
+                };
+                result["location"] = new Dictionary<string, Dictionary<string, int>>()
+                {
+                    {"start", startPosition},
+                    {"end", endPosition},
+                };
+            }
+
+            result["parameters"] = new List<Dictionary<string, object?>>(this.Parameters.Select(p =>
+            {
+                var paramObject = new Dictionary<string, object?>();
+
+                paramObject["name"] = p.Name;
+                if (!string.IsNullOrEmpty(p.Description))
+                {
+                    paramObject["documentation"] = p.Description;
+                }
+                if (!string.IsNullOrEmpty(p.DefaultValueString))
+                {
+                    paramObject["defaultValue"] = p.DefaultValueString;
+                }
+                paramObject["isParamsArray"] = p.IsParamsArray;
+
+                // there are two special cases for parameters
+                // if it is a subclass of UnityEngine.Component or MonoBehaviour we additionally add the subtype
+                // this is used by the editor later on to let the writer know WHERE the command will be going
+                // otherwise we just add the Yarn type of the parameter
+                if (p.Type.BaseType?.Name == "MonoBehaviour" || p.Type.BaseType?.Name == "Component")
+                {
+                    paramObject["type"] = "instance";
+                    paramObject["subtype"] = p.Type.Name;
+                }
+                else
+                {
+                    // there are two special case of the regular types:
+                    // if you are a string and attributed as a node parameter you get declared as being a node type
+                    // if you have an enum attribute it gets declared as an enum and it has the subtype as defined in the enum attribute
+
+                    var isANodeType = p.Attributes?.Count(a => a.AttributeClass?.Name == "YarnNodeParameterAttribute") > 0;
+                    var isAnEnum = p.Attributes?.Count(a => a.AttributeClass?.Name == "YarnEnumParameterAttribute") > 0;
+
+                    if (isANodeType && p.Type.SpecialType == SpecialType.System_String)
+                    {
+                        paramObject["type"] = "node";
+                    }
+                    else if (isAnEnum)
+                    {
+                        var subtype = "any";
+                        var attribute = p.Attributes?.Where(a => a.AttributeClass?.Name == "YarnEnumParameterAttribute").First();
+                        if (attribute != null && attribute.ConstructorArguments.Count() > 0)
+                        {
+                            var enumType = attribute.ConstructorArguments[0];
+                            if (enumType.Type?.SpecialType == SpecialType.System_String)
+                            {
+                                subtype = enumType.Value as string ?? p.YarnTypeString;
+                            }
+                        }
+
+                        paramObject["type"] = "enum";
+                        paramObject["subtype"] = subtype;
+
+                    }
+                    else
+                    {
+                        paramObject["type"] = p.YarnTypeString;
+                    }
+                }
+
+                return paramObject;
+            }).ToArray());
+
+            if (this.Type == ActionType.Function)
+            {
+                var retvrn = new Dictionary<string, string>();
+                retvrn["type"] = this.YarnReturnTypeString;
+
+                if (!string.IsNullOrWhiteSpace(this.ReturnDescription))
+                {
+                    retvrn["description"] = this.ReturnDescription!;
+                }
+                result["return"] = retvrn;
+            }
+
+            return YarnSpinnerGodot.Json.Serialize(result);
+        }
+
+        public List<Microsoft.CodeAnalysis.Diagnostic> Validate(Compilation compilation, ILogger? logger)
+        {
+            logger?.WriteLine($"Beginning validation");
             var diagnostics = new List<Microsoft.CodeAnalysis.Diagnostic>();
             if (this.MethodDeclarationSyntax == null)
             {
@@ -229,6 +376,17 @@ namespace YarnSpinnerGodot
             {
                 diagnostics.Add(Diagnostic.Create(Diagnostics.YS1002ActionMethodsMustHaveAValidName, this.MethodDeclarationSyntax.GetLocation(), this.Name));
             }
+
+            if (this.Name == null)
+            {
+                throw new NullReferenceException("Action name is null");
+            }
+
+            if (this.MethodSymbol == null)
+            {
+                throw new NullReferenceException($"Method symbol for {Name} is null");
+            }
+
             // Actions that are registered via an attribute must be publicly
             // accessible
             if (this.DeclarationType == DeclarationType.Attribute)
@@ -252,7 +410,7 @@ namespace YarnSpinnerGodot
                             // is not
                             var typeName = containingType.Name ?? "(anonymous)";
                             diagnostics.Add(Diagnostic.Create(
-                                Diagnostics.YS1007ActionsMustBeInPublicTypes,
+                                Diagnostics.YS1001ActionMethodsMustBePublic,
                                 diagnosticLocation, identifier, typeName, containingType.DeclaredAccessibility));
                             break;
                         }
@@ -261,6 +419,7 @@ namespace YarnSpinnerGodot
 
                 }
             }
+
             switch (Type)
             {
                 case ActionType.Invalid:
@@ -268,6 +427,7 @@ namespace YarnSpinnerGodot
                         var actionAttributes = MethodSymbol.GetAttributes().Where(attr => Analyser.IsAttributeYarnCommand(attr));
 
                         var count = actionAttributes.Count();
+
                         if (count != 1)
                         {
                             diagnostics.Add(Diagnostic.Create(Diagnostics.YS1005ActionMethodsMustHaveOneActionAttribute, diagnosticLocation, 0));
@@ -280,11 +440,11 @@ namespace YarnSpinnerGodot
                     break;
 
                 case ActionType.Command:
-                    diagnostics.AddRange(ValidateCommand(compilation));
+                    diagnostics.AddRange(ValidateCommand(compilation, logger));
                     break;
 
                 case ActionType.Function:
-                    diagnostics.AddRange(ValidateFunction(compilation));
+                    diagnostics.AddRange(ValidateFunction(compilation, logger));
                     break;
 
                 default:
@@ -295,9 +455,8 @@ namespace YarnSpinnerGodot
             return diagnostics;
         }
 
-        private IEnumerable<Diagnostic> ValidateFunction(Compilation compilation)
+        private IEnumerable<Diagnostic> ValidateFunction(Compilation compilation, ILogger? logger)
         {
-
             string identifier;
             Location returnTypeLocation;
             Location identifierLocation;
@@ -326,15 +485,26 @@ namespace YarnSpinnerGodot
                 throw new NotImplementedException("Todo: handle case where action's method is not a IMethodSymbol");
             }
 
-            // Functions must be static
-            if (this.MethodSymbol.MethodKind == MethodKind.Ordinary && this.MethodSymbol.IsStatic == false)
+            // Functions must be static if they're declared via attributes
+            if (this.DeclarationType == DeclarationType.Attribute
+                && this.MethodSymbol.MethodKind == MethodKind.Ordinary
+                && this.MethodSymbol.IsStatic == false)
             {
                 yield return Diagnostic.Create(Diagnostics.YS1006YarnFunctionsMustBeStatic, identifierLocation);
+            }
+
+            logger?.Inc();
+            logger?.WriteLine($"Validating {identifier} as a function");
+            var paramDiags = ValidateParameters(compilation, logger);
+            foreach (var p in paramDiags)
+            {
+                yield return p;
             }
 
             // Functions must return a number, string, or bool
             var returnTypeSymbol = this.MethodSymbol.ReturnType;
 
+            logger?.Dec();
             switch (returnTypeSymbol.SpecialType)
             {
                 case SpecialType.System_Boolean:
@@ -358,64 +528,241 @@ namespace YarnSpinnerGodot
             }
         }
 
-        private IEnumerable<Diagnostic> ValidateCommand(Compilation compilation)
+        // validates the parameters are correct
+        private List<Diagnostic> ValidateParameters(Compilation compilation, ILogger? logger)
         {
+            logger?.Inc();
+            List<Diagnostic> diagnostics = new List<Diagnostic>();
+            ParameterListSyntax? parameterList = null;
+            string? identifier = null;
+
+            if (this.MethodDeclarationSyntax is MethodDeclarationSyntax methodDeclaration)
+            {
+                identifier = methodDeclaration.Identifier.ToString();
+                logger?.WriteLine($"identified {identifier} as a method");
+                parameterList = methodDeclaration.ParameterList;
+            }
+            else if (this.MethodDeclarationSyntax is LocalFunctionStatementSyntax localFunctionStatement)
+            {
+                identifier = localFunctionStatement.Identifier.ToString();
+                logger?.WriteLine($"identified {identifier} as a local function");
+                parameterList = localFunctionStatement.ParameterList;
+            }
+            else if (this.MethodDeclarationSyntax is LambdaExpressionSyntax lambdaExpression)
+            {
+                logger?.WriteLine("identifed the action as a lambda.");
+                var actionLocation = lambdaExpression.GetLocation();
+
+                if (lambdaExpression is SimpleLambdaExpressionSyntax)
+                {
+                    logger?.WriteLine("The action is a simple lambda, validations do not apply here, skipping this action.");
+                    logger?.Dec();
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.YS1012ActionIsALambda, actionLocation));
+                    return diagnostics;
+                }
+
+                if (lambdaExpression is ParenthesizedLambdaExpressionSyntax pls)
+                {
+                    logger?.WriteLine("The action is a parenthesized lambda, can perform some validation.");
+
+                    identifier = "(lambda expression)";
+                    parameterList = pls.ParameterList;
+
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.YS1012ActionIsALambda, actionLocation));
+                }
+            }
+
+            if (parameterList == null || parameterList.Parameters.Count() == 0)
+            {
+                logger?.WriteLine($"{identifier} has no parameters, ignoring");
+                logger?.Dec();
+                return diagnostics;
+            }
+
+            logger?.WriteLine($"Will be checking {parameterList.Parameters.Count()} parameters");
+
+            int parameterIndex = 0;
+            int parameterCount = parameterList.Parameters.Count;
+            foreach (var parameter in parameterList.Parameters)
+            {
+                parameterIndex += 1;
+                logger?.Inc();
+                if (parameter.Type == null)
+                {
+                    logger?.WriteLine($"{parameter.ToFullString()} has no type, ignoring validation?");
+                    logger?.Dec();
+                    continue;
+                }
+
+                var model = compilation.GetSemanticModel(parameter.SyntaxTree);
+                var typeInfo = model.GetTypeInfo(parameter.Type).Type;
+
+                var parameterName = model.GetDeclaredSymbol(parameter)?.Name ?? "(UNKNOWN)";
+                logger?.WriteLine($"Validating {parameterName}");
+
+                if (typeInfo == null)
+                {
+                    logger?.WriteLine($"Unable to determine typeinfo of {parameterName} ignoring validation?");
+                    logger?.Dec();
+                    continue;
+                }
+
+                var symbol = model.GetDeclaredSymbol(parameter);
+                if (symbol == null)
+                {
+                    logger?.WriteLine($"Unable to determine the declared symbol for {parameterName}, skipping validation");
+                    logger?.Dec();
+                    continue;
+                }
+
+                // Params arrays or arrays that are the final parameter make
+                // that parameter variadic in Yarn Spinner. Check that the
+                // element type of that array is of the right type.
+                if (symbol.Type is IArrayTypeSymbol arrayTypeSymbol
+                    && (symbol.IsParams || parameterIndex == parameterCount))
+                {
+                    var subtype = arrayTypeSymbol.ElementType;
+                    if (subtype.GetYarnTypeString() == "any")
+                    {
+                        logger?.WriteLine($"{parameterName} is a parameter array of non Yarn compatible types!");
+                        diagnostics.Add(Diagnostic.Create(Diagnostics.YS1008ActionsParamsArraysMustBeOfYarnTypes, parameter.GetLocation(), parameterName, subtype.Name));
+                    }
+                }
+                else
+                {
+                    if (typeInfo.GetYarnTypeString() == "any" && typeInfo.BaseType?.Name != "Component")
+                    {
+                        // we have an invalid type
+                        logger?.WriteLine($"{parameterName} is an invalid type for use in a Yarn action");
+                        diagnostics.Add(Diagnostic.Create(Diagnostics.YS1011ActionsParameterIsAnIncompatibleType, parameter.GetLocation(), parameterName, typeInfo.Name));
+                    }
+                }
+
+                foreach (var attribute in symbol.GetAttributes())
+                {
+                    // this attribute is an enum parameter
+                    if (attribute.AttributeClass?.Name == "YarnEnumParameterAttribute")
+                    {
+                        if (typeInfo.GetYarnTypeString() == "any")
+                        {
+                            logger?.WriteLine($"{parameterName} is attributed as an enum but isn't a Yarn compatible type!");
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.YS1009ActionsEnumAttributedParameterIsOfIncompatibleType, parameter.GetLocation(), parameterName, typeInfo.Name));
+                        }
+                    }
+                    if (attribute.AttributeClass?.Name == "YarnNodeParameterAttribute")
+                    {
+                        if (typeInfo.GetYarnTypeString() != "string")
+                        {
+                            logger?.WriteLine($"{parameterName} is attributed as a node but isn't a string!");
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.YS1010ActionsNodeAttributedParameterIsOfIncompatibleType, parameter.GetLocation(), parameterName, typeInfo.Name));
+                        }
+                    }
+                }
+                logger?.Dec();
+            }
+
+            logger?.Dec();
+            return diagnostics;
+        }
+
+        private IEnumerable<Diagnostic> ValidateCommand(Compilation compilation, ILogger? logger)
+        {
+            logger?.Inc();
             if (MethodSymbol == null)
             {
+                logger?.Dec();
                 throw new NullReferenceException("Method symbol is null");
             }
 
-            List<ITypeSymbol> validCommandReturnTypes = new List<ITypeSymbol?>
-                {
+            List<ITypeSymbol> validCommandReturnTypes = new List<ITypeSymbol?> {
+                    compilation.GetTypeByMetadataName("UnityEngine.Coroutine"),
+                    compilation.GetTypeByMetadataName("System.Collections.IEnumerator"),
                     compilation.GetSpecialType(SpecialType.System_Void),
                 }
                 .NonNull(throwIfAnyNull: true)
                 .ToList();
 
-            List<ITypeSymbol> validTaskTypes = new List<ITypeSymbol?>
-                {
+            List<ITypeSymbol> validTaskTypes = new List<ITypeSymbol?> {
                     compilation.GetTypeByMetadataName("System.Threading.Tasks.Task"),
-                    compilation.GetTypeByMetadataName("YarnSpinnerGodot.YarnTask"),
-                }.NonNull(throwIfAnyNull: false)
+                    compilation.GetTypeByMetadataName("Cysharp.Threading.Tasks.UniTask"),
+                    compilation.GetTypeByMetadataName("UnityEngine.Awaitable"),
+                    compilation.GetTypeByMetadataName("Yarn.Unity.YarnTask"),
+            }.NonNull(throwIfAnyNull: false)
+            .ToList();
+
+            // Explicitly ban 'string' as a return type - strings implement
+            // IEnumerator, but they're not coroutines. We'll need to manually
+            // exclude this.
+            List<ITypeSymbol> knownInvalidCommandReturnTypes = new List<ITypeSymbol?> {
+                    compilation.GetSpecialType(SpecialType.System_String),
+                }
+                .NonNull(throwIfAnyNull: true)
                 .ToList();
-
-            // Note: In Godot we don't support IEnumerator coroutines from Unity 
-            // which this list was intended to help support. Keep the list defined to make it easier
-            // to port updates from Unity if needed.
-            List<ITypeSymbol> knownInvalidCommandReturnTypes = new List<ITypeSymbol>();
-
-            var methodDeclaration = (MethodDeclarationSyntax)this.MethodDeclarationSyntax!;
 
             // Functions must return void, IEnumerator, Coroutine, or an awaitable type
             var returnTypeSymbol = MethodSymbol.ReturnType;
 
+            Location returnTypeLocation;
+            string identifier;
+            string returnTypeName;
+            if (this.MethodDeclarationSyntax is MethodDeclarationSyntax methodDeclaration)
+            {
+                returnTypeLocation = methodDeclaration.ReturnType.GetLocation();
+                identifier = methodDeclaration.Identifier.ToString();
+                returnTypeName = methodDeclaration.ReturnType.ToString();
+            }
+            else if (this.MethodDeclarationSyntax is LocalFunctionStatementSyntax localFunctionStatement)
+            {
+                returnTypeLocation = localFunctionStatement.ReturnType.GetLocation();
+                identifier = localFunctionStatement.Identifier.ToString();
+                returnTypeName = localFunctionStatement.ReturnType.ToString();
+            }
+            else if (this.MethodDeclarationSyntax is LambdaExpressionSyntax lambdaExpression)
+            {
+                returnTypeLocation = lambdaExpression.GetLocation();
+                identifier = "(lambda expression)";
+                returnTypeName = returnTypeSymbol.Name;
+            }
+            else
+            {
+                logger?.Dec();
+                throw new InvalidOperationException($"Expected decl for {this.Name} ({this.SourceFileName}) was of unexpected type {this.MethodDeclarationSyntax?.GetType().Name ?? "null"}");
+            }
+
+            logger?.WriteLine($"Validating {identifier} as a command");
+
+            var paramDiags = ValidateParameters(compilation, logger);
+            foreach (var p in paramDiags)
+            {
+                yield return p;
+            }
+
             var typeIsKnownValid = validCommandReturnTypes.Contains(returnTypeSymbol)
-                                   || validTaskTypes.Contains(returnTypeSymbol);
+                || validTaskTypes.Contains(returnTypeSymbol);
             var typeIsKnownInvalid = knownInvalidCommandReturnTypes.Contains(returnTypeSymbol);
 
             var returnTypeIsValid = typeIsKnownValid && !typeIsKnownInvalid;
+            logger?.Dec();
 
             if (returnTypeIsValid == false)
             {
                 yield return Diagnostic.Create(Diagnostics.YS1003CommandMethodsMustHaveAValidReturnType,
-                    methodDeclaration.ReturnType.GetLocation(),
-                    methodDeclaration.Identifier.ToString(),
-                    methodDeclaration.ReturnType.ToString());
+                                               returnTypeLocation,
+                                               identifier,
+                                               returnTypeName);
             }
         }
 
-        public SyntaxNode GetRegistrationSyntax(string dialogueRunnerVariableName = "dialogueRunner")
+        public StatementSyntax GetRegistrationSyntax(string dialogueRunnerVariableName = "dialogueRunner")
         {
             if (MethodSymbol == null)
             {
                 throw new NullReferenceException("Method symbol is null");
             }
-
             if (Name == null)
             {
                 throw new NullReferenceException("Action name is null");
             }
-
             string registrationMethodName;
             switch (Type)
             {
@@ -434,8 +781,7 @@ namespace YarnSpinnerGodot
             // Get any parameters we have for this method as a sequence of type
             // symbols. We'll use that when building the call to
             // AddCommandHandler/Function.
-            var parameterTypes = (MethodSymbol as IMethodSymbol)?.Parameters.Select(p => p.Type) ??
-                                 Enumerable.Empty<ITypeSymbol>();
+            var parameterTypes = (MethodSymbol as IMethodSymbol)?.Parameters.Select(p => p.Type) ?? Enumerable.Empty<ITypeSymbol>();
 
             var typeArguments = parameterTypes.Select(t =>
             {
@@ -446,17 +792,11 @@ namespace YarnSpinnerGodot
             // this list.
             if (Type == ActionType.Function)
             {
-                var returnType = (MethodSymbol as IMethodSymbol)?.ReturnType ??
-                                 throw new InvalidOperationException(
-                                     $"Action {Name} has type {ActionType.Function}, but its return type is null.");
+                var returnType = (MethodSymbol as IMethodSymbol)?.ReturnType ?? throw new InvalidOperationException($"Action {Name} has type {ActionType.Function}, but its return type is null.");
 
-                typeArguments =
-                    typeArguments.Append(
-                        SyntaxFactory.ParseTypeName(
-                            returnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
+                typeArguments = typeArguments.Append(SyntaxFactory.ParseTypeName(returnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
             }
 
-            // TODO:  generic AddCommandHandler<T1, T2> not working in Godot.
             if (typeArguments.Any() && MethodSymbol?.IsStatic == true)
             {
                 // This method needs to be specified with type arguments, so
@@ -485,12 +825,11 @@ namespace YarnSpinnerGodot
                 SyntaxFactory.IdentifierName(dialogueRunnerVariableName),
                 SyntaxFactory.Token(SyntaxKind.DotToken),
                 nameSyntax
-            );
+                );
 
             ExpressionSyntax methodReferenceExpression = GetReferenceSyntaxForRegistration();
 
-            var arguments = SyntaxFactory.ArgumentList().AddArguments(new[]
-            {
+            var arguments = SyntaxFactory.ArgumentList().AddArguments(new[]{
                 SyntaxFactory.Argument(
                     SyntaxFactory.LiteralExpression(
                         SyntaxKind.StringLiteralExpression,
@@ -512,9 +851,7 @@ namespace YarnSpinnerGodot
         {
             // Create an expression that refers to the type that contains the
             // method we're registering.
-            var containingTypeExpression =
-                SyntaxFactory.ParseName(
-                    MethodSymbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+            var containingTypeExpression = SyntaxFactory.ParseName(MethodSymbol.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
 
             // Now use that to create an expression that refers to _this method group_
             // on _that type_.
@@ -573,8 +910,7 @@ namespace YarnSpinnerGodot
                         SyntaxFactory.ParseName(nameOfIdentifier),
                         SyntaxFactory.ArgumentList(
                             SyntaxFactory.SeparatedList(
-                                new[]
-                                {
+                                new[] {
                                     SyntaxFactory.Argument(methodReference)
                                 }
                             )
@@ -587,8 +923,7 @@ namespace YarnSpinnerGodot
                     SyntaxFactory.ArrayType(
                         SyntaxFactory.ParseTypeName("System.Type"),
                         SyntaxFactory.List(
-                            new[]
-                            {
+                            new[] {
                                 SyntaxFactory.ArrayRankSpecifier(
                                     SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
                                         SyntaxFactory.OmittedArraySizeExpression()
@@ -614,8 +949,7 @@ namespace YarnSpinnerGodot
 
                 var getMethodArguments = SyntaxFactory.ArgumentList(
                     SyntaxFactory.SeparatedList(
-                        new[]
-                        {
+                        new[] {
                             SyntaxFactory.Argument(nameOfMethod),
                             SyntaxFactory.Argument(arrayOfTypeParameters)
                         }
@@ -628,7 +962,7 @@ namespace YarnSpinnerGodot
             }
         }
 
-        public SyntaxNode GetFunctionDeclarationSyntax(string dialogueRunnerVariableName = "dialogueRunner")
+        public StatementSyntax GetFunctionDeclarationSyntax(string dialogueRunnerVariableName = "dialogueRunner")
         {
             var typeOfMethodReturn = SyntaxFactory.TypeOfExpression(SyntaxFactory.ParseTypeName(MethodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
             var typeOfMethodParameters = MethodSymbol.Parameters.Select(p =>
