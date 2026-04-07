@@ -187,11 +187,7 @@ public class YarnSpinnerProjectSettings
         var logger = iLogger;
         if (logger == null)
         {
-#if UNITY_EDITOR
-                logger = new UnityLogger();
-#else
             logger = new NullLogger();
-#endif
         }
         return logger;
     }

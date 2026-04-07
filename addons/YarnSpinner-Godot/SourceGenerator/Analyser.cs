@@ -181,7 +181,7 @@ namespace YarnSpinnerGodot
                                 SyntaxFactory.TriviaList(
                                     SyntaxFactory.Trivia(
                                         SyntaxFactory.IfDirectiveTrivia(
-                                            SyntaxFactory.IdentifierName("UNITY_EDITOR"),
+                                            SyntaxFactory.IdentifierName("TOOLS"),
                                             true,
                                             true,
                                             true
