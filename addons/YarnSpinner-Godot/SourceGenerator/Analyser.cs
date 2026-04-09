@@ -89,7 +89,7 @@ namespace YarnSpinnerGodot
                 MetadataReference.CreateFromFile(
                     GetLocationOfAssemblyWithType("YarnSpinnerGodot.YarnCommandAttribute")),
                 MetadataReference.CreateFromFile(
-                    GetLocationOfAssemblyWithType("UnityEngine.MonoBehaviour")),
+                    GetLocationOfAssemblyWithType("Godot.Node")),
             };
 
             if (assemblyPaths != null)

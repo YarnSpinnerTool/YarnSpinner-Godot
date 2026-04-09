@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using YarnSpinnerGodot;
 using YarnAction = YarnSpinnerGodot.Action;
-
+using System.Diagnostics;
 #nullable enable
 
 [Generator]
@@ -81,7 +81,10 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 
         // we don't have plugin settings right now to disable the source generation 
 
-
+        if (!Debugger.IsAttached)
+        {
+            Debugger.Launch();
+        }
         bool hasCriticalActionErrors = false;
         try
         {

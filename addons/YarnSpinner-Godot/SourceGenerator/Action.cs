@@ -283,11 +283,11 @@ namespace YarnSpinnerGodot
                 }
                 paramObject["isParamsArray"] = p.IsParamsArray;
 
-                // there are two special cases for parameters
-                // if it is a subclass of UnityEngine.Component or MonoBehaviour we additionally add the subtype
+    
+                // if it is a subclass of Godot Node we additionally add the subtype
                 // this is used by the editor later on to let the writer know WHERE the command will be going
                 // otherwise we just add the Yarn type of the parameter
-                if (p.Type.BaseType?.Name == "MonoBehaviour" || p.Type.BaseType?.Name == "Component")
+                if (p.Type.BaseType?.Name == "Node")
                 {
                     paramObject["type"] = "instance";
                     paramObject["subtype"] = p.Type.Name;
@@ -675,7 +675,7 @@ namespace YarnSpinnerGodot
             }
 
             List<ITypeSymbol> validCommandReturnTypes = new List<ITypeSymbol?> {
-                    compilation.GetTypeByMetadataName("UnityEngine.Coroutine"),
+                    compilation.GetTypeByMetadataName("System.Threading.Tasks.Task"),
                     compilation.GetTypeByMetadataName("System.Collections.IEnumerator"),
                     compilation.GetSpecialType(SpecialType.System_Void),
                 }
@@ -684,9 +684,7 @@ namespace YarnSpinnerGodot
 
             List<ITypeSymbol> validTaskTypes = new List<ITypeSymbol?> {
                     compilation.GetTypeByMetadataName("System.Threading.Tasks.Task"),
-                    compilation.GetTypeByMetadataName("Cysharp.Threading.Tasks.UniTask"),
-                    compilation.GetTypeByMetadataName("UnityEngine.Awaitable"),
-                    compilation.GetTypeByMetadataName("Yarn.Unity.YarnTask"),
+                    compilation.GetTypeByMetadataName("YarnSpinnerGodot.YarnTask"),
             }.NonNull(throwIfAnyNull: false)
             .ToList();
 
