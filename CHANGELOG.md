@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.20] 2026-TODO
+
+* Upgrade YarnSpinner base libraries to 3.2.0. For details, see https://github.com/YarnSpinnerTool/YarnSpinner/releases/tag/v3.2.0
+* Update the source generator to output `.ysls.json` files, used to integrate with other YarnSpinner tools like the VS Code extension.
+* TODO: more release notes 
+
 ## [0.3.12] 2025-12-21
 
 * Provide typed GDScript classes for LocalizedLine and MarkupParseResult. Additional GDScript support for Presenters #111 and #113 by @KXI-System

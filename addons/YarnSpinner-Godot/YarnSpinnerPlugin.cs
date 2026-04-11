@@ -23,7 +23,7 @@ public partial class YarnSpinnerPlugin : EditorPlugin
 #endif
 
     private const string ToolsMenuName = "YarnSpinner";
-    public const string VersionString = "0.3.0";
+    public const string VersionString = "0.3.20";
 
     private List<EditorInspectorPlugin> _inspectorPlugins =
         new();
@@ -69,14 +69,6 @@ public partial class YarnSpinnerPlugin : EditorPlugin
                         MenuName = "Create Markup Palette",
                         Handler = CreateMarkupPalette,
                     }
-                // TODO: actions source generation 
-                //     [8] =
-                //     new ToolsMenuItem()
-                //     {
-                //         MenuName = "Update Yarn Commands",
-                //         Handler = ActionSourceCodeGenerator.GenerateYarnActionSourceCode,
-                //     }
-                // 
             };
 
             return _idToToolsMenuItem;
