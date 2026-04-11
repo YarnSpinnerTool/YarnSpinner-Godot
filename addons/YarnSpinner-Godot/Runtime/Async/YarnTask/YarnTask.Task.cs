@@ -129,18 +129,7 @@ public partial struct YarnTask
         var mainLoop = (SceneTree)Engine.GetMainLoop();
         await mainLoop.ToSignal(mainLoop, SceneTree.SignalName.ProcessFrame);
     }
-
-#if USE_ADDRESSABLES
-        public static partial async YarnTask WaitForAsyncOperation(AsyncOperationHandle operationHandle, CancellationToken cancellationToken)
-        {
-            await operationHandle.Task;
-        }
-
-        public static partial async YarnTask<T> WaitForAsyncOperation<T>(AsyncOperationHandle<T> operationHandle, CancellationToken cancellationToken)
-        {
-            return await operationHandle.Task;
-        }
-#endif
+    
 }
 
 public partial struct YarnTask<T>
