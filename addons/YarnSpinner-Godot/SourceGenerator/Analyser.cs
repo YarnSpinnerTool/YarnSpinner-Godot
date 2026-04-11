@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Diagnostics.CodeAnalysis;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 #nullable enable
 
@@ -58,7 +59,7 @@ namespace YarnSpinnerGodot
         public IEnumerable<string> SourceFiles => GetSourceFiles(SourcePath);
         public string SourcePath { get; set; }
 
-        public IEnumerable<Action> GetActions(IEnumerable<string>? assemblyPaths = null, ILogger? logger = null)
+        public IEnumerable<Action> GetActions(string projectRoot, IEnumerable<string>? assemblyPaths = null, ILogger? logger = null)
         {
             var trees = SourceFiles
                 .Select(path => CSharpSyntaxTree.ParseText(File.ReadAllText(path), path: path))
@@ -109,7 +110,7 @@ namespace YarnSpinnerGodot
             {
                 foreach (var tree in trees)
                 {
-                    output.AddRange(GetActions(compilation, tree, logger));
+                    output.AddRange(GetActions(projectRoot!, compilation, tree, logger));
                 }
             }
             catch (Exception e)
@@ -133,11 +134,16 @@ namespace YarnSpinnerGodot
             var namespaceDecl = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(@namespace));
 
             var classDeclaration = SyntaxFactory.ClassDeclaration(className);
-            classDeclaration = classDeclaration.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+            classDeclaration = classDeclaration.WithModifiers(
+                TokenList(
+                    new[]{
+                        Token(SyntaxKind.PublicKeyword),
+                        Token(SyntaxKind.PartialKeyword)}
+                ));
             classDeclaration = classDeclaration.AddAttributeLists(GeneratedCodeAttributeList);
 
             MethodDeclarationSyntax registrationMethod = GenerateRegistrationMethod(actions);
-            MethodDeclarationSyntax initializationMethod = GenerateInitialisationMethod();
+            ConstructorDeclarationSyntax initializationMethod = GenerateInitialisationMethod();
 
             classDeclaration = classDeclaration.AddMembers(
                 initializationMethod,
@@ -150,134 +156,34 @@ namespace YarnSpinnerGodot
             return namespaceDecl.NormalizeWhitespace().ToFullString();
         }
 
-        private static MethodDeclarationSyntax GenerateInitialisationMethod()
+        private static ConstructorDeclarationSyntax GenerateInitialisationMethod()
         {
-            return SyntaxFactory.MethodDeclaration(
-                SyntaxFactory.PredefinedType(
-                    SyntaxFactory.Token(SyntaxKind.VoidKeyword)
-                ),
-                SyntaxFactory.Identifier(initialisationMethodName)
-            )
-            .WithAttributeLists(
-                SyntaxFactory.List(
-                    new AttributeListSyntax[]{
-                        SyntaxFactory.AttributeList(
-                            SyntaxFactory.SingletonSeparatedList(
-                                SyntaxFactory.Attribute(
-                                    SyntaxFactory.QualifiedName(
-                                        SyntaxFactory.AliasQualifiedName(
-                                            SyntaxFactory.IdentifierName(
-                                                SyntaxFactory.Token(SyntaxKind.GlobalKeyword)
-                                            ),
-                                            SyntaxFactory.IdentifierName("UnityEditor")
-                                        ),
-                                        SyntaxFactory.IdentifierName("InitializeOnLoadMethod")
-                                    )
-                                )
-                            )
-                        )
-                        .WithOpenBracketToken(
-                            SyntaxFactory.Token(
-                                SyntaxFactory.TriviaList(
-                                    SyntaxFactory.Trivia(
-                                        SyntaxFactory.IfDirectiveTrivia(
-                                            SyntaxFactory.IdentifierName("TOOLS"),
-                                            true,
-                                            true,
-                                            true
-                                        )
-                                    )
-                                ),
-                                SyntaxKind.OpenBracketToken,
-                                SyntaxFactory.TriviaList()
-                            )
-                        ),
-                        SyntaxFactory.AttributeList(
-                            SyntaxFactory.SingletonSeparatedList(
-                                SyntaxFactory.Attribute(
-                                    SyntaxFactory.QualifiedName(
-                                        SyntaxFactory.AliasQualifiedName(
-                                            SyntaxFactory.IdentifierName(
-                                                SyntaxFactory.Token(SyntaxKind.GlobalKeyword)
-                                            ),
-                                            SyntaxFactory.IdentifierName("UnityEngine")
-                                        ),
-                                        SyntaxFactory.IdentifierName("RuntimeInitializeOnLoadMethod")
-                                    )
-                                )
-                                .WithArgumentList(
-                                    SyntaxFactory.AttributeArgumentList(
-                                        SyntaxFactory.SingletonSeparatedList(
-                                            SyntaxFactory.AttributeArgument(
-                                                SyntaxFactory.MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                    SyntaxFactory.MemberAccessExpression(
-                                                        SyntaxKind.SimpleMemberAccessExpression,
-                                                        SyntaxFactory.AliasQualifiedName(
-                                                            SyntaxFactory.IdentifierName(
-                                                                SyntaxFactory.Token(SyntaxKind.GlobalKeyword)
-                                                            ),
-                                                            SyntaxFactory.IdentifierName("UnityEngine")
-                                                        ),
-                                                        SyntaxFactory.IdentifierName("RuntimeInitializeLoadType")
-                                                    ),
-                                                    SyntaxFactory.IdentifierName("BeforeSceneLoad")
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                        .WithOpenBracketToken(
-                            SyntaxFactory.Token(
-                                SyntaxFactory.TriviaList(
-                                    SyntaxFactory.Trivia(
-                                        SyntaxFactory.EndIfDirectiveTrivia(
-                                            true
-                                        )
-                                    )
-                                ),
-                                SyntaxKind.OpenBracketToken,
-                                SyntaxFactory.TriviaList()
-                            )
-                        )
-                    }
-                )
-            )
-            .WithModifiers(
-                SyntaxFactory.TokenList(
-                    new[]{
-                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword)
-                    }
-                )
-            )
-            .WithBody(
-                SyntaxFactory.Block(
-                    SyntaxFactory.SingletonList<StatementSyntax>(
-                        SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.InvocationExpression(
-                                SyntaxFactory.MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    SyntaxFactory.IdentifierName("Actions"),
-                                    SyntaxFactory.IdentifierName("AddRegistrationMethod")
-                                )
-                            )
-                            .WithArgumentList(
-                                SyntaxFactory.ArgumentList(
-                                    SyntaxFactory.SingletonSeparatedList(
-                                        SyntaxFactory.Argument(
-                                            SyntaxFactory.IdentifierName(registrationMethodName)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-            .NormalizeWhitespace();
+            return ConstructorDeclaration(
+                    Identifier("ActionRegistration"))
+                .WithModifiers(
+                    TokenList(
+                        Token(SyntaxKind.StaticKeyword)))
+                .WithBody(
+                    Block(
+                        SingletonList<StatementSyntax>(
+                            ExpressionStatement(
+                                InvocationExpression(
+                                        MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                AliasQualifiedName(
+                                                    IdentifierName(
+                                                        Token(SyntaxKind.GlobalKeyword)),
+                                                    IdentifierName("YarnSpinnerGodot")),
+                                                IdentifierName("Actions")),
+                                            IdentifierName("AddRegistrationMethod")))
+                                    .WithArgumentList(
+                                        ArgumentList(
+                                            SingletonSeparatedList<ArgumentSyntax>(
+                                                Argument(
+                                                    IdentifierName(registrationMethodName)))))))))
+                .NormalizeWhitespace();
         }
 
         public static MethodDeclarationSyntax GenerateRegistrationMethod(IEnumerable<Action> actions)
@@ -299,7 +205,6 @@ namespace YarnSpinnerGodot
 
             var attributeRegistrationStatements = actionGroups.SelectMany(group =>
             {
-
                 var attributeRegistrations = group
                     .Where(a => a.DeclarationType != DeclarationType.DirectRegistration);
                 return GetRegistrationStatements(attributeRegistrations);
@@ -441,7 +346,7 @@ namespace YarnSpinnerGodot
             }
         }
 
-        public static IEnumerable<Action> GetActions(CSharpCompilation compilation, SyntaxTree tree, ILogger? yLogger = null)
+        public static IEnumerable<Action> GetActions(string projectRoot, CSharpCompilation compilation, SyntaxTree tree, ILogger? yLogger = null)
         {
             var logger = yLogger;
             if (logger == null)
@@ -463,11 +368,12 @@ namespace YarnSpinnerGodot
                 return Array.Empty<Action>();
             }
 
-            return GetAttributeActions(root, model, logger).Concat(GetRuntimeDefinedActions(root, model, logger));
+            return GetAttributeActions(projectRoot, root, model, logger).Concat(GetRuntimeDefinedActions(projectRoot, root, model, logger));
         }
 
-        private static IEnumerable<Action> GetRuntimeDefinedActions(CompilationUnitSyntax root, SemanticModel model, ILogger? logger)
+        private static IEnumerable<Action> GetRuntimeDefinedActions(string projectRoot, CompilationUnitSyntax root, SemanticModel model, ILogger? logger)
         {
+
             var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
             classes = classes.Where(c =>
             {
@@ -577,6 +483,17 @@ namespace YarnSpinnerGodot
                     }
                 }
 
+                string sourceFileName = root.SyntaxTree.FilePath;
+                if (sourceFileName.StartsWith(projectRoot))
+                {                  
+                    logger?.WriteLine($"Adjusting {sourceFileName} to remove {projectRoot}");
+                    sourceFileName = sourceFileName.Substring(projectRoot.Length);
+                }
+                else
+                {
+                    logger?.WriteLine(
+                        $"{sourceFileName} does not start with {projectRoot}. The path may end up being absolute in the output.");
+                }
                 yield return new Action(name, methodCall.Type, targetSymbol)
                 {
                     SemanticModel = model,
@@ -585,7 +502,7 @@ namespace YarnSpinnerGodot
                     Declaration = declaringSyntax,
                     Description = summary,
                     Parameters = GetParams(targetSymbol, documentationXML, logger),
-                    SourceFileName = root.SyntaxTree.FilePath,
+                    SourceFileName = sourceFileName,
                     DeclarationType = DeclarationType.DirectRegistration,
                     ReturnDescription = ReturnDescription,
                 };
@@ -679,7 +596,7 @@ namespace YarnSpinnerGodot
             }
         }
 
-        private static IEnumerable<Action> GetAttributeActions(CompilationUnitSyntax root, SemanticModel model, ILogger logger)
+        private static IEnumerable<Action> GetAttributeActions(string projectRoot, CompilationUnitSyntax root, SemanticModel model, ILogger logger)
         {
             var methodInfos = root
                 .DescendantNodes()
@@ -726,13 +643,13 @@ namespace YarnSpinnerGodot
                     {
                         if (constantValue.Value is string constantString)
                         {
-                            logger.WriteLine($"resolved constant expression value for the action name: {constantValue.Value.ToString()}");
+                            logger?.WriteLine($"resolved constant expression value for the action name: {constantValue.Value.ToString()}");
                             actionName = constantString;
                         }
                         else
                         {
                             // Otherwise just logging the incorrect type and moving on with our life
-                            logger.WriteLine($"resolved constant expression value for the action name, but it is not a string, skipping: {constantValue.Value}");
+                            logger?.WriteLine($"resolved constant expression value for the action name, but it is not a string, skipping: {constantValue!.Value}");
                         }
                     }
                 }
@@ -743,13 +660,13 @@ namespace YarnSpinnerGodot
                 var methodSymbol = methodInfo.Symbol;
                 if (methodSymbol == null)
                 {
-                    logger.WriteLine($"Failed to get a symbol for " + methodInfo.MethodDeclaration.Identifier);
+                    logger?.WriteLine($"Failed to get a symbol for " + methodInfo.MethodDeclaration.Identifier);
                     continue;
                 }
 
                 if (!(methodSymbol.ContainingSymbol is ITypeSymbol container))
                 {
-                    logger.WriteLine($"Failed to get a containing symbol for " + methodInfo.MethodDeclaration.Identifier);
+                    logger?.WriteLine($"Failed to get a containing symbol for " + methodInfo.MethodDeclaration.Identifier);
                     continue;
                 }
 
@@ -760,12 +677,22 @@ namespace YarnSpinnerGodot
                     if (returnNode != null)
                     {
                         ReturnDescription = string.Join("", returnNode.DescendantNodes().OfType<XText>().Select(n => n.ToString())).Trim();
-                        logger.WriteLine($"\tFound a return: {ReturnDescription}");
+                        logger?.WriteLine($"\tFound a return: {ReturnDescription}");
                     }
                 }
 
-                var containerName = container?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? "<unknown>";
-
+                var containerName = container?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? "<unknown>" ;
+                string sourceFileName = root.SyntaxTree.FilePath;
+                if (projectRoot != null && sourceFileName.StartsWith(projectRoot!))
+                {                  
+                    logger?.WriteLine($"Adjusting {sourceFileName} to remove {projectRoot!}");
+                    sourceFileName = sourceFileName.Substring(projectRoot!.Length);
+                }
+                else
+                {
+                    logger?.WriteLine(
+                        $"{sourceFileName} does not start with {projectRoot}. The path may end up being absolute in the output.");
+                }
                 yield return new Action(actionName, methodInfo.ActionType, methodSymbol)
                 {
                     Name = actionName,
@@ -780,7 +707,7 @@ namespace YarnSpinnerGodot
                     AsyncType = GetAsyncType(methodSymbol),
                     SemanticModel = model,
                     Description = summary,
-                    SourceFileName = root.SyntaxTree.FilePath,
+                    SourceFileName = sourceFileName,
                     DeclarationType = DeclarationType.Attribute,
                     ReturnDescription = ReturnDescription,
                 };
@@ -788,7 +715,7 @@ namespace YarnSpinnerGodot
         }
 
         /// <summary>
-        /// Returns a value indicating the Unity async type for this action.
+        /// Returns a value indicating the async type for this action.
         /// </summary>
         /// <param name="symbol">The method symbol to test.</param>
         /// <returns></returns>
@@ -806,14 +733,7 @@ namespace YarnSpinnerGodot
             {
                 return AsyncType.AsyncCoroutine;
             }
-
-            // If the method returns a Coroutine, then it is potentially async
-            // (because if it returns null, it's sync, and if it returns non-null,
-            // it's async)
-            if (returnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::UnityEngine.Coroutine")
-            {
-                return AsyncType.MaybeAsyncCoroutine;
-            }
+            
 
             // now checking for the various different awaiter types
             // later on it might be worth seeing if there is a good way to check if the return type is something that can be awaited
@@ -822,8 +742,6 @@ namespace YarnSpinnerGodot
             {
                 case "global::YarnSpinnerGodot.YarnTask":
                 case "global::System.Threading.Tasks.Task":
-                case "global::Cysharp.Threading.Tasks.UniTask":
-                case "global::UnityEngine.Awaitable":
                     return AsyncType.AsyncTask;
                 default:
                     return default;
@@ -846,7 +764,7 @@ namespace YarnSpinnerGodot
                     Name = "target",
                     IsOptional = false,
                     Type = symbol.ContainingType,
-                    Description = "The name of the Game Object the runner will search for to run this command upon. This will be done through a normal GameObject.Find Unity call.",
+                    Description = "The name of the Game Object the runner will search for to run this command upon. This will be done through a normal Godot.Node.FindChild call.",
                     IsParamsArray = false,
                 };
                 parameters.Insert(0, p);

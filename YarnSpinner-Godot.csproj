@@ -16,6 +16,7 @@
 
   </PropertyGroup>
   <ItemGroup>
+
     <!-- Add some extra files for ease of developing samples -->
     <Compile Include="addons\YarnSpinner-Godot\SourceGenerator\YarnSpinnerProjectSettings.cs" />
     <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />

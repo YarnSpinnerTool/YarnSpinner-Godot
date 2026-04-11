@@ -57,7 +57,7 @@ public static class Diagnostics
     public static readonly DiagnosticDescriptor YS1006YarnFunctionsMustBeStatic = new DiagnosticDescriptor(
                         "YS1006",
                         title: $"YarnFunction methods be static",
-                        messageFormat: $"YarnFunction methods are required to be static.",
+                        messageFormat: $"YarnFunction methods are required to be static",
                         category: "Yarn Spinner",
                         defaultSeverity: DiagnosticSeverity.Error,
                         isEnabledByDefault: true,
@@ -102,7 +102,7 @@ public static class Diagnostics
     public static readonly DiagnosticDescriptor YS1012ActionIsALambda = new DiagnosticDescriptor(
                         "YS1012",
                         title: "Yarn actions can be lambdas but this generally isn't recommended",
-                        messageFormat: "Yarn actions can be lambdas but this generally isn't recommended. Lambda based actions cannot be unregistered and are more difficult to debug",
+                        messageFormat: "Yarn actions can be lambdas but this generally isn't recommended. Lambda based actions cannot be unregistered and are more difficult to debug.",
                         category: "Yarn Spinner",
                         defaultSeverity: DiagnosticSeverity.Info,
                         isEnabledByDefault: true,

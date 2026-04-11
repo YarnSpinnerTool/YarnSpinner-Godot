@@ -16,6 +16,17 @@ using YarnAction = YarnSpinnerGodot.Action;
 using System.Diagnostics;
 #nullable enable
 
+public static class GeneratorExecutionContextExtensions {
+	/// <summary>Gets the file path the source generator was called from.</summary>
+	/// <param name="context">The context of the Generator's Execute method.</param>
+	/// <returns>The file path the generator was called from.</returns>
+	public static string? GetCallingPath(this GeneratorExecutionContext context)
+	{
+  	return context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var result) ? result : null;
+	}
+} 
+
+
 [Generator]
 public class ActionRegistrationSourceGenerator : ISourceGenerator
 {
@@ -25,69 +36,29 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 
     public static string? GetProjectRoot(GeneratorExecutionContext context)
     {
-        // todo need to find alternate way to locate  project root if ... 
-
-        // Try and find any additional files passed to the context
-        if (!context.AdditionalFiles.Any())
-        {
-            return null;
-        }
-
-        // One of those files is (AssemblyName).[godot]AdditionalFile.txt, and it
-        // contains the path to the project
-        var relevantFiles = context.AdditionalFiles.Where(i => i.Path.EndsWith($".godot")
-        );
-
-        if (!relevantFiles.Any())
-        {
-            return null;
-        }
-
-        var assemblyRelevantFile = relevantFiles.First();
-
-        // The file needs to exist on disk
-        if (!File.Exists(assemblyRelevantFile.Path))
-        {
-            return null;
-        }
-
-        try
-        {
-            // Attempt to read it - it should contain the path to the project directory
-            var projectPath = File.ReadAllText(assemblyRelevantFile.Path);
-            if (Directory.Exists(projectPath))
-            {
-                // If this directory exists, we're done
-                return projectPath;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        catch (IOException)
-        {
-            // We encountered a problem while testing
-            return null;
-        }
+      return context.GetCallingPath();
     }
 
     public void Execute(GeneratorExecutionContext context)
     {
         using var output = GetOutput(context);
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
+        var projectRoot = GetProjectRoot(context);
         output.WriteLine(DateTime.Now);
+		output.WriteLine($"GetCallingPath: {context.GetCallingPath()}");
+        if (projectRoot == null)
+        {
+            output.WriteLine("Unable to locate caller's project directory. Can't output YSLS file.");
+            return;
+        }
 
         // we don't have plugin settings right now to disable the source generation 
 
-        if (!Debugger.IsAttached)
-        {
-            Debugger.Launch();
-        }
+
         bool hasCriticalActionErrors = false;
         try
         {
+            
             output.WriteLine("Source code generation for assembly " + context.Compilation.AssemblyName);
 
             if (context.AdditionalFiles.Any())
@@ -164,7 +135,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             var actions = new List<YarnAction>();
             foreach (var tree in compilation.SyntaxTrees)
             {
-                actions.AddRange(Analyser.GetActions(compilation, tree, output));
+                actions.AddRange(Analyser.GetActions(projectRoot!, compilation, tree, output));
             }
 
             if (actions.Count() == 0)
@@ -271,8 +242,8 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
             if (!string.IsNullOrEmpty("not empty todo"))
             {
                 output.Write($"Writing generated ysls...");
-                var fullPath = Path.Combine("/Users/chris/",
-                    "todohowtolocate.ysls");
+                var fullPath = Path.Combine(projectRoot,
+                    $"{context.Compilation.AssemblyName}.ysls.json");
                 try
                 {
                     System.IO.File.WriteAllText(fullPath, ysls);
@@ -506,7 +477,7 @@ catch (Exception e)
         var rootPath = GetProjectRoot(context);
         if (rootPath != null)
         {
-            tempPath = Path.Combine(rootPath, "Logs", "Packages", "dev.yarnspinner.unity");
+            tempPath = Path.Combine(rootPath, ".godot", "dev.yarnspinner.unity");
         }
         else
         {
@@ -556,7 +527,7 @@ catch (Exception e)
         if (GetShouldLogToFile(context))
         {
             var tempPath = ActionRegistrationSourceGenerator.GetTemporaryPath(context);
-            var path = System.IO.Path.Combine(tempPath, $"{nameof(ActionRegistrationSourceGenerator)}-{context.Compilation.AssemblyName}.cs");
+            var path = System.IO.Path.Combine(tempPath, $"{nameof(ActionRegistrationSourceGenerator)}-{context.Compilation.AssemblyName}.cs.txt");
             System.IO.File.WriteAllText(path, text);
         }
     }
