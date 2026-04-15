@@ -203,7 +203,7 @@ public partial class DialogueRunner : Godot.Node
     /// The list of dialogue presenters that the dialogue runner delivers content
     /// to.
     /// </summary>
-    [Export] public Array<Godot.Node?> dialoguePresenters = [];
+    [Export] public Array<Godot.Node?>? dialoguePresenters;
 
     /// <summary>
     /// Gets a value that indicates if the dialogue is actively
@@ -385,6 +385,7 @@ public partial class DialogueRunner : Godot.Node
             CheckCompilationErrors();
         }
 
+        dialoguePresenters ??= [];
         foreach (var presenter in dialoguePresenters)
         {
             if (presenter == null ||
@@ -549,6 +550,7 @@ public partial class DialogueRunner : Godot.Node
         currentLineHurryUpSource = null;
 
         var pendingTasks = new HashSet<YarnTask>();
+        dialoguePresenters ??= [];
         foreach (var presenter in this.dialoguePresenters)
         {
             if (!IsInstanceValid(presenter))
@@ -787,7 +789,7 @@ public partial class DialogueRunner : Godot.Node
         };
 
         var pendingTasks = new HashSet<YarnTask>();
-
+        dialoguePresenters ??= [];
         foreach (var presenter in this.dialoguePresenters)
         {
             if (!IsInstanceValid(presenter))
@@ -982,6 +984,7 @@ public partial class DialogueRunner : Godot.Node
         }
 
         var pendingTasks = new List<YarnTask>();
+        dialoguePresenters ??= [];
         foreach (var presenter in this.dialoguePresenters)
         {
             if (!IsInstanceValid(presenter))
@@ -1143,6 +1146,7 @@ public partial class DialogueRunner : Godot.Node
         EmitSignal(SignalName.onDialogueStart);
 
         var tasks = new List<YarnTask>();
+        dialoguePresenters ??= [];
         foreach (var presenter in dialoguePresenters)
         {
             if (presenter == null || !IsInstanceValid(presenter))

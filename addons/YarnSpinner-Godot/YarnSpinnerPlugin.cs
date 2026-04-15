@@ -102,7 +102,8 @@ public partial class YarnSpinnerPlugin : EditorPlugin
         var dialogueRunnerScript =
             ResourceLoader.Load<CSharpScript>(
                 "res://addons/YarnSpinner-Godot/Runtime/DialogueRunner.cs");
-
+        var basicMarkerScript = ResourceLoader.Load<CSharpScript>("addons/YarnSpinner-Godot/Runtime/BasicMarker.cs");
+        var customMarkerScript = ResourceLoader.Load<CSharpScript>("addons/YarnSpinner-Godot/Runtime/CustomMarker.cs");
         // load icons
         var miniYarnSpinnerIcon =
             ResourceLoader.Load<Texture2D>(
@@ -140,6 +141,8 @@ public partial class YarnSpinnerPlugin : EditorPlugin
 
         AddCustomType(nameof(DialogueRunner), "Node", dialogueRunnerScript,
             miniYarnSpinnerIcon);
+        AddCustomType(nameof(BasicMarker), "Resource", basicMarkerScript,  miniYarnSpinnerIcon);
+        AddCustomType(nameof(CustomMarker), "Resource", customMarkerScript,  miniYarnSpinnerIcon);
         AddCustomType(nameof(YarnProject), "Resource", yarnProjectScript,
             miniYarnProjectIcon);
     }
@@ -153,6 +156,8 @@ public partial class YarnSpinnerPlugin : EditorPlugin
 
         RemoveCustomType(nameof(DialogueRunner));
         RemoveCustomType(nameof(YarnProject));
+        RemoveCustomType(nameof(BasicMarker));
+        RemoveCustomType(nameof(CustomMarker));
         foreach (var plugin in _inspectorPlugins.Where(IsInstanceValid))
         {
             RemoveInspectorPlugin(plugin);

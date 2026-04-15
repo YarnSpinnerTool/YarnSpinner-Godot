@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 * Upgrade YarnSpinner base libraries to 3.2.0. For details, see https://github.com/YarnSpinnerTool/YarnSpinner/releases/tag/v3.2.0
 * Update the source generator to output `.ysls.json` files, used to integrate with other YarnSpinner tools like the VS Code extension.
+* Work around Godot issue where exported C# variables can reset to their initial value: remove initial value from DialogueRunner.dialoguePresenters
+* Register `CustomMarker` and `BasicMarker` as custom types for better editor integration (#119)
 * TODO: more release notes 
 
 ## [0.3.12] 2025-12-21
