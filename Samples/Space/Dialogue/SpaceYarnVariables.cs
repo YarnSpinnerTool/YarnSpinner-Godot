@@ -1,6 +1,6 @@
 using YarnSpinnerGodot;
 
-[System.CodeDom.Compiler.GeneratedCode("YarnSpinner", "0.3.0")]
+[System.CodeDom.Compiler.GeneratedCode("YarnSpinner", "0.3.20")]
 public partial class SpaceYarnVariables : YarnSpinnerGodot.InMemoryVariableStorage, YarnSpinnerGodot.IGeneratedVariableStorage {
     // Accessor for Number $times_talked_sally_before_ship
     public float TimesTalkedSallyBeforeShip {

@@ -1,5 +1,7 @@
 {
-  "cSpell.enableFiletypes": ["yarnspinner"],
+  "cSpell.enableFiletypes": [
+    "yarnspinner"
+  ],
   "cSpell.languageSettings": [
     {
       "languageId": "yarnspinner",

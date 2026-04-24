@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/4.6.1">
+<Project Sdk="Godot.NET.Sdk/4.6.0">
   <PropertyGroup>
     <NoWarn>RS2008</NoWarn> <!-- We do not have the AnalyserReleases.*.md files written to satisfy this warning -->
     <TargetFramework>net8.0</TargetFramework>
@@ -16,7 +16,9 @@
 
   </PropertyGroup>
   <ItemGroup>
+
     <!-- Add some extra files for ease of developing samples -->
+    <Compile Include="addons\YarnSpinner-Godot\SourceGenerator\YarnSpinnerProjectSettings.cs" />
     <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
     <None Include="addons\YarnSpinner-Godot\plugin.cfg" />
     <None Include="**\*.md" />
