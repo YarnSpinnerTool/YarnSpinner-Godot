@@ -537,7 +537,6 @@ public partial class DialogueRunner : Godot.Node
 
     private void OnDialogueCompleted()
     {
-        EmitSignal(SignalName.onDialogueComplete);
         OnDialogueCompleteAsync().Forget();
     }
 
