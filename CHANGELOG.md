@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Work around Godot issue where exported C# variables can reset to their initial value: remove initial value from DialogueRunner.dialoguePresenters
 - Register `CustomMarker` and `BasicMarker` as custom types for better editor integration (#119)
 - Fix a bug where the`DialogueRunner.onDialogueComplete` signal was emitted twice when dialogue ends. (fix #120)
+- Add dialogueRunner.allowOptionFallthrough which allows dialogue to proceed when no dialogue options were chosen https://yarnspinner.dev/blog/yarn-spinner-3-1-release/#dialogue-option-fallthrough
 - TODO: more release notes
 
 ## [0.3.12] 2025-12-21

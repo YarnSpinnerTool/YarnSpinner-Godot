@@ -139,8 +139,9 @@ public partial class DialogueRunner : Godot.Node
     /// If true, errors will be logged at runtime if the <see cref="yarnProject"/>
     /// on this dialogue runner has compilation errors. 
     /// </summary>
-    [Export] public bool PrintProjectErrors = true;
+    [Export] public bool PrintProjectErrors;
 
+    [Export] public bool allowOptionFallthrough;
     /// <summary>
     /// Gets the <see cref="YarnProject"/> asset that this dialogue runner uses.
     /// </summary>
@@ -1038,16 +1039,24 @@ public partial class DialogueRunner : Godot.Node
             return;
         }
 
-        else if (selectedOption == null)
+        if (selectedOption == null)
         {
-            // None of our option presenters returned an option, and our dialogue
-            // wasn't cancelled. That's not allowed, because we don't know what
-            // to do next!
-            GD.PushError($"No dialogue presenter returned an option selection! Hanging here!");
-            return;
+            if (allowOptionFallthrough)
+            {
+                Dialogue.SetSelectedOption(Dialogue.NoOptionSelected);
+            }
+            else
+            {
+                // None of our option views returned an option, and our dialogue wasn't cancelled, and we've said we don't want to do fallthrough.
+                // That's not allowed, because we don't know what to do next!
+                GD.PushError($"All presenters have returned from {nameof(DialoguePresenterBase.RunOptionsAsync)} but none returned an option, and fallthrough is disabled. This is not allowed.");
+                return;
+            }
         }
+        else
+        {
+            Dialogue.SetSelectedOption(selectedOption.DialogueOptionID);
 
-        Dialogue.SetSelectedOption(selectedOption.DialogueOptionID);
 
         if (runSelectedOptionAsLine)
         {
@@ -1055,7 +1064,7 @@ public partial class DialogueRunner : Godot.Node
             // it as a line.
             await RunLocalisedLine(selectedOption.Line);
         }
-
+        }
         if (dialogueCancellationSource?.IsCancellationRequested ?? false)
         {
             // Our dialogue has been cancelled. Don't continue the dialogue.
