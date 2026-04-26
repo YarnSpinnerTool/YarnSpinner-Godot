@@ -44,7 +44,7 @@ namespace YarnSpinnerGodot
         const string targetParameterName = "target";
         const string registrationTypeParameterName = "registrationType";
         const string initialisationMethodName = "AddRegisterFunction";
-
+        
         /// <summary>
         /// The name of a scripting define symbol that, if set, indicates that
         /// Yarn actions specific to unit tests should be generated.
@@ -482,18 +482,7 @@ namespace YarnSpinnerGodot
                         logger?.WriteLine($"\tFound a return: {ReturnDescription}");
                     }
                 }
-
-                string sourceFileName = root.SyntaxTree.FilePath;
-                if (sourceFileName.StartsWith(projectRoot))
-                {                  
-                    logger?.WriteLine($"Adjusting {sourceFileName} to remove {projectRoot}");
-                    sourceFileName = sourceFileName.Substring(projectRoot.Length);
-                }
-                else
-                {
-                    logger?.WriteLine(
-                        $"{sourceFileName} does not start with {projectRoot}. The path may end up being absolute in the output.");
-                }
+                
                 yield return new Action(name, methodCall.Type, targetSymbol)
                 {
                     SemanticModel = model,
@@ -502,7 +491,7 @@ namespace YarnSpinnerGodot
                     Declaration = declaringSyntax,
                     Description = summary,
                     Parameters = GetParams(targetSymbol, documentationXML, logger),
-                    SourceFileName = sourceFileName,
+                    SourceFileName =root.SyntaxTree.FilePath,
                     DeclarationType = DeclarationType.DirectRegistration,
                     ReturnDescription = ReturnDescription,
                 };
