@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://ddbq27wcm6emj"]
+[gd_scene format=3 uid="uid://ddbq27wcm6emj"]
 
 [ext_resource type="Texture2D" uid="uid://delt5hkois0xf" path="res://Samples/Space/Sprites/Ship-Face-Happy.png" id="2_b8xl3"]
 [ext_resource type="Script" uid="uid://c7djt487dc5x8" path="res://Samples/Space/Scripts/SpaceSample.cs" id="3"]
@@ -30,112 +30,112 @@ height = 265.06
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(314, 2122)
 
-[node name="SpaceSample" type="Node2D" node_paths=PackedStringArray("dialogueRunner", "shipFace")]
+[node name="SpaceSample" type="Node2D" unique_id=663462354 node_paths=PackedStringArray("dialogueRunner", "shipFace")]
 script = ExtResource("3")
 ShipHappySprite = ExtResource("2_b8xl3")
 ShipNeutralSprite = ExtResource("3_b3htj")
 dialogueRunner = NodePath("YarnSpinnerCanvasLayer/DialogueRunner")
 shipFace = NodePath("Ship/ShipFaceSprite")
 
-[node name="Ship" type="Area2D" parent="."]
+[node name="Ship" type="Area2D" parent="." unique_id=1577766202]
 position = Vector2(1828, 1328)
 collision_layer = 2
 collision_mask = 0
 
-[node name="ShipSprite" type="Sprite2D" parent="Ship"]
+[node name="ShipSprite" type="Sprite2D" parent="Ship" unique_id=1256725261]
 z_index = 1
 position = Vector2(-10, -126)
 texture = ExtResource("4_adhl1")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ship"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ship" unique_id=472250700]
 modulate = Color(0, 0.12549, 0.54902, 1)
 z_index = 6
 z_as_relative = false
 position = Vector2(-7, -102)
 shape = SubResource("3")
 
-[node name="DialogueTarget" type="Node2D" parent="Ship"]
+[node name="DialogueTarget" type="Node2D" parent="Ship" unique_id=1938391015]
 script = ExtResource("16")
 nodeName = "Ship"
 
-[node name="ShipFaceSprite" type="Sprite2D" parent="Ship"]
+[node name="ShipFaceSprite" type="Sprite2D" parent="Ship" unique_id=136465283]
 z_index = 1
 position = Vector2(-10, -199)
 texture = ExtResource("3_b3htj")
 
-[node name="Sally" type="Area2D" parent="."]
+[node name="Sally" type="Area2D" parent="." unique_id=925614723]
 position = Vector2(782, 1306)
 collision_layer = 2
 collision_mask = 0
 
-[node name="SallySprite" type="Sprite2D" parent="Sally"]
+[node name="SallySprite" type="Sprite2D" parent="Sally" unique_id=57856561]
 z_index = 1
 position = Vector2(-2, -114)
 texture = ExtResource("6_0pnyi")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Sally"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sally" unique_id=727453308]
 modulate = Color(0, 0.12549, 0.54902, 1)
 z_index = 6
 z_as_relative = false
 position = Vector2(-7, -102)
 shape = SubResource("3")
 
-[node name="DialogueTarget" type="Node2D" parent="Sally"]
+[node name="DialogueTarget" type="Node2D" parent="Sally" unique_id=1857353260]
 script = ExtResource("16")
 nodeName = "Sally"
 
-[node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("IntersectShape", "DialogueRunner")]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1982405232 node_paths=PackedStringArray("IntersectShape", "DialogueRunner")]
 position = Vector2(418, 1210)
 collision_mask = 3
 script = ExtResource("14")
 IntersectShape = NodePath("CollisionShape2D")
 DialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
 
-[node name="PlayerSpite" type="Sprite2D" parent="Player"]
+[node name="PlayerSpite" type="Sprite2D" parent="Player" unique_id=543719380]
 z_index = 2
 position = Vector2(3, -1)
 texture = ExtResource("8_18hb1")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1298103186]
 modulate = Color(0, 1, 0.415686, 1)
 z_index = 2
 position = Vector2(0, -4)
 shape = SubResource("2")
 
-[node name="Left Wall" type="StaticBody2D" parent="."]
+[node name="Left Wall" type="StaticBody2D" parent="." unique_id=604936159]
 z_index = 1
 position = Vector2(283, 984)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Left Wall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left Wall" unique_id=1390119321]
 position = Vector2(-153, -133)
 shape = SubResource("1")
 
-[node name="Right Wall" type="StaticBody2D" parent="."]
+[node name="Right Wall" type="StaticBody2D" parent="." unique_id=235250332]
 z_index = 1
 position = Vector2(3351, 984)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Right Wall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right Wall" unique_id=1075814890]
 position = Vector2(-153, -133)
 shape = SubResource("1")
 
-[node name="SpaceBackground" type="TextureRect" parent="."]
+[node name="SpaceBackground" type="TextureRect" parent="." unique_id=1089035019]
 offset_right = 3167.0
 offset_bottom = 2142.0
 texture = ExtResource("6_lstjv")
 
-[node name="wall" type="TextureRect" parent="."]
+[node name="wall" type="TextureRect" parent="." unique_id=1738067699]
 texture = ExtResource("7_ld3rh")
 
-[node name="wall2" type="TextureRect" parent="."]
+[node name="wall2" type="TextureRect" parent="." unique_id=806839503]
 texture = ExtResource("7_ld3rh")
 
-[node name="wall3" type="TextureRect" parent="."]
+[node name="wall3" type="TextureRect" parent="." unique_id=1059082823]
 offset_left = 2048.0
 offset_right = 4096.0
 offset_bottom = 1536.0
 texture = ExtResource("7_ld3rh")
 
-[node name="SpaceCamera" type="Camera2D" parent="." node_paths=PackedStringArray("followTarget")]
+[node name="SpaceCamera" type="Camera2D" parent="." unique_id=824921915 node_paths=PackedStringArray("followTarget")]
 position = Vector2(3, 630)
 anchor_mode = 0
 script = ExtResource("15")
@@ -143,20 +143,24 @@ followTarget = NodePath("../Player")
 MinX = 3
 MaxX = 1200
 
-[node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("4")]
+[node name="YarnSpinnerCanvasLayer" parent="." unique_id=724909479 instance=ExtResource("4")]
 
-[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0" unique_id=1412460189]
 yarnProject = ExtResource("12_qnfx0")
 autoStart = true
 startNode = "SpaceIntro"
 
-[node name="InMemoryVariableStorage" parent="YarnSpinnerCanvasLayer" index="4"]
+[node name="LinePresenter" parent="YarnSpinnerCanvasLayer" index="2" unique_id=216920850]
+wordsPerSecond = 8
+typewriterStyle = 2
+
+[node name="InMemoryVariableStorage" parent="YarnSpinnerCanvasLayer" index="4" unique_id=189682707]
 script = ExtResource("16_i6fc8")
 
-[node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5"]
+[node name="TextLineProvider" parent="YarnSpinnerCanvasLayer" index="5" unique_id=1335892241]
 YarnProject = ExtResource("12_qnfx0")
 
-[node name="ReturnToMenuButton" type="Button" parent="YarnSpinnerCanvasLayer"]
+[node name="ReturnToMenuButton" type="Button" parent="YarnSpinnerCanvasLayer" unique_id=131840014]
 self_modulate = Color(1, 0, 0, 1)
 custom_minimum_size = Vector2(180, 120)
 offset_left = 1394.0
@@ -167,7 +171,7 @@ text = "Return To
 Samples Menu"
 script = ExtResource("15_x0h8y")
 
-[node name="StopButton" type="Button" parent="YarnSpinnerCanvasLayer" node_paths=PackedStringArray("DialogueRunner")]
+[node name="StopButton" type="Button" parent="YarnSpinnerCanvasLayer" unique_id=1963076143 node_paths=PackedStringArray("DialogueRunner")]
 self_modulate = Color(1, 0, 0, 1)
 custom_minimum_size = Vector2(180, 120)
 offset_left = 56.0
@@ -178,12 +182,12 @@ text = "Stop Dialogue"
 script = ExtResource("14_1b0fg")
 DialogueRunner = NodePath("../DialogueRunner")
 
-[node name="SaliencySetter" type="Node2D" parent="." node_paths=PackedStringArray("dialogueRunner")]
+[node name="SaliencySetter" type="Node2D" parent="." unique_id=1818218424 node_paths=PackedStringArray("dialogueRunner")]
 script = ExtResource("16_nbkjm")
 dialogueRunner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
 SaliencyStrategy = 3
 
-[node name="LineAdvancer" type="Node2D" parent="." node_paths=PackedStringArray("runner")]
+[node name="LineAdvancer" type="Node2D" parent="." unique_id=1029061139 node_paths=PackedStringArray("runner")]
 script = ExtResource("17_wrty4")
 runner = NodePath("../YarnSpinnerCanvasLayer/DialogueRunner")
 hurryUpAction = "dialogue_hurry"

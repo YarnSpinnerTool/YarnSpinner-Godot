@@ -1,4 +1,4 @@
-﻿#nullable enable 
+﻿#nullable enable
 using Godot;
 using Yarn.Markup;
 
@@ -57,7 +57,18 @@ public class LocalizedLine
     /// The asset associated with this line, if any.
     /// </summary>
     public PackedScene? Asset;
-
+    
+    /// <summary>
+    /// The object that created this line.
+    /// Most of the time will be the <see cref="DialogueRunner"/> that passed the presenter the line.
+    /// </summary>
+    /// <remarks>
+    /// This exists for situations where you need the dialogue runner (or your custom equivalent) to send back messages.
+    /// In particular this is used by the <see cref="VoiceOverPresenter"/> to get a reference to the dialogue runner to advance lines after playback is finished without needing a specific reference.
+    /// Allowing the presenter to be reused across multiple runners.
+    /// </remarks>
+    public object? Source;
+    
     /// <summary>
     /// The underlying <see cref="Yarn.Markup.MarkupParseResult"/> for this
     /// line.
@@ -104,5 +115,7 @@ public class LocalizedLine
         RawText = "!! ERROR: Missing line!",
         Substitutions = System.Array.Empty<string>(),
         TextID = "<missing>",
-        Text = new MarkupParseResult("!! ERROR: Missing line!", new System.Collections.Generic.List<MarkupAttribute>())    };
+        Text = new MarkupParseResult("!! ERROR: Missing line!", new System.Collections.Generic.List<MarkupAttribute>())
+    };
+
 }

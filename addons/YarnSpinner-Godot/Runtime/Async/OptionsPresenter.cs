@@ -192,7 +192,21 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
                 $"Can't display options from {nameof(OptionsPresenter)}. No {nameof(optionParent)} is set " +
                 $"to parent the options to.");
         }
-
+        // if all options are unavailable then we need to return null
+        // it's the responsibility of the dialogue runner to handle this, not the presenter
+        bool anyAvailable = false;
+        foreach (var option in dialogueOptions)
+        {
+            if (option.IsAvailable)
+            {
+                anyAvailable = true;
+                break;
+            }
+        }
+        if (!anyAvailable)
+        {
+            return null;
+        }
         // If we don't already have enough option views, create more
         while (dialogueOptions.Length > optionItems.Count)
         {

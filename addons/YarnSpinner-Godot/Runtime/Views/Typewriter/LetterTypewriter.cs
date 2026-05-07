@@ -1,6 +1,10 @@
-﻿#nullable enable
+/*
+Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
+*/
 
-using System.Text.RegularExpressions;
+#nullable enable
+
+using System.Diagnostics;
 
 namespace YarnSpinnerGodot;
 
@@ -9,24 +13,27 @@ using System.Collections.Generic;
 using System.Threading;
 using Godot;
 
+
 /// <summary>
 /// An implementation of <see cref="IAsyncTypewriter"/> that delivers
 /// characters one at a time, and invokes any <see
 /// cref="IActionMarkupHandler"/>s along the way as needed.
 /// </summary>
-public class BasicTypewriter : IAsyncTypewriter
+public class LetterTypewriter : IAsyncTypewriter
 {
     /// <summary>
-    /// The <see cref="TMP_Text"/> to display the text in.
+    /// The RichTextLabel> to display the text in.
     /// </summary>
-    public RichTextLabel? Text { get; set; }
+    public RichTextLabel? TextElement { get; set; }
+
+    public bool ConvertHTMLToBBCode { get; set; }
 
     /// <summary>
     /// A collection of <see cref="IActionMarkupHandler"/> objects that
     /// should be invoked as needed during the typewriter's delivery in <see
     /// cref="RunTypewriter"/>, depending upon the contents of a line.
     /// </summary>
-    public IEnumerable<IActionMarkupHandler> ActionMarkupHandlers { get; set; } = Array.Empty<IActionMarkupHandler>();
+    public List<IActionMarkupHandler> ActionMarkupHandlers { get; set; } = new();
 
     /// <summary>
     /// The number of characters per second to deliver.
@@ -36,28 +43,22 @@ public class BasicTypewriter : IAsyncTypewriter
     /// cref="ActionMarkupHandlers"/>.</remarks>
     public float CharactersPerSecond { get; set; } = 0f;
 
-    /// <summary>
-    /// Whether we will replace <> characters with [] to display them as BBCode.
-    /// </summary>
-    public bool ConvertHTMLToBBCode;
-
     /// <inheritdoc/>
     public async YarnTask RunTypewriter(Yarn.Markup.MarkupParseResult line, CancellationToken cancellationToken)
     {
-        if (Text == null)
+        if (TextElement == null)
         {
-            GD.PushWarning($"Can't show text as typewriter, because {nameof(Text)} was not provided");
+           GD.PushWarning($"Can't show text as typewriter, because {nameof(TextElement)} was not provided");
         }
         else
         {
-            Text.VisibleCharacters = 0;
-            Text.Text = line.Text;
-            ConvertHTMLToBBCodeIfConfigured();
-
+            TextElement.VisibleCharacters = 0;
+            TextElement.Text = line.Text;
+            this.ConvertHTMLToBBCodeIfConfigured();
             // Let every markup handler know that display is about to begin
             foreach (var markupHandler in ActionMarkupHandlers)
             {
-                markupHandler.OnLineDisplayBegin(line, Text);
+                markupHandler.OnLineDisplayBegin(line, TextElement);
             }
 
             double secondsPerCharacter = 0;
@@ -65,9 +66,9 @@ public class BasicTypewriter : IAsyncTypewriter
             {
                 secondsPerCharacter = 1.0 / CharactersPerSecond;
             }
-
-            // Get the count of visible characters from RichTextLabel to exclude BBCode characters
-            var visibleCharacterCount = Text.GetParsedText().Length;
+            
+            // Get the count of visible characters from the RichTextLabel to exclude markup characters
+            var visibleCharacterCount = TextElement.GetParsedText().Length;
 
             // Start with a full time budget so that we immediately show the first character
             double accumulatedDelay = secondsPerCharacter;
@@ -95,20 +96,16 @@ public class BasicTypewriter : IAsyncTypewriter
                     await processor
                         .OnCharacterWillAppear(i, line, cancellationToken)
                         .SuppressCancellationThrow();
-                    if (!GodotObject.IsInstanceValid(Text))
-                    {
-                        return;
-                    }
                 }
 
-                Text.VisibleCharacters += 1;
+                TextElement.VisibleCharacters += 1;
 
                 accumulatedDelay -= secondsPerCharacter;
             }
 
             // We've finished showing every character (or we were
             // cancelled); ensure that everything is now visible.
-            Text.VisibleRatio = 1.0f;
+            TextElement.VisibleCharacters = visibleCharacterCount;
         }
 
         // Let each markup handler know the line has finished displaying
@@ -118,15 +115,36 @@ public class BasicTypewriter : IAsyncTypewriter
         }
     }
 
-    /// <summary>
-    /// If <see cref="ConvertHTMLToBBCode"/> is true, replace any HTML tags in the line text and
-    /// character name text with BBCode tags.
-    /// </summary>
-    private void ConvertHTMLToBBCodeIfConfigured()
+    public void PrepareForContent(Yarn.Markup.MarkupParseResult line)
     {
-        if (ConvertHTMLToBBCode)
+        if (TextElement == null)
         {
-            Text!.Text = Regex.Replace(Text.Text, LinePresenter.HtmlTagPattern, "[$1]");
+            return;
         }
+
+        TextElement.VisibleCharacters = 0;
+        TextElement.Text = line.Text;
+
+        foreach (var processor in ActionMarkupHandlers)
+        {
+            processor.OnPrepareForLine(line, TextElement);
+        }
+    }
+
+    public void ContentWillDismiss()
+    {
+        // we tell all action processors that the line is finished and is about to go away
+        foreach (var processor in ActionMarkupHandlers)
+        {
+            processor.OnLineWillDismiss();
+        }
+    }
+    public void ContentDidDismiss()
+    {
+        if (TextElement == null)
+        {
+            return;
+        }
+        TextElement.VisibleCharacters = 0;
     }
 }

@@ -728,7 +728,7 @@ public partial class DialogueRunner : Godot.Node
         var localisedLine =
             await LineProvider.GetLocalizedLineAsync(line,
                 dialogueCancellationSource?.Token ?? CancellationToken.None);
-
+        localisedLine.Source = this;
         if (!IsInstanceValid(this))
         {
             return;
@@ -798,15 +798,6 @@ public partial class DialogueRunner : Godot.Node
                 continue;
             }
 
-            // Legacy support: if this presenter is a v2-style DialogueViewBase,
-            // then set its requestInterrupt delegate to be one that stops
-            // the current line.
-#pragma warning disable CS0618 // 'construct' is obsolete
-            if (presenter is DialogueViewBase v2View)
-            {
-                v2View.requestInterrupt = RequestNextLine;
-            }
-#pragma warning restore CS0618 // 'construct' is obsolete
             if (presenter is DialoguePresenterBase asyncPresenter)
             {
                 // Tell all of our presenters to run this line, and give them a
@@ -897,6 +888,7 @@ public partial class DialogueRunner : Godot.Node
             var opt = options.Options[i];
             LocalizedLine localizedLine =
                 await LineProvider.GetLocalizedLineAsync(opt.Line, optionCancellationSource.Token);
+            localizedLine.Source = this;
             if (!IsInstanceValid(this))
             {
                 return;

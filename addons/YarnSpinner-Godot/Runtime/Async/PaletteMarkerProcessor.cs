@@ -8,13 +8,13 @@ namespace YarnSpinnerGodot;
 
 /// <summary>
 /// An attribute marker processor that uses a <see cref="MarkupPalette"/> to
-/// apply TextMeshPro styling tags to a line.
+/// apply BBCode styling tags to a line.
 /// </summary>
 /// <remarks>This marker processor registers itself as a handler for markers
 /// whose name is equal to the name of a style in the given palette. For
 /// example, if the palette defines a style named "happy", this marker processor
 /// will process tags in a Yarn line named <c>[happy]</c> by inserting the
-/// appropriate TextMeshProp style tags defined for the "happy" style.</remarks>
+/// appropriate BBCode style tags defined for the "happy" style.</remarks>
 [GlobalClass]
 public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
 {
@@ -36,7 +36,7 @@ public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
     /// <param name="marker">The marker to process.</param>
     /// <param name="childBuilder">A StringBuilder to build the styled text in.</param>
     /// <param name="childAttributes">An optional list of child attributes to
-    /// apply, but this is ignored for TextMeshPro styles.</param>
+    /// apply</param>
     /// <param name="localeCode">The locale code to use when formatting the style.</param>
     /// <returns>A list of markup diagnostics if there are any errors, otherwise an empty list.</returns>
     public override ReplacementMarkerResult ProcessReplacementMarker(MarkupAttribute marker,
