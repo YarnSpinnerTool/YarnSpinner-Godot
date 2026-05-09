@@ -16,15 +16,16 @@ using YarnAction = YarnSpinnerGodot.Action;
 using System.Diagnostics;
 #nullable enable
 
-public static class GeneratorExecutionContextExtensions {
-	/// <summary>Gets the file path the source generator was called from.</summary>
-	/// <param name="context">The context of the Generator's Execute method.</param>
-	/// <returns>The file path the generator was called from.</returns>
-	public static string? GetCallingPath(this GeneratorExecutionContext context)
-	{
-  	return context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var result) ? result : null;
-	}
-} 
+public static class GeneratorExecutionContextExtensions
+{
+    /// <summary>Gets the file path the source generator was called from.</summary>
+    /// <param name="context">The context of the Generator's Execute method.</param>
+    /// <returns>The file path the generator was called from.</returns>
+    public static string? GetCallingPath(this GeneratorExecutionContext context)
+    {
+        return context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var result) ? result : null;
+    }
+}
 
 
 [Generator]
@@ -32,20 +33,27 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 {
     const string YarnSpinnerCompilerAssemblyName = "YarnSpinner.Compiler";
     const string DebugLoggingPreprocessorSymbol = "YARN_SOURCE_GENERATION_DEBUG_LOGGING";
+    const string DisableAllGenerationSymbol = "YARN_SOURCE_GENERATION_DISABLE_ALL";
+    const string DisableYSLSGenerationSymbol = "YARN_SOURCE_GENERATION_DISABLE_YSLS";
     const string MinimumGodotVersionPreprocessorSymbol = "if GODOT4_0_OR_GREATER";
 
     public static string? GetProjectRoot(GeneratorExecutionContext context)
     {
-      return context.GetCallingPath();
+        return context.GetCallingPath();
     }
 
     public void Execute(GeneratorExecutionContext context)
     {
+
         using var output = GetOutput(context);
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var projectRoot = GetProjectRoot(context);
         output.WriteLine(DateTime.Now);
-		output.WriteLine($"GetCallingPath: {context.GetCallingPath()}");
+        if (context.ParseOptions.PreprocessorSymbolNames.Contains(DisableAllGenerationSymbol))
+        {
+            output.WriteLine($"All YarnSpinner source generation disabled by #define {DisableAllGenerationSymbol}.");
+            return;
+        }
         if (projectRoot == null)
         {
             output.WriteLine("Unable to locate caller's project directory. Can't output YSLS file.");
@@ -58,7 +66,7 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
         bool hasCriticalActionErrors = false;
         try
         {
-            
+
             output.WriteLine("Source code generation for assembly " + context.Compilation.AssemblyName);
 
             if (context.AdditionalFiles.Any())
@@ -221,11 +229,17 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
 
             output.WriteLine($"Done.");
 
-            context.AddSource($"YarnActionRegistration-{compilation.AssemblyName}.Generated.cs", sourceText);
 
-            // no settings at the moment to disable ysls. Could use define symbol? 
-            output.Write($"Generating ysls...");
-            // generating the ysls
+            if (context.ParseOptions.PreprocessorSymbolNames.Contains(DisableYSLSGenerationSymbol))
+            {
+                output.WriteLine($"YSLS generation is disabled via {DisableYSLSGenerationSymbol}");
+            }
+            else
+            {
+                context.AddSource($"YarnActionRegistration-{compilation.AssemblyName}.Generated.cs", sourceText);
+
+                output.Write($"Generating ysls...");
+                // generating the ysls
 
             IEnumerable<string> commandJSON = actions.Where(a => a.Type == ActionType.Command).Select(a => a.ToJSON());
             IEnumerable<string> functionJSON =
@@ -237,37 +251,37 @@ public class ActionRegistrationSourceGenerator : ISourceGenerator
                        $@"""functions"":[{string.Join(",", functionJSON)}]" +
                        "}";
 
-            output.WriteLine($"Done.");
+                output.WriteLine($"Done.");
                 // todo how to find projectpath
-            if (!string.IsNullOrEmpty("not empty todo"))
-            {
-                output.Write($"Writing generated ysls...");
-                var fullPath = Path.Combine(projectRoot,
-                    $"{context.Compilation.AssemblyName}.ysls.json");
-                try
+                if (!string.IsNullOrEmpty("not empty todo"))
                 {
-                    System.IO.File.WriteAllText(fullPath, ysls);
-                    output.WriteLine($"Done.");
+                    output.Write($"Writing generated ysls...");
+                    var fullPath = Path.Combine(projectRoot,
+                        $"{context.Compilation.AssemblyName}.ysls.json");
+                    try
+                    {
+                        System.IO.File.WriteAllText(fullPath, ysls);
+                        output.WriteLine($"Done.");
+                    }
+                    catch (Exception e)
+                    {
+                        output.WriteLine($"Unable to write ysls to disk: {e.Message}");
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    output.WriteLine($"Unable to write ysls to disk: {e.Message}");
+                    output.WriteLine("unable to identify project path, ysls will not be written to disk");
                 }
+
             }
-            else
-            {
-                output.WriteLine("unable to identify project path, ysls will not be written to disk");
-            }
-        
 
+            stopwatch.Stop();
+            output.WriteLine($"Source code generation completed in {stopwatch.Elapsed.TotalMilliseconds}ms");
+            return;
 
-        stopwatch.Stop();
-        output.WriteLine($"Source code generation completed in {stopwatch.Elapsed.TotalMilliseconds}ms");
-        return;
+        }
 
-    }
-
-catch (Exception e)
+        catch (Exception e)
         {
             output.WriteLine($"{e}");
         }

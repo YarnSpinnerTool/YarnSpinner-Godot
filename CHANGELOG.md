@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Upgrade YarnSpinner base libraries to 3.2.0. For details, see https://github.com/YarnSpinnerTool/YarnSpinner/releases/tag/v3.2.0
 - Update the source generator to output `.ysls.json` files, used to integrate with other YarnSpinner tools like the VS Code extension. Updated diagnostics around command registration are also provided.
+  - To disable generation of the YSLS file, add the define symbol . Example in your `.csproj` file: `<DefineConstants>$(DefineConstants);YARN_SOURCE_GENERATION_DISABLE_YSLS</DefineConstants>`
+  - You can now also disable source generation entirely if desired with the symbol `YARN_SOURCE_GENERATION_DISABLE_ALL`. This will prevent you from using the `[YarnCommand]` and `[YarnFunction]` attributes and require manual command and function registration to each dialogue runner.
 - Work around Godot issue where exported C# variables can reset to their initial value: remove initial value from DialogueRunner.dialoguePresenters
 - Register `CustomMarker` and `BasicMarker` as custom types for better editor integration (#119)
 - Fix a bug where the`DialogueRunner.onDialogueComplete` signal was emitted twice when dialogue ends. (fix #120)
