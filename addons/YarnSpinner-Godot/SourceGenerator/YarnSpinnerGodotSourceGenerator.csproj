@@ -13,6 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="**.cs"/>
+        <Compile Include="Analyser.cs" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" PrivateAssets="All" ExcludeAssets="runtime" />
     </ItemGroup>
 </Project>
