@@ -265,8 +265,12 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
             optionViewsCreated += 1;
         }
         // The first available option is selected by default
-
-        optionItems.First(view => view.Visible).FocusButton();
+        if (optionItems.Count(opt => opt.Visible) == 0)
+        {
+            // no options are displayed, they may all be unavailable. count this as selecting no options 
+            return await DialogueRunner.NoOptionSelected;
+        }
+        optionItems.First(opt => opt.Visible).FocusButton();
 
         // Update the last line, if one is configured
         if (IsInstanceValid(lastLineContainer))
