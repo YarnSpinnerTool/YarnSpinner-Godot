@@ -192,6 +192,7 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
                 $"Can't display options from {nameof(OptionsPresenter)}. No {nameof(optionParent)} is set " +
                 $"to parent the options to.");
         }
+
         // if all options are unavailable then we need to return null
         // it's the responsibility of the dialogue runner to handle this, not the presenter
         bool anyAvailable = false;
@@ -203,10 +204,12 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
                 break;
             }
         }
+
         if (!anyAvailable)
         {
             return null;
         }
+
         // If we don't already have enough option views, create more
         while (dialogueOptions.Length > optionItems.Count)
         {
@@ -264,12 +267,13 @@ public partial class OptionsPresenter : Node, DialoguePresenterBase
 
             optionViewsCreated += 1;
         }
-        // The first available option is selected by default
+
         if (optionItems.Count(opt => opt.Visible) == 0)
         {
             // no options are displayed, they may all be unavailable. count this as selecting no options 
             return await DialogueRunner.NoOptionSelected;
         }
+        // The first available option is selected by default
         optionItems.First(opt => opt.Visible).FocusButton();
 
         // Update the last line, if one is configured
