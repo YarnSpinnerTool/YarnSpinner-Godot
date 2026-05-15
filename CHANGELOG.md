@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.3.20] 2026-TODO
+## [0.3.20] 2026-05-15
 
 - Upgrade YarnSpinner base libraries to 3.2.0. For details, see https://github.com/YarnSpinnerTool/YarnSpinner/releases/tag/v3.2.0
 - Update the source generator to output `.ysls.json` files, used to integrate with other YarnSpinner tools like the VS Code extension. Updated diagnostics around command registration are also provided.
@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Dialogue Presenters now have optional OnNodeEnter and OnNodeExit methods that can be overridden to respond to changes in the running node. 
 - ⚠️ Breaking change: Remove `DialogueViewBase` and `GDScriptPresenterAdapter`, which have been deprecated in favor of DialoguePresenterBase / views implemented directly in GDScript for a while now.
 - LocalizedLine now has a Source property that tells you where the line came from (typically a DialogueRunner instance). https://yarnspinner.dev/blog/yarn-spinner-3-1-release/#lines-know-where-they-came-from
-
+- Fix #121 - Logic for showCharacterNameInLineView was inaccurate versus its comments
 
 ## [0.3.12] 2025-12-21
 
