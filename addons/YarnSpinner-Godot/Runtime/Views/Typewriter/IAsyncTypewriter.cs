@@ -1,13 +1,20 @@
-﻿#nullable enable
+﻿/*
+Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
+*/
 
+#nullable enable
+
+using System.Text.RegularExpressions;
+using Godot;
 
 namespace YarnSpinnerGodot;
 
 using System.Threading;
+using System.Collections.Generic;
 
 /// <summary>
 /// An object that can handle delivery of a line's text over time.
-/// </summary>Add commentMore actions
+/// </summary>
 public interface IAsyncTypewriter
 {
     /// <summary>
@@ -22,10 +29,67 @@ public interface IAsyncTypewriter
     /// cref="CancellationToken.IsCancellationRequested"/> becomes true, the
     /// typewriter effect should end early and present the entire contents
     /// of <paramref name="line"/>.</para>
+    /// </remarks>
     /// <param name="line">The line to display.</param>
     /// <param name="cancellationToken">A token that indicates that the
     /// typewriter effect should be cancelled.</param>
     /// <returns>A task that completes when the typewriter effect has
     /// finished.</returns>
     public YarnTask RunTypewriter(Yarn.Markup.MarkupParseResult line, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Called by the presenter before content has been shown.
+    /// This gives the typewriter it's chance to do any setup before the content is visibly shown.
+    /// </summary>
+    /// <param name="line">The content of the line or option that is about to be shown</param>
+    public void PrepareForContent(Yarn.Markup.MarkupParseResult line);
+
+    /// <summary>
+    /// Called right before the content will be visibly hidden
+    /// </summary>
+    public void ContentWillDismiss();
+
+    /// <summary>
+    /// Called after the content has been visibly hidden.
+    /// </summary>
+    /// <remarks>
+    /// This is the typewriters last chance to do any cleanup that they may need to do before more content or full destruction occurs, will always be called after <see cref="ContentWillDismiss"/>.
+    /// It is the responsibility of the <see cref="DialoguePresenterBase"/> to only call this after hiding anything that might look weird if state is reset.
+    /// </remarks>
+    public void ContentDidDismiss();
+
+    /// <summary>
+    /// The list of action markup handlers that this typewriter should call out to while typewriting.
+    /// </summary>
+    public List<IActionMarkupHandler> ActionMarkupHandlers { get; }
+
+    /// <summary>
+    /// The main text element that the presenter intends the typewriter to work with
+    /// </summary>
+    /// <remarks>
+    /// Most of the time the typewriter is just going to be changing the visible characters so will need this anyways.
+    /// Is safe to not worry about this if your typewriter has no need of it.
+    /// </remarks>
+    public RichTextLabel? TextElement { get; set; }
+
+    /// <summary>
+    /// Whether we will replace <> characters with [] to display them as BBCode.
+    /// </summary>
+    public bool ConvertHTMLToBBCode { get; set; }
+}
+
+public static class IAsyncTypewriterExtensions
+{
+    /// <summary>
+    /// If <see cref="ConvertHTMLToBBCode"/> is true, replace any HTML tags in the line text and
+    /// character name text with BBCode tags.
+    /// </summary>
+    public static void ConvertHTMLToBBCodeIfConfigured(this IAsyncTypewriter typewriter)
+    {
+        if (typewriter.ConvertHTMLToBBCode)
+        {
+            typewriter.TextElement!.Text =
+                Regex.Replace(typewriter.TextElement.Text, LinePresenter.HtmlTagPattern, "[$1]");
+        }
+    }
 }

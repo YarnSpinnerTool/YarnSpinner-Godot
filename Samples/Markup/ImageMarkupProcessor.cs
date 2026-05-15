@@ -40,22 +40,26 @@ public partial class ImageMarkupProcessor : ReplacementMarkupHandler
         LineProvider.RegisterMarkerProcessor("img", this);
     }
 
-    public override List<LineParser.MarkupDiagnostic> ProcessReplacementMarker(MarkupAttribute marker,
-        StringBuilder childBuilder, List<MarkupAttribute> childAttributes,
-        string localeCode)
+    public override ReplacementMarkerResult ProcessReplacementMarker(MarkupAttribute marker,
+           StringBuilder childBuilder, List<MarkupAttribute> childAttributes,
+           string localeCode)
     {
         if (_aliasToSpritePath.TryGetValue(marker.Name, out var value))
         {
             // replace with <image tag> 
             childBuilder.Insert(0, value);
-            return [];
+            return new ReplacementMarkerResult(value.Length);
         }
 
         if (marker.Name == "img")
         {
             if (!marker.TryGetProperty("path", out MarkupValue imagePath))
             {
-                return [new("No path attribute specified for img markup tag.")];
+                var error = new List<LineParser.MarkupDiagnostic>
+                {
+                    new LineParser.MarkupDiagnostic("No path attribute specified for img markup tag.")
+                };
+                return new ReplacementMarkerResult(error, 0);
             }
 
             var widthString = "";
@@ -74,10 +78,11 @@ public partial class ImageMarkupProcessor : ReplacementMarkupHandler
 
             // generic image markup
             childBuilder.Insert(0, $"[img{argsString}]res://Samples/Markup/images/{imagePath.StringValue}[/img]");
-
-            return NoDiagnostics;
+            var finalString = $"[img{argsString}]res://Samples/Markup/images/{imagePath.StringValue}[/img]";
+            childBuilder.Insert(0, finalString);
+            return new ReplacementMarkerResult(finalString.Length);
         }
 
-        return [];
+        return new ReplacementMarkerResult();
     }
 }

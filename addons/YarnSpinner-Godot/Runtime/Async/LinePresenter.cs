@@ -21,6 +21,14 @@ namespace YarnSpinnerGodot;
 [GlobalClass]
 public partial class LinePresenter : Node, DialoguePresenterBase
 {
+    public enum TypewriterType
+    {
+        Instant,
+        ByLetter,
+        ByWord,
+        Custom,
+    }
+
     [Export] public DialogueRunner? dialogueRunner;
 
     /// <summary>
@@ -28,8 +36,8 @@ public partial class LinePresenter : Node, DialoguePresenterBase
     /// Presenter.
     /// </summary>
     /// <remarks>
-    /// If <see cref="useFadeEffect"/> is true, then the alpha value of this
-    /// <see cref="CanvasGroup"/> will be animated during line presentation
+    /// If <see cref="useFadeEffect"/> is true, then the modulate.alpha value of this
+    /// <see cref="Control"/> will be animated during line presentation
     /// and dismissal.
     /// </remarks>
     /// <seealso cref="useFadeEffect"/>
@@ -147,32 +155,14 @@ public partial class LinePresenter : Node, DialoguePresenterBase
     // typewriter fields
 
     /// <summary>
-    /// Controls whether the text of <see cref="lineText"/> should be
-    /// gradually revealed over time.
-    /// </summary>
-    /// <remarks><para>If this value is <see langword="true"/>, the <see
-    /// cref="lineText"/> object's <see
-    /// cref="RichTextLabel.maxVisibleCharacters"/> property will animate from 0
-    /// to the length of the text, at a rate of <see
-    /// cref="typewriterEffectSpeed"/> letters per second when the line
-    /// appears. <see cref="onCharacterTyped"/> is called for every new
-    /// character that is revealed.</para>
-    /// <para>If this value is <see langword="false"/>, the <see
-    /// cref="lineText"/> will all be revealed at the same time.</para>
-    /// <para style="note">If <see cref="useFadeEffect"/> is <see
-    /// langword="true"/>, the typewriter effect will run after the fade-in
-    /// is complete.</para>
-    /// </remarks>
-    /// <seealso cref="lineText"/>
-    /// <seealso cref="onCharacterTyped"/>
-    /// <seealso cref="typewriterEffectSpeed"/>
-    [Export] public bool useTypewriterEffect = true;
-
-    /// <summary>
     /// The number of characters per second that should appear during a
     /// typewriter effect.
     /// </summary>
-    [Export] public int typewriterEffectSpeed = 60;
+    [ExportGroup("Typewriter")] [Export] public int lettersPerSecond;
+
+    [ExportGroup("Typewriter")] [Export] public int wordsPerSecond;
+    [ExportGroup("Typewriter")] [Export] public TypewriterType typewriterStyle;
+    [ExportGroup("Typewriter")] [Export] public Node? customTypewriter;
 
     /// <summary>
     /// If enabled, matched pairs of the characters '<' and `>`  will be replaced by
@@ -209,6 +199,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
     }
 
     public List<IActionMarkupHandler> ActionMarkupHandlers { get; } = [];
+    public IAsyncTypewriter? Typewriter { get; set; }
 
     /// <inheritdoc/>
     public YarnTask OnDialogueStartedAsync()
@@ -224,18 +215,54 @@ public partial class LinePresenter : Node, DialoguePresenterBase
             presenterControl!.Visible = false;
         }
 
-        if (useTypewriterEffect)
-        {
-            // need to add a pause handler also
-            // and add it to the front of the list
-            // that way it always happens first
-            var pauser = new PauseEventProcessor();
-            ActionMarkupHandlers.Insert(0, pauser);
-        }
-
         if (IsInstanceValid(lineText))
         {
+            lineText.BbcodeEnabled = true;
             lineText.VisibleCharactersBehavior = TextServer.VisibleCharactersBehavior.CharsAfterShaping;
+            switch (typewriterStyle)
+            {
+                case TypewriterType.Instant:
+                    Typewriter = new InstantTypewriter()
+                    {
+                        ActionMarkupHandlers = ActionMarkupHandlers,
+                        TextElement = this.lineText, ConvertHTMLToBBCode = ConvertHTMLToBBCode
+                    };
+                    break;
+
+                case TypewriterType.ByLetter:
+                    Typewriter = new LetterTypewriter()
+                    {
+                        ActionMarkupHandlers = ActionMarkupHandlers,
+                        TextElement = this.lineText,
+                        CharactersPerSecond = this.lettersPerSecond,
+                        ConvertHTMLToBBCode = ConvertHTMLToBBCode
+                    };
+                    break;
+
+                case TypewriterType.ByWord:
+                    Typewriter = new WordTypewriter()
+                    {
+                        ActionMarkupHandlers = ActionMarkupHandlers,
+                        TextElement = this.lineText,
+                        WordsPerSecond = this.wordsPerSecond, ConvertHTMLToBBCode = ConvertHTMLToBBCode
+                    };
+                    break;
+
+                case TypewriterType.Custom:
+
+                    if (customTypewriter is not IAsyncTypewriter)
+                    {
+                        GD.PushWarning("Typewriter mode is set to custom but there is no typewriter set.");
+                    }
+                    else
+                    {
+                        Typewriter = (IAsyncTypewriter)customTypewriter;
+                        Typewriter.ActionMarkupHandlers.AddRange(ActionMarkupHandlers);
+                        Typewriter.TextElement = this.lineText;
+                    }
+
+                    break;
+            }
         }
 
         if (characterNameContainer == null && characterNameText != null)
@@ -259,49 +286,50 @@ public partial class LinePresenter : Node, DialoguePresenterBase
         }
 
         MarkupParseResult text;
-
-        // configuring the text fields
-        if (showCharacterNameInLineView)
+        
+        if (!IsInstanceValid(characterNameText))
         {
-            if (characterNameText == null)
+            if (showCharacterNameInLineView)
             {
-                GD.PushWarning(
-                    $"{nameof(LinePresenter)} is configured to show character names, but no character name text view was provided.",
-                    this);
+                text = line.Text;
             }
             else
             {
-                characterNameText.Text = line.CharacterName;
-            }
-
-            text = line.TextWithoutCharacterName;
-
-            if (line.Text.TryGetAttributeWithName("character", out var characterAttribute))
-            {
-                text.Attributes.Add(characterAttribute);
+                text = line.TextWithoutCharacterName;
             }
         }
         else
         {
-            // we don't want to show character names but do have a valid container for showing them
-            // so we should just disable that and continue as if it didn't exist
+            text = line.TextWithoutCharacterName;
+
+            // we are configured to show character names in their own little box, but this line doesn't have one
             if (IsInstanceValid(characterNameContainer))
             {
-                characterNameContainer!.Visible = false;
+                if (string.IsNullOrWhiteSpace(line.CharacterName))
+                {
+                    characterNameContainer.Visible = false;
+                }
+                else
+                {
+                    characterNameContainer.Visible = true;
+                    characterNameText.Text = line.CharacterName;
+                }
             }
-
-            text = line.TextWithoutCharacterName;
         }
-
-        lineText.Text = text.Text;
-        
-        lineText.VisibleRatio = 0;
         // letting every action markup handler know that fade up (if set) is about to begin
         foreach (var processor in ActionMarkupHandlers)
         {
             processor.OnPrepareForLine(text, lineText);
         }
 
+        Typewriter ??= new InstantTypewriter()
+        {
+            ActionMarkupHandlers = this.ActionMarkupHandlers,
+            TextElement = this.lineText,
+            ConvertHTMLToBBCode = ConvertHTMLToBBCode
+        };
+
+        Typewriter.PrepareForContent(text);
         if (IsInstanceValid(presenterControl))
         {
             // fading up the UI
@@ -322,46 +350,23 @@ public partial class LinePresenter : Node, DialoguePresenterBase
             }
         }
 
-        if (useTypewriterEffect)
-        {
-            var typewriter = new BasicTypewriter()
-            {
-                ActionMarkupHandlers = this.ActionMarkupHandlers,
-                Text = this.lineText,
-                CharactersPerSecond = this.typewriterEffectSpeed,
-                ConvertHTMLToBBCode = this.ConvertHTMLToBBCode,
-            };
-
-            await typewriter.RunTypewriter(text, token.HurryUpToken);
-            if (!IsInstanceValid(this))
-            {
-                return;
-            }
-        }
-
+        await Typewriter.RunTypewriter(text, token.HurryUpToken).SuppressCancellationThrow();
         // if we are set to autoadvance how long do we hold for before continuing?
         if (autoAdvance)
         {
             await YarnTask.Delay((int)(autoAdvanceDelay * 1000), token.NextLineToken).SuppressCancellationThrow();
-            if (!IsInstanceValid(this))
-            {
-                return;
-            }
         }
         else
         {
             await YarnTask.WaitUntilCanceled(token.NextLineToken).SuppressCancellationThrow();
-            if (!IsInstanceValid(this))
-            {
-                return;
-            }
         }
 
-        // we tell all action processors that the line is finished and is about to go away
-        foreach (var processor in ActionMarkupHandlers)
+        if (!IsInstanceValid(this))
         {
-            processor.OnLineWillDismiss();
+            return;
         }
+
+        Typewriter.ContentWillDismiss();
 
         if (IsInstanceValid(presenterControl))
         {
@@ -377,6 +382,8 @@ public partial class LinePresenter : Node, DialoguePresenterBase
 
             presenterControl!.Visible = false;
         }
+
+        Typewriter.ContentDidDismiss();
     }
 
     /// <inheritdoc cref="DialoguePresenterBase.RunOptionsAsync(DialogueOption[], CancellationToken)" path="/summary"/> 
@@ -402,20 +409,4 @@ public partial class LinePresenter : Node, DialoguePresenterBase
         dialogueRunner!.RequestNextLine();
     }
 
-    /// <summary>
-    /// If <see cref="ConvertHTMLToBBCode"/> is true, replace any HTML tags in the line text and
-    /// character name text with BBCode tags.
-    /// </summary>
-    private void ConvertHTMLToBBCodeIfConfigured()
-    {
-        if (ConvertHTMLToBBCode)
-        {
-            if (IsInstanceValid(characterNameText))
-            {
-                characterNameText!.Text = Regex.Replace(characterNameText.Text, HtmlTagPattern, "[$1]");
-            }
-
-            lineText!.Text = Regex.Replace(lineText.Text, HtmlTagPattern, "[$1]");
-        }
-    }
 }

@@ -8,13 +8,13 @@ namespace YarnSpinnerGodot;
 
 /// <summary>
 /// An attribute marker processor that uses a <see cref="MarkupPalette"/> to
-/// apply TextMeshPro styling tags to a line.
+/// apply BBCode styling tags to a line.
 /// </summary>
 /// <remarks>This marker processor registers itself as a handler for markers
 /// whose name is equal to the name of a style in the given palette. For
 /// example, if the palette defines a style named "happy", this marker processor
 /// will process tags in a Yarn line named <c>[happy]</c> by inserting the
-/// appropriate TextMeshProp style tags defined for the "happy" style.</remarks>
+/// appropriate BBCode style tags defined for the "happy" style.</remarks>
 [GlobalClass]
 public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
 {
@@ -36,17 +36,20 @@ public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
     /// <param name="marker">The marker to process.</param>
     /// <param name="childBuilder">A StringBuilder to build the styled text in.</param>
     /// <param name="childAttributes">An optional list of child attributes to
-    /// apply, but this is ignored for TextMeshPro styles.</param>
+    /// apply</param>
     /// <param name="localeCode">The locale code to use when formatting the style.</param>
     /// <returns>A list of markup diagnostics if there are any errors, otherwise an empty list.</returns>
-    public override List<LineParser.MarkupDiagnostic> ProcessReplacementMarker(MarkupAttribute marker,
+    public override ReplacementMarkerResult ProcessReplacementMarker(MarkupAttribute marker,
         StringBuilder childBuilder, List<MarkupAttribute> childAttributes, string localeCode)
     {
         if (palette == null)
         {
-            var list = new List<LineParser.MarkupDiagnostic>
-                { new($"No palette set on {nameof(PaletteMarkerProcessor)}") };
-            return list;
+            var error = new List<LineParser.MarkupDiagnostic>
+            {
+                new LineParser.MarkupDiagnostic(
+                    $"can't apply palette for marker {marker.Name}, because a palette was not set")
+            };
+            return new ReplacementMarkerResult(error, 0);
         }
 
 
@@ -70,11 +73,19 @@ public partial class PaletteMarkerProcessor : ReplacementMarkupHandler
                 }
             }
 
-            return ReplacementMarkupHandler.NoDiagnostics;
+            // finally we need to calculate the number of invisible characters we added
+            // which is the difference between the new and original string lengths - the total number of visible characters inserted
+            // we don't care WHERE those visible characters were added, just that they were
+            // we can't just use the marker offset because that only worries about visible elements added at the front of the string
+            // most of the time this is just gonna be 0 anyways and you don't have to think about it
+            return new ReplacementMarkerResult(childBuilder.Length - childrenLength -
+                                               format.TotalVisibleCharacterCount);
         }
 
-        var diagnostic = new LineParser.MarkupDiagnostic($"was unable to find a matching marker for {marker.Name}");
-        return new List<LineParser.MarkupDiagnostic>() { diagnostic };
+        List<LineParser.MarkupDiagnostic> diagnostics =
+                  [new($"was unable to find a matching marker for {marker.Name}")];
+
+        return new ReplacementMarkerResult(diagnostics, 0);
     }
 
     /// <summary>

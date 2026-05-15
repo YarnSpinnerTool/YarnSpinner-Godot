@@ -1,0 +1,59 @@
+{
+  "cSpell.enableFiletypes": [
+    "yarnspinner"
+  ],
+  "cSpell.languageSettings": [
+    {
+      "languageId": "yarnspinner",
+      "patterns": [
+        {
+          "name": "yarn-commands",
+          "pattern": "/<<[^>]*>>/g"
+        },
+        {
+          "name": "yarn-expressions",
+          "pattern": "/\\{[^}]*\\}/g"
+        },
+        {
+          "name": "yarn-variables",
+          "pattern": "/\\$[a-zA-Z_][a-zA-Z0-9_]*/g"
+        },
+        {
+          "name": "yarn-markup",
+          "pattern": "/\\[[^\\]]*\\]/g"
+        },
+        {
+          "name": "yarn-hashtags",
+          "pattern": "/#[a-zA-Z_][a-zA-Z0-9_:-]*/g"
+        },
+        {
+          "name": "yarn-node-markers",
+          "pattern": "/^(---|===)$/gm"
+        },
+        {
+          "name": "yarn-headers",
+          "pattern": "/^(title|tags|position|color|colorID|tracking|custom|style):.*/gm"
+        },
+        {
+          "name": "yarn-character-names",
+          "pattern": "/^\\s*[A-Za-z_][A-Za-z0-9_]*(?=:)/gm"
+        },
+        {
+          "name": "yarn-comments",
+          "pattern": "/\\/\\/.*$/gm"
+        }
+      ],
+      "ignoreRegExpList": [
+        "yarn-commands",
+        "yarn-expressions",
+        "yarn-variables",
+        "yarn-markup",
+        "yarn-hashtags",
+        "yarn-node-markers",
+        "yarn-headers",
+        "yarn-character-names",
+        "yarn-comments"
+      ]
+    }
+  ]
+}

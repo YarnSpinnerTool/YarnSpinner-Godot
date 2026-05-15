@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="MarkupPalette" load_steps=10 format=3 uid="uid://c631us202ijmk"]
+[gd_resource type="Resource" script_class="MarkupPalette" format=3 uid="uid://c631us202ijmk"]
 
 [ext_resource type="Script" uid="uid://b3q2v7wyxccs0" path="res://addons/YarnSpinner-Godot/Runtime/BasicMarker.cs" id="1_n23v5"]
 [ext_resource type="Script" uid="uid://lvtve3yjd8v7" path="res://addons/YarnSpinner-Godot/Runtime/CustomMarker.cs" id="2_1n8i4"]

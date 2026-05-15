@@ -17,11 +17,6 @@ public partial class SpaceSample : Node
         _instance = this;
         dialogueRunner.onDialogueComplete += OnDialogueComplete;
     }
-
-    public static void Test(global::YarnSpinnerGodot.IActionRegistration target)
-    {
-        target.AddCommandHandler<string, string>("test", SetSprite);
-    }
     
     [YarnCommand("setsprite")]
     public static void SetSprite(string character, string spriteName)
