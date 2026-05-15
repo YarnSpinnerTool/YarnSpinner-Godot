@@ -286,43 +286,36 @@ public partial class LinePresenter : Node, DialoguePresenterBase
         }
 
         MarkupParseResult text;
-
-        // configuring the text fields
-        if (showCharacterNameInLineView)
+        
+        if (!IsInstanceValid(characterNameText))
         {
-            if (characterNameText == null)
+            if (showCharacterNameInLineView)
             {
-                GD.PushWarning(
-                    $"{nameof(LinePresenter)} is configured to show character names, but no character name text view was provided.",
-                    this);
+                text = line.Text;
             }
             else
             {
-                characterNameText.Text = line.CharacterName;
-            }
-
-            text = line.TextWithoutCharacterName;
-
-            if (line.Text.TryGetAttributeWithName("character", out var characterAttribute))
-            {
-                text.Attributes.Add(characterAttribute);
+                text = line.TextWithoutCharacterName;
             }
         }
         else
         {
-            // we don't want to show character names but do have a valid container for showing them
-            // so we should just disable that and continue as if it didn't exist
+            text = line.TextWithoutCharacterName;
+
+            // we are configured to show character names in their own little box, but this line doesn't have one
             if (IsInstanceValid(characterNameContainer))
             {
-                characterNameContainer!.Visible = false;
+                if (string.IsNullOrWhiteSpace(line.CharacterName))
+                {
+                    characterNameContainer.Visible = false;
+                }
+                else
+                {
+                    characterNameContainer.Visible = true;
+                    characterNameText.Text = line.CharacterName;
+                }
             }
-
-            text = line.TextWithoutCharacterName;
         }
-
-        lineText.Text = text.Text;
-
-        lineText.VisibleRatio = 0;
         // letting every action markup handler know that fade up (if set) is about to begin
         foreach (var processor in ActionMarkupHandlers)
         {
