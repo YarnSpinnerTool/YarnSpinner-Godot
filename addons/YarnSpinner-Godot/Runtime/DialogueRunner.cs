@@ -186,14 +186,15 @@ public partial class DialogueRunner : Godot.Node
     {
         get
         {
-            if (lineProvider == null)
+            if (!IsInstanceValid(lineProvider))
             {
                 // No line provider was created. We'll need to create one.
                 var textProvider = new TextLineProvider();
                 textProvider.Name = nameof(TextLineProvider);
                 lineProvider = textProvider;
-                AddChild(textProvider);
+                // make sure to set the YarnProject before adding the provider to the scene tree 
                 lineProvider.YarnProject = yarnProject;
+                AddChild(textProvider);
             }
 
             return lineProvider;
