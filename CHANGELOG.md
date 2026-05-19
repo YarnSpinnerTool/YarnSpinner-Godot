@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.21] 2026-05-18
+* Fix invalid **.cs glob breaking incremental builds by @spirifoxy
+* Fix issue #122 where line providers automatically created by the DialogueRunner threw exceptions due to setting the YarnProject after adding to the tree
+
 ## [0.3.20] 2026-05-15
 
 - Upgrade YarnSpinner base libraries to 3.2.0. For details, see https://github.com/YarnSpinnerTool/YarnSpinner/releases/tag/v3.2.0
