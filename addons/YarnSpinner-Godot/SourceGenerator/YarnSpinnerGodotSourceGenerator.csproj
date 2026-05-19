@@ -12,8 +12,7 @@
         <DefineConstants>YARN_SOURCE_GENERATION_DEBUG_LOGGING</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="**.cs"/>
-        <Compile Include="Analyser.cs" />
+        <Compile Include="*.cs"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" PrivateAssets="All" ExcludeAssets="runtime" />
     </ItemGroup>
 </Project>
