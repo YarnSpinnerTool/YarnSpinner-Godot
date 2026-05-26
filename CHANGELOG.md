@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.22] 2026-05-25
+* Fix new DialoguePresenterBase.OnNodeEnter/OnNodeExit not being called (Fix #126)
+* Fix "Custom typewriter doesn't get markup handlers correctly" (Fix #125)
+
 ## [0.3.21] 2026-05-18
 * Fix invalid **.cs glob breaking incremental builds by @spirifoxy
 * Fix issue #122 where line providers automatically created by the DialogueRunner threw exceptions due to setting the YarnProject after adding to the tree

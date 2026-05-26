@@ -214,7 +214,9 @@ public partial class LinePresenter : Node, DialoguePresenterBase
         {
             presenterControl!.Visible = false;
         }
-
+        // we add all the Godot Node-derived handlers into the shared list
+        ActionMarkupHandlers.AddRange(eventHandlers);
+        
         if (IsInstanceValid(lineText))
         {
             lineText.BbcodeEnabled = true;
@@ -257,7 +259,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
                     else
                     {
                         Typewriter = (IAsyncTypewriter)customTypewriter;
-                        Typewriter.ActionMarkupHandlers.AddRange(ActionMarkupHandlers);
+                        Typewriter.ActionMarkupHandlers = ActionMarkupHandlers;
                         Typewriter.TextElement = this.lineText;
                     }
 
@@ -270,8 +272,7 @@ public partial class LinePresenter : Node, DialoguePresenterBase
             characterNameContainer = characterNameText;
         }
 
-        // we add all the Godot Node-derived handlers into the shared list
-        ActionMarkupHandlers.AddRange(eventHandlers);
+
     }
 
     /// <summary>Presents a line using the configured text view.</summary>

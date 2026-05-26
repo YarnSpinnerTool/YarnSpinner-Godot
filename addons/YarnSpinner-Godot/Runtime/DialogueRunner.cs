@@ -142,6 +142,7 @@ public partial class DialogueRunner : Godot.Node
     [Export] public bool PrintProjectErrors;
 
     [Export] public bool allowOptionFallthrough;
+
     /// <summary>
     /// Gets the <see cref="YarnProject"/> asset that this dialogue runner uses.
     /// </summary>
@@ -436,6 +437,7 @@ public partial class DialogueRunner : Godot.Node
         {
             return;
         }
+
         dialogueCancellationCompletion = null;
     }
 
@@ -610,6 +612,7 @@ public partial class DialogueRunner : Godot.Node
         {
             return;
         }
+
         // Finally, notify that dialogue is complete and tidy up.
         dialogueCompletionSource?.TrySetResult();
         EmitSignal(SignalName.onDialogueComplete);
@@ -626,11 +629,33 @@ public partial class DialogueRunner : Godot.Node
     private void OnNodeCompleted(string completedNodeName)
     {
         EmitSignal(SignalName.onNodeComplete, completedNodeName);
+        foreach (var presenter in dialoguePresenters!.Where(IsInstanceValid))
+        {
+            if (presenter is DialoguePresenterBase cSharpPresenter)
+            {
+                cSharpPresenter.OnNodeExit(completedNodeName);
+            }
+            else if (presenter!.HasMethod("on_node_exit"))
+            {
+                presenter.Call("on_node_exit", completedNodeName);
+            }
+        }
     }
 
     private void OnNodeStarted(string startedNodeName)
     {
         EmitSignal(SignalName.onNodeStart, startedNodeName);
+        foreach (var presenter in dialoguePresenters!.Where(IsInstanceValid))
+        {
+            if (presenter is DialoguePresenterBase cSharpPresenter)
+            {
+                cSharpPresenter.OnNodeEnter(startedNodeName);
+            }
+            else if (presenter!.HasMethod("on_node_started"))
+            {
+                presenter.Call("on_node_exit", startedNodeName);
+            }
+        }
     }
 
     private void OnCommandReceived(Command command)
@@ -716,6 +741,7 @@ public partial class DialogueRunner : Godot.Node
         {
             return;
         }
+
         Dialogue.Continue();
     }
 
@@ -1019,10 +1045,12 @@ public partial class DialogueRunner : Godot.Node
             return;
             // throw;
         }
+
         if (!IsInstanceValid(this))
         {
             return;
         }
+
         optionCancellationSource.Dispose();
 
         if (dialogueCancellationSource?.IsCancellationRequested ?? false)
@@ -1042,7 +1070,8 @@ public partial class DialogueRunner : Godot.Node
             {
                 // None of our option views returned an option, and our dialogue wasn't cancelled, and we've said we don't want to do fallthrough.
                 // That's not allowed, because we don't know what to do next!
-                GD.PushError($"All presenters have returned from {nameof(DialoguePresenterBase.RunOptionsAsync)} but none returned an option, and fallthrough is disabled. This is not allowed.");
+                GD.PushError(
+                    $"All presenters have returned from {nameof(DialoguePresenterBase.RunOptionsAsync)} but none returned an option, and fallthrough is disabled. This is not allowed.");
                 return;
             }
         }
@@ -1051,13 +1080,14 @@ public partial class DialogueRunner : Godot.Node
             Dialogue.SetSelectedOption(selectedOption.DialogueOptionID);
 
 
-        if (runSelectedOptionAsLine)
-        {
-            // Run the selected option's line content as though we had received
-            // it as a line.
-            await RunLocalisedLine(selectedOption.Line);
+            if (runSelectedOptionAsLine)
+            {
+                // Run the selected option's line content as though we had received
+                // it as a line.
+                await RunLocalisedLine(selectedOption.Line);
+            }
         }
-        }
+
         if (dialogueCancellationSource?.IsCancellationRequested ?? false)
         {
             // Our dialogue has been cancelled. Don't continue the dialogue.
@@ -1350,7 +1380,6 @@ public partial class DialogueRunner : Godot.Node
             {
                 // callable is from GDScript with await statements
                 await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
-                
             }
         }
 
