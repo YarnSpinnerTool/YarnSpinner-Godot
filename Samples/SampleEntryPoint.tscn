@@ -67,7 +67,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
-text = "0.3.21"
+text = "0.3.22"
 script = ExtResource("2_shsu2")
 
 [node name="Logo" type="TextureRect" parent="." unique_id=1051631919]
