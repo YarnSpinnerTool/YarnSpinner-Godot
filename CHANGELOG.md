@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.3.22] 2026-05-todo 
+## [0.3.22] 2026-05-25
 * Fix new DialoguePresenterBase.OnNodeEnter/OnNodeExit not being called (Fix #126)
 * Fix "Custom typewriter doesn't get markup handlers correctly" (Fix #125)
 
