@@ -242,7 +242,7 @@ public class Actions : ICommandDispatcher
                         i += 1;
                     }
 
-                    finalArgs[paramIndex] = paramsArray;
+                    finalArgs[paramIndex] = paramsArray.ToArray();
                 }
                 else
                 {
