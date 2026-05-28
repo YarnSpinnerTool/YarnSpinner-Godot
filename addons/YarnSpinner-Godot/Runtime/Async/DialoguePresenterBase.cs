@@ -83,63 +83,6 @@ public interface DialoguePresenterBase
     /// CancellationToken)"/>
     public async YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
     {
-        // backwards compatibility with 0.2.*
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (this is DialogueViewBase v2View)
-#pragma warning restore CS0618 // Type or member is obsolete
-        {
-            // phaseComplete is a flag that represents whether the current
-            // 'phase' of a v2-style Dialogue Presenter (Run, Interrupt, Dismiss) is
-            // complete or not.
-            bool phaseComplete = false;
-            void PhaseComplete() => phaseComplete = true;
-
-            // Run the line, and make phaseComplete become true when it's done.
-            v2View.RunLine(line, PhaseComplete);
-
-            // Wait for one of the following things to happen:
-            // 1. RunLine completes successfully and calls PhaseComplete.
-            // 2. The line is cancelled.
-            while (GodotObject.IsInstanceValid((GodotObject)this) && phaseComplete == false
-                                                                  && token.IsNextLineRequested == false
-                  )
-            {
-                await YarnTask.Yield();
-            }
-
-            if (!GodotObject.IsInstanceValid((GodotObject)this))
-            {
-                return;
-            }
-
-            // If the line was cancelled, tell the view that the line was
-            // 'interrupted' and should finish presenting quickly. Wait for the
-            // phase to complete.
-            if (token.IsNextLineRequested)
-            {
-                phaseComplete = false;
-                v2View.InterruptLine(line, PhaseComplete);
-                while (GodotObject.IsInstanceValid((GodotObject)this) && phaseComplete == false)
-                {
-                    await YarnTask.Yield();
-                }
-
-                if (!GodotObject.IsInstanceValid((GodotObject)this))
-                {
-                    return;
-                }
-            }
-
-            // Finally, signal that the line should be dismissed, and wait for
-            // the dismissal to complete.
-            phaseComplete = false;
-            v2View.DismissLine(PhaseComplete);
-
-            while (GodotObject.IsInstanceValid((GodotObject)this) && phaseComplete == false)
-            {
-                await YarnTask.Yield();
-            }
-        }
     }
 
 
@@ -184,45 +127,7 @@ public interface DialoguePresenterBase
     public async YarnTask<DialogueOption?> RunOptionsAsync(DialogueOption[] dialogueOptions,
         CancellationToken cancellationToken)
     {
-        // backwards compatibility with 0.2.*
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (this is DialogueViewBase v2View)
-#pragma warning restore CS0618 // Type or member is obsolete
-        {
-            int selectedOptionID = -1;
-
-            // Run the options, and wait for either a selection to be made, or
-            // for this view to be cancelled.
-            v2View.RunOptions(dialogueOptions, (selectedID) => { selectedOptionID = selectedID; });
-
-            while (GodotObject.IsInstanceValid((GodotObject)this) &&
-                   selectedOptionID == -1 && cancellationToken.IsCancellationRequested == false)
-            {
-                await YarnTask.Yield();
-            }
-
-            if (!GodotObject.IsInstanceValid((GodotObject)this) || cancellationToken.IsCancellationRequested)
-            {
-                // We were cancelled or are exiting the game. Return null.
-                return null;
-            }
-
-            // Find the option that has the same ID as the one that was
-            // selected, and return that.
-            for (int i = 0; i < dialogueOptions.Length; i++)
-            {
-                if (dialogueOptions[i].DialogueOptionID == selectedOptionID)
-                {
-                    return dialogueOptions[i];
-                }
-            }
-
-            // If we got here, we weren't cancelled, but we also didn't select
-            // an option that was valid. Throw an error.
-            throw new InvalidOperationException($"Option view selected an invalid option ID ({selectedOptionID})");
-        }
-
-        // otherwise, default implementation.
+        // default implementation.
         return await DialogueRunner.NoOptionSelected;
     }
 
@@ -241,15 +146,6 @@ public interface DialoguePresenterBase
     /// <returns>A task that represents any work done by this Dialogue Presenter in order to get ready for dialogue to run.</returns>
     public YarnTask OnDialogueStartedAsync()
     {
-        // backwards compatibility with 0.2.*
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (this is DialogueViewBase v2View)
-#pragma warning restore CS0618 // Type or member is obsolete
-        {
-            // Invoke the synchronous version of 'dialogue started'
-            v2View.DialogueStarted();
-        }
-
         return YarnTask.CompletedTask;
     }
 
@@ -271,15 +167,6 @@ public interface DialoguePresenterBase
     /// in order to clean up after running dialogue.</returns>
     public YarnTask OnDialogueCompleteAsync()
     {
-        // backwards compatibility with 0.2.*
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (this is DialogueViewBase v2View)
-#pragma warning restore CS0618 // Type or member is obsolete
-        {
-            // Invoke the synchronous version of 'dialogue started'
-            v2View.DialogueComplete();
-        }
-
         return YarnTask.CompletedTask;
     }
 
@@ -287,4 +174,10 @@ public interface DialoguePresenterBase
     /// uses when presenting content.
     /// </summary>
     public List<IActionMarkupHandler> ActionMarkupHandlers { get; }
+
+    // these return void instead of YarnTask because currently the VM doesn't wait on node enter/exit so we can't either
+    public  void OnNodeEnter(string nodeName) { }
+    public  void OnNodeExit(string nodeName) { }
+
+    
 }

@@ -139,7 +139,9 @@ public partial class DialogueRunner : Godot.Node
     /// If true, errors will be logged at runtime if the <see cref="yarnProject"/>
     /// on this dialogue runner has compilation errors. 
     /// </summary>
-    [Export] public bool PrintProjectErrors = true;
+    [Export] public bool PrintProjectErrors;
+
+    [Export] public bool allowOptionFallthrough;
 
     /// <summary>
     /// Gets the <see cref="YarnProject"/> asset that this dialogue runner uses.
@@ -185,14 +187,15 @@ public partial class DialogueRunner : Godot.Node
     {
         get
         {
-            if (lineProvider == null)
+            if (!IsInstanceValid(lineProvider))
             {
                 // No line provider was created. We'll need to create one.
                 var textProvider = new TextLineProvider();
                 textProvider.Name = nameof(TextLineProvider);
                 lineProvider = textProvider;
-                AddChild(textProvider);
+                // make sure to set the YarnProject before adding the provider to the scene tree 
                 lineProvider.YarnProject = yarnProject;
+                AddChild(textProvider);
             }
 
             return lineProvider;
@@ -203,7 +206,7 @@ public partial class DialogueRunner : Godot.Node
     /// The list of dialogue presenters that the dialogue runner delivers content
     /// to.
     /// </summary>
-    [Export] public Array<Godot.Node?> dialoguePresenters = [];
+    [Export] public Array<Godot.Node?>? dialoguePresenters;
 
     /// <summary>
     /// Gets a value that indicates if the dialogue is actively
@@ -385,6 +388,7 @@ public partial class DialogueRunner : Godot.Node
             CheckCompilationErrors();
         }
 
+        dialoguePresenters ??= [];
         foreach (var presenter in dialoguePresenters)
         {
             if (presenter == null ||
@@ -433,6 +437,7 @@ public partial class DialogueRunner : Godot.Node
         {
             return;
         }
+
         dialogueCancellationCompletion = null;
     }
 
@@ -536,7 +541,6 @@ public partial class DialogueRunner : Godot.Node
 
     private void OnDialogueCompleted()
     {
-        EmitSignal(SignalName.onDialogueComplete);
         OnDialogueCompleteAsync().Forget();
     }
 
@@ -549,6 +553,7 @@ public partial class DialogueRunner : Godot.Node
         currentLineHurryUpSource = null;
 
         var pendingTasks = new HashSet<YarnTask>();
+        dialoguePresenters ??= [];
         foreach (var presenter in this.dialoguePresenters)
         {
             if (!IsInstanceValid(presenter))
@@ -607,6 +612,7 @@ public partial class DialogueRunner : Godot.Node
         {
             return;
         }
+
         // Finally, notify that dialogue is complete and tidy up.
         dialogueCompletionSource?.TrySetResult();
         EmitSignal(SignalName.onDialogueComplete);
@@ -623,11 +629,33 @@ public partial class DialogueRunner : Godot.Node
     private void OnNodeCompleted(string completedNodeName)
     {
         EmitSignal(SignalName.onNodeComplete, completedNodeName);
+        foreach (var presenter in dialoguePresenters!.Where(IsInstanceValid))
+        {
+            if (presenter is DialoguePresenterBase cSharpPresenter)
+            {
+                cSharpPresenter.OnNodeExit(completedNodeName);
+            }
+            else if (presenter!.HasMethod("on_node_exit"))
+            {
+                presenter.Call("on_node_exit", completedNodeName);
+            }
+        }
     }
 
     private void OnNodeStarted(string startedNodeName)
     {
         EmitSignal(SignalName.onNodeStart, startedNodeName);
+        foreach (var presenter in dialoguePresenters!.Where(IsInstanceValid))
+        {
+            if (presenter is DialoguePresenterBase cSharpPresenter)
+            {
+                cSharpPresenter.OnNodeEnter(startedNodeName);
+            }
+            else if (presenter!.HasMethod("on_node_started"))
+            {
+                presenter.Call("on_node_exit", startedNodeName);
+            }
+        }
     }
 
     private void OnCommandReceived(Command command)
@@ -708,6 +736,12 @@ public partial class DialogueRunner : Godot.Node
             return;
         }
 
+        await YarnTask.NextFrame();
+        if (!IsInstanceValid(this))
+        {
+            return;
+        }
+
         Dialogue.Continue();
     }
 
@@ -721,7 +755,7 @@ public partial class DialogueRunner : Godot.Node
         var localisedLine =
             await LineProvider.GetLocalizedLineAsync(line,
                 dialogueCancellationSource?.Token ?? CancellationToken.None);
-
+        localisedLine.Source = this;
         if (!IsInstanceValid(this))
         {
             return;
@@ -782,7 +816,7 @@ public partial class DialogueRunner : Godot.Node
         };
 
         var pendingTasks = new HashSet<YarnTask>();
-
+        dialoguePresenters ??= [];
         foreach (var presenter in this.dialoguePresenters)
         {
             if (!IsInstanceValid(presenter))
@@ -791,15 +825,6 @@ public partial class DialogueRunner : Godot.Node
                 continue;
             }
 
-            // Legacy support: if this presenter is a v2-style DialogueViewBase,
-            // then set its requestInterrupt delegate to be one that stops
-            // the current line.
-#pragma warning disable CS0618 // 'construct' is obsolete
-            if (presenter is DialogueViewBase v2View)
-            {
-                v2View.requestInterrupt = RequestNextLine;
-            }
-#pragma warning restore CS0618 // 'construct' is obsolete
             if (presenter is DialoguePresenterBase asyncPresenter)
             {
                 // Tell all of our presenters to run this line, and give them a
@@ -890,6 +915,7 @@ public partial class DialogueRunner : Godot.Node
             var opt = options.Options[i];
             LocalizedLine localizedLine =
                 await LineProvider.GetLocalizedLineAsync(opt.Line, optionCancellationSource.Token);
+            localizedLine.Source = this;
             if (!IsInstanceValid(this))
             {
                 return;
@@ -977,6 +1003,7 @@ public partial class DialogueRunner : Godot.Node
         }
 
         var pendingTasks = new List<YarnTask>();
+        dialoguePresenters ??= [];
         foreach (var presenter in this.dialoguePresenters)
         {
             if (!IsInstanceValid(presenter))
@@ -1018,10 +1045,12 @@ public partial class DialogueRunner : Godot.Node
             return;
             // throw;
         }
+
         if (!IsInstanceValid(this))
         {
             return;
         }
+
         optionCancellationSource.Dispose();
 
         if (dialogueCancellationSource?.IsCancellationRequested ?? false)
@@ -1031,22 +1060,32 @@ public partial class DialogueRunner : Godot.Node
             return;
         }
 
-        else if (selectedOption == null)
+        if (selectedOption == null)
         {
-            // None of our option presenters returned an option, and our dialogue
-            // wasn't cancelled. That's not allowed, because we don't know what
-            // to do next!
-            GD.PushError($"No dialogue presenter returned an option selection! Hanging here!");
-            return;
+            if (allowOptionFallthrough)
+            {
+                Dialogue.SetSelectedOption(Dialogue.NoOptionSelected);
+            }
+            else
+            {
+                // None of our option views returned an option, and our dialogue wasn't cancelled, and we've said we don't want to do fallthrough.
+                // That's not allowed, because we don't know what to do next!
+                GD.PushError(
+                    $"All presenters have returned from {nameof(DialoguePresenterBase.RunOptionsAsync)} but none returned an option, and fallthrough is disabled. This is not allowed.");
+                return;
+            }
         }
-
-        Dialogue.SetSelectedOption(selectedOption.DialogueOptionID);
-
-        if (runSelectedOptionAsLine)
+        else
         {
-            // Run the selected option's line content as though we had received
-            // it as a line.
-            await RunLocalisedLine(selectedOption.Line);
+            Dialogue.SetSelectedOption(selectedOption.DialogueOptionID);
+
+
+            if (runSelectedOptionAsLine)
+            {
+                // Run the selected option's line content as though we had received
+                // it as a line.
+                await RunLocalisedLine(selectedOption.Line);
+            }
         }
 
         if (dialogueCancellationSource?.IsCancellationRequested ?? false)
@@ -1138,6 +1177,7 @@ public partial class DialogueRunner : Godot.Node
         EmitSignal(SignalName.onDialogueStart);
 
         var tasks = new List<YarnTask>();
+        dialoguePresenters ??= [];
         foreach (var presenter in dialoguePresenters)
         {
             if (presenter == null || !IsInstanceValid(presenter))
@@ -1340,7 +1380,6 @@ public partial class DialogueRunner : Godot.Node
             {
                 // callable is from GDScript with await statements
                 await ((SceneTree)Engine.GetMainLoop()).ToSignal(returnValue.AsGodotObject(), "completed");
-                
             }
         }
 
