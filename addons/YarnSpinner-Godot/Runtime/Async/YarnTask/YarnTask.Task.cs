@@ -91,21 +91,21 @@ public partial struct YarnTask
         await Task.WhenAll(taskList.ToArray());
     }
 
-    public static async partial YarnTask<T[]> WhenAll<T>(params YarnTask<T>[] tasks)
-    {
-        return await Task.WhenAll(Array.ConvertAll<YarnTask<T>, Task<T>>(tasks, t => t));
-    }
+    // public static async partial YarnTask<T[]> WhenAll<T>(params YarnTask<T>[] tasks)
+    // {
+    //     return await Task.WhenAll(Array.ConvertAll<YarnTask<T>, Task<T>>(tasks, t => t));
+    // }
 
-    public static async partial YarnTask<T[]> WhenAll<T>(IEnumerable<YarnTask<T>> tasks)
-    {
-        var uniTasks = new List<Task<T>>();
-        foreach (var task in tasks)
-        {
-            uniTasks.Add(task);
-        }
-
-        return await Task.WhenAll(uniTasks);
-    }
+    // public static async partial YarnTask<T[]> WhenAll<T>(IEnumerable<YarnTask<T>> tasks)
+    // {
+    //     var uniTasks = new List<Task<T>>();
+    //     foreach (var task in tasks)
+    //     {
+    //         uniTasks.Add(task);
+    //     }
+    //
+    //     return await Task.WhenAll(uniTasks);
+    // }
 
     public readonly async partial YarnTask<bool> SuppressCancellationThrow()
     {

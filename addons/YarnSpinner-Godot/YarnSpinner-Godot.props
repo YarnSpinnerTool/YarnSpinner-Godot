@@ -23,4 +23,8 @@
                           ReferenceOutputAssembly="false"
                           OutputItemType="analyzer"/>
     </ItemGroup>
+    <ItemGroup>
+        <TrimmerRootAssembly Include="Google.Protobuf"/>
+        <TrimmerRootAssembly Include="CsvHelper"/>
+    </ItemGroup>
 </Project>

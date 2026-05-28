@@ -1,35 +1,44 @@
 <Project Sdk="Godot.NET.Sdk/4.6.2">
-  <PropertyGroup>
-    <NoWarn>RS2008</NoWarn> <!-- We do not have the AnalyserReleases.*.md files written to satisfy this warning -->
-    <TargetFramework>net8.0</TargetFramework>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-    <WarningsAsErrors>Nullable</WarningsAsErrors>
-    <!--Turn on Nullable so that we can fail the build if there are any incompatible scripts-->
-    <Nullable>enable</Nullable>
-    <!-- Include this when debugging source generation -->
-    <DefineConstants>$(DefineConstants);YARN_SOURCE_GENERATION_DEBUG_LOGGING;YARNSPINNER_DEBUG</DefineConstants>
+    <PropertyGroup>
+        <NoWarn>RS2008</NoWarn> <!-- We do not have the AnalyserReleases.*.md files written to satisfy this warning -->
+        <TargetFramework>net8.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <WarningsAsErrors>Nullable</WarningsAsErrors>
+        <!--Turn on Nullable so that we can fail the build if there are any incompatible scripts-->
+        <Nullable>enable</Nullable>
+        <!-- Include this when debugging source generation -->
+        <DefineConstants>$(DefineConstants);YARN_SOURCE_GENERATION_DEBUG_LOGGING;YARNSPINNER_DEBUG</DefineConstants>
 
-    <!-- Uncomment the following two lines if you want to see the generated 
-    Command/Function C# file on disk for debugging purposes. -->
-<!--    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
-<!--    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
+        <!-- Uncomment the following two lines if you want to see the generated 
+        Command/Function C# file on disk for debugging purposes. -->
+        <!--    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+        <!--    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
 
-  </PropertyGroup>
-  <ItemGroup>
+    </PropertyGroup>
+    <Choose>
+        <When Condition=" $(Configuration)=='ExportDebug' Or $(Configuration)=='ExportRelease'">
+            <!-- Exported game -->
+            <PropertyGroup>
+                <!-- To enable AOT compilation in exports -->
+                <PublishAot>true</PublishAot>
+            </PropertyGroup>
+        </When>
+    </Choose>
+    <ItemGroup>
+        <!-- Add some extra files for ease of developing samples -->
+        <Compile Include="addons\YarnSpinner-Godot\SourceGenerator\YarnSpinnerProjectSettings.cs"/>
+        <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
+        <None Include="addons\YarnSpinner-Godot\plugin.cfg"/>
+        <None Include="**\*.md"/>
+        <None Include="**\*.yarn"/>
+        <None Include="**\*.yarnproject"/>
+        <None Include="**\*.gd"/>
+        <Compile Remove="Generated\**"/>
+        <!-- For SQL variable storage sample -->
+        <PackageReference Include="sqlite-net-pcl" Version="1.9.172"/>
+    </ItemGroup>
 
-    <!-- Add some extra files for ease of developing samples -->
-    <Compile Include="addons\YarnSpinner-Godot\SourceGenerator\YarnSpinnerProjectSettings.cs" />
-    <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
-    <None Include="addons\YarnSpinner-Godot\plugin.cfg" />
-    <None Include="**\*.md" />
-    <None Include="**\*.yarn" />
-    <None Include="**\*.yarnproject" />
-    <None Include="**\*.gd" />
-    <Compile Remove="Generated\**" />
-    <!-- For SQL variable storage sample -->
-    <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-  </ItemGroup>
+    <!-- How to include the plugin code in your .csproj -->
+    <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
 
-  <!-- How to include the plugin code in your .csproj -->
-  <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props" />
 </Project>

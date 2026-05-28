@@ -59,8 +59,8 @@ public partial struct YarnTask
 
     public static partial YarnTask WhenAll(params YarnTask[] tasks);
     public static partial YarnTask WhenAll(IEnumerable<YarnTask> tasks);
-    public static partial YarnTask<T[]> WhenAll<T>(params YarnTask<T>[] tasks);
-    public static partial YarnTask<T[]> WhenAll<T>(IEnumerable<YarnTask<T>> tasks);
+    // public static partial YarnTask<T[]> WhenAll<T>(params YarnTask<T>[] tasks);
+    // public static partial YarnTask<T[]> WhenAll<T>(IEnumerable<YarnTask<T>> tasks);
 
     public readonly partial YarnTask<bool> SuppressCancellationThrow();
 
