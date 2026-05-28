@@ -215,20 +215,19 @@ public class Actions : ICommandDispatcher
                     // the method.
                     var parameterArrayElementType = parameters[i].ParameterType.GetElementType();
                     var paramIndex = i;
-                    var paramsArray = new List<object?>();
+                    var paramsList = new List<object?>();
                     while (i < argumentCount)
                     {
                         arg = args[i];
                         if (converter == null)
                         {
-                            paramsArray.Add(arg);
+                            paramsList.Add(arg);
                         }
                         else
                         {
                             try
                             {
-                                // todo test
-                                paramsArray.Add(converter.Invoke(arg, i))
+                                paramsList.Add(converter.Invoke(arg, i));
                             }
                             catch (Exception e)
                             {
@@ -242,7 +241,7 @@ public class Actions : ICommandDispatcher
                         i += 1;
                     }
 
-                    finalArgs[paramIndex] = paramsArray.ToArray();
+                    finalArgs[paramIndex] = paramsList.ToArray();
                 }
                 else
                 {

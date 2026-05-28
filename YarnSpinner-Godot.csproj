@@ -25,7 +25,8 @@
         </When>
     </Choose>
     <ItemGroup>
-        <!-- Add some extra files for ease of developing samples --><Compile Include="addons\YarnSpinner-Godot\SourceGenerator\YarnSpinnerProjectSettings.cs" />
+        <!-- Add some extra files for ease of developing samples -->
+        <Compile Include="addons\YarnSpinner-Godot\SourceGenerator\YarnSpinnerProjectSettings.cs"/>
         <None Include="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
         <None Include="addons\YarnSpinner-Godot\plugin.cfg"/>
         <None Include="**\*.md"/>
@@ -39,4 +40,5 @@
 
     <!-- How to include the plugin code in your .csproj -->
     <Import Project="addons\YarnSpinner-Godot\YarnSpinner-Godot.props"/>
+
 </Project>
