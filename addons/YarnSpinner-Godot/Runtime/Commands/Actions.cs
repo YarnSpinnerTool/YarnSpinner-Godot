@@ -228,7 +228,7 @@ public class Actions : ICommandDispatcher
                             try
                             {
                                 // todo test
-                                paramsArray[i - paramIndex] = converter.Invoke(arg, i);
+                                paramsArray.Add(converter.Invoke(arg, i))
                             }
                             catch (Exception e)
                             {
