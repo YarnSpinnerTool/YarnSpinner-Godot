@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.23] 2026-10-06
+
+* Updated YarnSpinner and YarnSpinner.Compiler dependencies to 3.2.2. See internal updates in the release notes for 3.2.1 and 3.2.2 [here](https://github.com/YarnSpinnerTool/YarnSpinner/blob/main/CHANGELOG.md#321-2026-05-05).
+* Updated the sample project to use Godot 4.7.2 
+
 ## [0.3.22] 2026-05-25
 * Fix new DialoguePresenterBase.OnNodeEnter/OnNodeExit not being called (Fix #126)
 * Fix "Custom typewriter doesn't get markup handlers correctly" (Fix #125)
