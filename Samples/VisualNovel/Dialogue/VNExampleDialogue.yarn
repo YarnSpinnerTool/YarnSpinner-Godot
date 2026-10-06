@@ -11,12 +11,12 @@ position: 0,0
 // start playing audioclip "ambient_birds" at 50% volume, loop forever
 <<PlayAudio VNManager ambient_birds 0.5>>
 
-A VISUAL NOVEL EXAMPLE #line:07ee50d 
+A VISUAL NOVEL EXAMPLE    #line:094883b 
 
 // adds actor named "Eve" using sprite "cool-girl", placed in left-half + center of screen, with green text label
 <<Act VNManager Eve cool-girl left center green>>
 
-Eve: Finally, a quiet day at the office. Maybe I'll be able to get some work done. #line:03a9f6d 
+Eve: Finally, a quiet day at the office. Maybe I'll be able to get some work done.    #line:0e9b86d 
 
 // adds actor "Adam" with sprite "biz-guy" off-screen right, with blue-ish text label
 <<Act VNManager Adam biz-guy 1.25 top #226677>>
@@ -25,47 +25,47 @@ Eve: Finally, a quiet day at the office. Maybe I'll be able to get some work don
 <<Move VNManager Adam right center 0.5>>
 <<PlayAudio VNManager music_funny>>
 
-Adam: Hey Eve! I have a question! #line:07f4eac 
-Eve: Oh no... #line:0721506 
+Adam: Hey Eve! I have a question!    #line:074a16a 
+Eve: Oh no...    #line:0b364ef 
 
 // horizontally flips Eve actor to face Adam
 <<Flip VNManager Eve right>>
 
 // Yarn shortcut choices, an easy way to make branching options
--> Eve gets upset with Adam #line:0b52843 
+-> Eve gets upset with Adam    #line:08cbd91 
 	<<Shake VNManager Eve 1.0>>
-	Eve: WHAT DO YOU WANT??? #line:09f21f4 
-	Adam: I just wanted to see if you liked using YarnSpinner. #line:0b7be61 
-	Eve: ... It's fine. Thanks. Now leave me alone. #line:01942dd 
--> Adam asks Eve a question #line:0c481f8 
-	Adam: Do you think YarnSpinner is easy to use? #line:05eb26a 
-	Eve: Not when you're bothering me. #line:0e8ce79 
-	Adam: Oh, I didn't realize you were busy. Sorry. #line:0cb4316 
+	Eve: WHAT DO YOU WANT???    #line:0703be8 
+	Adam: I just wanted to see if you liked using YarnSpinner.    #line:0713239 
+	Eve: ... It's fine. Thanks. Now leave me alone.    #line:0b9e489 
+-> Adam asks Eve a question    #line:0e57423 
+	Adam: Do you think YarnSpinner is easy to use?    #line:074145f 
+	Eve: Not when you're bothering me.    #line:03c833d 
+	Adam: Oh, I didn't realize you were busy. Sorry.    #line:0663843 
 
 // hide Adam actor and remove from the scene
 <<Hide VNManager Adam>>
 // Stop all sound playback
 <<StopAudioAll VNManager >>
 
-Eve: Ok, now to finally write that visual novel. #line:0794753 
+Eve: Ok, now to finally write that visual novel.    #line:014cb80 
 <<Flip VNManager Eve left>>
 <<PlayAudio VNManager  music_romantic>>
-Eve: I can finally write my epic romance about - #line:0c39b43 
+Eve: I can finally write my epic romance about -    #line:0808897 
 <<StopAudioAll VNManager >>
 <<Flip VNManager Eve right>>
 <<wait 1.5>>
 <<Flip VNManager Eve left>>
-Eve: Wait... where's my laptop? It's not here. #line:04432b5 
+Eve: Wait... where's my laptop? It's not here.    #line:0e957ec 
 <<Shake VNManager Eve 1.0>>
-Eve: Adam! Have you seen my laptop??? #line:0a21105 
+Eve: Adam! Have you seen my laptop???    #line:0afdd8a 
 
 <<PlayAudio VNManager music_funny>>
 <<Flip VNManager Eve right>>
 <<Move VNManager Eve 1.25 center 1.0>>
-Eve: ADDDDAAAMMMMMMM!!! #line:062467b 
+Eve: ADDDDAAAMMMMMMM!!!    #line:08b83b5 
 
 // fade to black, from 0% opacity to 100% opacity, in 2.0 seconds
 <<Fade VNManager 000000 0.0 1.0 2.0>>
-THE END. #line:0d7e78e 
+THE END.    #line:076b4f2 
 
 ===
