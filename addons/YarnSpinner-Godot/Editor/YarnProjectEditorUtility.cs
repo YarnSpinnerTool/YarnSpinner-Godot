@@ -910,7 +910,7 @@ public static class YarnProjectEditorUtility
             return result.StringTable == null
                 ? Array.Empty<string>()
                 : result.StringTable.Where(i => i.Value.isImplicitTag == false).Select(i => i.Key);
-        }).ToList(); // immediately execute this query so we can determine timing information
+        }).ToHashSet(); // immediately execute this query so we can determine timing information
 
 #if YARNSPINNER_DEBUG
         stopwatch.Stop();
@@ -928,7 +928,7 @@ public static class YarnProjectEditorUtility
 
                 // Produce a version of this file that contains line
                 // tags added where they're needed.
-                var tagged = Yarn.Compiler.Utility.TagLines(contents, allExistingTags);
+                var tagged = Yarn.Compiler.Utility.TagLines(contents, allExistingTags, null);
 
                 var taggedVersion = tagged.Item1;
 
