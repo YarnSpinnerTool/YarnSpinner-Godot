@@ -6,7 +6,7 @@
 Yarn Spinner for Godot (C#) is a version of [Yarn Spinner](https://yarnspinner.dev) integration for the Godot Engine 4.x (C#).
 
 > **Note:**
-> If you are using GDScript instead, visit [Yarn Spinner for Godot (GDScript)](https://github.com/YarnSpinnerTool/YarnSpinner-Godot/edit/develop/README.md).
+> If you are using GDScript instead, visit [Yarn Spinner for Godot (GDScript)](https://github.com/YarnSpinnerTool/YarnSpinner-Godot-GDScript).
 
 Here is a video of the various samples available as of version 0.2.0:
 
